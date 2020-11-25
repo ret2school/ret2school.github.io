@@ -17,7 +17,7 @@
       
       <guid>https://ret2school.github.io/post/1000_and_1_night/</guid>
       <description>Author: supersnail
-The files can be found there
+Files can be found here
 For this challenge, we get an archive with a lot of files, the name of which seems to be a hash. Each file is an ELF x86_64 program file. In addition, a server listens, and requests:
 Enter valid token to binary with name &amp;lt;8c235f89a8143a28a1d6067e959dd858&amp;gt; Token: at connection. We therefore understand quickly enough that we will have to automate the reversing of all these ELFs to send the correct token back to the server, and thus have the flag, the server requesting a series of tokens before spitting the flag.</description>
     </item>
