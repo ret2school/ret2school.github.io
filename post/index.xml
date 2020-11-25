@@ -11,6 +11,18 @@
     
     
     <item>
+      <title>[Aero CTF 2020] 1000 and 1 night</title>
+      <link>https://ret2school.github.io/post/1000_and_1_night/</link>
+      <pubDate>Wed, 25 Nov 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/1000_and_1_night/</guid>
+      <description>Author: supersnail
+The files can be found there
+For this challenge, we get an archive with a lot of files, the name of which seems to be a hash. Each file is an ELF x86_64 program file. In addition, a server listens, and requests:
+Enter valid token to binary with name &amp;lt;8c235f89a8143a28a1d6067e959dd858&amp;gt; Token: at connection. We therefore understand quickly enough that we will have to automate the reversing of all these ELFs to send the correct token back to the server, and thus have the flag, the server requesting a series of tokens before spitting the flag.</description>
+    </item>
+    
+    <item>
       <title>[UTCTF 2020] Crack the heart</title>
       <link>https://ret2school.github.io/post/crack_the_heart/</link>
       <pubDate>Wed, 25 Nov 2020 00:00:00 +0000</pubDate>
