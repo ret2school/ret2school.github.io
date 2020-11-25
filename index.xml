@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>ret2school</title>
+    <link>https://ret2school.github.io/</link>
+    <description>Recent content on ret2school</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Wed, 25 Nov 2020 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://ret2school.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Team introduction</title>
+      <link>https://ret2school.github.io/post/list_team/</link>
+      <pubDate>Wed, 25 Nov 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/list_team/</guid>
+      <description>Members The team is composed of:
+ nasm (17 yo, interested in RE/pwn) supersnail (chad reverser) Zeynn (18 yo, web/steg/cypto) x. (the Guesser, the carry-er) Tek 0xPierre r0da op look Lime  </description>
+    </item>
+    
+  </channel>
+</rss>
