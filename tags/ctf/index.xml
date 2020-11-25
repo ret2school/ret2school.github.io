@@ -11,6 +11,18 @@
     
     
     <item>
+      <title>[UTCTF 2020] Crack the heart</title>
+      <link>https://ret2school.github.io/post/crack_the_heart/</link>
+      <pubDate>Wed, 25 Nov 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/crack_the_heart/</guid>
+      <description>Author: supersnail
+For this challenge, I first noticed (like in every other writeups) a big structure of offsets, that pointed to &amp;ldquo;funclets&amp;rdquo; followed by jump with rcx-relative offsets.
+The relative jump function:
+The first funclet just checks for the process being debugged, the &amp;ldquo;load_r9&amp;rdquo; funclet that jumps to the next funclet after skipping &amp;ldquo;n&amp;rdquo; bytes of garbage. Then the crackme calls a funclet &amp;ldquo;write_message&amp;rdquo; with the parameters (offset to &amp;ldquo;Why should I go out with you?</description>
+    </item>
+    
+    <item>
       <title>Team introduction</title>
       <link>https://ret2school.github.io/post/list_team/</link>
       <pubDate>Wed, 25 Nov 2020 00:00:00 +0000</pubDate>

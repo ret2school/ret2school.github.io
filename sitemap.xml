@@ -3,6 +3,16 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://ret2school.github.io/post/crack_the_heart/</loc>
+    <lastmod>2020-11-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://ret2school.github.io/tags/crack-the-heart/</loc>
+    <lastmod>2020-11-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://ret2school.github.io/tags/ctf/</loc>
     <lastmod>2020-11-25T00:00:00+00:00</lastmod>
   </url>
@@ -18,6 +28,11 @@
   </url>
   
   <url>
+    <loc>https://ret2school.github.io/tags/re/</loc>
+    <lastmod>2020-11-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://ret2school.github.io/tags/ret2school/</loc>
     <lastmod>2020-11-25T00:00:00+00:00</lastmod>
   </url>
@@ -28,12 +43,22 @@
   </url>
   
   <url>
+    <loc>https://ret2school.github.io/tags/reverse-engineering/</loc>
+    <lastmod>2020-11-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://ret2school.github.io/tags/</loc>
     <lastmod>2020-11-25T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>https://ret2school.github.io/post/list_team/</loc>
+    <lastmod>2020-11-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://ret2school.github.io/tags/utctf/</loc>
     <lastmod>2020-11-25T00:00:00+00:00</lastmod>
   </url>
   
