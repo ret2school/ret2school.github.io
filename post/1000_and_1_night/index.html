@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title>[Aero CTF 2020] 1000 and 1 night // ret2school</title>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.68.3" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="nasm" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="https://ret2school.github.io/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css" />
+
+    
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="[Aero CTF 2020] 1000 and 1 night"/>
+<meta name="twitter:description" content="Author: supersnail
+The files can be found there
+For this challenge, we get an archive with a lot of files, the name of which seems to be a hash. Each file is an ELF x86_64 program file. In addition, a server listens, and requests:
+Enter valid token to binary with name &lt;8c235f89a8143a28a1d6067e959dd858&gt; Token: at connection. We therefore understand quickly enough that we will have to automate the reversing of all these ELFs to send the correct token back to the server, and thus have the flag, the server requesting a series of tokens before spitting the flag."/>
+
+    <meta property="og:title" content="[Aero CTF 2020] 1000 and 1 night" />
+<meta property="og:description" content="Author: supersnail
+The files can be found there
+For this challenge, we get an archive with a lot of files, the name of which seems to be a hash. Each file is an ELF x86_64 program file. In addition, a server listens, and requests:
+Enter valid token to binary with name &lt;8c235f89a8143a28a1d6067e959dd858&gt; Token: at connection. We therefore understand quickly enough that we will have to automate the reversing of all these ELFs to send the correct token back to the server, and thus have the flag, the server requesting a series of tokens before spitting the flag." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ret2school.github.io/post/1000_and_1_night/" />
+<meta property="article:published_time" content="2020-11-25T00:00:00+00:00" />
+<meta property="article:modified_time" content="2020-11-25T00:00:00+00:00" />
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://ret2school.github.io"><img class="app-header-avatar" src="/pic.jpeg" alt="nasm" /></a>
+      <h1>ret2school</h1>
+      <nav class="app-header-menu">
+          <a class="app-header-menu-item" href="/">Home</a>
+             / 
+          
+          <a class="app-header-menu-item" href="/tags/">Tags</a>
+      </nav>
+      <p>Just a bunch of french ctf players</p>
+      <div class="app-header-social">
+        
+          <a target="_blank" href="https://github.com/ret2school" rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github">
+  <title>github</title>
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+</svg></a>
+        
+          <a target="_blank" href="https://twitter.com/nasm_re" rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-twitter">
+  <title>twitter</title>
+  <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
+</svg></a>
+        
+      </div>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">[Aero CTF 2020] 1000 and 1 night</h1>
+      <div class="post-meta">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          Nov 25, 2020
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          4 min read
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tag">
+  <title>tag</title>
+  <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line>
+</svg>
+              <a class="tag" href="https://ret2school.github.io/tags/ctf/">ctf</a>
+              <a class="tag" href="https://ret2school.github.io/tags/ret2school/">ret2school</a>
+              <a class="tag" href="https://ret2school.github.io/tags/utctf/">UTCTF</a>
+              <a class="tag" href="https://ret2school.github.io/tags/re/">RE</a>
+              <a class="tag" href="https://ret2school.github.io/tags/re/">RE</a>
+        </div>
+      </div>
+    </header>
+    <div class="post-content">
+      <p><a href="http://aassfxxx.infos.st/">Author: supersnail</a></p>
+<p>The files can be found <a href="https://rakovskij-stanislav.github.io/ctf_writeups/aeroctf_2020/tasks/files.zip">there</a></p>
+<p>For this challenge, we get an archive with a lot of files, the name of which seems to be a hash. Each file is an ELF x86_64 program file. In addition, a server listens, and requests:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">Enter valid token to binary with name &lt;8c235f89a8143a28a1d6067e959dd858&gt;
+Token:
+</code></pre></div><p>at connection. We therefore understand quickly enough that we will have to automate the reversing of all these ELFs to send the correct token back to the server, and thus have the flag, the server requesting a series of tokens before spitting the flag.</p>
+<p>Fortunately for us, these ELFs have a very similar structure, and automation should not be too difficult (especially since the binaries are not stripped). The interesting part is therefore in the &ldquo;sym.check&rdquo; function under radare2:</p>
+<pre><code>            ; CALL XREF from main @ 0x1219
+┌ 171: sym.check (void *arg1);
+│           ; var void *s1 @ rbp-0x38
+│           ; var void *s2 @ rbp-0x30
+│           ; var int64_t var_28h @ rbp-0x28
+│           ; var int64_t var_20h @ rbp-0x20
+│           ; var int64_t var_18h @ rbp-0x18
+│           ; var signed int64_t var_4h @ rbp-0x4
+│           ; arg void *arg1 @ rdi
+│           0x000012a4      55             push rbp
+│           0x000012a5      4889e5         mov rbp, rsp
+│           0x000012a8      4883ec40       sub rsp, 0x40
+│           0x000012ac      48897dc8       mov qword [s1], rdi         ; arg1
+│           0x000012b0      48b8110e5655.  movabs rax, 0xe57581255560e11
+│           0x000012ba      48ba0e585544.  movabs rdx, 0x114758114455580e
+│           0x000012c4      488945d0       mov qword [s2], rax
+│           0x000012c8      488955d8       mov qword [var_28h], rdx
+│           0x000012cc      48b80d131244.  movabs rax, 0x5614410e4412130d
+│           0x000012d6      48ba470d5755.  movabs rdx, 0x430d424155570d47
+│           0x000012e0      488945e0       mov qword [var_20h], rax
+│           0x000012e4      488955e8       mov qword [var_18h], rdx
+│           0x000012e8      c745fc000000.  mov dword [var_4h], 0
+│       ┌─&lt; 0x000012ef      eb2e           jmp 0x131f
+│       │   ; CODE XREF from sym.check @ 0x1323
+│      ┌──&gt; 0x000012f1      8b45fc         mov eax, dword [var_4h]
+│      ╎│   0x000012f4      4863d0         movsxd rdx, eax
+│      ╎│   0x000012f7      488b45c8       mov rax, qword [s1]
+│      ╎│   0x000012fb      4801d0         add rax, rdx
+│      ╎│   0x000012fe      0fb600         movzx eax, byte [rax]
+│      ╎│   0x00001301      83c00a         add eax, 0xa
+│      ╎│   0x00001304      83f022         xor eax, 0x22
+│      ╎│   0x00001307      8d48f5         lea ecx, [rax - 0xb]
+│      ╎│   0x0000130a      8b45fc         mov eax, dword [var_4h]
+│      ╎│   0x0000130d      4863d0         movsxd rdx, eax
+│      ╎│   0x00001310      488b45c8       mov rax, qword [s1]
+│      ╎│   0x00001314      4801d0         add rax, rdx
+│      ╎│   0x00001317      89ca           mov edx, ecx
+│      ╎│   0x00001319      8810           mov byte [rax], dl
+│      ╎│   0x0000131b      8345fc01       add dword [var_4h], 1
+│      ╎│   ; CODE XREF from sym.check @ 0x12ef
+│      ╎└─&gt; 0x0000131f      837dfc1f       cmp dword [var_4h], 0x1f
+│      └──&lt; 0x00001323      7ecc           jle 0x12f1
+│           0x00001325      488d4dd0       lea rcx, [s2]
+│           0x00001329      488b45c8       mov rax, qword [s1]
+│           0x0000132d      ba20000000     mov edx, 0x20               ; &quot;@&quot; ; size_t n
+│           0x00001332      4889ce         mov rsi, rcx                ; const void *s2
+│           0x00001335      4889c7         mov rdi, rax                ; const void *s1
+│           0x00001338      e833fdffff     call sym.imp.memcmp         ; int memcmp(const void *s1, const void *s2, size_t n)
+│           0x0000133d      85c0           test eax, eax
+│       ┌─&lt; 0x0000133f      7407           je 0x1348
+│       │   0x00001341      b800000000     mov eax, 0
+│      ┌──&lt; 0x00001346      eb05           jmp 0x134d
+│      ││   ; CODE XREF from sym.check @ 0x133f
+│      │└─&gt; 0x00001348      b801000000     mov eax, 1
+│      │    ; CODE XREF from sym.check @ 0x1346
+│      └──&gt; 0x0000134d      c9             leave
+└           0x0000134e      c3             ret
+</code></pre><p>We can see that crackme fills a buffer with 4 qwords (the encrypted &ldquo;token&rdquo;), before retrieving the serial entered by the user, and performing calculations on it before comparing it with the first buffer.</p>
+<p>The input encryption algorithm is therefore for each byte:</p>
+<pre><code>out[i] = ((serial[i] + 0xa) ^ 0x22) - 0xb
+</code></pre><p>All executables have the same algorithm, only the parameters, i.e. the buffer, and the constants 0xa, 0x22 and 0xb change for each binary. So we just have to exit python and r2pipe to extract these values and communicate with the server, which gives the python below (the binaries are placed in a &ldquo;files&rdquo; sub-folder):</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#!/usr/bin/python</span>
+
+<span style="color:#f92672">import</span> r2pipe
+<span style="color:#f92672">import</span> sys
+<span style="color:#f92672">import</span> struct
+<span style="color:#f92672">import</span> pexpect
+<span style="color:#f92672">import</span> socket
+
+buf <span style="color:#f92672">=</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;&#34;</span>
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">get_tok</span>(file):
+    r2 <span style="color:#f92672">=</span> r2pipe<span style="color:#f92672">.</span>open(<span style="color:#e6db74">&#34;files/&#34;</span> <span style="color:#f92672">+</span> file)
+    <span style="color:#75715e"># Extraction du buffer</span>
+    buf <span style="color:#f92672">=</span> struct<span style="color:#f92672">.</span>pack(<span style="color:#e6db74">&#34;&lt;Q&#34;</span>, r2<span style="color:#f92672">.</span>cmdj(<span style="color:#e6db74">&#34;pdj 1 @0x000012b0&#34;</span>)[<span style="color:#ae81ff">0</span>][<span style="color:#e6db74">&#34;val&#34;</span>])
+    buf <span style="color:#f92672">+=</span> struct<span style="color:#f92672">.</span>pack(<span style="color:#e6db74">&#34;&lt;Q&#34;</span>, r2<span style="color:#f92672">.</span>cmdj(<span style="color:#e6db74">&#34;pdj 1 @0x000012ba&#34;</span>)[<span style="color:#ae81ff">0</span>][<span style="color:#e6db74">&#34;val&#34;</span>])
+    buf <span style="color:#f92672">+=</span> struct<span style="color:#f92672">.</span>pack(<span style="color:#e6db74">&#34;&lt;Q&#34;</span>, r2<span style="color:#f92672">.</span>cmdj(<span style="color:#e6db74">&#34;pdj 1 @0x000012cc&#34;</span>)[<span style="color:#ae81ff">0</span>][<span style="color:#e6db74">&#34;val&#34;</span>])
+    buf <span style="color:#f92672">+=</span> struct<span style="color:#f92672">.</span>pack(<span style="color:#e6db74">&#34;&lt;Q&#34;</span>, r2<span style="color:#f92672">.</span>cmdj(<span style="color:#e6db74">&#34;pdj 1 @0x000012d6&#34;</span>)[<span style="color:#ae81ff">0</span>][<span style="color:#e6db74">&#34;val&#34;</span>])
+
+    <span style="color:#75715e"># Extraction des params de chiffrement</span>
+    add_operand <span style="color:#f92672">=</span> r2<span style="color:#f92672">.</span>cmdj(<span style="color:#e6db74">&#34;pdj 1 @0x00001301&#34;</span>)[<span style="color:#ae81ff">0</span>][<span style="color:#e6db74">&#34;val&#34;</span>]
+    xor_operand <span style="color:#f92672">=</span> r2<span style="color:#f92672">.</span>cmdj(<span style="color:#e6db74">&#34;pdj 1 @0x00001304&#34;</span>)[<span style="color:#ae81ff">0</span>][<span style="color:#e6db74">&#34;val&#34;</span>]
+    final_sub <span style="color:#f92672">=</span> r2<span style="color:#f92672">.</span>cmdj(<span style="color:#e6db74">&#34;pdj 1 @0x00001307&#34;</span>)[<span style="color:#ae81ff">0</span>][<span style="color:#e6db74">&#34;esil&#34;</span>]<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#34;,&#34;</span>)[<span style="color:#ae81ff">0</span>]
+    final_sub <span style="color:#f92672">=</span> int(final_sub[<span style="color:#ae81ff">2</span>:], <span style="color:#ae81ff">16</span>)
+
+    out <span style="color:#f92672">=</span> []
+    <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> buf:
+        out<span style="color:#f92672">.</span>append(((final_sub <span style="color:#f92672">+</span> i) <span style="color:#f92672">^</span> xor_operand) <span style="color:#f92672">-</span> add_operand)
+
+    <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;&#34;</span><span style="color:#f92672">.</span>join([chr(x) <span style="color:#66d9ef">for</span> x <span style="color:#f92672">in</span> out])
+
+sock <span style="color:#f92672">=</span> socket<span style="color:#f92672">.</span>socket(socket<span style="color:#f92672">.</span>AF_INET, socket<span style="color:#f92672">.</span>SOCK_STREAM)
+sock<span style="color:#f92672">.</span>connect((<span style="color:#e6db74">&#34;tasks.aeroctf.com&#34;</span>, <span style="color:#ae81ff">44324</span>))
+toto <span style="color:#f92672">=</span> sock<span style="color:#f92672">.</span>makefile()
+<span style="color:#66d9ef">while</span> True:
+    line <span style="color:#f92672">=</span> toto<span style="color:#f92672">.</span>readline()
+    <span style="color:#66d9ef">print</span>(line)
+    <span style="color:#66d9ef">if</span> line<span style="color:#f92672">.</span>find(<span style="color:#e6db74">&#34;Enter valid token&#34;</span>) <span style="color:#f92672">&gt;</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>:
+        name <span style="color:#f92672">=</span> line[line<span style="color:#f92672">.</span>find(<span style="color:#e6db74">&#34;&lt;&#34;</span>)<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>:<span style="color:#f92672">-</span><span style="color:#ae81ff">2</span>]
+        token <span style="color:#f92672">=</span> get_tok(name)
+        sock<span style="color:#f92672">.</span>send(bytes(token <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74">&#34;ascii&#34;</span>))
+</code></pre></div><p>The only &ldquo;complicated&rdquo; part here is to extract the good value from the &ldquo;lea ecx, [rax - 0xb]&quot;, where I based myself on the ESIL evaluation made by radare2 to recover the good value. Finally, last subtlety, the server returns an ANSI terminal reset sequence after sending the flag, so we had to redirect the output to a file, to get the flag.</p>
+<p>That&rsquo;s all folks ! :þ</p>
+
+    </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>
