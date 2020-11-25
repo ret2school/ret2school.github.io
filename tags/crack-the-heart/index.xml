@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Crack the heart on ret2school</title>
+    <link>https://ret2school.github.io/tags/crack-the-heart/</link>
+    <description>Recent content in Crack the heart on ret2school</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Wed, 25 Nov 2020 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://ret2school.github.io/tags/crack-the-heart/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>[UTCTF 2020] Crack the heart</title>
+      <link>https://ret2school.github.io/post/crack_the_heart/</link>
+      <pubDate>Wed, 25 Nov 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/crack_the_heart/</guid>
+      <description>Author: supersnail
+For this challenge, I first noticed (like in every other writeups) a big structure of offsets, that pointed to &amp;ldquo;funclets&amp;rdquo; followed by jump with rcx-relative offsets.
+The relative jump function:
+The first funclet just checks for the process being debugged, the &amp;ldquo;load_r9&amp;rdquo; funclet that jumps to the next funclet after skipping &amp;ldquo;n&amp;rdquo; bytes of garbage. Then the crackme calls a funclet &amp;ldquo;write_message&amp;rdquo; with the parameters (offset to &amp;ldquo;Why should I go out with you?</description>
+    </item>
+    
+  </channel>
+</rss>
