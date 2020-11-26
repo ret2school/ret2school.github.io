@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title>[Aero CTF 2020] go away // ret2school</title>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.68.3" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="nasm" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="https://ret2school.github.io/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css" />
+
+    
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="[Aero CTF 2020] go away"/>
+<meta name="twitter:description" content="Hello world,
+This writeup concerns the most difficult challenge I did on the CTF (having occupied myself a few hours to break it). At first glance, we have an &ldquo;obfuscated&rdquo; binary, which makes system calls to mmap and mprotect: we immediately think of a packer, and we will therefore have to unpack it.
+Unpacking crackme Unpacking is not a problem on Linux when you are used to malware packers on Windows, thanks to radare2 and its visual mode."/>
+
+    <meta property="og:title" content="[Aero CTF 2020] go away" />
+<meta property="og:description" content="Hello world,
+This writeup concerns the most difficult challenge I did on the CTF (having occupied myself a few hours to break it). At first glance, we have an &ldquo;obfuscated&rdquo; binary, which makes system calls to mmap and mprotect: we immediately think of a packer, and we will therefore have to unpack it.
+Unpacking crackme Unpacking is not a problem on Linux when you are used to malware packers on Windows, thanks to radare2 and its visual mode." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ret2school.github.io/post/aero_ctf_2020/" />
+<meta property="article:published_time" content="2020-11-26T00:00:00+00:00" />
+<meta property="article:modified_time" content="2020-11-26T00:00:00+00:00" />
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://ret2school.github.io"><img class="app-header-avatar" src="/pic.jpeg" alt="nasm" /></a>
+      <h1>ret2school</h1>
+      <nav class="app-header-menu">
+          <a class="app-header-menu-item" href="/">Home</a>
+             / 
+          
+          <a class="app-header-menu-item" href="/tags/">Tags</a>
+      </nav>
+      <p>Just a bunch of french ctf players</p>
+      <div class="app-header-social">
+        
+          <a target="_blank" href="https://github.com/ret2school" rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github">
+  <title>github</title>
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+</svg></a>
+        
+          <a target="_blank" href="https://twitter.com/nasm_re" rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-twitter">
+  <title>twitter</title>
+  <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
+</svg></a>
+        
+      </div>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">[Aero CTF 2020] go away</h1>
+      <div class="post-meta">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          Nov 26, 2020
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          10 min read
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tag">
+  <title>tag</title>
+  <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line>
+</svg>
+              <a class="tag" href="https://ret2school.github.io/tags/ctf/">ctf</a>
+              <a class="tag" href="https://ret2school.github.io/tags/ret2school/">ret2school</a>
+              <a class="tag" href="https://ret2school.github.io/tags/aeroctf/">AeroCTF</a>
+              <a class="tag" href="https://ret2school.github.io/tags/re/">RE</a>
+              <a class="tag" href="https://ret2school.github.io/tags/re/">RE</a>
+        </div>
+      </div>
+    </header>
+    <div class="post-content">
+      <p>Hello world,</p>
+<p>This writeup concerns the most difficult challenge I did on the CTF (having occupied myself a few hours to break it). At first glance, we have an &ldquo;obfuscated&rdquo; binary, which makes system calls to mmap and mprotect: we immediately think of a packer, and we will therefore have to unpack it.</p>
+<h2 id="unpacking-crackme">Unpacking crackme</h2>
+<p>Unpacking is not a problem on Linux when you are used to malware packers on Windows, thanks to radare2 and its visual mode.</p>
+<p>The crack entrypoint therefore looks like this:</p>
+<pre><code>            ;-- entry0:
+            ;-- rip:
+            0x0046cbe8      50             push rax
+            0x0046cbe9      52             push rdx
+            0x0046cbea      e8c8020000     call 0x46ceb7
+            0x0046cbef      55             push rbp
+            0x0046cbf0      53             push rbx
+            0x0046cbf1      51             push rcx
+            0x0046cbf2      52             push rdx
+            0x0046cbf3      4801fe         add rsi, rdi
+            0x0046cbf6      56             push rsi
+            0x0046cbf7      4889fe         mov rsi, rdi
+            0x0046cbfa      4889d7         mov rdi, rdx
+            0x0046cbfd      31db           xor ebx, ebx
+            0x0046cbff      31c9           xor ecx, ecx
+            0x0046cc01      4883cdff       or rbp, 0xffffffffffffffff
+</code></pre><p>We have a call to a function 0x46ceb7, followed by what looks like a decompression function, especially aplib or one of its variants. So we have:</p>
+<pre><code>┌ 6: fcn.0046ceb7 ();
+│           0x0046ceb7      5d             pop rbp
+└           0x0046ceb8      e840ffffff     call fcn.0046cdfd
+</code></pre><p>followed by</p>
+<pre><code>           ; CALL XREF from fcn.0046ceb7 @ 0x46ceb8
+┌ 186: fcn.0046cdfd (int64_t arg_0h);
+│           ; var int64_t var_bh @ rbp-0xb
+│           ; var int64_t var_10h @ rsp+0x30
+│           ; var int64_t var_8h @ rsp+0x38
+│           ; arg int64_t arg_0h @ rsp+0x40
+│           0x0046cdfd      5f             pop rdi                     ; /proc/self/exe
+│           0x0046cdfe      29f6           sub esi, esi
+│           0x0046ce00      6a02           push 2                      ; SYS_open
+│           0x0046ce02      58             pop rax
+│           0x0046ce03      0f05           syscall
+│           0x0046ce05      50             push rax
+│           0x0046ce06      488db70f0000.  lea rsi, [rdi + 0xf]
+│           0x0046ce0d      ad             lodsd eax, dword [rsi]
+│           0x0046ce0e      83e0fe         and eax, 0xfffffffe         ; 4294967294
+│           0x0046ce11      4189c6         mov r14d, eax
+│           0x0046ce14      56             push rsi
+│           0x0046ce15      5b             pop rbx
+│           0x0046ce16      ad             lodsd eax, dword [rsi]
+│           0x0046ce17      92             xchg eax, edx
+│           0x0046ce18      4801da         add rdx, rbx
+│           0x0046ce1b      ad             lodsd eax, dword [rsi]
+│           0x0046ce1c      4195           xchg eax, r13d
+│           0x0046ce1e      ad             lodsd eax, dword [rsi]
+│           0x0046ce1f      4901f5         add r13, rsi
+│           0x0046ce22      488d8df5ffff.  lea rcx, [var_bh]
+│           0x0046ce29      448b39         mov r15d, dword [rcx]
+│           0x0046ce2c      4c29f9         sub rcx, r15
+│           0x0046ce2f      4529f7         sub r15d, r14d
+│           0x0046ce32      5f             pop rdi
+│           0x0046ce33      4829ca         sub rdx, rcx
+│           0x0046ce36      52             push rdx
+│           0x0046ce37      50             push rax
+│           0x0046ce38      4929cd         sub r13, rcx
+│           0x0046ce3b      57             push rdi
+│           0x0046ce3c      51             push rcx
+│           0x0046ce3d      4d29c9         sub r9, r9
+│           0x0046ce40      4183c8ff       or r8d, 0xffffffff          ; -1
+│           0x0046ce44      6a22           push 0x22                   ; '&quot;' ; 34
+│           0x0046ce46      415a           pop r10
+│           0x0046ce48      52             push rdx
+│           0x0046ce49      5e             pop rsi
+│           0x0046ce4a      6a03           push 3                      ; 3
+│           0x0046ce4c      5a             pop rdx
+│           0x0046ce4d      29ff           sub edi, edi
+│           0x0046ce4f      6a09           push 9                      ; SYS_mmap
+│           0x0046ce51      58             pop rax
+│           0x0046ce52      0f05           syscall
+│           0x0046ce54      4901c6         add r14, rax
+│           0x0046ce57      4889442410     mov qword [var_8h], rax
+│           0x0046ce5c      4897           xchg rax, rdi
+│           0x0046ce5e      448b442408     mov r8d, dword [var_10h]
+│           0x0046ce63      6a12           push 0x12                   ; 18
+│           0x0046ce65      415a           pop r10
+│           0x0046ce67      4c89ee         mov rsi, r13
+│           0x0046ce6a      6a09           push 9                      ; SYS_mmap
+│           0x0046ce6c      58             pop rax
+│           0x0046ce6d      0f05           syscall
+│           0x0046ce6f      488b542418     mov rdx, qword [arg_0h]
+│           0x0046ce74      59             pop rcx
+│           0x0046ce75      51             push rcx
+│           0x0046ce76      4801c2         add rdx, rax
+│           0x0046ce79      4829c8         sub rax, rcx
+│           0x0046ce7c      4989c4         mov r12, rax
+│           0x0046ce7f      4801e8         add rax, rbp
+│           0x0046ce82      50             push rax
+│           0x0046ce83      482500f0ffff   and rax, 0xfffffffffffff000
+│           0x0046ce89      50             push rax
+│           0x0046ce8a      4829c2         sub rdx, rax
+│           0x0046ce8d      52             push rdx
+│           0x0046ce8e      4889de         mov rsi, rbx
+│           0x0046ce91      ad             lodsd eax, dword [rsi]
+│           0x0046ce92      50             push rax
+│           0x0046ce93      4889e1         mov rcx, rsp
+│           0x0046ce96      4a8d1423       lea rdx, [rbx + r12]
+│           0x0046ce9a      4989d5         mov r13, rdx
+│           0x0046ce9d      ad             lodsd eax, dword [rsi]
+│           0x0046ce9e      50             push rax
+│           0x0046ce9f      ad             lodsd eax, dword [rsi]
+│           0x0046cea0      4190           xchg eax, r8d
+│           0x0046cea2      4889f7         mov rdi, rsi
+│           0x0046cea5      5e             pop rsi
+│           0x0046cea6      ffd5           call rbp
+│           0x0046cea8      59             pop rcx
+│           0x0046cea9      5e             pop rsi
+│           0x0046ceaa      5f             pop rdi
+│           0x0046ceab      5d             pop rbp
+│           0x0046ceac      6a05           push 5                      ; 5
+│           0x0046ceae      5a             pop rdx
+│           0x0046ceaf      6a0a           push 0xa                    ; 10
+│           0x0046ceb1      58             pop rax
+│           0x0046ceb2      0f05           syscall
+└           0x0046ceb4      41ffe5         jmp r13
+</code></pre><p>When debugging the calls in visual mode (F7), we can see alignment calculations to recover the size of the binary to be mapped and of the &ldquo;anonymous&rdquo; area to be created. Then, we see two mmap syscalls. The first is used to make an &ldquo;anonymous&rdquo; mapping which will contain the decompression and mapping code, then another one to load the binary. We then have a &ldquo;call rbp&rdquo; (which calls the decompression function located at 0x0046cbef, before doing an mprotect on the allocated page and jumping on it.</p>
+<p>Once the jump is made, we land here:</p>
+<pre><code>            0x7fb3749e3ed0      e84a000000     call 0x7fb3749e3f1f
+            0x7fb3749e3ed5      83f949         cmp ecx, 0x49           ; 73
+        ┌─&lt; 0x7fb3749e3ed8      7544           jne 0x7fb3749e3f1e
+        │   0x7fb3749e3eda      53             push rbx
+        │   0x7fb3749e3edb      57             push rdi
+</code></pre><p>Same stuff as earlier, we enter the call (F7 in visual mode), and we fall back on another function which performs other operations, followed by</p>
+<pre><code>            0x7fb3749e401e      41ff66f8       jmp qword [r14 - 8]
+</code></pre><p>We can reasonably think that we are approaching our OEP, so we position a breakpoint (F2) and continue the execution (F9) before returning to single-step mode.</p>
+<p>Then, we get this</p>
+<pre><code>            ;-- rip:
+            0x0048c48e      0f05           syscall
+            0x0048c490      5a             pop rdx
+            0x0048c491      c3             ret
+</code></pre><p>and once we reach <code>ret</code>, we finally get the OEP of the unpacked binary! We just have to dump the program, first by listing the sections with &ldquo;dm&rdquo;:</p>
+<pre><code>[0x0044fd80]&gt; dm
+0x0000000000400000 - 0x000000000048d000 * usr   564K s r-x unk0 unk0 ; map.home_supersnail_Documents_hack_lab_AeroCTF_goaway.r_x
+0x000000000048d000 - 0x0000000000525000 - usr   608K s r-- unk1 unk1
+0x0000000000525000 - 0x000000000055a000 - usr   212K s rw- unk2 unk2
+</code></pre><p>We can therefore dump the unpacked binary with the <code>wtf goaway.unpack 0x15a000 @0x400000</code> command, the size of the binary being 0x55a000-0x400000.</p>
+<p>Doing <code>strings</code> on the unpacked crackme, we can see that it was written in &hellip; the Go language, the beginning of the nightmare.</p>
+<h2 id="reversing-go-for-fun-and-chocapicz">Reversing Go for fun and chocapicz</h2>
+<p>Unfortunately for me, the crackme was written in Go: indeed, a fairly substantial runtime is found to be embedded in Go programs, making it difficult to identify the &ldquo;useful&rdquo; functions and the Go runtime ones. However, Go&rsquo;s RTTI mechanism still allows us to get out of it, since the name of the functions (and maybe the types of variables / arguments) is still preserved, which greatly facilitates our task.</p>
+<p>My first attempt was to use r2-gohelper , however the script only renamed a few functions, making it completely useless. In addition, radare2 is still too limited for static analysis, so I took out my good old IDA Free to analyze the &ldquo;main.main&rdquo; function (one of the few functions identified by r2-gohelper).</p>
+<p>After a failed attempt to understand all the code of the runtime, I ended up having the good idea to make a &ldquo;string search&rdquo; in IDA, which found a lot of function names. Not having IDAPython (because Free edition, thank you Ilfak \o/), I started doing manual resolution of RTTIs for each function called:
+<img src="http://real-asm.infos.st/assets/uploads/files/1583067885984-rtti.png" alt="rtti.png"></p>
+<p>I finally got something like this after a while renaming everything:</p>
+<p><img src="http://real-asm.infos.st//assets/uploads/files/1583067680265-idadmp1.png" alt="idadmp1.png"></p>
+<p>Another difficult point was to understand the calling convention used by Go.
+Actually, unlike C where a single parameter is returned, Go can return several return values, which are copied onto the stack frame of the calling function. So the stack looks something like this:</p>
+<pre><code>+-------------------+
+|    ebp backup     |
++-------------------+
+|  return address    |
++-------------------+
+|    argument 1     |
+|        ...        |
+|    argument n     |
+|     retour 1      |
+|        ...        |
+|     retour n      |
++-------------------+
+|    local vars     |
++-------------------+
+</code></pre><p>Also comes the &ldquo;slice&rdquo; mechanism much used by Go, which is actually a structure that could be defined like this (in 64 bits):</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-C" data-lang="C"><span style="color:#66d9ef">struct</span> slice {
+   <span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>pointer;
+   uint64_t size;
+   uint64_t allocated_size;
+}
+</code></pre></div><p>Once this is understood, we can finally study the operation of the program in good conditions.</p>
+<h2 id="crackme-algorithm">Crackme algorithm</h2>
+<p>The crackme starts by displaying the welcome message, then reading and storing user input (with bufio.Reader.ReadString).The crackme then removes the character &ldquo;\n&rdquo;, before creating a HashMap.</p>
+<p>This HashMap contains a permutation table, which will be useful later. Then, the crackme creates an array of slices which point to 16-byte &ldquo;strings&rdquo;, which curiously look like a hash. Then, after checking the size of the flag (which must also be 16 bytes), we land to a first loop on the characters of the flag. For each character, we compute the MD5 hash of the character.</p>
+<p><img src="http://real-asm.infos.st/assets/uploads/files/1583070437067-hashmd5.png" alt="hashmd5.png"></p>
+<p>Then we recover the permutation value corresponding to the index of the character of the string in the hashmap, and compare the hash md5 to the slice whose index is the permutation:</p>
+<p><img src="http://real-asm.infos.st/assets/uploads/files/1583070570281-cmphash.png" alt="cmphash.png"></p>
+<p>In &ldquo;pythonized&rdquo; pseudocode, we would get something like this:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py">slice <span style="color:#f92672">=</span> <span style="color:#f92672">&lt;</span>md5 hashes array<span style="color:#f92672">&gt;</span>
+permutations <span style="color:#f92672">=</span> [<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">6</span>, <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">7</span>, <span style="color:#ae81ff">8</span>, <span style="color:#ae81ff">7</span>, <span style="color:#ae81ff">9</span>]
+<span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(len(serial)):
+   <span style="color:#66d9ef">if</span> md5(serial[i]) <span style="color:#f92672">!=</span> slice[permutations[i]]:
+     <span style="color:#66d9ef">print</span> <span style="color:#e6db74">&#34;Bad boy&#34;</span>
+     exit(<span style="color:#ae81ff">1</span>)
+
+<span style="color:#66d9ef">print</span> <span style="color:#e6db74">&#34;Good boy&#34;</span>
+</code></pre></div><p>To recover the key, in theory, we just need to calculate the md5 for each character in the ASCII table, and compare its hash with the one found in the program. But like any theoretical solution, it does not work in practice for obscure reasons &hellip;</p>
+<h2 id="key-recovery-and-crackme-pwning">Key recovery and crackme pwning</h2>
+<p>Not understanding what is happening, I ended up opting for a more radical solution: I executed the MD5 implementation of the binary directly, controlling the radare2&rsquo;s debugger via r2pipe from my python script. After a few tries, I managed to make the following script:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#75715e">#!/usr/bin/python</span>
+<span style="color:#f92672">import</span> r2pipe
+<span style="color:#f92672">import</span> hashlib
+<span style="color:#f92672">import</span> binascii
+<span style="color:#f92672">import</span> os
+
+flag_md5_offsets <span style="color:#f92672">=</span> [<span style="color:#ae81ff">0xb</span>, <span style="color:#ae81ff">0x06</span>, <span style="color:#ae81ff">0x0a</span>, <span style="color:#ae81ff">0x0c</span>, <span style="color:#ae81ff">0x7</span>, <span style="color:#ae81ff">0x5</span>, <span style="color:#ae81ff">0x9</span>, <span style="color:#ae81ff">0x22</span>, <span style="color:#ae81ff">0x8</span>, <span style="color:#ae81ff">0x2</span>]
+hashes <span style="color:#f92672">=</span> []
+alphabet_dict <span style="color:#f92672">=</span> {}
+
+r2 <span style="color:#f92672">=</span> r2pipe<span style="color:#f92672">.</span>open(<span style="color:#e6db74">&#34;goaway.unpack&#34;</span>)
+r2<span style="color:#f92672">.</span>cmd(<span style="color:#e6db74">&#34;ood&#34;</span>)
+r2<span style="color:#f92672">.</span>cmd(<span style="color:#e6db74">&#34;db 0x48c10f&#34;</span>)
+r2<span style="color:#f92672">.</span>cmd(<span style="color:#e6db74">&#34;db 0x48b812&#34;</span>)
+r2<span style="color:#f92672">.</span>cmd(<span style="color:#e6db74">&#34;db 0x48c21e&#34;</span>)
+r2<span style="color:#f92672">.</span>cmd(<span style="color:#e6db74">&#34;db 0x48c223&#34;</span>)
+<span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0x7f</span>):
+    r2<span style="color:#f92672">.</span>cmd(<span style="color:#e6db74">&#34;dc&#34;</span>)
+    r2<span style="color:#f92672">.</span>cmd(<span style="color:#e6db74">&#34;dr edx=</span><span style="color:#e6db74">%d</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">%</span> i)
+    r2<span style="color:#f92672">.</span>cmd(<span style="color:#e6db74">&#34;dr rip=0x</span><span style="color:#e6db74">%x</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">%</span> <span style="color:#ae81ff">0x48c1ff</span>)
+    r2<span style="color:#f92672">.</span>cmd(<span style="color:#e6db74">&#34;dc&#34;</span>)
+    r2<span style="color:#f92672">.</span>cmd(<span style="color:#e6db74">&#34;s rsp+0x4f; wx 0x</span><span style="color:#e6db74">%x</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">%</span> (i <span style="color:#f92672">&lt;&lt;</span> <span style="color:#ae81ff">16</span> <span style="color:#f92672">|</span> <span style="color:#ae81ff">0x10</span>))
+    <span style="color:#66d9ef">print</span>(r2<span style="color:#f92672">.</span>cmd(<span style="color:#e6db74">&#34;dc&#34;</span>))
+    md5 <span style="color:#f92672">=</span> binascii<span style="color:#f92672">.</span>hexlify(bytes(r2<span style="color:#f92672">.</span>cmdj(<span style="color:#e6db74">&#34;pxj 16 @rsp+0x18&#34;</span>)))
+    alphabet_dict[md5] <span style="color:#f92672">=</span> chr(i)
+    r2<span style="color:#f92672">.</span>cmd(<span style="color:#e6db74">&#34;ood&#34;</span>)
+
+chars <span style="color:#f92672">=</span> []
+<span style="color:#66d9ef">for</span> offset <span style="color:#f92672">in</span> flag_md5_offsets:
+    addr <span style="color:#f92672">=</span> <span style="color:#ae81ff">0x4bf20c</span> <span style="color:#f92672">+</span> (offset <span style="color:#f92672">*</span> <span style="color:#ae81ff">16</span>)
+    <span style="color:#75715e">#print(hex(addr))</span>
+    nochr <span style="color:#f92672">=</span> binascii<span style="color:#f92672">.</span>hexlify(bytes(r2<span style="color:#f92672">.</span>cmdj(<span style="color:#e6db74">&#34;pxj 16 @0x</span><span style="color:#e6db74">%x</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">%</span> addr)))
+    hashes<span style="color:#f92672">.</span>append(nochr)
+    chars<span style="color:#f92672">.</span>append(alphabet_dict[nochr])
+
+subst <span style="color:#f92672">=</span> [<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">6</span>, <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">7</span>, <span style="color:#ae81ff">8</span>, <span style="color:#ae81ff">7</span>, <span style="color:#ae81ff">9</span>]
+toto <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;</span>
+<span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> subst:
+    toto <span style="color:#f92672">+=</span> chars[i]
+
+<span style="color:#66d9ef">print</span>(toto)
+</code></pre></div><p>The script directly gives us the right flag, &ldquo;secretkeykeklol1&rdquo;. However, the program is picky, and when you give it the right flag, you get</p>
+<pre><code>hmmmm...... key is correct! But I changed my mind about printing you a flag
+.....
+Instead, I will display you a flag for the key 'testtesttesttest'
+flag: &lt;non-printable chars&gt;
+</code></pre><p>The validation flag is therefore encrypted, and according to our renaming work, is encrypted in AES. The key &ldquo;testtesttesttest&rdquo;, encoded in hexadecimal form, is passed to the <code>main.ExampleNewCBCDecrypter</code> function (which does AES CBC as its name suggests, thank you Captain Obvious). As we are in a CTF, we will replace the barely decoded key with our flag, then continue the execution via:</p>
+<pre><code>$ r2 -d ./goaway.unpack
+ -- Everybody hates warnings. Mr. Pancake, tear down this -Wall
+[0x0044fd80]&gt; db 0x48b642
+[0x0044fd80]&gt; dc
+Go away I will not give you a flag!
+But if you guess the key I'll print you a flag....
+guess: secretkeykeklol1
+hmmmm...... key is correct! But I changed my mind about printing you a flag
+.....
+Instead, I will display you a flag for the key 'testtesttesttest'
+flag: hit breakpoint at: 48b642
+[0x0048b642]&gt; w secretkeykeklol1 @rax
+[0x0048b642]&gt; dc
+Aero{3475964bdbfe31fbb40d812fa2f88114765baf72fd7ef0a912c746312bbdc07b}
+[0x0044fd9b]&gt; 
+</code></pre><p>We recovered our validation flag (and I was the one to first blood this challenge, w00t !)</p>
+<p>aaSSfxxx</p>
+
+    </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>
