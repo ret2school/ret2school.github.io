@@ -5,10 +5,21 @@
     <link>https://ret2school.github.io/tags/re/</link>
     <description>Recent content in RE on ret2school</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Wed, 25 Nov 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 26 Nov 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://ret2school.github.io/tags/re/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>[Aero CTF 2020] go away</title>
+      <link>https://ret2school.github.io/post/aero_ctf_2020/</link>
+      <pubDate>Thu, 26 Nov 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/aero_ctf_2020/</guid>
+      <description>Hello world,
+This writeup concerns the most difficult challenge I did on the CTF (having occupied myself a few hours to break it). At first glance, we have an &amp;ldquo;obfuscated&amp;rdquo; binary, which makes system calls to mmap and mprotect: we immediately think of a packer, and we will therefore have to unpack it.
+Unpacking crackme Unpacking is not a problem on Linux when you are used to malware packers on Windows, thanks to radare2 and its visual mode.</description>
+    </item>
     
     <item>
       <title>[Aero CTF 2020] 1000 and 1 night</title>

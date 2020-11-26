@@ -5,7 +5,7 @@
     <link>https://ret2school.github.io/tags/</link>
     <description>Recent content in Tags on ret2school</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Wed, 25 Nov 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 26 Nov 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://ret2school.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     
@@ -13,9 +13,54 @@
     <item>
       <title>Aero CTF 2020</title>
       <link>https://ret2school.github.io/tags/aero-ctf-2020/</link>
-      <pubDate>Wed, 25 Nov 2020 00:00:00 +0000</pubDate>
+      <pubDate>Thu, 26 Nov 2020 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/tags/aero-ctf-2020/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>AeroCTF</title>
+      <link>https://ret2school.github.io/tags/aeroctf/</link>
+      <pubDate>Thu, 26 Nov 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/aeroctf/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>ctf</title>
+      <link>https://ret2school.github.io/tags/ctf/</link>
+      <pubDate>Thu, 26 Nov 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/ctf/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>RE</title>
+      <link>https://ret2school.github.io/tags/re/</link>
+      <pubDate>Thu, 26 Nov 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/re/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>ret2school</title>
+      <link>https://ret2school.github.io/tags/ret2school/</link>
+      <pubDate>Thu, 26 Nov 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/ret2school/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>reverse engineering</title>
+      <link>https://ret2school.github.io/tags/reverse-engineering/</link>
+      <pubDate>Thu, 26 Nov 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/reverse-engineering/</guid>
       <description></description>
     </item>
     
@@ -29,47 +74,11 @@
     </item>
     
     <item>
-      <title>ctf</title>
-      <link>https://ret2school.github.io/tags/ctf/</link>
-      <pubDate>Wed, 25 Nov 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/ctf/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>members</title>
       <link>https://ret2school.github.io/tags/members/</link>
       <pubDate>Wed, 25 Nov 2020 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/tags/members/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>RE</title>
-      <link>https://ret2school.github.io/tags/re/</link>
-      <pubDate>Wed, 25 Nov 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/re/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>ret2school</title>
-      <link>https://ret2school.github.io/tags/ret2school/</link>
-      <pubDate>Wed, 25 Nov 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/ret2school/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>reverse engineering</title>
-      <link>https://ret2school.github.io/tags/reverse-engineering/</link>
-      <pubDate>Wed, 25 Nov 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/reverse-engineering/</guid>
       <description></description>
     </item>
     
