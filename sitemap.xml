@@ -8,6 +8,16 @@
   </url>
   
   <url>
+    <loc>https://ret2school.github.io/post/babyrarf/</loc>
+    <lastmod>2020-12-01T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://ret2school.github.io/tags/buffer-overflow/</loc>
+    <lastmod>2020-12-01T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://ret2school.github.io/tags/ctf/</loc>
     <lastmod>2020-12-01T00:00:00+00:00</lastmod>
   </url>
@@ -43,12 +53,22 @@
   </url>
   
   <url>
+    <loc>https://ret2school.github.io/tags/pwn/</loc>
+    <lastmod>2020-12-01T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://ret2school.github.io/</loc>
     <lastmod>2020-12-01T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>https://ret2school.github.io/tags/</loc>
+    <lastmod>2020-12-01T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://ret2school.github.io/tags/unionctf-2021/</loc>
     <lastmod>2020-12-01T00:00:00+00:00</lastmod>
   </url>
   
