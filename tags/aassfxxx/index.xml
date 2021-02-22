@@ -21,6 +21,18 @@ Analyzing the Powershell While looking at the powershell, we can see an obfuscat
     </item>
     
     <item>
+      <title>[Hitcon CTF 2020 - forensic] AC1750</title>
+      <link>https://ret2school.github.io/post/forensic/</link>
+      <pubDate>Tue, 01 Dec 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/forensic/</guid>
+      <description>Hello world,
+The write up is about the AC1750 challenge in HITCON ctf. It&amp;rsquo;s a forensic challenge, where we need to analyze packets captured by Wireshark to find out what an attacker is doing on the network.
+First, we need to analyze intercepted traffic with wireshark. We see a lot of HTTP packets, and some contain &amp;ldquo;Archer&amp;rdquo; references. We can see weird UDP packets with port 20002.
+After some google-fu on port 20002, we come accross this, and we can see there is a CVE targeting T-Link Archer devices.</description>
+    </item>
+    
+    <item>
       <title>[Aero CTF 2020] go away</title>
       <link>https://ret2school.github.io/post/aero_ctf_2020/</link>
       <pubDate>Thu, 26 Nov 2020 00:00:00 +0000</pubDate>
