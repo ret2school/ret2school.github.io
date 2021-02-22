@@ -18,11 +18,6 @@
   </url>
   
   <url>
-    <loc>https://ret2school.github.io/tags/cr4/</loc>
-    <lastmod>2021-02-22T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://ret2school.github.io/tags/ctf/</loc>
     <lastmod>2021-02-22T00:00:00+00:00</lastmod>
   </url>
@@ -34,6 +29,11 @@
   
   <url>
     <loc>https://ret2school.github.io/tags/powershell/</loc>
+    <lastmod>2021-02-22T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://ret2school.github.io/tags/rc4/</loc>
     <lastmod>2021-02-22T00:00:00+00:00</lastmod>
   </url>
   

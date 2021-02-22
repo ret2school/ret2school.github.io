@@ -29,15 +29,6 @@
     </item>
     
     <item>
-      <title>CR4</title>
-      <link>https://ret2school.github.io/tags/cr4/</link>
-      <pubDate>Mon, 22 Feb 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/cr4/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>ctf</title>
       <link>https://ret2school.github.io/tags/ctf/</link>
       <pubDate>Mon, 22 Feb 2021 00:00:00 +0000</pubDate>
@@ -52,6 +43,15 @@
       <pubDate>Mon, 22 Feb 2021 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/tags/powershell/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>RC4</title>
+      <link>https://ret2school.github.io/tags/rc4/</link>
+      <pubDate>Mon, 22 Feb 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/rc4/</guid>
       <description></description>
     </item>
     
