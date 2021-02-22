@@ -350,7 +350,12 @@ r<span style="color:#ff79c6">.</span>interactive()
 </code></pre></div><p>We can compute compute the value of rand to avoid bruteforce, but I&rsquo;ve choosen to do not. So while it does not print <code>l0zers don't get cr0wns</code>, I&rsquo;m sending 4 for cr0wn and when it is teh case I get my leak of the csu and I compute the base address.
 When It&rsquo;s done I&rsquo;m sending 1 because it sounds more speed and I wait to win.
 And when I won I can trigger the buffer overflow and jmp on <code>get_shell</code>.</p>
-<pre><code>You deal 40 dmg
+<pre><code>
+/* ... */
+/* lot of iterations */
+/* ... */
+
+You deal 40 dmg
 The boss deals 70 dmg
 You lost!
 
