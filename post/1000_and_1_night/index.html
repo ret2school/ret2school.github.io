@@ -84,6 +84,7 @@ Enter valid token to binary with name &lt;8c235f89a8143a28a1d6067e959dd858&gt; T
               <a class="tag" href="https://ret2school.github.io/tags/utctf/">UTCTF</a>
               <a class="tag" href="https://ret2school.github.io/tags/re/">RE</a>
               <a class="tag" href="https://ret2school.github.io/tags/re/">RE</a>
+              <a class="tag" href="https://ret2school.github.io/tags/supersnail/">supersnail</a>
         </div>
       </div>
     </header>
@@ -91,7 +92,7 @@ Enter valid token to binary with name &lt;8c235f89a8143a28a1d6067e959dd858&gt; T
       <p><a href="http://aassfxxx.infos.st/">Author: supersnail</a></p>
 <p>Files can be found <a href="https://rakovskij-stanislav.github.io/ctf_writeups/aeroctf_2020/tasks/files.zip">here</a></p>
 <p>For this challenge, we get an archive with a lot of files, the name of which seems to be a hash. Each file is an ELF x86_64 program file. In addition, a server listens, and requests:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">Enter valid token to binary with name &lt;8c235f89a8143a28a1d6067e959dd858&gt;
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">Enter valid token to binary with name &lt;8c235f89a8143a28a1d6067e959dd858&gt;
 Token:
 </code></pre></div><p>at connection. We therefore understand quickly enough that we will have to automate the reversing of all these ELFs to send the correct token back to the server, and thus have the flag, the server requesting a series of tokens before spitting the flag.</p>
 <p>Fortunately for us, these ELFs have a very similar structure, and automation should not be too difficult (especially since the binaries are not stripped). The interesting part is therefore in the &ldquo;sym.check&rdquo; function under radare2:</p>
@@ -156,46 +157,46 @@ Token:
 <p>The input encryption algorithm is therefore for each byte:</p>
 <pre><code>out[i] = ((serial[i] + 0xa) ^ 0x22) - 0xb
 </code></pre><p>All executables have the same algorithm, only the parameters, i.e. the buffer, and the constants 0xa, 0x22 and 0xb change for each binary. So we just have to exit python and r2pipe to extract these values and communicate with the server, which gives the python below (the binaries are placed in a &ldquo;files&rdquo; sub-folder):</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#!/usr/bin/python</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#6272a4">#!/usr/bin/python</span>
 
-<span style="color:#f92672">import</span> r2pipe
-<span style="color:#f92672">import</span> sys
-<span style="color:#f92672">import</span> struct
-<span style="color:#f92672">import</span> pexpect
-<span style="color:#f92672">import</span> socket
+<span style="color:#ff79c6">import</span> r2pipe
+<span style="color:#ff79c6">import</span> sys
+<span style="color:#ff79c6">import</span> struct
+<span style="color:#ff79c6">import</span> pexpect
+<span style="color:#ff79c6">import</span> socket
 
-buf <span style="color:#f92672">=</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;&#34;</span>
+buf <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&#34;</span>
 
-<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">get_tok</span>(file):
-    r2 <span style="color:#f92672">=</span> r2pipe<span style="color:#f92672">.</span>open(<span style="color:#e6db74">&#34;files/&#34;</span> <span style="color:#f92672">+</span> file)
-    <span style="color:#75715e"># Extraction du buffer</span>
-    buf <span style="color:#f92672">=</span> struct<span style="color:#f92672">.</span>pack(<span style="color:#e6db74">&#34;&lt;Q&#34;</span>, r2<span style="color:#f92672">.</span>cmdj(<span style="color:#e6db74">&#34;pdj 1 @0x000012b0&#34;</span>)[<span style="color:#ae81ff">0</span>][<span style="color:#e6db74">&#34;val&#34;</span>])
-    buf <span style="color:#f92672">+=</span> struct<span style="color:#f92672">.</span>pack(<span style="color:#e6db74">&#34;&lt;Q&#34;</span>, r2<span style="color:#f92672">.</span>cmdj(<span style="color:#e6db74">&#34;pdj 1 @0x000012ba&#34;</span>)[<span style="color:#ae81ff">0</span>][<span style="color:#e6db74">&#34;val&#34;</span>])
-    buf <span style="color:#f92672">+=</span> struct<span style="color:#f92672">.</span>pack(<span style="color:#e6db74">&#34;&lt;Q&#34;</span>, r2<span style="color:#f92672">.</span>cmdj(<span style="color:#e6db74">&#34;pdj 1 @0x000012cc&#34;</span>)[<span style="color:#ae81ff">0</span>][<span style="color:#e6db74">&#34;val&#34;</span>])
-    buf <span style="color:#f92672">+=</span> struct<span style="color:#f92672">.</span>pack(<span style="color:#e6db74">&#34;&lt;Q&#34;</span>, r2<span style="color:#f92672">.</span>cmdj(<span style="color:#e6db74">&#34;pdj 1 @0x000012d6&#34;</span>)[<span style="color:#ae81ff">0</span>][<span style="color:#e6db74">&#34;val&#34;</span>])
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">get_tok</span>(<span style="color:#8be9fd;font-style:italic">file</span>):
+    r2 <span style="color:#ff79c6">=</span> r2pipe<span style="color:#ff79c6">.</span>open(<span style="color:#f1fa8c">&#34;files/&#34;</span> <span style="color:#ff79c6">+</span> <span style="color:#8be9fd;font-style:italic">file</span>)
+    <span style="color:#6272a4"># Extraction du buffer</span>
+    buf <span style="color:#ff79c6">=</span> struct<span style="color:#ff79c6">.</span>pack(<span style="color:#f1fa8c">&#34;&lt;Q&#34;</span>, r2<span style="color:#ff79c6">.</span>cmdj(<span style="color:#f1fa8c">&#34;pdj 1 @0x000012b0&#34;</span>)[<span style="color:#bd93f9">0</span>][<span style="color:#f1fa8c">&#34;val&#34;</span>])
+    buf <span style="color:#ff79c6">+=</span> struct<span style="color:#ff79c6">.</span>pack(<span style="color:#f1fa8c">&#34;&lt;Q&#34;</span>, r2<span style="color:#ff79c6">.</span>cmdj(<span style="color:#f1fa8c">&#34;pdj 1 @0x000012ba&#34;</span>)[<span style="color:#bd93f9">0</span>][<span style="color:#f1fa8c">&#34;val&#34;</span>])
+    buf <span style="color:#ff79c6">+=</span> struct<span style="color:#ff79c6">.</span>pack(<span style="color:#f1fa8c">&#34;&lt;Q&#34;</span>, r2<span style="color:#ff79c6">.</span>cmdj(<span style="color:#f1fa8c">&#34;pdj 1 @0x000012cc&#34;</span>)[<span style="color:#bd93f9">0</span>][<span style="color:#f1fa8c">&#34;val&#34;</span>])
+    buf <span style="color:#ff79c6">+=</span> struct<span style="color:#ff79c6">.</span>pack(<span style="color:#f1fa8c">&#34;&lt;Q&#34;</span>, r2<span style="color:#ff79c6">.</span>cmdj(<span style="color:#f1fa8c">&#34;pdj 1 @0x000012d6&#34;</span>)[<span style="color:#bd93f9">0</span>][<span style="color:#f1fa8c">&#34;val&#34;</span>])
 
-    <span style="color:#75715e"># Extraction des params de chiffrement</span>
-    add_operand <span style="color:#f92672">=</span> r2<span style="color:#f92672">.</span>cmdj(<span style="color:#e6db74">&#34;pdj 1 @0x00001301&#34;</span>)[<span style="color:#ae81ff">0</span>][<span style="color:#e6db74">&#34;val&#34;</span>]
-    xor_operand <span style="color:#f92672">=</span> r2<span style="color:#f92672">.</span>cmdj(<span style="color:#e6db74">&#34;pdj 1 @0x00001304&#34;</span>)[<span style="color:#ae81ff">0</span>][<span style="color:#e6db74">&#34;val&#34;</span>]
-    final_sub <span style="color:#f92672">=</span> r2<span style="color:#f92672">.</span>cmdj(<span style="color:#e6db74">&#34;pdj 1 @0x00001307&#34;</span>)[<span style="color:#ae81ff">0</span>][<span style="color:#e6db74">&#34;esil&#34;</span>]<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#34;,&#34;</span>)[<span style="color:#ae81ff">0</span>]
-    final_sub <span style="color:#f92672">=</span> int(final_sub[<span style="color:#ae81ff">2</span>:], <span style="color:#ae81ff">16</span>)
+    <span style="color:#6272a4"># Extraction des params de chiffrement</span>
+    add_operand <span style="color:#ff79c6">=</span> r2<span style="color:#ff79c6">.</span>cmdj(<span style="color:#f1fa8c">&#34;pdj 1 @0x00001301&#34;</span>)[<span style="color:#bd93f9">0</span>][<span style="color:#f1fa8c">&#34;val&#34;</span>]
+    xor_operand <span style="color:#ff79c6">=</span> r2<span style="color:#ff79c6">.</span>cmdj(<span style="color:#f1fa8c">&#34;pdj 1 @0x00001304&#34;</span>)[<span style="color:#bd93f9">0</span>][<span style="color:#f1fa8c">&#34;val&#34;</span>]
+    final_sub <span style="color:#ff79c6">=</span> r2<span style="color:#ff79c6">.</span>cmdj(<span style="color:#f1fa8c">&#34;pdj 1 @0x00001307&#34;</span>)[<span style="color:#bd93f9">0</span>][<span style="color:#f1fa8c">&#34;esil&#34;</span>]<span style="color:#ff79c6">.</span>split(<span style="color:#f1fa8c">&#34;,&#34;</span>)[<span style="color:#bd93f9">0</span>]
+    final_sub <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">int</span>(final_sub[<span style="color:#bd93f9">2</span>:], <span style="color:#bd93f9">16</span>)
 
-    out <span style="color:#f92672">=</span> []
-    <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> buf:
-        out<span style="color:#f92672">.</span>append(((final_sub <span style="color:#f92672">+</span> i) <span style="color:#f92672">^</span> xor_operand) <span style="color:#f92672">-</span> add_operand)
+    out <span style="color:#ff79c6">=</span> []
+    <span style="color:#ff79c6">for</span> i <span style="color:#ff79c6">in</span> buf:
+        out<span style="color:#ff79c6">.</span>append(((final_sub <span style="color:#ff79c6">+</span> i) <span style="color:#ff79c6">^</span> xor_operand) <span style="color:#ff79c6">-</span> add_operand)
 
-    <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;&#34;</span><span style="color:#f92672">.</span>join([chr(x) <span style="color:#66d9ef">for</span> x <span style="color:#f92672">in</span> out])
+    <span style="color:#ff79c6">return</span> <span style="color:#f1fa8c">&#34;&#34;</span><span style="color:#ff79c6">.</span>join([<span style="color:#8be9fd;font-style:italic">chr</span>(x) <span style="color:#ff79c6">for</span> x <span style="color:#ff79c6">in</span> out])
 
-sock <span style="color:#f92672">=</span> socket<span style="color:#f92672">.</span>socket(socket<span style="color:#f92672">.</span>AF_INET, socket<span style="color:#f92672">.</span>SOCK_STREAM)
-sock<span style="color:#f92672">.</span>connect((<span style="color:#e6db74">&#34;tasks.aeroctf.com&#34;</span>, <span style="color:#ae81ff">44324</span>))
-toto <span style="color:#f92672">=</span> sock<span style="color:#f92672">.</span>makefile()
-<span style="color:#66d9ef">while</span> True:
-    line <span style="color:#f92672">=</span> toto<span style="color:#f92672">.</span>readline()
-    <span style="color:#66d9ef">print</span>(line)
-    <span style="color:#66d9ef">if</span> line<span style="color:#f92672">.</span>find(<span style="color:#e6db74">&#34;Enter valid token&#34;</span>) <span style="color:#f92672">&gt;</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>:
-        name <span style="color:#f92672">=</span> line[line<span style="color:#f92672">.</span>find(<span style="color:#e6db74">&#34;&lt;&#34;</span>)<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>:<span style="color:#f92672">-</span><span style="color:#ae81ff">2</span>]
-        token <span style="color:#f92672">=</span> get_tok(name)
-        sock<span style="color:#f92672">.</span>send(bytes(token <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74">&#34;ascii&#34;</span>))
+sock <span style="color:#ff79c6">=</span> socket<span style="color:#ff79c6">.</span>socket(socket<span style="color:#ff79c6">.</span>AF_INET, socket<span style="color:#ff79c6">.</span>SOCK_STREAM)
+sock<span style="color:#ff79c6">.</span>connect((<span style="color:#f1fa8c">&#34;tasks.aeroctf.com&#34;</span>, <span style="color:#bd93f9">44324</span>))
+toto <span style="color:#ff79c6">=</span> sock<span style="color:#ff79c6">.</span>makefile()
+<span style="color:#ff79c6">while</span> True:
+    line <span style="color:#ff79c6">=</span> toto<span style="color:#ff79c6">.</span>readline()
+    <span style="color:#ff79c6">print</span>(line)
+    <span style="color:#ff79c6">if</span> line<span style="color:#ff79c6">.</span>find(<span style="color:#f1fa8c">&#34;Enter valid token&#34;</span>) <span style="color:#ff79c6">&gt;</span> <span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>:
+        name <span style="color:#ff79c6">=</span> line[line<span style="color:#ff79c6">.</span>find(<span style="color:#f1fa8c">&#34;&lt;&#34;</span>)<span style="color:#ff79c6">+</span><span style="color:#bd93f9">1</span>:<span style="color:#ff79c6">-</span><span style="color:#bd93f9">2</span>]
+        token <span style="color:#ff79c6">=</span> get_tok(name)
+        sock<span style="color:#ff79c6">.</span>send(<span style="color:#8be9fd;font-style:italic">bytes</span>(token <span style="color:#ff79c6">+</span> <span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>, <span style="color:#f1fa8c">&#34;ascii&#34;</span>))
 </code></pre></div><p>The only &ldquo;complicated&rdquo; part here is to extract the good value from the &ldquo;lea ecx, [rax - 0xb]&quot;, where I based myself on the ESIL evaluation made by radare2 to recover the good value. Finally, last subtlety, the server returns an ANSI terminal reset sequence after sending the flag, so we had to redirect the output to a file, to get the flag.</p>
 <p>That&rsquo;s all folks ! :þ</p>
 

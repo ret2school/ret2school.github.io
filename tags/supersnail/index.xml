@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>supersnail on ret2school</title>
+    <link>https://ret2school.github.io/tags/supersnail/</link>
+    <description>Recent content in supersnail on ret2school</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Tue, 01 Dec 2020 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://ret2school.github.io/tags/supersnail/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>[Hitcon CTF 2020 - forensic] AC1750</title>
+      <link>https://ret2school.github.io/post/forensic/</link>
+      <pubDate>Tue, 01 Dec 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/forensic/</guid>
+      <description>Hello world,
+The write up is about the AC1750 challenge in HITCON ctf. It&amp;rsquo;s a forensic challenge, where we need to analyze packets captured by Wireshark to find out what an attacker is doing on the network.
+First, we need to analyze intercepted traffic with wireshark. We see a lot of HTTP packets, and some contain &amp;ldquo;Archer&amp;rdquo; references. We can see weird UDP packets with port 20002.
+After some google-fu on port 20002, we come accross this, and we can see there is a CVE targeting T-Link Archer devices.</description>
+    </item>
+    
+    <item>
+      <title>[Aero CTF 2020] go away</title>
+      <link>https://ret2school.github.io/post/aero_ctf_2020/</link>
+      <pubDate>Thu, 26 Nov 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/aero_ctf_2020/</guid>
+      <description>Hello world,
+This writeup concerns the most difficult challenge I did on the CTF (having occupied myself a few hours to break it). At first glance, we have an &amp;ldquo;obfuscated&amp;rdquo; binary, which makes system calls to mmap and mprotect: we immediately think of a packer, and we will therefore have to unpack it.
+Unpacking crackme Unpacking is not a problem on Linux when you are used to malware packers on Windows, thanks to radare2 and its visual mode.</description>
+    </item>
+    
+    <item>
+      <title>[Aero CTF 2020] 1000 and 1 night</title>
+      <link>https://ret2school.github.io/post/1000_and_1_night/</link>
+      <pubDate>Wed, 25 Nov 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/1000_and_1_night/</guid>
+      <description>Author: supersnail
+Files can be found here
+For this challenge, we get an archive with a lot of files, the name of which seems to be a hash. Each file is an ELF x86_64 program file. In addition, a server listens, and requests:
+Enter valid token to binary with name &amp;lt;8c235f89a8143a28a1d6067e959dd858&amp;gt; Token: at connection. We therefore understand quickly enough that we will have to automate the reversing of all these ELFs to send the correct token back to the server, and thus have the flag, the server requesting a series of tokens before spitting the flag.</description>
+    </item>
+    
+    <item>
+      <title>[UTCTF 2020] Crack the heart</title>
+      <link>https://ret2school.github.io/post/crack_the_heart/</link>
+      <pubDate>Wed, 25 Nov 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/crack_the_heart/</guid>
+      <description>Author: supersnail
+For this challenge, I first noticed (like in every other writeups) a big structure of offsets, that pointed to &amp;ldquo;funclets&amp;rdquo; followed by jump with rcx-relative offsets.
+The relative jump function:
+The first funclet just checks for the process being debugged, the &amp;ldquo;load_r9&amp;rdquo; funclet that jumps to the next funclet after skipping &amp;ldquo;n&amp;rdquo; bytes of garbage. Then the crackme calls a funclet &amp;ldquo;write_message&amp;rdquo; with the parameters (offset to &amp;ldquo;Why should I go out with you?</description>
+    </item>
+    
+  </channel>
+</rss>

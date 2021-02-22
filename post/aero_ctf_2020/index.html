@@ -82,6 +82,7 @@ Unpacking crackme Unpacking is not a problem on Linux when you are used to malwa
               <a class="tag" href="https://ret2school.github.io/tags/aeroctf/">AeroCTF</a>
               <a class="tag" href="https://ret2school.github.io/tags/re/">RE</a>
               <a class="tag" href="https://ret2school.github.io/tags/re/">RE</a>
+              <a class="tag" href="https://ret2school.github.io/tags/supersnail/">supersnail</a>
         </div>
       </div>
     </header>
@@ -251,8 +252,8 @@ Actually, unlike C where a single parameter is returned, Go can return several r
 |    local vars     |
 +-------------------+
 </code></pre><p>Also comes the &ldquo;slice&rdquo; mechanism much used by Go, which is actually a structure that could be defined like this (in 64 bits):</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-C" data-lang="C"><span style="color:#66d9ef">struct</span> slice {
-   <span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>pointer;
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-C" data-lang="C"><span style="color:#ff79c6">struct</span> slice {
+   <span style="color:#8be9fd">void</span> <span style="color:#ff79c6">*</span>pointer;
    uint64_t size;
    uint64_t allocated_size;
 }
@@ -264,58 +265,58 @@ Actually, unlike C where a single parameter is returned, Go can return several r
 <p>Then we recover the permutation value corresponding to the index of the character of the string in the hashmap, and compare the hash md5 to the slice whose index is the permutation:</p>
 <p><img src="http://real-asm.infos.st/assets/uploads/files/1583070570281-cmphash.png" alt="cmphash.png"></p>
 <p>In &ldquo;pythonized&rdquo; pseudocode, we would get something like this:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py">slice <span style="color:#f92672">=</span> <span style="color:#f92672">&lt;</span>md5 hashes array<span style="color:#f92672">&gt;</span>
-permutations <span style="color:#f92672">=</span> [<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">6</span>, <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">7</span>, <span style="color:#ae81ff">8</span>, <span style="color:#ae81ff">7</span>, <span style="color:#ae81ff">9</span>]
-<span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(len(serial)):
-   <span style="color:#66d9ef">if</span> md5(serial[i]) <span style="color:#f92672">!=</span> slice[permutations[i]]:
-     <span style="color:#66d9ef">print</span> <span style="color:#e6db74">&#34;Bad boy&#34;</span>
-     exit(<span style="color:#ae81ff">1</span>)
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#8be9fd;font-style:italic">slice</span> <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">&lt;</span>md5 hashes array<span style="color:#ff79c6">&gt;</span>
+permutations <span style="color:#ff79c6">=</span> [<span style="color:#bd93f9">0</span>, <span style="color:#bd93f9">1</span>, <span style="color:#bd93f9">2</span>, <span style="color:#bd93f9">3</span>, <span style="color:#bd93f9">1</span>, <span style="color:#bd93f9">4</span>, <span style="color:#bd93f9">5</span>, <span style="color:#bd93f9">1</span>, <span style="color:#bd93f9">6</span>, <span style="color:#bd93f9">5</span>, <span style="color:#bd93f9">1</span>, <span style="color:#bd93f9">5</span>, <span style="color:#bd93f9">7</span>, <span style="color:#bd93f9">8</span>, <span style="color:#bd93f9">7</span>, <span style="color:#bd93f9">9</span>]
+<span style="color:#ff79c6">for</span> i <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#8be9fd;font-style:italic">len</span>(serial)):
+   <span style="color:#ff79c6">if</span> md5(serial[i]) <span style="color:#ff79c6">!=</span> <span style="color:#8be9fd;font-style:italic">slice</span>[permutations[i]]:
+     <span style="color:#ff79c6">print</span> <span style="color:#f1fa8c">&#34;Bad boy&#34;</span>
+     <span style="color:#8be9fd;font-style:italic">exit</span>(<span style="color:#bd93f9">1</span>)
 
-<span style="color:#66d9ef">print</span> <span style="color:#e6db74">&#34;Good boy&#34;</span>
+<span style="color:#ff79c6">print</span> <span style="color:#f1fa8c">&#34;Good boy&#34;</span>
 </code></pre></div><p>To recover the key, in theory, we just need to calculate the md5 for each character in the ASCII table, and compare its hash with the one found in the program. But like any theoretical solution, it does not work in practice for obscure reasons &hellip;</p>
 <h2 id="key-recovery-and-crackme-pwning">Key recovery and crackme pwning</h2>
 <p>Not understanding what is happening, I ended up opting for a more radical solution: I executed the MD5 implementation of the binary directly, controlling the radare2&rsquo;s debugger via r2pipe from my python script. After a few tries, I managed to make the following script:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#75715e">#!/usr/bin/python</span>
-<span style="color:#f92672">import</span> r2pipe
-<span style="color:#f92672">import</span> hashlib
-<span style="color:#f92672">import</span> binascii
-<span style="color:#f92672">import</span> os
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#6272a4">#!/usr/bin/python</span>
+<span style="color:#ff79c6">import</span> r2pipe
+<span style="color:#ff79c6">import</span> hashlib
+<span style="color:#ff79c6">import</span> binascii
+<span style="color:#ff79c6">import</span> os
 
-flag_md5_offsets <span style="color:#f92672">=</span> [<span style="color:#ae81ff">0xb</span>, <span style="color:#ae81ff">0x06</span>, <span style="color:#ae81ff">0x0a</span>, <span style="color:#ae81ff">0x0c</span>, <span style="color:#ae81ff">0x7</span>, <span style="color:#ae81ff">0x5</span>, <span style="color:#ae81ff">0x9</span>, <span style="color:#ae81ff">0x22</span>, <span style="color:#ae81ff">0x8</span>, <span style="color:#ae81ff">0x2</span>]
-hashes <span style="color:#f92672">=</span> []
-alphabet_dict <span style="color:#f92672">=</span> {}
+flag_md5_offsets <span style="color:#ff79c6">=</span> [<span style="color:#bd93f9">0xb</span>, <span style="color:#bd93f9">0x06</span>, <span style="color:#bd93f9">0x0a</span>, <span style="color:#bd93f9">0x0c</span>, <span style="color:#bd93f9">0x7</span>, <span style="color:#bd93f9">0x5</span>, <span style="color:#bd93f9">0x9</span>, <span style="color:#bd93f9">0x22</span>, <span style="color:#bd93f9">0x8</span>, <span style="color:#bd93f9">0x2</span>]
+hashes <span style="color:#ff79c6">=</span> []
+alphabet_dict <span style="color:#ff79c6">=</span> {}
 
-r2 <span style="color:#f92672">=</span> r2pipe<span style="color:#f92672">.</span>open(<span style="color:#e6db74">&#34;goaway.unpack&#34;</span>)
-r2<span style="color:#f92672">.</span>cmd(<span style="color:#e6db74">&#34;ood&#34;</span>)
-r2<span style="color:#f92672">.</span>cmd(<span style="color:#e6db74">&#34;db 0x48c10f&#34;</span>)
-r2<span style="color:#f92672">.</span>cmd(<span style="color:#e6db74">&#34;db 0x48b812&#34;</span>)
-r2<span style="color:#f92672">.</span>cmd(<span style="color:#e6db74">&#34;db 0x48c21e&#34;</span>)
-r2<span style="color:#f92672">.</span>cmd(<span style="color:#e6db74">&#34;db 0x48c223&#34;</span>)
-<span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0x7f</span>):
-    r2<span style="color:#f92672">.</span>cmd(<span style="color:#e6db74">&#34;dc&#34;</span>)
-    r2<span style="color:#f92672">.</span>cmd(<span style="color:#e6db74">&#34;dr edx=</span><span style="color:#e6db74">%d</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">%</span> i)
-    r2<span style="color:#f92672">.</span>cmd(<span style="color:#e6db74">&#34;dr rip=0x</span><span style="color:#e6db74">%x</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">%</span> <span style="color:#ae81ff">0x48c1ff</span>)
-    r2<span style="color:#f92672">.</span>cmd(<span style="color:#e6db74">&#34;dc&#34;</span>)
-    r2<span style="color:#f92672">.</span>cmd(<span style="color:#e6db74">&#34;s rsp+0x4f; wx 0x</span><span style="color:#e6db74">%x</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">%</span> (i <span style="color:#f92672">&lt;&lt;</span> <span style="color:#ae81ff">16</span> <span style="color:#f92672">|</span> <span style="color:#ae81ff">0x10</span>))
-    <span style="color:#66d9ef">print</span>(r2<span style="color:#f92672">.</span>cmd(<span style="color:#e6db74">&#34;dc&#34;</span>))
-    md5 <span style="color:#f92672">=</span> binascii<span style="color:#f92672">.</span>hexlify(bytes(r2<span style="color:#f92672">.</span>cmdj(<span style="color:#e6db74">&#34;pxj 16 @rsp+0x18&#34;</span>)))
-    alphabet_dict[md5] <span style="color:#f92672">=</span> chr(i)
-    r2<span style="color:#f92672">.</span>cmd(<span style="color:#e6db74">&#34;ood&#34;</span>)
+r2 <span style="color:#ff79c6">=</span> r2pipe<span style="color:#ff79c6">.</span>open(<span style="color:#f1fa8c">&#34;goaway.unpack&#34;</span>)
+r2<span style="color:#ff79c6">.</span>cmd(<span style="color:#f1fa8c">&#34;ood&#34;</span>)
+r2<span style="color:#ff79c6">.</span>cmd(<span style="color:#f1fa8c">&#34;db 0x48c10f&#34;</span>)
+r2<span style="color:#ff79c6">.</span>cmd(<span style="color:#f1fa8c">&#34;db 0x48b812&#34;</span>)
+r2<span style="color:#ff79c6">.</span>cmd(<span style="color:#f1fa8c">&#34;db 0x48c21e&#34;</span>)
+r2<span style="color:#ff79c6">.</span>cmd(<span style="color:#f1fa8c">&#34;db 0x48c223&#34;</span>)
+<span style="color:#ff79c6">for</span> i <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#bd93f9">0</span>, <span style="color:#bd93f9">0x7f</span>):
+    r2<span style="color:#ff79c6">.</span>cmd(<span style="color:#f1fa8c">&#34;dc&#34;</span>)
+    r2<span style="color:#ff79c6">.</span>cmd(<span style="color:#f1fa8c">&#34;dr edx=</span><span style="color:#f1fa8c">%d</span><span style="color:#f1fa8c">&#34;</span> <span style="color:#ff79c6">%</span> i)
+    r2<span style="color:#ff79c6">.</span>cmd(<span style="color:#f1fa8c">&#34;dr rip=0x</span><span style="color:#f1fa8c">%x</span><span style="color:#f1fa8c">&#34;</span> <span style="color:#ff79c6">%</span> <span style="color:#bd93f9">0x48c1ff</span>)
+    r2<span style="color:#ff79c6">.</span>cmd(<span style="color:#f1fa8c">&#34;dc&#34;</span>)
+    r2<span style="color:#ff79c6">.</span>cmd(<span style="color:#f1fa8c">&#34;s rsp+0x4f; wx 0x</span><span style="color:#f1fa8c">%x</span><span style="color:#f1fa8c">&#34;</span> <span style="color:#ff79c6">%</span> (i <span style="color:#ff79c6">&lt;&lt;</span> <span style="color:#bd93f9">16</span> <span style="color:#ff79c6">|</span> <span style="color:#bd93f9">0x10</span>))
+    <span style="color:#ff79c6">print</span>(r2<span style="color:#ff79c6">.</span>cmd(<span style="color:#f1fa8c">&#34;dc&#34;</span>))
+    md5 <span style="color:#ff79c6">=</span> binascii<span style="color:#ff79c6">.</span>hexlify(<span style="color:#8be9fd;font-style:italic">bytes</span>(r2<span style="color:#ff79c6">.</span>cmdj(<span style="color:#f1fa8c">&#34;pxj 16 @rsp+0x18&#34;</span>)))
+    alphabet_dict[md5] <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">chr</span>(i)
+    r2<span style="color:#ff79c6">.</span>cmd(<span style="color:#f1fa8c">&#34;ood&#34;</span>)
 
-chars <span style="color:#f92672">=</span> []
-<span style="color:#66d9ef">for</span> offset <span style="color:#f92672">in</span> flag_md5_offsets:
-    addr <span style="color:#f92672">=</span> <span style="color:#ae81ff">0x4bf20c</span> <span style="color:#f92672">+</span> (offset <span style="color:#f92672">*</span> <span style="color:#ae81ff">16</span>)
-    <span style="color:#75715e">#print(hex(addr))</span>
-    nochr <span style="color:#f92672">=</span> binascii<span style="color:#f92672">.</span>hexlify(bytes(r2<span style="color:#f92672">.</span>cmdj(<span style="color:#e6db74">&#34;pxj 16 @0x</span><span style="color:#e6db74">%x</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">%</span> addr)))
-    hashes<span style="color:#f92672">.</span>append(nochr)
-    chars<span style="color:#f92672">.</span>append(alphabet_dict[nochr])
+chars <span style="color:#ff79c6">=</span> []
+<span style="color:#ff79c6">for</span> offset <span style="color:#ff79c6">in</span> flag_md5_offsets:
+    addr <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x4bf20c</span> <span style="color:#ff79c6">+</span> (offset <span style="color:#ff79c6">*</span> <span style="color:#bd93f9">16</span>)
+    <span style="color:#6272a4">#print(hex(addr))</span>
+    nochr <span style="color:#ff79c6">=</span> binascii<span style="color:#ff79c6">.</span>hexlify(<span style="color:#8be9fd;font-style:italic">bytes</span>(r2<span style="color:#ff79c6">.</span>cmdj(<span style="color:#f1fa8c">&#34;pxj 16 @0x</span><span style="color:#f1fa8c">%x</span><span style="color:#f1fa8c">&#34;</span> <span style="color:#ff79c6">%</span> addr)))
+    hashes<span style="color:#ff79c6">.</span>append(nochr)
+    chars<span style="color:#ff79c6">.</span>append(alphabet_dict[nochr])
 
-subst <span style="color:#f92672">=</span> [<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">6</span>, <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">7</span>, <span style="color:#ae81ff">8</span>, <span style="color:#ae81ff">7</span>, <span style="color:#ae81ff">9</span>]
-toto <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;</span>
-<span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> subst:
-    toto <span style="color:#f92672">+=</span> chars[i]
+subst <span style="color:#ff79c6">=</span> [<span style="color:#bd93f9">0</span>, <span style="color:#bd93f9">1</span>, <span style="color:#bd93f9">2</span>, <span style="color:#bd93f9">3</span>, <span style="color:#bd93f9">1</span>, <span style="color:#bd93f9">4</span>, <span style="color:#bd93f9">5</span>, <span style="color:#bd93f9">1</span>, <span style="color:#bd93f9">6</span>, <span style="color:#bd93f9">5</span>, <span style="color:#bd93f9">1</span>, <span style="color:#bd93f9">5</span>, <span style="color:#bd93f9">7</span>, <span style="color:#bd93f9">8</span>, <span style="color:#bd93f9">7</span>, <span style="color:#bd93f9">9</span>]
+toto <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;&#34;</span>
+<span style="color:#ff79c6">for</span> i <span style="color:#ff79c6">in</span> subst:
+    toto <span style="color:#ff79c6">+=</span> chars[i]
 
-<span style="color:#66d9ef">print</span>(toto)
+<span style="color:#ff79c6">print</span>(toto)
 </code></pre></div><p>The script directly gives us the right flag, &ldquo;secretkeykeklol1&rdquo;. However, the program is picky, and when you give it the right flag, you get</p>
 <pre><code>hmmmm...... key is correct! But I changed my mind about printing you a flag
 .....

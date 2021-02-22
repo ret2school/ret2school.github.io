@@ -84,6 +84,7 @@ The first funclet just checks for the process being debugged, the &ldquo;load_r9
               <a class="tag" href="https://ret2school.github.io/tags/utctf/">UTCTF</a>
               <a class="tag" href="https://ret2school.github.io/tags/re/">RE</a>
               <a class="tag" href="https://ret2school.github.io/tags/re/">RE</a>
+              <a class="tag" href="https://ret2school.github.io/tags/supersnail/">supersnail</a>
         </div>
       </div>
     </header>
@@ -101,47 +102,47 @@ Studying the crackme confirmed my doubts, we have an obfuscated &ldquo;keyState&
 <p>Now, since we located the key and the algorithm used, we need to locate where the encrypted data (probably the flag) is located. After a little debugging with radare2 (and a a breakpoint on the &ldquo;write_message&rdquo; function), I finally located it in the offset table</p>
 <p><img src="http://aassfxxx.infos.st/media/crack-the-heart/keyloc.png" alt="Key state">.</p>
 <p>Given this, I wrote a script relying a lot on r2pipe to crack the crackme and get the flag:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#!/usr/bin/python</span>
-<span style="color:#f92672">import</span> r2pipe
-<span style="color:#f92672">import</span> struct
-<span style="color:#f92672">from</span> Crypto.Cipher <span style="color:#f92672">import</span> ARC4
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#6272a4">#!/usr/bin/python</span>
+<span style="color:#ff79c6">import</span> r2pipe
+<span style="color:#ff79c6">import</span> struct
+<span style="color:#ff79c6">from</span> Crypto.Cipher <span style="color:#ff79c6">import</span> ARC4
 
-rop_buf <span style="color:#f92672">=</span> <span style="color:#ae81ff">0x4045A6</span>
+rop_buf <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x4045A6</span>
 
-r9_caution <span style="color:#f92672">=</span> <span style="color:#ae81ff">0x4021FD</span>
-rsi_param <span style="color:#f92672">=</span> <span style="color:#ae81ff">0x402102</span>
-and_param <span style="color:#f92672">=</span> <span style="color:#ae81ff">0x402065</span>
+r9_caution <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x4021FD</span>
+rsi_param <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x402102</span>
+and_param <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x402065</span>
 
-r2 <span style="color:#f92672">=</span> r2pipe<span style="color:#f92672">.</span>open(<span style="color:#e6db74">&#34;./crackme&#34;</span>)
+r2 <span style="color:#ff79c6">=</span> r2pipe<span style="color:#ff79c6">.</span>open(<span style="color:#f1fa8c">&#34;./crackme&#34;</span>)
 
-is_key_loading <span style="color:#f92672">=</span> True
-count <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
-key <span style="color:#f92672">=</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;&#34;</span>
+is_key_loading <span style="color:#ff79c6">=</span> True
+count <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>
+key <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&#34;</span>
 
-<span style="color:#66d9ef">while</span> count <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">256</span>:
-    buf <span style="color:#f92672">=</span> bytes(r2<span style="color:#f92672">.</span>cmdj(<span style="color:#e6db74">&#34;pxj 8 @0x</span><span style="color:#e6db74">%x</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">%</span> rop_buf))
-    addr <span style="color:#f92672">=</span> struct<span style="color:#f92672">.</span>unpack(<span style="color:#e6db74">&#34;&lt;Q&#34;</span>, buf)[<span style="color:#ae81ff">0</span>]
-    <span style="color:#66d9ef">if</span> addr <span style="color:#f92672">==</span> rsi_param:
-        <span style="color:#66d9ef">if</span> is_key_loading:
-            buf <span style="color:#f92672">=</span> bytes(r2<span style="color:#f92672">.</span>cmdj(<span style="color:#e6db74">&#34;pxj 8 @0x</span><span style="color:#e6db74">%x</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">%</span> (rop_buf <span style="color:#f92672">+</span> <span style="color:#ae81ff">8</span>)))
-            addr <span style="color:#f92672">=</span> struct<span style="color:#f92672">.</span>unpack(<span style="color:#e6db74">&#34;&lt;Q&#34;</span>, buf)
-            key <span style="color:#f92672">+=</span> bytes(r2<span style="color:#f92672">.</span>cmdj(<span style="color:#e6db74">&#34;pxj 1 @0x</span><span style="color:#e6db74">%x</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">%</span> addr))
-            count <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
-            is_key_loading <span style="color:#f92672">=</span> False
-        <span style="color:#66d9ef">else</span>:
-            is_key_loading <span style="color:#f92672">=</span> True
-        rop_buf <span style="color:#f92672">+=</span> <span style="color:#ae81ff">8</span>
-    <span style="color:#66d9ef">elif</span> addr <span style="color:#f92672">==</span> and_param:
-        rop_buf <span style="color:#f92672">+=</span> <span style="color:#ae81ff">8</span>
-    <span style="color:#66d9ef">elif</span> addr <span style="color:#f92672">==</span> r9_caution:
-        rop_buf <span style="color:#f92672">+=</span> <span style="color:#ae81ff">8</span> <span style="color:#f92672">+</span> r2<span style="color:#f92672">.</span>cmdj(<span style="color:#e6db74">&#34;pxj 1 @0x</span><span style="color:#e6db74">%x</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">%</span> (rop_buf <span style="color:#f92672">+</span> <span style="color:#ae81ff">8</span>))[<span style="color:#ae81ff">0</span>]
-    rop_buf <span style="color:#f92672">+=</span> <span style="color:#ae81ff">8</span>
-<span style="color:#66d9ef">print</span>(key)
+<span style="color:#ff79c6">while</span> count <span style="color:#ff79c6">&lt;</span> <span style="color:#bd93f9">256</span>:
+    buf <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">bytes</span>(r2<span style="color:#ff79c6">.</span>cmdj(<span style="color:#f1fa8c">&#34;pxj 8 @0x</span><span style="color:#f1fa8c">%x</span><span style="color:#f1fa8c">&#34;</span> <span style="color:#ff79c6">%</span> rop_buf))
+    addr <span style="color:#ff79c6">=</span> struct<span style="color:#ff79c6">.</span>unpack(<span style="color:#f1fa8c">&#34;&lt;Q&#34;</span>, buf)[<span style="color:#bd93f9">0</span>]
+    <span style="color:#ff79c6">if</span> addr <span style="color:#ff79c6">==</span> rsi_param:
+        <span style="color:#ff79c6">if</span> is_key_loading:
+            buf <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">bytes</span>(r2<span style="color:#ff79c6">.</span>cmdj(<span style="color:#f1fa8c">&#34;pxj 8 @0x</span><span style="color:#f1fa8c">%x</span><span style="color:#f1fa8c">&#34;</span> <span style="color:#ff79c6">%</span> (rop_buf <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">8</span>)))
+            addr <span style="color:#ff79c6">=</span> struct<span style="color:#ff79c6">.</span>unpack(<span style="color:#f1fa8c">&#34;&lt;Q&#34;</span>, buf)
+            key <span style="color:#ff79c6">+=</span> <span style="color:#8be9fd;font-style:italic">bytes</span>(r2<span style="color:#ff79c6">.</span>cmdj(<span style="color:#f1fa8c">&#34;pxj 1 @0x</span><span style="color:#f1fa8c">%x</span><span style="color:#f1fa8c">&#34;</span> <span style="color:#ff79c6">%</span> addr))
+            count <span style="color:#ff79c6">+=</span> <span style="color:#bd93f9">1</span>
+            is_key_loading <span style="color:#ff79c6">=</span> False
+        <span style="color:#ff79c6">else</span>:
+            is_key_loading <span style="color:#ff79c6">=</span> True
+        rop_buf <span style="color:#ff79c6">+=</span> <span style="color:#bd93f9">8</span>
+    <span style="color:#ff79c6">elif</span> addr <span style="color:#ff79c6">==</span> and_param:
+        rop_buf <span style="color:#ff79c6">+=</span> <span style="color:#bd93f9">8</span>
+    <span style="color:#ff79c6">elif</span> addr <span style="color:#ff79c6">==</span> r9_caution:
+        rop_buf <span style="color:#ff79c6">+=</span> <span style="color:#bd93f9">8</span> <span style="color:#ff79c6">+</span> r2<span style="color:#ff79c6">.</span>cmdj(<span style="color:#f1fa8c">&#34;pxj 1 @0x</span><span style="color:#f1fa8c">%x</span><span style="color:#f1fa8c">&#34;</span> <span style="color:#ff79c6">%</span> (rop_buf <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">8</span>))[<span style="color:#bd93f9">0</span>]
+    rop_buf <span style="color:#ff79c6">+=</span> <span style="color:#bd93f9">8</span>
+<span style="color:#ff79c6">print</span>(key)
 
-data <span style="color:#f92672">=</span> <span style="color:#ae81ff">0x4022D5</span>
-buf <span style="color:#f92672">=</span> bytes(r2<span style="color:#f92672">.</span>cmdj(<span style="color:#e6db74">&#34;pxj 256 @0x</span><span style="color:#e6db74">%x</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">%</span> data))
-cipher <span style="color:#f92672">=</span> ARC4<span style="color:#f92672">.</span>new(key)
-<span style="color:#66d9ef">print</span>(cipher<span style="color:#f92672">.</span>encrypt(buf))
+data <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x4022D5</span>
+buf <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">bytes</span>(r2<span style="color:#ff79c6">.</span>cmdj(<span style="color:#f1fa8c">&#34;pxj 256 @0x</span><span style="color:#f1fa8c">%x</span><span style="color:#f1fa8c">&#34;</span> <span style="color:#ff79c6">%</span> data))
+cipher <span style="color:#ff79c6">=</span> ARC4<span style="color:#ff79c6">.</span>new(key)
+<span style="color:#ff79c6">print</span>(cipher<span style="color:#ff79c6">.</span>encrypt(buf))
 </code></pre></div>
     </div>
     <div class="post-footer">
