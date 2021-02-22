@@ -102,7 +102,8 @@ Studying the crackme confirmed my doubts, we have an obfuscated &ldquo;keyState&
 <p>Now, since we located the key and the algorithm used, we need to locate where the encrypted data (probably the flag) is located. After a little debugging with radare2 (and a a breakpoint on the &ldquo;write_message&rdquo; function), I finally located it in the offset table</p>
 <p><img src="http://aassfxxx.infos.st/media/crack-the-heart/keyloc.png" alt="Key state">.</p>
 <p>Given this, I wrote a script relying a lot on r2pipe to crack the crackme and get the flag:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#6272a4">#!/usr/bin/python</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">
+<span style="color:#6272a4">#!/usr/bin/python</span>
 <span style="color:#ff79c6">import</span> r2pipe
 <span style="color:#ff79c6">import</span> struct
 <span style="color:#ff79c6">from</span> Crypto.Cipher <span style="color:#ff79c6">import</span> ARC4
@@ -143,6 +144,7 @@ data <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x4022D5</
 buf <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">bytes</span>(r2<span style="color:#ff79c6">.</span>cmdj(<span style="color:#f1fa8c">&#34;pxj 256 @0x</span><span style="color:#f1fa8c">%x</span><span style="color:#f1fa8c">&#34;</span> <span style="color:#ff79c6">%</span> data))
 cipher <span style="color:#ff79c6">=</span> ARC4<span style="color:#ff79c6">.</span>new(key)
 <span style="color:#ff79c6">print</span>(cipher<span style="color:#ff79c6">.</span>encrypt(buf))
+
 </code></pre></div>
     </div>
     <div class="post-footer">

@@ -252,20 +252,23 @@ Actually, unlike C where a single parameter is returned, Go can return several r
 |    local vars     |
 +-------------------+
 </code></pre><p>Also comes the &ldquo;slice&rdquo; mechanism much used by Go, which is actually a structure that could be defined like this (in 64 bits):</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-C" data-lang="C"><span style="color:#ff79c6">struct</span> slice {
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-C" data-lang="C">
+<span style="color:#ff79c6">struct</span> slice {
    <span style="color:#8be9fd">void</span> <span style="color:#ff79c6">*</span>pointer;
    uint64_t size;
    uint64_t allocated_size;
 }
+
 </code></pre></div><p>Once this is understood, we can finally study the operation of the program in good conditions.</p>
 <h2 id="crackme-algorithm">Crackme algorithm</h2>
 <p>The crackme starts by displaying the welcome message, then reading and storing user input (with bufio.Reader.ReadString).The crackme then removes the character &ldquo;\n&rdquo;, before creating a HashMap.</p>
 <p>This HashMap contains a permutation table, which will be useful later. Then, the crackme creates an array of slices which point to 16-byte &ldquo;strings&rdquo;, which curiously look like a hash. Then, after checking the size of the flag (which must also be 16 bytes), we land to a first loop on the characters of the flag. For each character, we compute the MD5 hash of the character.</p>
-<p><img src="http://real-asm.infos.st/assets/uploads/files/1583070437067-hashmd5.png" alt="hashmd5.png"></p>
+<p><img src="http://aassfxxx.infos.st/media/goaway/1583067885984-rtti.png" alt="hashmd5.png"></p>
 <p>Then we recover the permutation value corresponding to the index of the character of the string in the hashmap, and compare the hash md5 to the slice whose index is the permutation:</p>
-<p><img src="http://real-asm.infos.st/assets/uploads/files/1583070570281-cmphash.png" alt="cmphash.png"></p>
+<p><img src="http://aassfxxx.infos.st/media/goaway/1583067680265-idadmp1.png" alt="cmphash.png"></p>
 <p>In &ldquo;pythonized&rdquo; pseudocode, we would get something like this:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#8be9fd;font-style:italic">slice</span> <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">&lt;</span>md5 hashes array<span style="color:#ff79c6">&gt;</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py">
+<span style="color:#8be9fd;font-style:italic">slice</span> <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">&lt;</span>md5 hashes array<span style="color:#ff79c6">&gt;</span>
 permutations <span style="color:#ff79c6">=</span> [<span style="color:#bd93f9">0</span>, <span style="color:#bd93f9">1</span>, <span style="color:#bd93f9">2</span>, <span style="color:#bd93f9">3</span>, <span style="color:#bd93f9">1</span>, <span style="color:#bd93f9">4</span>, <span style="color:#bd93f9">5</span>, <span style="color:#bd93f9">1</span>, <span style="color:#bd93f9">6</span>, <span style="color:#bd93f9">5</span>, <span style="color:#bd93f9">1</span>, <span style="color:#bd93f9">5</span>, <span style="color:#bd93f9">7</span>, <span style="color:#bd93f9">8</span>, <span style="color:#bd93f9">7</span>, <span style="color:#bd93f9">9</span>]
 <span style="color:#ff79c6">for</span> i <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#8be9fd;font-style:italic">len</span>(serial)):
    <span style="color:#ff79c6">if</span> md5(serial[i]) <span style="color:#ff79c6">!=</span> <span style="color:#8be9fd;font-style:italic">slice</span>[permutations[i]]:
@@ -273,10 +276,12 @@ permutations <span style="color:#ff79c6">=</span> [<span style="color:#bd93f9">0
      <span style="color:#8be9fd;font-style:italic">exit</span>(<span style="color:#bd93f9">1</span>)
 
 <span style="color:#ff79c6">print</span> <span style="color:#f1fa8c">&#34;Good boy&#34;</span>
+
 </code></pre></div><p>To recover the key, in theory, we just need to calculate the md5 for each character in the ASCII table, and compare its hash with the one found in the program. But like any theoretical solution, it does not work in practice for obscure reasons &hellip;</p>
 <h2 id="key-recovery-and-crackme-pwning">Key recovery and crackme pwning</h2>
 <p>Not understanding what is happening, I ended up opting for a more radical solution: I executed the MD5 implementation of the binary directly, controlling the radare2&rsquo;s debugger via r2pipe from my python script. After a few tries, I managed to make the following script:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#6272a4">#!/usr/bin/python</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py">
+<span style="color:#6272a4">#!/usr/bin/python</span>
 <span style="color:#ff79c6">import</span> r2pipe
 <span style="color:#ff79c6">import</span> hashlib
 <span style="color:#ff79c6">import</span> binascii
@@ -317,6 +322,7 @@ toto <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;&#34;
     toto <span style="color:#ff79c6">+=</span> chars[i]
 
 <span style="color:#ff79c6">print</span>(toto)
+
 </code></pre></div><p>The script directly gives us the right flag, &ldquo;secretkeykeklol1&rdquo;. However, the program is picky, and when you give it the right flag, you get</p>
 <pre><code>hmmmm...... key is correct! But I changed my mind about printing you a flag
 .....
