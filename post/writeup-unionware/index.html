@@ -3,7 +3,7 @@
   <head>
     <title> // ret2school</title>
     <meta charset="utf-8" />
-    <meta name="generator" content="Hugo 0.68.3" />
+    <meta name="generator" content="Hugo 0.81.0" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="author" content="nasm" />
     <meta name="description" content="" />
@@ -19,7 +19,9 @@ Analyzing the Powershell While looking at the powershell, we can see an obfuscat
 <meta property="og:description" content="UnionCTF - Unionware This challenge gives us two files: an &ldquo;unionware.ps1&rdquo; and a &ldquo;important_homework.txt.unionware&rdquo; containing seemingly random bytes. The challenge tells us that a ransomware encrypted the important homework and asks us to decrypt it.
 Analyzing the Powershell While looking at the powershell, we can see an obfuscated Powershell command, which seems to split some random string and then evaluating it. So, we&rsquo;ll just run the part of the script which deobfuscates the payload without executing it, which give us:" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://ret2school.github.io/post/writeup-unionware/" />
+<meta property="og:url" content="https://ret2school.github.io/post/writeup-unionware/" /><meta property="article:section" content="post" />
+
+
 
 
 
@@ -130,7 +132,7 @@ mov     dword_40A3F8, eax
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#ff79c6">import</span> socket
 
 s <span style="color:#ff79c6">=</span> socket<span style="color:#ff79c6">.</span>socket(socket<span style="color:#ff79c6">.</span>AF_INET,socket<span style="color:#ff79c6">.</span>SOCK_STREAM)
-<span style="color:#6272a4"># 159.65.197.149</span>
+<span style="color:#6272a4"># 159.65.197.149</span>
 s<span style="color:#ff79c6">.</span>connect((<span style="color:#f1fa8c">&#34;35.241.159.62&#34;</span>, <span style="color:#bd93f9">1337</span>))
 zgueg <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;KADMKLAFD:LSM$OPM@FLK:FM!N$@N$&#34;</span>
 s<span style="color:#ff79c6">.</span>send(zgueg)

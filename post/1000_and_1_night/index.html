@@ -3,7 +3,7 @@
   <head>
     <title>[Aero CTF 2020] 1000 and 1 night // ret2school</title>
     <meta charset="utf-8" />
-    <meta name="generator" content="Hugo 0.68.3" />
+    <meta name="generator" content="Hugo 0.81.0" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="author" content="nasm" />
     <meta name="description" content="" />
@@ -23,9 +23,10 @@ Files can be found here
 For this challenge, we get an archive with a lot of files, the name of which seems to be a hash. Each file is an ELF x86_64 program file. In addition, a server listens, and requests:
 Enter valid token to binary with name &lt;8c235f89a8143a28a1d6067e959dd858&gt; Token: at connection. We therefore understand quickly enough that we will have to automate the reversing of all these ELFs to send the correct token back to the server, and thus have the flag, the server requesting a series of tokens before spitting the flag." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://ret2school.github.io/post/1000_and_1_night/" />
-<meta property="article:published_time" content="2020-11-25T00:00:00+00:00" />
-<meta property="article:modified_time" content="2020-11-25T00:00:00+00:00" />
+<meta property="og:url" content="https://ret2school.github.io/post/1000_and_1_night/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2020-11-25T00:00:00&#43;00:00" />
+<meta property="article:modified_time" content="2020-11-25T00:00:00&#43;00:00" />
+
 
 
   </head>
@@ -82,7 +83,6 @@ Enter valid token to binary with name &lt;8c235f89a8143a28a1d6067e959dd858&gt; T
               <a class="tag" href="https://ret2school.github.io/tags/ctf/">ctf</a>
               <a class="tag" href="https://ret2school.github.io/tags/ret2school/">ret2school</a>
               <a class="tag" href="https://ret2school.github.io/tags/utctf/">UTCTF</a>
-              <a class="tag" href="https://ret2school.github.io/tags/re/">RE</a>
               <a class="tag" href="https://ret2school.github.io/tags/re/">RE</a>
               <a class="tag" href="https://ret2school.github.io/tags/supersnail/">supersnail</a>
               <a class="tag" href="https://ret2school.github.io/tags/aassfxxx/">aaSSfxxx</a>
@@ -198,7 +198,7 @@ toto <span style="color:#ff79c6">=</span> sock<span style="color:#ff79c6">.</spa
         name <span style="color:#ff79c6">=</span> line[line<span style="color:#ff79c6">.</span>find(<span style="color:#f1fa8c">&#34;&lt;&#34;</span>)<span style="color:#ff79c6">+</span><span style="color:#bd93f9">1</span>:<span style="color:#ff79c6">-</span><span style="color:#bd93f9">2</span>]
         token <span style="color:#ff79c6">=</span> get_tok(name)
         sock<span style="color:#ff79c6">.</span>send(<span style="color:#8be9fd;font-style:italic">bytes</span>(token <span style="color:#ff79c6">+</span> <span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>, <span style="color:#f1fa8c">&#34;ascii&#34;</span>))
-</code></pre></div><p>The only &ldquo;complicated&rdquo; part here is to extract the good value from the &ldquo;lea ecx, [rax - 0xb]&quot;, where I based myself on the ESIL evaluation made by radare2 to recover the good value. Finally, last subtlety, the server returns an ANSI terminal reset sequence after sending the flag, so we had to redirect the output to a file, to get the flag.</p>
+</code></pre></div><p>The only &ldquo;complicated&rdquo; part here is to extract the good value from the &ldquo;lea ecx, [rax - 0xb]&rdquo;, where I based myself on the ESIL evaluation made by radare2 to recover the good value. Finally, last subtlety, the server returns an ANSI terminal reset sequence after sending the flag, so we had to redirect the output to a file, to get the flag.</p>
 <p>That&rsquo;s all folks ! :þ</p>
 
     </div>
