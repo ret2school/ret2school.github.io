@@ -12,12 +12,12 @@
     
     <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="[UnionCTF - 2021] Cr0wnAir"/>
-<meta name="twitter:description" content="UnionCTF - Cr0wnAir To solve this challenge, we had to exploit a vulnerability in jpv which allows us to bypass the regex validation in order to get a JWT. Then, we were able to change the algorithm from RS256 to HS256 and forge a new JWT with the public key, a key that we were able to retrieve thanks to a weak e.
- The source code of the app is given, so let&rsquo;s take a look at it (only what will be interesting for us) :"/>
+<meta name="twitter:description" content="The challenge can be found right here.
+UnionCTF - Cr0wnAir To solve this challenge, we had to exploit a vulnerability in jpv which allows us to bypass the regex validation in order to get a JWT. Then, we were able to change the algorithm from RS256 to HS256 and forge a new JWT with the public key, a key that we were able to retrieve thanks to a weak e."/>
 
     <meta property="og:title" content="[UnionCTF - 2021] Cr0wnAir" />
-<meta property="og:description" content="UnionCTF - Cr0wnAir To solve this challenge, we had to exploit a vulnerability in jpv which allows us to bypass the regex validation in order to get a JWT. Then, we were able to change the algorithm from RS256 to HS256 and forge a new JWT with the public key, a key that we were able to retrieve thanks to a weak e.
- The source code of the app is given, so let&rsquo;s take a look at it (only what will be interesting for us) :" />
+<meta property="og:description" content="The challenge can be found right here.
+UnionCTF - Cr0wnAir To solve this challenge, we had to exploit a vulnerability in jpv which allows us to bypass the regex validation in order to get a JWT. Then, we were able to change the algorithm from RS256 to HS256 and forge a new JWT with the public key, a key that we were able to retrieve thanks to a weak e." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://ret2school.github.io/post/writeup_cr0wnair/" /><meta property="article:section" content="post" />
 <meta property="article:published_time" content="2021-02-24T00:00:00&#43;00:00" />
@@ -86,9 +86,9 @@
       </div>
     </header>
     <div class="post-content">
-      <h1 id="unionctf---cr0wnair">UnionCTF - Cr0wnAir</h1>
+      <p>The challenge can be found <a href="https://github.com/ret2school/ctf/tree/master/2021/unionctf/web/cr0wnair/app_src">right here</a>.</p>
+<h1 id="unionctf---cr0wnair">UnionCTF - Cr0wnAir</h1>
 <p>To solve this challenge, we had to exploit a vulnerability in <code>jpv</code> which allows us to bypass the regex validation in order to get a JWT. Then, we were able to change the algorithm from <code>RS256</code> to <code>HS256</code> and forge a new JWT with the public key, a key that we were able to retrieve thanks to a weak <code>e</code>.</p>
-<hr>
 <p>The source code of the app is given, so let&rsquo;s take a look at it (only what will be interesting for us) :</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js">
 <span style="color:#6272a4">// routes/checkin.js

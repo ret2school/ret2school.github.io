@@ -12,8 +12,8 @@
       <pubDate>Wed, 24 Feb 2021 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/post/writeup_cr0wnair/</guid>
-      <description>UnionCTF - Cr0wnAir To solve this challenge, we had to exploit a vulnerability in jpv which allows us to bypass the regex validation in order to get a JWT. Then, we were able to change the algorithm from RS256 to HS256 and forge a new JWT with the public key, a key that we were able to retrieve thanks to a weak e.
- The source code of the app is given, so let&amp;rsquo;s take a look at it (only what will be interesting for us) :</description>
+      <description>The challenge can be found right here.
+UnionCTF - Cr0wnAir To solve this challenge, we had to exploit a vulnerability in jpv which allows us to bypass the regex validation in order to get a JWT. Then, we were able to change the algorithm from RS256 to HS256 and forge a new JWT with the public key, a key that we were able to retrieve thanks to a weak e.</description>
     </item>
     
   </channel>
