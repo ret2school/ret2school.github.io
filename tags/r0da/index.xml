@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>r0da on ret2school</title>
+    <link>https://ret2school.github.io/tags/r0da/</link>
+    <description>Recent content in r0da on ret2school</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Sun, 13 Sep 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/r0da/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>[CSAW CTF 2020 - RE] Cuba</title>
+      <link>https://ret2school.github.io/post/cuba/</link>
+      <pubDate>Sun, 13 Sep 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/cuba/</guid>
+      <description>Hi
+This is my write up for the challange Cuba of CSAW CTF 2020 :
+So this challenge is a CUBA program wrapped in a Windows Executable. CUBA is a GPU langage created by NVIDIA to work around GPU with high performance langage.
+https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html
+Luckily there is a public SDK for it, with a disassembler :
+https://docs.nvidia.com/cuda/cuda-binary-utilities/index.html
+Using a tool called cuobjdump, we can extract the assembly code :
+To extract ptx text from a host binary, use the following command: cuobjdump -ptx &amp;lt;host binary&amp;gt;  And after reversing the output, we can see that it&amp;rsquo;s a simple xor looping through a ciphered flag</description>
+    </item>
+    
+  </channel>
+</rss>

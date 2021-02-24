@@ -42,13 +42,29 @@ The first funclet just checks for the process being debugged, the &amp;ldquo;loa
     </item>
     
     <item>
+      <title>[CSAW CTF 2020 - RE] Cuba</title>
+      <link>https://ret2school.github.io/post/cuba/</link>
+      <pubDate>Sun, 13 Sep 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/cuba/</guid>
+      <description>Hi
+This is my write up for the challange Cuba of CSAW CTF 2020 :
+So this challenge is a CUBA program wrapped in a Windows Executable. CUBA is a GPU langage created by NVIDIA to work around GPU with high performance langage.
+https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html
+Luckily there is a public SDK for it, with a disassembler :
+https://docs.nvidia.com/cuda/cuda-binary-utilities/index.html
+Using a tool called cuobjdump, we can extract the assembly code :
+To extract ptx text from a host binary, use the following command: cuobjdump -ptx &amp;lt;host binary&amp;gt;  And after reversing the output, we can see that it&amp;rsquo;s a simple xor looping through a ciphered flag</description>
+    </item>
+    
+    <item>
       <title>Team introduction</title>
       <link>https://ret2school.github.io/post/list_team/</link>
-      <pubDate>Wed, 25 Nov 2020 00:00:00 +0000</pubDate>
+      <pubDate>Tue, 25 Feb 2020 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/post/list_team/</guid>
       <description>Members The team is composed of:
- nasm (17 yo, interested in RE/pwn) supersnail (chad reverser) Zeynn (18 yo, web/steg/cypto) x. (the Guesser, the carry-er) Tek 0xPierre r0da (RE stuff) op (pwn/RE, a little bit of everything :) ) look Lime  </description>
+ nasm (17 yo, interested in RE/pwn) supersnail (chad reverser) Zeynn (18 yo, web/steg/cypto) x. (the Guesser, the carry-er) Tek 0xPierre r0da (RE stuff) op (pwn/RE, a little bit of everything :) ) look  </description>
     </item>
     
   </channel>

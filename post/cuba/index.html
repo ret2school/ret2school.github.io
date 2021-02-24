@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title>[CSAW CTF 2020 - RE] Cuba // ret2school</title>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.81.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="nasm" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="https://ret2school.github.io/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css" />
+
+    
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="[CSAW CTF 2020 - RE] Cuba"/>
+<meta name="twitter:description" content="Hi
+This is my write up for the challange Cuba of CSAW CTF 2020 :
+So this challenge is a CUBA program wrapped in a Windows Executable. CUBA is a GPU langage created by NVIDIA to work around GPU with high performance langage.
+https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html
+Luckily there is a public SDK for it, with a disassembler :
+https://docs.nvidia.com/cuda/cuda-binary-utilities/index.html
+Using a tool called cuobjdump, we can extract the assembly code :
+To extract ptx text from a host binary, use the following command: cuobjdump -ptx &lt;host binary&gt;  And after reversing the output, we can see that it&rsquo;s a simple xor looping through a ciphered flag"/>
+
+    <meta property="og:title" content="[CSAW CTF 2020 - RE] Cuba" />
+<meta property="og:description" content="Hi
+This is my write up for the challange Cuba of CSAW CTF 2020 :
+So this challenge is a CUBA program wrapped in a Windows Executable. CUBA is a GPU langage created by NVIDIA to work around GPU with high performance langage.
+https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html
+Luckily there is a public SDK for it, with a disassembler :
+https://docs.nvidia.com/cuda/cuda-binary-utilities/index.html
+Using a tool called cuobjdump, we can extract the assembly code :
+To extract ptx text from a host binary, use the following command: cuobjdump -ptx &lt;host binary&gt;  And after reversing the output, we can see that it&rsquo;s a simple xor looping through a ciphered flag" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ret2school.github.io/post/cuba/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2020-09-13T00:00:00&#43;00:00" />
+<meta property="article:modified_time" content="2020-09-13T00:00:00&#43;00:00" />
+
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://ret2school.github.io"><img class="app-header-avatar" src="/pic.jpeg" alt="nasm" /></a>
+      <h1>ret2school</h1>
+      <nav class="app-header-menu">
+          <a class="app-header-menu-item" href="/">Home</a>
+             / 
+          
+          <a class="app-header-menu-item" href="/tags/">Tags</a>
+      </nav>
+      <p>Just a bunch of french ctf players</p>
+      <div class="app-header-social">
+        
+          <a target="_blank" href="https://github.com/ret2school" rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github">
+  <title>github</title>
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+</svg></a>
+        
+          <a target="_blank" href="https://twitter.com/nasm_re" rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-twitter">
+  <title>twitter</title>
+  <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
+</svg></a>
+        
+      </div>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">[CSAW CTF 2020 - RE] Cuba</h1>
+      <div class="post-meta">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          Sep 13, 2020
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          3 min read
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tag">
+  <title>tag</title>
+  <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line>
+</svg>
+              <a class="tag" href="https://ret2school.github.io/tags/ctf/">ctf</a>
+              <a class="tag" href="https://ret2school.github.io/tags/ret2school/">ret2school</a>
+              <a class="tag" href="https://ret2school.github.io/tags/csaw/">CSAW</a>
+              <a class="tag" href="https://ret2school.github.io/tags/re/">RE</a>
+              <a class="tag" href="https://ret2school.github.io/tags/r0da/">r0da</a>
+        </div>
+      </div>
+    </header>
+    <div class="post-content">
+      <p>Hi</p>
+<p>This is my write up for the challange <code>Cuba</code> of CSAW CTF 2020 :</p>
+<p>So this challenge is a CUBA program wrapped in a Windows Executable. CUBA is a GPU langage created by NVIDIA to work around GPU with high performance langage.</p>
+<p><a href="https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html">https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html</a></p>
+<p>Luckily there is a public SDK for it, with a disassembler :</p>
+<p><a href="https://docs.nvidia.com/cuda/cuda-binary-utilities/index.html">https://docs.nvidia.com/cuda/cuda-binary-utilities/index.html</a></p>
+<p>Using a tool called <code>cuobjdump</code>, we can extract the assembly code :</p>
+<pre><code>To extract ptx text from a host binary, use the following command:
+
+cuobjdump -ptx &lt;host binary&gt;
+</code></pre>
+<p>And after reversing the output, we can see that it&rsquo;s a simple xor looping through a ciphered flag</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-asm" data-lang="asm"><span style="color:#50fa7b">.global</span> .align <span style="color:#bd93f9">1</span> .b8 $CORRECT[<span style="color:#bd93f9">18</span>] = {<span style="color:#bd93f9">67</span>, <span style="color:#bd93f9">79</span>, <span style="color:#bd93f9">82</span>, <span style="color:#bd93f9">82</span>, <span style="color:#bd93f9">69</span>, <span style="color:#bd93f9">67</span>, <span style="color:#bd93f9">84</span>, <span style="color:#bd93f9">32</span>, <span style="color:#bd93f9">80</span>, <span style="color:#bd93f9">65</span>, <span style="color:#bd93f9">83</span>, <span style="color:#bd93f9">83</span>, <span style="color:#bd93f9">87</span>, <span style="color:#bd93f9">79</span>, <span style="color:#bd93f9">82</span>, <span style="color:#bd93f9">68</span>, <span style="color:#bd93f9">33</span>, <span style="color:#bd93f9">0</span>}<span style="color:#6272a4">;
+</span><span style="color:#6272a4"></span>
+<span style="color:#50fa7b">.global</span> .align <span style="color:#bd93f9">1</span> .b8 $WRONG[<span style="color:#bd93f9">27</span>] = {<span style="color:#bd93f9">87</span>, <span style="color:#bd93f9">82</span>, <span style="color:#bd93f9">79</span>, <span style="color:#bd93f9">78</span>, <span style="color:#bd93f9">71</span>, <span style="color:#bd93f9">32</span>, <span style="color:#bd93f9">80</span>, <span style="color:#bd93f9">65</span>, <span style="color:#bd93f9">83</span>, <span style="color:#bd93f9">83</span>, <span style="color:#bd93f9">87</span>, <span style="color:#bd93f9">79</span>, <span style="color:#bd93f9">82</span>, <span style="color:#bd93f9">68</span>, <span style="color:#bd93f9">44</span>, <span style="color:#bd93f9">32</span>, <span style="color:#bd93f9">84</span>, <span style="color:#bd93f9">82</span>, <span style="color:#bd93f9">89</span>, <span style="color:#bd93f9">32</span>, <span style="color:#bd93f9">65</span>, <span style="color:#bd93f9">71</span>, <span style="color:#bd93f9">65</span>, <span style="color:#bd93f9">73</span>, <span style="color:#bd93f9">78</span>, <span style="color:#bd93f9">33</span>, <span style="color:#bd93f9">0</span>}<span style="color:#6272a4">;
+</span><span style="color:#6272a4"></span>...
+
+// <span style="color:#50fa7b">load</span> each xorred bytes on stack
+
+<span style="color:#50fa7b">mov.u16</span>         <span style="color:#8be9fd;font-style:italic">%rs1</span>, <span style="color:#bd93f9">99</span><span style="color:#6272a4">;
+</span><span style="color:#6272a4"></span>.loc	        <span style="color:#bd93f9">1</span> <span style="color:#bd93f9">14</span> <span style="color:#bd93f9">18</span><span style="color:#6272a4">;
+</span><span style="color:#6272a4"></span>st.u8           [<span style="color:#8be9fd;font-style:italic">%SP</span>+<span style="color:#bd93f9">30</span>], <span style="color:#8be9fd;font-style:italic">%rs1</span><span style="color:#6272a4">;
+</span><span style="color:#6272a4"></span>mov.u16         <span style="color:#8be9fd;font-style:italic">%rs2</span>, <span style="color:#bd93f9">103</span><span style="color:#6272a4">;
+</span><span style="color:#6272a4"></span>st.u8           [<span style="color:#8be9fd;font-style:italic">%SP</span>+<span style="color:#bd93f9">29</span>], <span style="color:#8be9fd;font-style:italic">%rs2</span><span style="color:#6272a4">;
+</span><span style="color:#6272a4"></span>mov.u16         <span style="color:#8be9fd;font-style:italic">%rs3</span>, <span style="color:#bd93f9">104</span><span style="color:#6272a4">;
+</span><span style="color:#6272a4"></span>st.u8           [<span style="color:#8be9fd;font-style:italic">%SP</span>+<span style="color:#bd93f9">28</span>], <span style="color:#8be9fd;font-style:italic">%rs3</span><span style="color:#6272a4">;
+</span><span style="color:#6272a4"></span>mov.u16         <span style="color:#8be9fd;font-style:italic">%rs4</span>, <span style="color:#bd93f9">122</span><span style="color:#6272a4">;
+</span><span style="color:#6272a4"></span>st.u8           [<span style="color:#8be9fd;font-style:italic">%SP</span>+<span style="color:#bd93f9">27</span>], <span style="color:#8be9fd;font-style:italic">%rs4</span><span style="color:#6272a4">;
+</span><span style="color:#6272a4"></span>mov.u16         <span style="color:#8be9fd;font-style:italic">%rs5</span>, <span style="color:#bd93f9">41</span><span style="color:#6272a4">;
+</span><span style="color:#6272a4"></span>st.u8           [<span style="color:#8be9fd;font-style:italic">%SP</span>+<span style="color:#bd93f9">26</span>], <span style="color:#8be9fd;font-style:italic">%rs5</span><span style="color:#6272a4">;
+</span><span style="color:#6272a4"></span>mov.u16         <span style="color:#8be9fd;font-style:italic">%rs6</span>, <span style="color:#bd93f9">113</span><span style="color:#6272a4">;
+</span><span style="color:#6272a4"></span>...
+
+<span style="color:#8be9fd;font-style:italic">LOOP:</span>
+<span style="color:#50fa7b">.loc</span>            <span style="color:#bd93f9">1</span> <span style="color:#bd93f9">20</span> <span style="color:#bd93f9">5</span><span style="color:#6272a4">;
+</span><span style="color:#6272a4"></span>mov.u32         %r4, %r21<span style="color:#6272a4">;              // %r4 = i
+</span><span style="color:#6272a4"></span>mov.u32         %r3, %r20<span style="color:#6272a4">;
+</span><span style="color:#6272a4"></span>ld.u32          %r11, [%rd2]<span style="color:#6272a4">;           // %r11 = FLAG_SIZE
+</span><span style="color:#6272a4"></span>setp.lt.s32     %p3, %r4, %r11<span style="color:#6272a4">;         // %p3 = i &lt; %r11
+</span><span style="color:#6272a4"></span>not.pred        %p4, %p3<span style="color:#6272a4">;               // %p4 = %p3 == 0
+</span><span style="color:#6272a4"></span>@%p4 bra        FINAL_CMP<span style="color:#6272a4">;              // if %p4 : jmp
+</span><span style="color:#6272a4"></span>bra.uni         UNCIPHER<span style="color:#6272a4">;
+</span><span style="color:#6272a4"></span>
+<span style="color:#8be9fd;font-style:italic">UNCIPHER:</span>
+<span style="color:#50fa7b">.loc</span>            <span style="color:#bd93f9">1</span> <span style="color:#bd93f9">22</span> <span style="color:#bd93f9">9</span><span style="color:#6272a4">;
+</span><span style="color:#6272a4"></span>cvt.s64.s32     %rd10, %r4<span style="color:#6272a4">;             // %r4 = i
+</span><span style="color:#6272a4"></span>add.s64         %rd11, %rd1, %rd10<span style="color:#6272a4">;     // %rd11 = &amp;INPUT + 1
+</span><span style="color:#6272a4"></span>ld.u8           %rs25, [%rd11]<span style="color:#6272a4">;         // %rs25 = INPUT[i]
+</span><span style="color:#6272a4"></span>cvt.r32.u16     %r14, %rs25<span style="color:#6272a4">;            // unsigned -&gt; signed 
+</span><span style="color:#6272a4"></span>cvt.s32.s8      %r15, %r14<span style="color:#6272a4">;             // %r15 = INPUT[i] 
+</span><span style="color:#6272a4"></span>xor.b32         %r16, %r15, %r4<span style="color:#6272a4">;        // %r16 = %r15 ^ i
+</span><span style="color:#6272a4"></span>cvt.s64.s32     %rd12, %r4<span style="color:#6272a4">;
+</span><span style="color:#6272a4"></span>add.u64         %rd13, %SP, <span style="color:#bd93f9">0</span><span style="color:#6272a4">;          // %rd13 = &amp;FLAG
+</span><span style="color:#6272a4"></span>add.s64         %rd14, %rd13, %rd12<span style="color:#6272a4">;    // %rd13 = &amp;FLAG + 1
+</span><span style="color:#6272a4"></span>ld.u8           %rs26, [%rd14]<span style="color:#6272a4">;         // %rs26 = FLAG[i]
+</span><span style="color:#6272a4"></span>cvt.u32.u16     %r17, %rs26<span style="color:#6272a4">;            // unsigned -&gt; signed 
+</span><span style="color:#6272a4"></span>cvt.s32.s8      %r18, %r17<span style="color:#6272a4">;             // %r18 = FLAG[i]
+</span><span style="color:#6272a4"></span>setp.eq.s32     %p7, %r16, %r18<span style="color:#6272a4">;        // %p7 = %r16 == %r18
+</span><span style="color:#6272a4"></span>not.pred        %p8, %p7<span style="color:#6272a4">;
+</span><span style="color:#6272a4"></span>mov.u32         %r22, %r3<span style="color:#6272a4">;
+</span><span style="color:#6272a4"></span>@%p8 bra        BB6_6<span style="color:#6272a4">;
+</span><span style="color:#6272a4"></span>...
+
+<span style="color:#50fa7b">bra.uni</span> LOOP<span style="color:#6272a4">;
+</span><span style="color:#6272a4"></span>
+<span style="color:#8be9fd;font-style:italic">FINAL_CMP:</span>
+<span style="color:#50fa7b">.loc</span>	        <span style="color:#bd93f9">1</span> <span style="color:#bd93f9">26</span> <span style="color:#bd93f9">5</span><span style="color:#6272a4">;
+</span><span style="color:#6272a4"></span>setp.eq.s32	    %p5, %r3, <span style="color:#bd93f9">31</span><span style="color:#6272a4">;           // %p5 = %r3 == 31
+</span><span style="color:#6272a4"></span>not.pred        %p6, %p5<span style="color:#6272a4">;               // %p6 = %p5 == 0
+</span><span style="color:#6272a4"></span>@%p6 bra        WRONG_PASS<span style="color:#6272a4">;
+</span><span style="color:#6272a4"></span>bra.uni         CORRECT_PASS<span style="color:#6272a4">;
+</span><span style="color:#6272a4"></span>
+<span style="color:#8be9fd;font-style:italic">WRONG_PASS:</span>
+<span style="color:#50fa7b">.loc</span>	        <span style="color:#bd93f9">1</span> <span style="color:#bd93f9">30</span> <span style="color:#bd93f9">9</span><span style="color:#6272a4">;
+</span><span style="color:#6272a4"></span>mov.u64         %rd4, $WRONG<span style="color:#6272a4">;
+</span><span style="color:#6272a4"></span>cvta.global.u64 %rd5, %rd4<span style="color:#6272a4">;
+</span><span style="color:#6272a4"></span>mov.u64         %rd6, <span style="color:#bd93f9">0</span><span style="color:#6272a4">;
+</span><span style="color:#6272a4"></span>
+<span style="color:#8be9fd;font-style:italic">CORRECT_PASS:</span>
+<span style="color:#50fa7b">.loc</span>	        <span style="color:#bd93f9">1</span> <span style="color:#bd93f9">27</span> <span style="color:#bd93f9">9</span><span style="color:#6272a4">;
+</span><span style="color:#6272a4"></span>mov.u64         %rd7, $CORRECT<span style="color:#6272a4">;
+</span><span style="color:#6272a4"></span>cvta.global.u64 %rd8, %rd7<span style="color:#6272a4">;
+</span><span style="color:#6272a4"></span>mov.u64         %rd9, <span style="color:#bd93f9">0</span><span style="color:#6272a4">;
+</span><span style="color:#6272a4"></span>
+</code></pre></div><p>Then a decryption script :</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">xorred <span style="color:#ff79c6">=</span> [<span style="color:#bd93f9">102</span>, <span style="color:#bd93f9">109</span>, <span style="color:#bd93f9">99</span>, <span style="color:#bd93f9">100</span>, <span style="color:#bd93f9">127</span>, <span style="color:#bd93f9">104</span>, <span style="color:#bd93f9">53</span>, <span style="color:#bd93f9">52</span>, <span style="color:#bd93f9">124</span>, <span style="color:#bd93f9">86</span>, <span style="color:#bd93f9">103</span>, <span style="color:#bd93f9">56</span>, <span style="color:#bd93f9">83</span>, <span style="color:#bd93f9">100</span>, <span style="color:#bd93f9">96</span>, <span style="color:#bd93f9">80</span>, <span style="color:#bd93f9">114</span>, <span style="color:#bd93f9">125</span>, <span style="color:#bd93f9">123</span>, <span style="color:#bd93f9">99</span>, <span style="color:#bd93f9">103</span>, <span style="color:#bd93f9">74</span>, <span style="color:#bd93f9">120</span>, <span style="color:#bd93f9">72</span>, <span style="color:#bd93f9">123</span>, <span style="color:#bd93f9">113</span>, <span style="color:#bd93f9">41</span>, <span style="color:#bd93f9">122</span>, <span style="color:#bd93f9">104</span>, <span style="color:#bd93f9">103</span>, <span style="color:#bd93f9">99</span>]
+
+<span style="color:#ff79c6">for</span> i <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#8be9fd;font-style:italic">len</span>(xorred)):
+    xorred[i] <span style="color:#ff79c6">=</span> xorred[i] <span style="color:#ff79c6">^</span> i
+
+<span style="color:#ff79c6">print</span>(xorred)
+</code></pre></div><p>And here is the flag : <code>flag{m33t_m3_in_blips_n_ch3atz}</code></p>
+<p>~r0da</p>
+
+    </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>
