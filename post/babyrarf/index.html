@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en-us">
   <head>
-    <title>[Unionctf 2021 - pwn] babyrarf // ret2school</title>
+    <title>[UnionCTF 2021 - pwn] babyrarf // ret2school</title>
     <meta charset="utf-8" />
     <meta name="generator" content="Hugo 0.81.0" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -11,14 +11,16 @@
 
     
     <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="[Unionctf 2021 - pwn] babyrarf"/>
-<meta name="twitter:description" content="Welcome guys,
+<meta name="twitter:title" content="[UnionCTF 2021 - pwn] babyrarf"/>
+<meta name="twitter:description" content="The binary can be found right here.
+[UnionCTF] Babyrarf Welcome guys,
 This Write-Up is about de first pwn challenge of unionctf: babyrarf. It was a really easy challenge with a stack based buffer overflow. The source code was provided so, no need to reverse the binary :).
 Let&rsquo;s take a look at the src!
 #include &lt;stdio.h&gt;#include &lt;stdlib.h&gt;#include &lt;stdint.h&gt;#include &lt;unistd.h&gt; typedef struct attack { uint64_t id; uint64_t dmg; } attack; typedef struct character { char name[10]; int health; } character; uint8_t score; int read_int(){ char buf[10]; fgets(buf, 10, stdin); return atoi(buf); } void get_shell(){ execve(&#34;/bin/sh&#34;, NULL, NULL); } attack choose_attack(){ attack a; int id; puts(&#34;Choose an attack:\n&#34;); puts(&#34;1."/>
 
-    <meta property="og:title" content="[Unionctf 2021 - pwn] babyrarf" />
-<meta property="og:description" content="Welcome guys,
+    <meta property="og:title" content="[UnionCTF 2021 - pwn] babyrarf" />
+<meta property="og:description" content="The binary can be found right here.
+[UnionCTF] Babyrarf Welcome guys,
 This Write-Up is about de first pwn challenge of unionctf: babyrarf. It was a really easy challenge with a stack based buffer overflow. The source code was provided so, no need to reverse the binary :).
 Let&rsquo;s take a look at the src!
 #include &lt;stdio.h&gt;#include &lt;stdlib.h&gt;#include &lt;stdint.h&gt;#include &lt;unistd.h&gt; typedef struct attack { uint64_t id; uint64_t dmg; } attack; typedef struct character { char name[10]; int health; } character; uint8_t score; int read_int(){ char buf[10]; fgets(buf, 10, stdin); return atoi(buf); } void get_shell(){ execve(&#34;/bin/sh&#34;, NULL, NULL); } attack choose_attack(){ attack a; int id; puts(&#34;Choose an attack:\n&#34;); puts(&#34;1." />
@@ -59,7 +61,7 @@ Let&rsquo;s take a look at the src!
       
   <article class="post">
     <header class="post-header">
-      <h1 class ="post-title">[Unionctf 2021 - pwn] babyrarf</h1>
+      <h1 class ="post-title">[UnionCTF 2021 - pwn] babyrarf</h1>
       <div class="post-meta">
         <div>
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
@@ -87,7 +89,9 @@ Let&rsquo;s take a look at the src!
       </div>
     </header>
     <div class="post-content">
-      <p>Welcome guys,</p>
+      <p>The binary can be found <a href="https://github.com/ret2school/ctf/blob/master/2021/unionctf/pwn/babyrarf/babyrarf?raw=true">right here</a>.</p>
+<h2 id="unionctf-babyrarf">[UnionCTF] Babyrarf</h2>
+<p>Welcome guys,</p>
 <p>This Write-Up is about de first pwn challenge of <a href="https://ctf.cr0wn.uk">unionctf</a>: <a href="">babyrarf</a>.
 It was a really easy challenge with a stack based buffer overflow. The source code was provided so, no need to reverse the binary :).</p>
 <p>Let&rsquo;s take a look at the src!</p>
@@ -383,7 +387,8 @@ Congratulations! You may now declare yourself the winner:
 [*] Switching to interactive mode
 $ cat /home/babyrarf/flag.txt
 union{baby_rarf_d0o_d00_do0_doo_do0_d0o}
-</code></pre><p>That&rsquo;s all folks :)</p>
+</code></pre><p>The final script can be found <a href="https://github.com/ret2school/ctf/blob/master/2021/unionctf/pwn/babyrarf/p0wn.py">here</a>.</p>
+<p>That&rsquo;s all folks :)</p>
 
     </div>
     <div class="post-footer">
