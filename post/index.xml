@@ -7,7 +7,7 @@
     <generator>Hugo -- gohugo.io</generator>
     <lastBuildDate>Wed, 24 Feb 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/post/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>[UnionCTF - 2021] Cr0wnAir</title>
+      <title>[UnionCTF 2021 - web] Cr0wnAir</title>
       <link>https://ret2school.github.io/post/writeup_cr0wnair/</link>
       <pubDate>Wed, 24 Feb 2021 00:00:00 +0000</pubDate>
       
@@ -17,7 +17,7 @@ UnionCTF - Cr0wnAir To solve this challenge, we had to exploit a vulnerability i
     </item>
     
     <item>
-      <title>[Unionctf 2021 - RE] Unionware</title>
+      <title>[UnionCTF 2021 - RE] Unionware</title>
       <link>https://ret2school.github.io/post/unionware/</link>
       <pubDate>Mon, 22 Feb 2021 00:00:00 +0000</pubDate>
       
@@ -52,7 +52,7 @@ After some google-fu on port 20002, we come accross this, and we can see there i
     </item>
     
     <item>
-      <title>[Aero CTF 2020] go away</title>
+      <title>[AeroCTF 2020 - RE] go away</title>
       <link>https://ret2school.github.io/post/aero_ctf_2020/</link>
       <pubDate>Thu, 26 Nov 2020 00:00:00 +0000</pubDate>
       
@@ -63,7 +63,7 @@ Unpacking crackme Unpacking is not a problem on Linux when you are used to malwa
     </item>
     
     <item>
-      <title>[Aero CTF 2020] 1000 and 1 night</title>
+      <title>[AeroCTF 2020 - RE] 1000 and 1 night</title>
       <link>https://ret2school.github.io/post/1000_and_1_night/</link>
       <pubDate>Wed, 25 Nov 2020 00:00:00 +0000</pubDate>
       
@@ -75,7 +75,7 @@ Enter valid token to binary with name &amp;lt;8c235f89a8143a28a1d6067e959dd858&a
     </item>
     
     <item>
-      <title>[UTCTF 2020] Crack the heart</title>
+      <title>[UTCTF 2020 - RE] Crack the heart</title>
       <link>https://ret2school.github.io/post/crack_the_heart/</link>
       <pubDate>Wed, 25 Nov 2020 00:00:00 +0000</pubDate>
       

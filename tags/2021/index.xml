@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>unionCTF 2021 on ret2school</title>
-    <link>https://ret2school.github.io/tags/unionctf-2021/</link>
-    <description>Recent content in unionCTF 2021 on ret2school</description>
+    <title>2021 on ret2school</title>
+    <link>https://ret2school.github.io/tags/2021/</link>
+    <description>Recent content in 2021 on ret2school</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Mon, 22 Feb 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/unionctf-2021/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 22 Feb 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/2021/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>[UnionCTF 2021 - RE] Unionware</title>
       <link>https://ret2school.github.io/post/unionware/</link>
@@ -27,6 +27,22 @@ Analyzing the Powershell While looking at the powershell, we can see an obfuscat
 This Write-Up is about de first pwn challenge of unionctf: babyrarf. It was a really easy challenge with a stack based buffer overflow. The source code was provided so, no need to reverse the binary :).
 Let&amp;rsquo;s take a look at the src!
 #include &amp;lt;stdio.h&amp;gt;#include &amp;lt;stdlib.h&amp;gt;#include &amp;lt;stdint.h&amp;gt;#include &amp;lt;unistd.h&amp;gt; typedef struct attack { uint64_t id; uint64_t dmg; } attack; typedef struct character { char name[10]; int health; } character; uint8_t score; int read_int(){ char buf[10]; fgets(buf, 10, stdin); return atoi(buf); } void get_shell(){ execve(&amp;#34;/bin/sh&amp;#34;, NULL, NULL); } attack choose_attack(){ attack a; int id; puts(&amp;#34;Choose an attack:\n&amp;#34;); puts(&amp;#34;1.</description>
+    </item>
+    
+    <item>
+      <title>[CSAW CTF 2020 - RE] Cuba</title>
+      <link>https://ret2school.github.io/post/cuba/</link>
+      <pubDate>Sun, 13 Sep 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/cuba/</guid>
+      <description>Hi
+This is my write up for the challange Cuba of CSAW CTF 2020 :
+So this challenge is a CUBA program wrapped in a Windows Executable. CUBA is a GPU langage created by NVIDIA to work around GPU with high performance langage.
+https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html
+Luckily there is a public SDK for it, with a disassembler :
+https://docs.nvidia.com/cuda/cuda-binary-utilities/index.html
+Using a tool called cuobjdump, we can extract the assembly code :
+To extract ptx text from a host binary, use the following command: cuobjdump -ptx &amp;lt;host binary&amp;gt;  And after reversing the output, we can see that it&amp;rsquo;s a simple xor looping through a ciphered flag</description>
     </item>
     
   </channel>
