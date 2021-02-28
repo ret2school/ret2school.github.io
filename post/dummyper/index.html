@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title>[AeroCTF 2021 - RE] dummyper // ret2school</title>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.81.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="nasm" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="https://ret2school.github.io/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css" />
+
+    
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="[AeroCTF 2021 - RE] dummyper"/>
+<meta name="twitter:description" content="Aero CTF 2021 - Dummyper (454 pts) This the first challenge I did. The challenge&rsquo;s task was:
+ This stupid program has encrypted our flag.
+We only have a dump left.
+ With a mysterious &ldquo;dump.7z&rdquo; that contains a &ldquo;dump&rdquo; file. This file is an ELF binary, so we load it in IDA.
+Overview IDA complains about broken section table, but still succeeds to load the bin. We get classical glibc&rsquo;s __libc_start_main, and the &ldquo;main&rdquo; function which looks like this:"/>
+
+    <meta property="og:title" content="[AeroCTF 2021 - RE] dummyper" />
+<meta property="og:description" content="Aero CTF 2021 - Dummyper (454 pts) This the first challenge I did. The challenge&rsquo;s task was:
+ This stupid program has encrypted our flag.
+We only have a dump left.
+ With a mysterious &ldquo;dump.7z&rdquo; that contains a &ldquo;dump&rdquo; file. This file is an ELF binary, so we load it in IDA.
+Overview IDA complains about broken section table, but still succeeds to load the bin. We get classical glibc&rsquo;s __libc_start_main, and the &ldquo;main&rdquo; function which looks like this:" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ret2school.github.io/post/dummyper/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2021-02-28T00:00:00&#43;00:00" />
+<meta property="article:modified_time" content="2021-02-28T00:00:00&#43;00:00" />
+
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://ret2school.github.io"><img class="app-header-avatar" src="/pic.jpeg" alt="nasm" /></a>
+      <h1>ret2school</h1>
+      <nav class="app-header-menu">
+          <a class="app-header-menu-item" href="/">Home</a>
+             / 
+          
+          <a class="app-header-menu-item" href="/tags/">Tags</a>
+      </nav>
+      <p>Just a bunch of french ctf players</p>
+      <div class="app-header-social">
+        
+          <a target="_blank" href="https://github.com/ret2school" rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github">
+  <title>github</title>
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+</svg></a>
+        
+          <a target="_blank" href="https://twitter.com/nasm_re" rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-twitter">
+  <title>twitter</title>
+  <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
+</svg></a>
+        
+      </div>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">[AeroCTF 2021 - RE] dummyper</h1>
+      <div class="post-meta">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          Feb 28, 2021
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          6 min read
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tag">
+  <title>tag</title>
+  <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line>
+</svg>
+              <a class="tag" href="https://ret2school.github.io/tags/ctf/">ctf</a>
+              <a class="tag" href="https://ret2school.github.io/tags/ret2school/">ret2school</a>
+              <a class="tag" href="https://ret2school.github.io/tags/re/">RE</a>
+              <a class="tag" href="https://ret2school.github.io/tags/supersnail/">supersnail</a>
+              <a class="tag" href="https://ret2school.github.io/tags/aassfxxx/">aaSSfxxx</a>
+              <a class="tag" href="https://ret2school.github.io/tags/2021/">2021</a>
+              <a class="tag" href="https://ret2school.github.io/tags/aes/">AES</a>
+              <a class="tag" href="https://ret2school.github.io/tags/unpacking/">unpacking</a>
+        </div>
+      </div>
+    </header>
+    <div class="post-content">
+      <h1 id="aero-ctf-2021---dummyper-454-pts">Aero CTF 2021 - Dummyper (454 pts)</h1>
+<p>This the first challenge I did. The challenge&rsquo;s task was:</p>
+<blockquote>
+<p>This stupid program has encrypted our flag.</p>
+<p>We only have a dump left.</p>
+</blockquote>
+<p>With a mysterious &ldquo;dump.7z&rdquo; that contains a &ldquo;dump&rdquo; file. This file is an ELF binary, so we load it in IDA.</p>
+<h2 id="overview">Overview</h2>
+<p>IDA complains about broken section table, but still succeeds to load the bin. We get classical glibc&rsquo;s <code>__libc_start_main</code>, and the &ldquo;main&rdquo; function which looks like this:</p>
+<pre><code>; int __fastcall main(int, char **, char **)
+main proc near
+endbr64
+push    rbp
+mov     rbp, rsp
+call    loc_1691
+call    sub_172A
+call    sub_188B
+mov     eax, 0
+pop     rbp
+retn
+main endp
+
+</code></pre><p>The first function contains garbage, such as:</p>
+<pre><code>
+loc_1691:                               ; CODE XREF: main+8↓p
+LOAD:0000000000001691                 out     53h, al
+LOAD:0000000000001693                 pop     rbp
+LOAD:0000000000001694                 out     1, eax          ; DMA controller, 8237A-5.
+LOAD:0000000000001694                                         ; channel 0 base address and word count
+LOAD:0000000000001696                 std
+LOAD:0000000000001697                 adc     [rdi+65h], cl
+LOAD:000000000000169A                 movsb
+LOAD:000000000000169B                 mov     ebx, 58D66E0Ah
+LOAD:000000000000169B ; ---------------------------------------------------------------------------
+LOAD:00000000000016A0                 dq 91870DBC4BC97160h, 1FEC1165698C4247h, 26B5D424EA599C8Ah
+
+</code></pre><p>which probably means that the binary was edited before the dump was taken. A quick look to the next function (<code>sub_172a</code>) confirms this:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
+_BYTE <span style="color:#ff79c6">*</span><span style="color:#50fa7b">sub_172A</span>()
+{
+  _BYTE <span style="color:#ff79c6">*</span>result; <span style="color:#6272a4">// rax
+</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">int</span> i; <span style="color:#6272a4">// [rsp+Ch] [rbp-34h]
+</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">int</span> j; <span style="color:#6272a4">// [rsp+10h] [rbp-30h]
+</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">int</span> v3; <span style="color:#6272a4">// [rsp+14h] [rbp-2Ch]
+</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">int</span> v4; <span style="color:#6272a4">// [rsp+1Ch] [rbp-24h]
+</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">void</span> <span style="color:#ff79c6">*</span>ptr; <span style="color:#6272a4">// [rsp+28h] [rbp-18h]
+</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">void</span> <span style="color:#ff79c6">*</span>v6; <span style="color:#6272a4">// [rsp+38h] [rbp-8h]
+</span><span style="color:#6272a4"></span>
+  v3 <span style="color:#ff79c6">=</span> getpagesize();
+  mprotect((<span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>)<span style="color:#ff79c6">&amp;</span>loc_13A9 <span style="color:#ff79c6">-</span> (<span style="color:#8be9fd">unsigned</span> <span style="color:#ff79c6">__int64</span>)<span style="color:#ff79c6">&amp;</span>loc_13A9 <span style="color:#ff79c6">%</span> v3, v3, <span style="color:#bd93f9">7</span>);
+  ptr <span style="color:#ff79c6">=</span> (<span style="color:#8be9fd">void</span> <span style="color:#ff79c6">*</span>)((<span style="color:#ff79c6">__int64</span> (<span style="color:#ff79c6">__fastcall</span> <span style="color:#ff79c6">*</span>)(<span style="color:#ff79c6">__int64</span>))loc_13A9)(<span style="color:#bd93f9">32LL</span>);
+  fread(ptr, <span style="color:#bd93f9">0x20uLL</span>, <span style="color:#bd93f9">1uLL</span>, stream);
+  <span style="color:#ff79c6">for</span> ( i <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>; i <span style="color:#ff79c6">&lt;=</span> <span style="color:#bd93f9">63</span>; <span style="color:#ff79c6">++</span>i )
+  {
+    v4 <span style="color:#ff79c6">=</span> rand() <span style="color:#ff79c6">%</span> <span style="color:#bd93f9">2047</span>;
+    v6 <span style="color:#ff79c6">=</span> (<span style="color:#8be9fd">void</span> <span style="color:#ff79c6">*</span>)((<span style="color:#ff79c6">__int64</span> (<span style="color:#ff79c6">__fastcall</span> <span style="color:#ff79c6">*</span>)(_QWORD))loc_13A9)(v4);
+    fread(v6, v4, <span style="color:#bd93f9">1uLL</span>, stream);
+  }
+  result <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">&amp;</span>loc_13A9;
+  <span style="color:#ff79c6">for</span> ( j <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>; j <span style="color:#ff79c6">&lt;=</span> <span style="color:#bd93f9">895</span>; <span style="color:#ff79c6">++</span>j )
+  {
+    result <span style="color:#ff79c6">=</span> (<span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>)<span style="color:#ff79c6">&amp;</span>loc_13A9 <span style="color:#ff79c6">+</span> j;
+    <span style="color:#ff79c6">*</span>result <span style="color:#ff79c6">^=</span> <span style="color:#ff79c6">*</span>((_BYTE <span style="color:#ff79c6">*</span>)ptr <span style="color:#ff79c6">+</span> j <span style="color:#ff79c6">%</span> <span style="color:#bd93f9">32</span>);
+  }
+  <span style="color:#ff79c6">return</span> result;
+}
+
+</code></pre></div><p>It&rsquo;s obvious to see that the function calls mprotect to allow writing on the .text session, then call <code>loc_13a9</code>, which also contains garbage. Then, some part of the text section is xored with a random key. So to analyze further the binary, we need to find the decryption key, which is a 32-byte key.</p>
+<p>Luckily, we have an amd64 binary, and gcc puts an &ldquo;endbr64&rdquo; instruction at the beginning of each section, before the habitual prologue <code>push rbp, mov rbp, rsp</code>. So we can recover 8 bytes of the key with partial known plaintext.</p>
+<p>We have two encrypted functions, and luckily, the first function is at position 0 mod 32, and the second function at pos 8 mod 32, which means we know the first 16 bytes of the key, we have to xor the 8 first bytes of the function with &ldquo;f30f1efa554889e5&rdquo; (our prologue).</p>
+<p>Then, we can manage to &ldquo;guess&rdquo; some bytes looking at the partial disassembly, which gives this decoding script:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">
+<span style="color:#6272a4">#!/usr/bin/python</span>
+
+f <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">open</span>(<span style="color:#f1fa8c">&#34;dump&#34;</span>, <span style="color:#f1fa8c">&#34;rb&#34;</span>)
+buf <span style="color:#ff79c6">=</span> f<span style="color:#ff79c6">.</span>read()
+modbuf <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">bytearray</span>(buf)
+
+<span style="color:#6272a4"># Offset of the two first functions</span>
+offset <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x13a9</span>
+offset2 <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x1691</span>
+
+<span style="color:#6272a4"># endbr64; push rbp; mov rbp; rsp</span>
+endbr64 <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">bytes</span><span style="color:#ff79c6">.</span>fromhex(<span style="color:#f1fa8c">&#34;f30f1efa554889e5&#34;</span>)
+
+<span style="color:#6272a4"># Get the first 8 bytes of the key</span>
+func <span style="color:#ff79c6">=</span> buf[offset:offset<span style="color:#ff79c6">+</span><span style="color:#8be9fd;font-style:italic">len</span>(endbr64)]
+key1 <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">bytes</span>([x <span style="color:#ff79c6">^</span> y <span style="color:#ff79c6">for</span> x,y <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">zip</span>(func, endbr64)])
+
+<span style="color:#6272a4"># Get the next 8 bytes of the key</span>
+func2 <span style="color:#ff79c6">=</span> buf[offset2:offset2<span style="color:#ff79c6">+</span><span style="color:#8be9fd;font-style:italic">len</span>(endbr64)]
+key2 <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">bytes</span>([x <span style="color:#ff79c6">^</span> y <span style="color:#ff79c6">for</span> x,y <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">zip</span>(func2, endbr64)])
+
+<span style="color:#6272a4"># Some guessed bytes according to the disass</span>
+key <span style="color:#ff79c6">=</span> key1 <span style="color:#ff79c6">+</span> key2 <span style="color:#ff79c6">+</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\x2d\x27\x57</span><span style="color:#f1fa8c">&#34;</span> <span style="color:#ff79c6">+</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\x1a\x26</span><span style="color:#f1fa8c">&#34;</span>
+
+<span style="color:#6272a4"># Luckily we have a function here too, so 8 bytes for free</span>
+func3 <span style="color:#ff79c6">=</span> buf[<span style="color:#bd93f9">0x13fe</span>:<span style="color:#bd93f9">0x13fe</span><span style="color:#ff79c6">+</span><span style="color:#8be9fd;font-style:italic">len</span>(endbr64)]
+key4 <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">bytes</span>([x <span style="color:#ff79c6">^</span> y <span style="color:#ff79c6">for</span> x,y <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">zip</span>(func3, endbr64)])
+
+<span style="color:#6272a4"># Guessed bytes again</span>
+key <span style="color:#ff79c6">=</span> key <span style="color:#ff79c6">+</span> key4 <span style="color:#ff79c6">+</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\xba\xca\x5e</span><span style="color:#f1fa8c">&#34;</span>
+
+<span style="color:#6272a4"># Now let&#39;s decrypt the encrypted functions</span>
+<span style="color:#ff79c6">for</span> i <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#bd93f9">0</span>, <span style="color:#bd93f9">896</span>):
+    modbuf[offset <span style="color:#ff79c6">+</span> i] <span style="color:#ff79c6">=</span> modbuf[offset <span style="color:#ff79c6">+</span> i] <span style="color:#ff79c6">^</span> key[i <span style="color:#ff79c6">%</span> <span style="color:#bd93f9">32</span>]
+
+out <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">open</span>(<span style="color:#f1fa8c">&#34;dump2&#34;</span>, <span style="color:#f1fa8c">&#34;wb&#34;</span>)
+out<span style="color:#ff79c6">.</span>write(modbuf)
+out<span style="color:#ff79c6">.</span>close()
+
+</code></pre></div><p>Now we have recovered the full code, we can analyze the dump.</p>
+<h2 id="analysis-of-the-decrypted-dump">Analysis of the decrypted dump</h2>
+<p>The main function didn&rsquo;t change a lot, but now the <code>sub_1691</code> function disassembles correctly. Let&rsquo;s have a look to the decompiled function:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
+<span style="color:#ff79c6">__int64</span> <span style="color:#50fa7b">sub_1691</span>()
+{
+  <span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd">int</span> v0; <span style="color:#6272a4">// eax
+</span><span style="color:#6272a4"></span>  FILE <span style="color:#ff79c6">*</span>stream; <span style="color:#6272a4">// [rsp+0h] [rbp-10h]
+</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">void</span> <span style="color:#ff79c6">*</span>ptr; <span style="color:#6272a4">// [rsp+8h] [rbp-8h]
+</span><span style="color:#6272a4"></span>
+  randomfile <span style="color:#ff79c6">=</span> fopen(<span style="color:#f1fa8c">&#34;/dev/urandom&#34;</span>, <span style="color:#f1fa8c">&#34;r&#34;</span>);
+  v0 <span style="color:#ff79c6">=</span> time(<span style="color:#bd93f9">0LL</span>);
+  srand(v0);
+  stream <span style="color:#ff79c6">=</span> fopen(<span style="color:#f1fa8c">&#34;./flag.txt&#34;</span>, <span style="color:#f1fa8c">&#34;r&#34;</span>);
+  ptr <span style="color:#ff79c6">=</span> (<span style="color:#8be9fd">void</span> <span style="color:#ff79c6">*</span>)alloc_mem(<span style="color:#bd93f9">128LL</span>);
+  fread(ptr, <span style="color:#bd93f9">0x80uLL</span>, <span style="color:#bd93f9">1uLL</span>, stream);
+  fclose(stream);
+  <span style="color:#ff79c6">return</span> cryptostuff(ptr);
+}
+
+</code></pre></div><p>The function calls <code>alloc_mem</code> which looks like this:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
+<span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span><span style="color:#ff79c6">__fastcall</span> <span style="color:#50fa7b">alloc_mem</span>(size_t a1)
+{
+  <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>s; <span style="color:#6272a4">// [rsp+18h] [rbp-8h]
+</span><span style="color:#6272a4"></span>
+  s <span style="color:#ff79c6">=</span> (<span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>)<span style="color:#ff79c6">&amp;</span>unk_5060 <span style="color:#ff79c6">+</span> count;
+  memset((<span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>)<span style="color:#ff79c6">&amp;</span>unk_5060 <span style="color:#ff79c6">+</span> count, <span style="color:#bd93f9">204</span>, a1);
+  count <span style="color:#ff79c6">+=</span> a1;
+  <span style="color:#ff79c6">return</span> s;
+}
+
+</code></pre></div><p>to write the flag on it. Then the function calls <code>cryptostuff</code>, we&rsquo;ll look into.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"> 
+ <span style="color:#ff79c6">for</span> ( i <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>; i <span style="color:#ff79c6">&lt;=</span> <span style="color:#bd93f9">63</span>; <span style="color:#ff79c6">++</span>i )
+  {
+    v9 <span style="color:#ff79c6">=</span> rand() <span style="color:#ff79c6">%</span> <span style="color:#bd93f9">2047</span>;
+    ptr <span style="color:#ff79c6">=</span> alloc_mem(v9);
+    fread(ptr, v9, <span style="color:#bd93f9">1uLL</span>, randomfile);
+  }
+  aeskey <span style="color:#ff79c6">=</span> alloc_mem(<span style="color:#bd93f9">0x20uLL</span>);
+  <span style="color:#ff79c6">for</span> ( j <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>; j <span style="color:#ff79c6">&lt;=</span> <span style="color:#bd93f9">63</span>; <span style="color:#ff79c6">++</span>j )
+  {
+    v8 <span style="color:#ff79c6">=</span> rand() <span style="color:#ff79c6">%</span> <span style="color:#bd93f9">2047</span>;
+    v15 <span style="color:#ff79c6">=</span> alloc_mem(v8);
+    fread(v15, v8, <span style="color:#bd93f9">1uLL</span>, randomfile);
+  }
+  aesiv <span style="color:#ff79c6">=</span> alloc_mem(<span style="color:#bd93f9">0x10uLL</span>);
+  <span style="color:#ff79c6">for</span> ( k <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>; k <span style="color:#ff79c6">&lt;=</span> <span style="color:#bd93f9">63</span>; <span style="color:#ff79c6">++</span>k )
+  {
+    v7 <span style="color:#ff79c6">=</span> rand() <span style="color:#ff79c6">%</span> <span style="color:#bd93f9">2047</span>;
+    v14 <span style="color:#ff79c6">=</span> alloc_mem(v7);
+    fread(v14, v7, <span style="color:#bd93f9">1uLL</span>, randomfile);
+  }
+  fread(aeskey, <span style="color:#bd93f9">1uLL</span>, <span style="color:#bd93f9">0x20uLL</span>, randomfile);
+  fread(aesiv, <span style="color:#bd93f9">1uLL</span>, <span style="color:#bd93f9">0x10uLL</span>, randomfile);
+  aes_ctx <span style="color:#ff79c6">=</span> alloc_mem(<span style="color:#bd93f9">0xC0uLL</span>);
+  <span style="color:#ff79c6">for</span> ( l <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>; l <span style="color:#ff79c6">&lt;=</span> <span style="color:#bd93f9">63</span>; <span style="color:#ff79c6">++</span>l )
+  {
+    v6 <span style="color:#ff79c6">=</span> rand() <span style="color:#ff79c6">%</span> <span style="color:#bd93f9">2047</span>;
+    v13 <span style="color:#ff79c6">=</span> alloc_mem(v6);
+    fread(v13, v6, <span style="color:#bd93f9">1uLL</span>, randomfile);
+  }
+  aes_setup_key((<span style="color:#ff79c6">__int64</span>)aes_ctx, (<span style="color:#ff79c6">__int64</span>)aeskey);
+  aes_setup_iv(aes_ctx, aesiv);
+  <span style="color:#ff79c6">return</span> <span style="color:#50fa7b">aes_encrypt</span>(aes_ctx, flag, <span style="color:#bd93f9">128LL</span>);
+
+</code></pre></div><p>The function calls the custom &ldquo;malloc&rdquo; to get the AES key and IV (the AES function could be identified thanks to its S-Box which begins with <code>63h, 7Ch, 77h, 7Bh, 0F2h, 6Bh, 6Fh, 0C5h, 30h, 1, 67h</code>). To avoid being found easily, a lot of junk allocation with random sizes are performed. Fortunately, those random allocation are performed with <code>rand</code>, which is initialized with <code>srand(time(NULL))</code>. So we just need to know when the program was run, you can know thanks to the modification date of the &ldquo;dump&rdquo; file in the archive.</p>
+<p>So, the solve script to fetch the flag (I use the offset of the xor key as a check to determine if we got the right seed):</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">
+<span style="color:#6272a4">#!/usr/bin/python</span>
+<span style="color:#ff79c6">from</span> ctypes <span style="color:#ff79c6">import</span> CDLL
+<span style="color:#ff79c6">from</span> Crypto.Cipher <span style="color:#ff79c6">import</span> AES
+libc <span style="color:#ff79c6">=</span> CDLL(<span style="color:#f1fa8c">&#34;libc.so.6&#34;</span>)
+
+<span style="color:#6272a4"># Offset where blocks are allocated</span>
+blockoff <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x5060</span>
+
+f <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">open</span>(<span style="color:#f1fa8c">&#34;dump&#34;</span>, <span style="color:#f1fa8c">&#34;rb&#34;</span>)
+buf <span style="color:#ff79c6">=</span> f<span style="color:#ff79c6">.</span>read()
+
+<span style="color:#6272a4"># Get the encrypted flag</span>
+encflag <span style="color:#ff79c6">=</span> buf[blockoff:blockoff <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x80</span>]
+
+<span style="color:#6272a4"># Bruteforce timestamps for the 25 Feb. to get the correct seed</span>
+ts <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1614211200</span>
+<span style="color:#ff79c6">for</span> i <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#bd93f9">0</span>, <span style="color:#bd93f9">24</span><span style="color:#ff79c6">*</span><span style="color:#bd93f9">3660</span>):
+    blockpos <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x80</span>
+    libc<span style="color:#ff79c6">.</span>srand(ts <span style="color:#ff79c6">+</span> i)
+    <span style="color:#ff79c6">for</span> _ <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#bd93f9">0</span>, <span style="color:#bd93f9">64</span>):
+        blockpos <span style="color:#ff79c6">+=</span> libc<span style="color:#ff79c6">.</span>rand() <span style="color:#ff79c6">%</span> <span style="color:#bd93f9">2047</span>
+    aeskey <span style="color:#ff79c6">=</span> buf[blockoff <span style="color:#ff79c6">+</span> blockpos:blockoff <span style="color:#ff79c6">+</span> blockpos <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x10</span>]
+    blockpos <span style="color:#ff79c6">+=</span> <span style="color:#bd93f9">0x20</span>
+    <span style="color:#ff79c6">for</span> _ <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#bd93f9">0</span>, <span style="color:#bd93f9">64</span>):
+        blockpos <span style="color:#ff79c6">+=</span> libc<span style="color:#ff79c6">.</span>rand() <span style="color:#ff79c6">%</span> <span style="color:#bd93f9">2047</span>
+    aesiv <span style="color:#ff79c6">=</span> buf[blockoff <span style="color:#ff79c6">+</span> blockpos:blockoff <span style="color:#ff79c6">+</span> blockpos <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x10</span>]
+    blockpos <span style="color:#ff79c6">+=</span> <span style="color:#bd93f9">0x10</span>
+    <span style="color:#ff79c6">for</span> _ <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#bd93f9">0</span>, <span style="color:#bd93f9">64</span>):
+        blockpos <span style="color:#ff79c6">+=</span> libc<span style="color:#ff79c6">.</span>rand() <span style="color:#ff79c6">%</span> <span style="color:#bd93f9">2047</span>
+    blockpos <span style="color:#ff79c6">+=</span> <span style="color:#bd93f9">0xc0</span>
+    <span style="color:#ff79c6">for</span> _ <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#bd93f9">0</span>, <span style="color:#bd93f9">64</span>):
+        blockpos <span style="color:#ff79c6">+=</span> libc<span style="color:#ff79c6">.</span>rand() <span style="color:#ff79c6">%</span> <span style="color:#bd93f9">2047</span>
+    <span style="color:#6272a4"># If the computed offset is the offset of the xor key in the dump, we won</span>
+    <span style="color:#ff79c6">if</span>(blockoff <span style="color:#ff79c6">+</span> blockpos <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">0x4ba74</span>):
+        <span style="color:#ff79c6">print</span>(<span style="color:#f1fa8c">&#34;Found candidate </span><span style="color:#f1fa8c">%d</span><span style="color:#f1fa8c">&#34;</span> <span style="color:#ff79c6">%</span> i)
+        <span style="color:#ff79c6">break</span>
+
+c <span style="color:#ff79c6">=</span> AES<span style="color:#ff79c6">.</span>new(aeskey, AES<span style="color:#ff79c6">.</span>MODE_CBC, aesiv)
+<span style="color:#ff79c6">print</span>(i)
+<span style="color:#ff79c6">print</span>(c<span style="color:#ff79c6">.</span>decrypt(encflag))
+
+</code></pre></div><p>And the flag we got is <code>Aero{d37fd6db2f8d562422aaf2a83dc62043}</code></p>
+
+    </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>

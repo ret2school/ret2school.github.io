@@ -5,7 +5,20 @@
     <link>https://ret2school.github.io/tags/supersnail/</link>
     <description>Recent content in supersnail on ret2school</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Mon, 22 Feb 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/supersnail/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 28 Feb 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/supersnail/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>[AeroCTF 2021 - RE] dummyper</title>
+      <link>https://ret2school.github.io/post/dummyper/</link>
+      <pubDate>Sun, 28 Feb 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/dummyper/</guid>
+      <description>Aero CTF 2021 - Dummyper (454 pts) This the first challenge I did. The challenge&amp;rsquo;s task was:
+ This stupid program has encrypted our flag.
+We only have a dump left.
+ With a mysterious &amp;ldquo;dump.7z&amp;rdquo; that contains a &amp;ldquo;dump&amp;rdquo; file. This file is an ELF binary, so we load it in IDA.
+Overview IDA complains about broken section table, but still succeeds to load the bin. We get classical glibc&amp;rsquo;s __libc_start_main, and the &amp;ldquo;main&amp;rdquo; function which looks like this:</description>
+    </item>
+    
     <item>
       <title>[UnionCTF 2021 - RE] Unionware</title>
       <link>https://ret2school.github.io/post/unionware/</link>
