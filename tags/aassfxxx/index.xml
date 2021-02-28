@@ -7,6 +7,19 @@
     <generator>Hugo -- gohugo.io</generator>
     <lastBuildDate>Sun, 28 Feb 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/aassfxxx/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>[AeroCTF 2021 - RE] BashD00r</title>
+      <link>https://ret2school.github.io/post/bashd00r/</link>
+      <pubDate>Sun, 28 Feb 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/bashd00r/</guid>
+      <description>Aero CTF 2021 - BashD00r (500 pts) This is the second challenge I was able to solve, and the hardest one. The task is below:
+ There seems to be something wrong with our bash.
+Can you see if anyone has entered the backdoor?
+bash.7z
+ So we are given a archive, which contains a &amp;ldquo;bash&amp;rdquo; binary. This binary was backdoored, so we need to find it to get the flag.</description>
+    </item>
+    
+    <item>
       <title>[AeroCTF 2021 - RE] dummyper</title>
       <link>https://ret2school.github.io/post/dummyper/</link>
       <pubDate>Sun, 28 Feb 2021 00:00:00 +0000</pubDate>
