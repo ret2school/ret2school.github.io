@@ -3,7 +3,37 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://ret2school.github.io/tags/2021/</loc>
-    <lastmod>2021-02-28T00:00:00+00:00</lastmod>
+    <lastmod>2021-03-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/post/localization_is_hard_wu/</loc>
+    <lastmod>2021-03-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/tags/aeroctf-2021/</loc>
+    <lastmod>2021-03-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/tags/ctf/</loc>
+    <lastmod>2021-03-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/tags/java/</loc>
+    <lastmod>2021-03-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/post/</loc>
+    <lastmod>2021-03-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/</loc>
+    <lastmod>2021-03-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/tags/ssti/</loc>
+    <lastmod>2021-03-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/tags/</loc>
+    <lastmod>2021-03-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/tags/thymeleaf/</loc>
+    <lastmod>2021-03-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/tags/web/</loc>
+    <lastmod>2021-03-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://ret2school.github.io/post/bashd00r/</loc>
     <lastmod>2021-02-28T00:00:00+00:00</lastmod>
@@ -20,28 +50,16 @@
     <loc>https://ret2school.github.io/tags/aes/</loc>
     <lastmod>2021-02-28T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://ret2school.github.io/tags/ctf/</loc>
-    <lastmod>2021-02-28T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://ret2school.github.io/post/</loc>
-    <lastmod>2021-02-28T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>https://ret2school.github.io/tags/re/</loc>
     <lastmod>2021-02-28T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://ret2school.github.io/tags/ret2school/</loc>
     <lastmod>2021-02-28T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://ret2school.github.io/</loc>
-    <lastmod>2021-02-28T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>https://ret2school.github.io/tags/reverse-engineering/</loc>
     <lastmod>2021-02-28T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://ret2school.github.io/tags/supersnail/</loc>
-    <lastmod>2021-02-28T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://ret2school.github.io/tags/</loc>
     <lastmod>2021-02-28T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://ret2school.github.io/tags/unpacking/</loc>
@@ -54,9 +72,6 @@
     <lastmod>2021-02-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://ret2school.github.io/tags/tek/</loc>
-    <lastmod>2021-02-24T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://ret2school.github.io/tags/web/</loc>
     <lastmod>2021-02-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://ret2school.github.io/post/unionware/</loc>

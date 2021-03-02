@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>ssti on ret2school</title>
+    <link>https://ret2school.github.io/tags/ssti/</link>
+    <description>Recent content in ssti on ret2school</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Tue, 02 Mar 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/ssti/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>[AeroCTF 2021 - web] Localization is hard</title>
+      <link>https://ret2school.github.io/post/localization_is_hard_wu/</link>
+      <pubDate>Tue, 02 Mar 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/localization_is_hard_wu/</guid>
+      <description>[Localization is hard - web] AeroCTF 0x00 To solve this challenge we had to exploit a SSTI on Thymeleaf and lead that into a Remote Code Execution
+0x01 Discovering the vulnerability The challenge description talk about a Coffee who made for CTFers and in English and in Russian.
+Btw , the challenge description tell us that the flag should be located at / on the file system, this maybe mean that we have to get an access to the machine to read the flag.</description>
+    </item>
+    
+  </channel>
+</rss>
