@@ -5,7 +5,18 @@
     <link>https://ret2school.github.io/tags/ctf/</link>
     <description>Recent content in ctf on ret2school</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Mon, 15 Mar 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/ctf/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 23 Mar 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/ctf/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>[Securinets CTF 2021 - RE] RUN! &amp; YAY!</title>
+      <link>https://ret2school.github.io/post/rev_securinets/</link>
+      <pubDate>Tue, 23 Mar 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/rev_securinets/</guid>
+      <description>RUN! (930 pts) This challenge was a keygenme for Windows (64-bit PE), and like all keygenmes you had to understand the algorithm and write a keygen for it.
+The algorithm was &amp;ldquo;simple&amp;rdquo;, you just had to deal with C++ overhead for std::string, and was basically:
+ The programs take the username and computes the sum of each char of the username (with some SSE2 wizardry) This sum is then given as seed to srand() The user serial is split into 2-char blocks, and each block is decoded as hex string and the integer is added to an array The program then searches the highest value in the decoded serial array and allocated a int array with this size The array is filled with rand() values mod 13371337 A valid serial is a sequences of indexes into the random array whose sum is equals to 0xbcdb6 mod 1337  So, the tricky part was to generate this sequence of indexes.</description>
+    </item>
+    
     <item>
       <title>[DaVinciCTF 2021 - pwn] Quotebook</title>
       <link>https://ret2school.github.io/post/dvctf_quotebook/</link>
