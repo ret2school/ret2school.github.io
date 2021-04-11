@@ -5,7 +5,17 @@
     <link>https://ret2school.github.io/tags/ret2school/</link>
     <description>Recent content on ret2school</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Tue, 23 Mar 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/ret2school/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 11 Apr 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/ret2school/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>[Midnight Sun CTF 2021 - RE] Labyrevnt</title>
+      <link>https://ret2school.github.io/post/wu_labyrevnt/</link>
+      <pubDate>Sun, 11 Apr 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/wu_labyrevnt/</guid>
+      <description>You can find the files here.
+We used the proximity browser in IDA with the &amp;ldquo;Add node -&amp;gt; Find path&amp;rdquo; mini-trick to get the path between the main and walk_end function. Once all the function names in the path where dumped, in the same order as in IDA, inside functions.txt, we just have to tell angr to discard, avoid, every state wherein the callstack is different from the path linking main and walk_end.</description>
+    </item>
+    
     <item>
       <title>[Securinets CTF 2021 - RE] RUN! &amp; YAY!</title>
       <link>https://ret2school.github.io/post/rev_securinets/</link>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Midnight Sun on ret2school</title>
+    <link>https://ret2school.github.io/tags/midnight-sun/</link>
+    <description>Recent content in Midnight Sun on ret2school</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Sun, 11 Apr 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/midnight-sun/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>[Midnight Sun CTF 2021 - Crypto] frank</title>
+      <link>https://ret2school.github.io/post/writeuprsa/</link>
+      <pubDate>Sun, 11 Apr 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/writeuprsa/</guid>
+      <description>Welcome folks,
+This writeup is about Midnight Sun CTF [frank] challenge on how to recover a full RSA private key, when half of it is erased.
+Challenge therefore requires recovering the entire RSA key from this image :
+Get the part of the private key visible: The first step of the challenge is to recover the visible part, to do this I quickly created a small OCR script with the pytesseract module in Python, to facilitate the recovery task.</description>
+    </item>
+    
+    <item>
+      <title>[Midnight Sun CTF 2021 - RE] Labyrevnt</title>
+      <link>https://ret2school.github.io/post/wu_labyrevnt/</link>
+      <pubDate>Sun, 11 Apr 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/wu_labyrevnt/</guid>
+      <description>You can find the files here.
+We used the proximity browser in IDA with the &amp;ldquo;Add node -&amp;gt; Find path&amp;rdquo; mini-trick to get the path between the main and walk_end function. Once all the function names in the path where dumped, in the same order as in IDA, inside functions.txt, we just have to tell angr to discard, avoid, every state wherein the callstack is different from the path linking main and walk_end.</description>
+    </item>
+    
+  </channel>
+</rss>
