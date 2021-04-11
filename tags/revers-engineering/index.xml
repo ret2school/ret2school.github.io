@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>revers engineering on ret2school</title>
+    <link>https://ret2school.github.io/tags/revers-engineering/</link>
+    <description>Recent content in revers engineering on ret2school</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Fri, 12 Mar 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/revers-engineering/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>[BTSCTF 2021 - RE] BtS emulator</title>
+      <link>https://ret2school.github.io/post/wu_emulator/</link>
+      <pubDate>Fri, 12 Mar 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/wu_emulator/</guid>
+      <description>The files can be found here.
+ Hi, I&amp;rsquo;m r0da.
+Last day I did a CTF called BTSCTF, and a challenge called BtS emulator. As I&amp;rsquo;m still working on VMP virtualization currently, I&amp;rsquo;m kind good with VM stuff.
+First I noticed that the binary has all its symbols in it, so easier to reverse. Then I saw that the dispatcher routine seems pretty clean.
+We found the opcode related to it :</description>
+    </item>
+    
+  </channel>
+</rss>

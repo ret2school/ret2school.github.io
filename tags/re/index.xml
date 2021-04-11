@@ -28,6 +28,19 @@ The algorithm was &amp;ldquo;simple&amp;rdquo;, you just had to deal with C++ ov
     </item>
     
     <item>
+      <title>[BTSCTF 2021 - RE] BtS emulator</title>
+      <link>https://ret2school.github.io/post/wu_emulator/</link>
+      <pubDate>Fri, 12 Mar 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/wu_emulator/</guid>
+      <description>The files can be found here.
+ Hi, I&amp;rsquo;m r0da.
+Last day I did a CTF called BTSCTF, and a challenge called BtS emulator. As I&amp;rsquo;m still working on VMP virtualization currently, I&amp;rsquo;m kind good with VM stuff.
+First I noticed that the binary has all its symbols in it, so easier to reverse. Then I saw that the dispatcher routine seems pretty clean.
+We found the opcode related to it :</description>
+    </item>
+    
+    <item>
       <title>[AeroCTF 2021 - RE] BashD00r</title>
       <link>https://ret2school.github.io/post/bashd00r/</link>
       <pubDate>Sun, 28 Feb 2021 00:00:00 +0000</pubDate>
