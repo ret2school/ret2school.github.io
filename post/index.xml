@@ -5,7 +5,19 @@
     <link>https://ret2school.github.io/post/</link>
     <description>Recent content in Posts on ret2school</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Tue, 23 Mar 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 11 Apr 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>[Midnightsun CTF 2021 - Crypto] frank</title>
+      <link>https://ret2school.github.io/post/writeuprsa/</link>
+      <pubDate>Sun, 11 Apr 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/writeuprsa/</guid>
+      <description>Welcome folks,
+This writeup is about Midnight Sun CTF [frank] challenge on how to recover a full RSA private key, when half of it is erased.
+Challenge therefore requires recovering the entire RSA key from this image :
+Get the part of the private key visible: The first step of the challenge is to recover the visible part, to do this I quickly created a small OCR script with the pytesseract module in Python, to facilitate the recovery task.</description>
+    </item>
+    
     <item>
       <title>[Securinets CTF 2021 - RE] RUN! &amp; YAY!</title>
       <link>https://ret2school.github.io/post/rev_securinets/</link>

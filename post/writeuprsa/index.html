@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title>[Midnightsun CTF 2021 - Crypto] frank // ret2school</title>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.81.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="nasm" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="https://ret2school.github.io/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css" />
+
+    
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="[Midnightsun CTF 2021 - Crypto] frank"/>
+<meta name="twitter:description" content="Welcome folks,
+This writeup is about Midnight Sun CTF [frank] challenge on how to recover a full RSA private key, when half of it is erased.
+Challenge therefore requires recovering the entire RSA key from this image :
+Get the part of the private key visible: The first step of the challenge is to recover the visible part, to do this I quickly created a small OCR script with the pytesseract module in Python, to facilitate the recovery task."/>
+
+    <meta property="og:title" content="[Midnightsun CTF 2021 - Crypto] frank" />
+<meta property="og:description" content="Welcome folks,
+This writeup is about Midnight Sun CTF [frank] challenge on how to recover a full RSA private key, when half of it is erased.
+Challenge therefore requires recovering the entire RSA key from this image :
+Get the part of the private key visible: The first step of the challenge is to recover the visible part, to do this I quickly created a small OCR script with the pytesseract module in Python, to facilitate the recovery task." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ret2school.github.io/post/writeuprsa/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2021-04-11T00:00:00&#43;00:00" />
+<meta property="article:modified_time" content="2021-04-11T00:00:00&#43;00:00" />
+
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://ret2school.github.io"><img class="app-header-avatar" src="/pic.jpeg" alt="nasm" /></a>
+      <h1>ret2school</h1>
+      <nav class="app-header-menu">
+          <a class="app-header-menu-item" href="/">Home</a>
+             / 
+          
+          <a class="app-header-menu-item" href="/tags/">Tags</a>
+      </nav>
+      <p>Just a bunch of french ctf players</p>
+      <div class="app-header-social">
+        
+          <a target="_blank" href="https://github.com/ret2school" rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github">
+  <title>github</title>
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+</svg></a>
+        
+          <a target="_blank" href="https://twitter.com/ret2school_fr" rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-twitter">
+  <title>twitter</title>
+  <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
+</svg></a>
+        
+      </div>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">[Midnightsun CTF 2021 - Crypto] frank</h1>
+      <div class="post-meta">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          Apr 11, 2021
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          6 min read
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tag">
+  <title>tag</title>
+  <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line>
+</svg>
+              <a class="tag" href="https://ret2school.github.io/tags/ctf/">ctf</a>
+              <a class="tag" href="https://ret2school.github.io/tags/midnightsun/">Midnightsun</a>
+              <a class="tag" href="https://ret2school.github.io/tags/crypto/">crypto</a>
+              <a class="tag" href="https://ret2school.github.io/tags/rsa/">RSA</a>
+              <a class="tag" href="https://ret2school.github.io/tags/zeynn/">Zeynn</a>
+              <a class="tag" href="https://ret2school.github.io/tags/2021/">2021</a>
+              <a class="tag" href="https://ret2school.github.io/tags/archie/">Archie</a>
+              <a class="tag" href="https://ret2school.github.io/tags/supersnail/">supersnail</a>
+        </div>
+      </div>
+    </header>
+    <div class="post-content">
+      <p>Welcome folks,</p>
+<p>This writeup is about Midnight Sun CTF [frank] challenge on how to recover a full RSA private key, when half of it is erased.<br>
+Challenge therefore requires recovering the entire RSA key from this image :</p>
+<p><img src="/images/rsa.png" alt="image"></p>
+<h4 id="get-the-part-of-the-private-key-visible">Get the part of the private key visible:</h4>
+<p>The first step of the challenge is to <strong>recover the visible part</strong>, to do this I quickly created a small <strong>OCR</strong> script with the <strong>pytesseract</strong> module in Python, to facilitate the recovery task.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#ff79c6">import</span> pytesseract
+
+<span style="color:#ff79c6">try</span>:
+    <span style="color:#ff79c6">import</span> Image<span style="color:#ff79c6">,</span> ImageOps<span style="color:#ff79c6">,</span> ImageEnhance<span style="color:#ff79c6">,</span> imread
+<span style="color:#ff79c6">except</span> ImportError:
+    <span style="color:#ff79c6">from</span> PIL <span style="color:#ff79c6">import</span> Image, ImageOps, ImageEnhance
+
+pytesseract<span style="color:#ff79c6">.</span>pytesseract<span style="color:#ff79c6">.</span>tesseract_cmd <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#39;C:</span><span style="color:#f1fa8c">\\</span><span style="color:#f1fa8c">Program Files</span><span style="color:#f1fa8c">\\</span><span style="color:#f1fa8c">Tesseract-OCR</span><span style="color:#f1fa8c">\\</span><span style="color:#f1fa8c">tesseract.exe&#39;</span>
+
+decode <span style="color:#ff79c6">=</span> pytesseract<span style="color:#ff79c6">.</span>image_to_string(<span style="color:#f1fa8c">r</span><span style="color:#f1fa8c">&#39;C:</span><span style="color:#f1fa8c">\\</span><span style="color:#f1fa8c">Users</span><span style="color:#f1fa8c">\\</span><span style="color:#f1fa8c">Zeynn</span><span style="color:#f1fa8c">\\</span><span style="color:#f1fa8c">Desktop</span><span style="color:#f1fa8c">\\</span><span style="color:#f1fa8c">file.png&#39;</span>)
+<span style="color:#ff79c6">print</span>(decode)
+</code></pre></div><p>Which gives:</p>
+<pre><code>YZE7xr8bE94J04cqritOcE+d)4WOmt 4HvmhaSElywep9xN8xBucNSDnx1XtaMeb
+
+me7udUNRVTDYHdFkv26P1K4Xhes8duRpQBES/TxN4YD42td2P8PCShLnvQ5JLWuY
+cCnYQa9wbEH8zL91x1lJne5+0Vc1Bd7X70ENRTxBHpYJg28m/cDeUs8KHUvlyeGHK
+gJGj ZIA03KXj vQzj OYWi/MGKCBLeeoVZOURKR7oP7Gxj ORF2DypmL F8r2374ulISy
+RHLKFQfW9TNO/ j 8L7DWm55d0cJOZr1kbDvxPAu2zLQKCAQEAWM/Hdvm8 rX6Q6C8A
+tYLA/+JvWsxLxGW4nL88dg 16 1RVWPz24PZZWPNQwb fWohay562+ccTxFMOrlxuDoH
+Dh7A4X45W0+MBJ bdYTSoVzFs1r1bj oPpwBnsL1pNAkC5zloQFUkmvpzBD6DaLx0i
+OhZtqsichyPGEyVHORYv2L3UPYAhdmeYbsbc6Ruhva9tVUUMc+nFyKf510s4vC8M
+YTnyYZJqo/50AR7wt6806Z1sTQowLbSPn1hYgtSka/RK+gBnKyFhmihi/Jy@gJNg
+T/p/Fb1DaX6s j nTpPbx fHXX9j 2ExC3uH1/ 1lynF1tpLBp2AN9/ rbc2N2NtOI3W40)
+X2krUQKCAQBRxpFTEWofHJZk7A6eaL7AKzQtJkWqRlyor7Yd1w0QdaiqDd020AbW
+Sbnb18msiGGwPm25IUFqa214ULC87s rWNBdw51/WOXaZiGzmj rct fHwZmVUQ310u
+pDWve4ButBBI0t9sEnTq+pMiC93nPprG/E8uBLyF2KX/c8WIBa/WpE/mmC31lvgtb
+PC2N9LrNeaHM4QPeRr f cj 52qxxKY1o55XUGpMSG j EUaHiTqSZa5QIR26s5Q80ceV
+sq5fUEDPbxHEhpO IUVVHarDBk2CCOiL+vQs082QQjmOybJ1/posPNfDHLYHuqhSA
+rVoRpE14r1M+FIX00S050f L2RHV8Bd f FAOIBAQCUFi7Lv3+dHMJ j Oh4HyL23rL6y
+yZXE9E jMd1ExoDP91aJSnSbS9GS+/Ro40si+rw5ixryqBXRn9tMCDtJ INQUY+MiU
+XFEs1tt 9N4XAYOWNm/ 1aUGsuICBdYbKh3DD97M+FZqzUqlI1p1Fb3NpKhat fY7Yg
+t2Z6w77B+0Mi8T6rIpeLOLxR5pEJmCCfojM8gVRGMFb7 [HcSHp1X1JpePh10ywQF
+ywaauJBnYEsIz2A22cMp4f rY/unZxeWRK82rN4d+j SYmy f9NCXwK9mXuq/pXj laB
+XqIB6+n3swDFGQX732iPBGu9iDbhsQ6vdoRBAtqcHmCTLB2dqXhrnvUSMMUS
+
+END RSA PRIVATE KEY
+</code></pre><p>We can observe that there are still many errors on what the script returned. We have no other choice than to check by hand and really be careful not to make a mistake on any character, in which case the next steps won&rsquo;t work.</p>
+<pre><code class="language------BEGIN" data-lang="-----BEGIN">[                             Hide!                            ]
+[                             Hide!                            ]
+[                             Hide!                            ]
+[                             Hide!                            ]
+[                             Hide!                            ]
+[                             Hide!                            ]
+[                             Hide!                            ]
+[                             Hide!                            ]
+[                             Hide!                            ]
+[                             Hide!                            ]
+[                             Hide!                            ]
+[                             Hide!                            ]
+[                             Hide!                            ]
+[                             Hide!                            ]
+[                             Hide!                            ]
+[                             Hide!                            ]
+[                             Hide!                            ]
+[                             Hide!                            ]
+[                             Hide!                            ]
+[                             Hide!                            ]
+[                             Hide!                            ]
+[                             Hide!                            ]
+[                             Hide!                            ]
+[                             Hide!                            ]
+[                             Hide!                            ]
+[                             Hide!                            ]
+[                             Hide!                            ]
+YZE7xr0bE94JO4cqritQcE+dJ4WOmf4HvmhaSElywcp9xN8xBucN5DnxlXt8MEbj
+me7udUNRvTDYHdFkv26P1K4Xhes8duRpQBES/TxN4YD42td2P8PCShLnvQ5JLWuY
+cCnYQa9wbEH8zL9lxlJne5+0Vc1Bd7X7OENRTxBHpYJg28m/cDeUs8KHUvlyeGHK
+qJGjzIAO3KXjvQzj0YWi/MGKCBleeoVz0URKR7oP7Gxj0RF2DypmLf8r2374uISy
+RHLKFQfW9TnO/j8L7DWm55dOcJOZr1kbDvxPAu2zLQKCAQEAwM/Hdvm8rX6Q6C8A
+tYLA/+JvWsxLxGW4nL88dgl61RVWPz4PZzWPNQwbfWohay562+ccTxFM0rlxuDoH
+Dh7A4X45W0+MBJbdYTSoVzFs1r1bjoPpwBnsL1pNAkC5zloQFUkmvpzBD6DaLx0i
+OhZtqsichyPGEyVH0RYv2L3UPYAhdmeYbsbc6Ruhva9tVUUMc+nFyKf51Os4vC8M
+YTnyYZJqo/5oAR7wt6806ZlsTQowlbSPn1hYgtSka/RK+gBnKyFhmihi/Jy0gJNg
+T/p/Fb1DaX6sjnTpPbxfHXX9j2ExC3uH1/1ynF1tpLBp2AN9/rbc2N2NtOI3W4oJ
+X2krUQKCAQBRxpFTEWofHJZk7A6eaL7AkzQtJkWqRlyor7Yd1wOQdaiqDdO20AbW
+Sbnb18msiGGwPm25IUFqa214ULC87srWNBdw51/W0XaZiGzmjrctfHwZmVUQ31Ou
+pDWve4ButBBIOt9sEnTq+pMiC93nPprG/E8uBLyF2KX/c8WIBa/WpE/mmC3lvgtb
+PC2N9lrNeaHM4QPeRrfcj52qxxKYIo55XUGpMSGjEUaHiTqSZa5QJR26s5Q8OceV
+sq5fUEDPbxHEhp0IUVVHarDBk2CC0iL+vQso82QQjm0ybJ1/posPNfDHlYHuqhSA
+rVoRpE14r1M+FIXO0S05Qfl2RHV8BdfFAoIBAQCUFi7Lv3+dHMJj0h4HyL23rL6y
+yZXE9EjMd1ExoDP91aJSnSbS9GS+/Ro4Osi+rw5ixryqBXRn9tMCDtJ1NQuY+MiU
+XFEsltt9N4XAY0WNm/1aUGsuICBdYbKh3DD97M+FZqzUqlI1p1Fb3NpKhatfY7Yg
+t2Z6w77B+OMi8T6rIpeLOLxR5pEJmCCfojM8gVRGMFb7IHc9Hp1XlJpePh1OyWQF
+ywaauJBnYEsIz2A22cMp4frY/unZxeWRK82rN4d+jSYmyf9NCXwK9mXuq/pXjlaB
+XqIB6+n3swDFGQX732iPBGu9iDbhsQ6vdoRBAtqcHmCTLB2dqXhrnvUSMMUS
+-----END RSA PRIVATE KEY-----
+</code></pre><p>With the size of the image we deduce that the key is coded on <strong>4096 bits</strong>. Now as we know that the rsa key is encoded in <strong>base 64</strong> we can convert it to <strong>hexadecimal</strong>
+(base 16).</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#ff79c6">from</span> Crypto.Util.number <span style="color:#ff79c6">import</span> bytes_to_long, isPrime
+<span style="color:#ff79c6">import</span> base64
+
+
+privet_key1 <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&#34;&#34;YZE7xr0bE94JO4cqritQcE+dJ4WOmf4HvmhaSElywcp9xN8xBucN5DnxlXt8MEbj
+</span><span style="color:#f1fa8c">me7udUNRvTDYHdFkv26P1K4Xhes8duRpQBES/TxN4YD42td2P8PCShLnvQ5JLWuY
+</span><span style="color:#f1fa8c">cCnYQa9wbEH8zL9lxlJne5+0Vc1Bd7X7OENRTxBHpYJg28m/cDeUs8KHUvlyeGHK
+</span><span style="color:#f1fa8c">qJGjzIAO3KXjvQzj0YWi/MGKCBleeoVz0URKR7oP7Gxj0RF2DypmLf8r2374uISy
+</span><span style="color:#f1fa8c">RHLKFQfW9TnO/j8L7DWm55dOcJOZr1kbDvxPAu2zLQKCAQEAwM/Hdvm8rX6Q6C8A
+</span><span style="color:#f1fa8c">tYLA/+JvWsxLxGW4nL88dgl61RVWPz4PZzWPNQwbfWohay562+ccTxFM0rlxuDoH
+</span><span style="color:#f1fa8c">Dh7A4X45W0+MBJbdYTSoVzFs1r1bjoPpwBnsL1pNAkC5zloQFUkmvpzBD6DaLX0i
+</span><span style="color:#f1fa8c">OhZtqsichyPGEyVH0RYv2L3UPYAhdmeYbsbc6Ruhva9tVUUMc+nFyKf51Os4vC8M
+</span><span style="color:#f1fa8c">YTnyYZJqo/5oAR7wt6806ZlsTQowlbSPn1hYgtSka/RK+gBnKyFhmihi/Jy0gJNg
+</span><span style="color:#f1fa8c">T/p/Fb1DaX6sjnTpPbxfHXX9j2ExC3uH1/1ynF1tpLBp2AN9/rbc2N2NtOI3W4oJ
+</span><span style="color:#f1fa8c">X2krUQKCAQBRxpFTEWofHJZk7A6eaL7AkzQtJkWqRlyor7Yd1wOQdaiqDdO20AbW
+</span><span style="color:#f1fa8c">Sbnb18msiGGwPm25IUFqa214ULC87srWNBdw51/W0XaZiGzmjrctfHwZmVUQ31Ou
+</span><span style="color:#f1fa8c">pDWve4ButBBIOt9sEnTq+pMiC93nPprG/E8uBLyF2KX/c8WIBa/WpE/mmC3lvgtb
+</span><span style="color:#f1fa8c">PC2N9lrNeaHM4QPeRrfcj52qxxKYIo55XUGpMSGjEUaHiTqSZa5QJR26s5Q8OceV
+</span><span style="color:#f1fa8c">sq5fUEDPbxHEhp0IUVVHarDBk2CC0iL+vQso82QQjm0ybJ1/posPNfDHlYHuqhSA
+</span><span style="color:#f1fa8c">rVoRpE14r1M+FIXO0S05Qfl2RHV8BdfFAoIBAQCUFi7Lv3+dHMJj0h4HyL23rL6y
+</span><span style="color:#f1fa8c">yZXE9EjMd1ExoDP91aJSnSbS9GS+/Ro4Osi+rw5ixryqBXRn9tMCDtJ1NQuY+MiU
+</span><span style="color:#f1fa8c">XFEsltt9N4XAY0WNm/1aUGsuICBdYbKh3DD97M+FZqzUqlI1p1Fb3NpKhatfY7Yg
+</span><span style="color:#f1fa8c">t2Z6w77B+OMi8T6rIpeLOLxR5pEJmCCfojM8gVRGMFb7IHc9Hp1XlJpePh1OyWQF
+</span><span style="color:#f1fa8c">ywaauJBnYEsIz2A22cMp4frY/unZxeWRK82rN4d+jSYmyf9NCXwK9mXuq/pXjlaB
+</span><span style="color:#f1fa8c">XqIB6+n3swDFGQX732iPBGu9iDbhsQ6vdoRBAtqcHmCTLB2dqXhrnvUSMMUS&#34;&#34;&#34;</span>
+
+<span style="color:#ff79c6">print</span>(<span style="color:#8be9fd;font-style:italic">hex</span>(bytes_to_long(base64<span style="color:#ff79c6">.</span>b64decode(privet_key1))))     
+</code></pre></div><p>Which returns the part of the key in hexa :</p>
+<blockquote>
+<p>0x61913bc6bd1b13de093b872aae2b50704f9d27858e99fe07be685a484972c1ca7dc4df3106e70de439
+f1957b7c3046e399eeee754351bd30d81dd164bf6e8fd4ae1785eb3c76e469401112fd3c4de180f8dad7
+763fc3c24a12e7bd0e492d6b987029d841af706c41fcccbf65c652677b9fb455cd4177b5fb3843514f10
+47a58260dbc9bf703794b3c28752f9727861caa891a3cc800edca5e3bd0ce3d185a2fcc18a08195e7a85
+73d1444a47ba0fec6c63d111760f2a662dff2bdb7ef8b884b24472ca1507d6f539cefe3f0bec35a6e797
+4e709399af591b0efc4f02edb32d0282010100c0cfc776f9bcad7e90e82f00b582c0ffe26f5acc4bc465
+b89cbf3c76097ad515563f3e0f67358f350c1b7d6a216b2e7adbe71c4f114cd2b971b83a070e1ec0e17e
+395b4f8c0496dd6134a857316cd6bd5b8e83e9c019ec2f5a4d0240b9ce5a10154926be9cc10fa0da2d7d
+223a166daac89c8723c6132547d1162fd8bdd43d80217667986ec6dce91ba1bdaf6d55450c73e9c5c8a7
+f9d4eb38bc2f0c6139f261926aa3fe68011ef0b7af34e9996c4d0a3095b48f9f585882d4a46bf44afa00
+672b21619a2862fc9cb48093604ffa7f15bd43697eac8e74e93dbc5f1d75fd8f61310b7b87d7fd729c5d
+6da4b069d8037dfeb6dcd8dd8db4e2375b8a095f692b510282010051c69153116a1f1c9664ec0e9e68be
+c093342d2645aa465ca8afb61dd7039075a8aa0dd3b6d006d649b9dbd7c9ac8861b03e6db921416a6b6d
+7850b0bceecad6341770e75fd6d17699886ce68eb72d7c7c19995510df53aea435af7b806eb410483adf
+6c1274eafa93220bdde73e9ac6fc4f2e04bc85d8a5ff73c58805afd6a44fe6982de5be0b5b3c2d8df65a
+cd79a1cce103de46b7dc8f9daac71298228e795d41a93121a3114687893a9265ae50251dbab3943c39c7
+95b2ae5f5040cf6f11c4869d085155476ab0c1936082d222febd0b28f364108e6d326c9d7fa68b0f35f0
+c79581eeaa1480ad5a11a44d78af533e1485ced12d3941f97644757c05d7c5028201010094162ecbbf7f
+9d1cc263d21e07c8bdb7acbeb2c995c4f448cc775131a033fdd5a2529d26d2f464befd1a383ac8beaf0e
+62c6bcaa057467f6d3020ed275350b98f8c8945c512c96db7d3785c063458d9bfd5a506b2e20205d61b2
+a1dc30fdeccf8566acd4aa5235a7515bdcda4a85ab5f63b620b7667ac3bec1f8e322f13eab22978b38bc
+51e6910998209fa2333c8154463056fb20773d1e9d57949a5e3e1d4ec96405cb069ab89067604b08cf60
+36d9c329e1fad8fee9d9c5e5912bcdab37877e8d2626c9ff4d097c0af665eeabfa578e56815ea201ebe9
+f7b300c51905fbdf688f046bbd8836e1b10eaf76844102da9c1e60932c1d9da9786b9ef51230c512</p>
+</blockquote>
+<h4 id="look-at-the-parts-we-have">Look at the parts we have</h4>
+<p>After being interested on how a private rsa key was created, we can observe that there is precisely a certain logic in the encoding in the order: <em>n, e, d, p, q, d mod(p-1), d mod(q-1) and q^-1 mod p</em>.</p>
+<pre><code>PrivateKeyInfo ::= SEQUENCE {
+   version Version,
+   privateKeyAlgorithm AlgorithmIdentifier ,
+   privateKey PrivateKey,
+   attributes [0] Attributes OPTIONAL
+}
+
+RSAPrivateKey ::= SEQUENCE {
+  version           Version,
+  modulus           INTEGER,  -- n
+  publicExponent    INTEGER,  -- e
+  privateExponent   INTEGER,  -- d
+  prime1            INTEGER,  -- p
+  prime2            INTEGER,  -- q
+  exponent1         INTEGER,  -- d mod (p-1)
+  exponent2         INTEGER,  -- d mod (q-1)
+  coefficient       INTEGER,  -- (inverse of q) mod p
+  otherPrimeInfos   OtherPrimeInfos OPTIONAL
+}
+</code></pre><p>As before we have just decoded the rsa key we can observe the structure and see that its parts are separated by <strong>02 82 01 01</strong> and as they showed it on the cryptohack <a href="https://blog.cryptohack.org/twitter-secrets">site</a> with a fictitious key and the key to recover 02 82 01 01 is indeed used to separate :  <em>n, e, d, p, q, d mod (p-1), d mod (q-1) and q ^ -1 mod p</em> .</p>
+<p><img src="/images/example.png" alt="image"></p>
+<p>As cryptohack <a href="https://blog.cryptohack.org/twitter-secrets">says</a> they precisely indicate that <strong>02 82 01 01</strong> corresponds to :</p>
+<p>Here the ASN.1 header for the integers values are <strong>02 82 01 01</strong>, which is decomposed as follow :</p>
+<blockquote>
+<p>02 for the data type, here Integer.<br>
+82 meaning that the length of the integer value will be encoded in the 2 following bytes.<br>
+0101, the actual length, which integer value is 257, meaning that the integer value will be encoded in the following 257 bytes. Retrieving the 257 next bytes in Big Endian and taking their integer values yield the rsa values we are looking for.</p>
+</blockquote>
+<p>And bingo precisely after <strong>decoding</strong> our key we get pretty much the same thing :</p>
+<p><img src="/images/key.png" alt="image"></p>
+<p>So we now know that we have:</p>
+<blockquote>
+<p>End =&gt; q<br>
+All =&gt; d mod (p-1) = dp<br>
+All =&gt; d mod (q-1) = dq<br>
+All =&gt; (inverse of q) mod p</p>
+</blockquote>
+<h4 id="recup-key-public-to-get-n-and-e">Recup key-public to get n and e:</h4>
+<p>We also have <em>access</em> to another <strong>authorized_keys file</strong> which contains the public keys <strong>n</strong> and <strong>e</strong>, so we can get them very easily with <strong>cat</strong>:</p>
+<pre><code>ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC/okaokb6dLlO889ktcFKuAzLbvCcy5Il2TiVIVzzibe+9FfH2W0RHtQ5A3aIvjbZKneQxgy9EiN+U28DOp9yBW4zAg11U77VtuF528Wp5ApwwN8SUD5YPBQssh3CFm6bKqg+O9F93J+/whzA8QGL8C2EYrN/BpOUSJKds0Az6cYYm3sqER+iQ64RDa9K2TrO5gfP/iyBTOydPD0ZNLbvsPMNk6YzuND+pjRGwtH9vxV5g0H1Pak1k+tXrcUSgpgnNkJ5Gptm5CgC0qF5yxR/+DMy/dOAc7jUhIZMeX1sWTd9rTSuQMAB/w3fONe6yXNBxaAavi5w3o1Cu7xgTUOYBUnAYaX+07AqTqu9PTrSpK08bZrnLf3oItdAUMsNStI4DiqxbdYX6TcccqdYLI7Cb3HdbBNRuMy3l25ZelSRyDaFT7ZXnMsGCbcWg3UnEbGCudAMHzU5aFLDYZJUpQsgYQblSw9EF7R/OLa8uy57CBGaqoM0wtU56A2sOPTGVbDVF2HmObg6rijqn4I6NBQsBeshANIil/amw08MJZVVK7jNYDLret23ky/uSyO/IRdp0KcByWk7vEW36J2itQOkRhKBVAgPIO3Vudez85TYoRb8ESAZ4OJtrBMP0l66lnXc5+L9keckKLZp24DNkb95ULd2g/7/jqFtv6gzFamb93w== u@eniac
+</code></pre><p>Now we just have to use <strong>ssh-keygen</strong> to decode the key:</p>
+<p><code>&gt;ssh-keygen -e -f ~/.ssh/id_rsa.pub -m pem &gt;ssh-pub.pem</code></p>
+<p>Which gives this:</p>
+<pre><code>-----BEGIN RSA PUBLIC KEY-----
+MIICCgKCAgEAv6JGqJG+nS5TvPPZLXBSrgMy27wnMuSJdk4lSFc84m3vvRXx9ltE
+R7UOQN2iL422Sp3kMYMvRIjflNvAzqfcgVuMwINdVO+1bbhedvFqeQKcMDfElA+W
+DwULLIdwhZumyqoPjvRfdyfv8IcwPEBi/AthGKzfwaTlEiSnbNAM+nGGJt7KhEfo
+kOuEQ2vStk6zuYHz/4sgUzsnTw9GTS277DzDZOmM7jQ/qY0RsLR/b8VeYNB9T2pN
+ZPrV63FEoKYJzZCeRqbZuQoAtKhecsUf/gzMv3TgHO41ISGTHl9bFk3fa00rkDAA
+f8N3zjXuslzQcWgGr4ucN6NQru8YE1DmAVJwGGl/tOwKk6rvT060qStPG2a5y396
+CLXQFDLDUrSOA4qsW3WF+k3HHKnWCyOwm9x3WwTUbjMt5duWXpUkcg2hU+2V5zLB
+gm3FoN1JxGxgrnQDB81OWhSw2GSVKULIGEG5UsPRBe0fzi2vLsuewgRmqqDNMLVO
+egNrDj0xlWw1Rdh5jm4Oq4o6p+COjQULAXrIQDSIpf2psNPDCWVVSu4zWAy63rdt
+5Mv7ksjvyEXadCnAclpO7xFt+idorUDpEYSgVQIDyDt1bnXs/OU2KEW/BEgGeDib
+awTD9JeupZ13Ofi/ZHnJCi2aduAzZG/eVC3doP+/46hbb+oMxWpm/d8CAwEAAQ==
+-----END RSA PUBLIC KEY-----
+</code></pre><p>With this <a href="https://8gwifi.org/PemParserFunctions.jsp">site</a> I was able to obtain <em>encryption module (n)</em> and <em>public exponent (e)</em>:</p>
+<pre><code>Algo RSA
+Format X.509
+ ASN1 Dump
+RSA Public Key [6b:b1:23:93:9f:b6:83:23:3e:7b:fb:d0:14:eb:d7:1f:f8:df:46:53]
+         
+
+bfa246a891be9d2e53bcf3d92d7052ae0332dbbc2732e489764e2548573ce26defbd15f1f65b4447b50e40dda22f8db64a9de431832f4488df94dbc0cea7dc815b8cc0835d54efb56db85e76f16a79029c3037c4940f960f050b2c8770859ba6caaa0f8ef45f7727eff087303c4062fc0b6118acdfc1a4e51224a76cd00cfa718626deca8447e890eb84436bd2b64eb3b981f3ff8b20533b274f0f464d2dbbec3cc364e98cee343fa98d11b0b47f6fc55e60d07d4f6a4d64fad5eb7144a0a609cd909e46a6d9b90a00b4a85e72c51ffe0cccbf74e01cee352121931e5f5b164ddf6b4d2b9030007fc377ce35eeb25cd0716806af8b9c37a350aeef181350e601527018697fb4ec0a93aaef4f4eb4a92b4f1b66b9cb7f7a08b5d01432c352b48e038aac5b7585fa4dc71ca9d60b23b09bdc775b04d46e332de5db965e9524720da153ed95e732c1826dc5a0dd49c46c60ae740307cd4e5a14b0d864952942c81841b952c3d105ed1fce2daf2ecb9ec20466aaa0cd30b54e7a036b0e3d31956c3545d8798e6e0eab8a3aa7e08e8d050b017ac8403488a5fda9b0d3c30965554aee33580cbadeb76de4cbfb92c8efc845da7429c0725a4eef116dfa2768ad40e91184a0550203c83b756e75ecfce5362845bf04480678389b6b04c3f497aea59d7739f8bf6479c90a2d9a76e033646fde542ddda0ffbfe3a85b6fea0cc56a66fddf
+
+public exponent: 10001
+</code></pre><h4 id="recup-q-and-p">Recup q and p:</h4>
+<p>With some math formulas we can succeed in expressing <strong>p</strong> and <strong>q</strong> according to what we have, with <strong>kp</strong> and <strong>kq</strong> our only strangers:</p>
+<pre><code>p = (e*dp-1)/kp + 1   and q = (e*dq-1)/kq + 1
+</code></pre><p>Perfect, you just have to make a script to recover its <strong>p</strong> and <strong>q</strong> potentials by trying to bruteforce <strong>kp</strong> and <strong>kq</strong>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#ff79c6">from</span> Crypto.Util.number <span style="color:#ff79c6">import</span> bytes_to_long, isPrime
+<span style="color:#ff79c6">from</span> sympy <span style="color:#ff79c6">import</span> <span style="color:#ff79c6">*</span>
+
+
+dp <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0xc0cfc776f9bcad7e90e82f00b582c0ffe26f5acc4bc465b89cbf3c76097ad515563f3e0f67358f350c1b7d6a216b2e7adbe71c4f114cd2b971b83a070e1ec0e17e395b4f8c0496dd6134a857316cd6bd5b8e83e9c019ec2f5a4d0240b9ce5a10154926be9cc10fa0da2d7d223a166daac89c8723c6132547d1162fd8bdd43d80217667986ec6dce91ba1bdaf6d55450c73e9c5c8a7f9d4eb38bc2f0c6139f261926aa3fe68011ef0b7af34e9996c4d0a3095b48f9f585882d4a46bf44afa00672b21619a2862fc9cb48093604ffa7f15bd43697eac8e74e93dbc5f1d75fd8f61310b7b87d7fd729c5d6da4b069d8037dfeb6dcd8dd8db4e2375b8a095f692b51</span>
+dq <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x51c69153116a1f1c9664ec0e9e68bec093342d2645aa465ca8afb61dd7039075a8aa0dd3b6d006d649b9dbd7c9ac8861b03e6db921416a6b6d7850b0bceecad6341770e75fd6d17699886ce68eb72d7c7c19995510df53aea435af7b806eb410483adf6c1274eafa93220bdde73e9ac6fc4f2e04bc85d8a5ff73c58805afd6a44fe6982de5be0b5b3c2d8df65acd79a1cce103de46b7dc8f9daac71298228e795d41a93121a3114687893a9265ae50251dbab3943c39c795b2ae5f5040cf6f11c4869d085155476ab0c1936082d222febd0b28f364108e6d326c9d7fa68b0f35f0c79581eeaa1480ad5a11a44d78af533e1485ced12d3941f97644757c05d7c5</span>
+
+e <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x10001</span>
+
+<span style="color:#ff79c6">for</span> kq <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#bd93f9">1</span>, e):
+    q_mul <span style="color:#ff79c6">=</span> dq <span style="color:#ff79c6">*</span> e <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">1</span>
+    <span style="color:#ff79c6">if</span> q_mul <span style="color:#ff79c6">%</span> kq <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">0</span>:
+        q <span style="color:#ff79c6">=</span> (q_mul <span style="color:#ff79c6">//</span> kq) <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">1</span>
+        <span style="color:#ff79c6">if</span> isPrime(q):
+        	<span style="color:#ff79c6">print</span>(<span style="color:#f1fa8c">&#34;Potentiel q : &#34;</span> <span style="color:#ff79c6">+</span> <span style="color:#8be9fd;font-style:italic">str</span>(q))
+
+<span style="color:#ff79c6">for</span> kp <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#bd93f9">1</span>, e):
+    p_mul <span style="color:#ff79c6">=</span> dp <span style="color:#ff79c6">*</span> e <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">1</span>
+    <span style="color:#ff79c6">if</span> p_mul <span style="color:#ff79c6">%</span> kp <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">0</span>:
+        p <span style="color:#ff79c6">=</span> (p_mul <span style="color:#ff79c6">//</span> kp) <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">1</span>
+        <span style="color:#ff79c6">if</span> isPrime(p):
+        	<span style="color:#ff79c6">print</span>(<span style="color:#f1fa8c">&#34;Potentiel p : &#34;</span> <span style="color:#ff79c6">+</span> <span style="color:#8be9fd;font-style:italic">str</span>(p))
+</code></pre></div><blockquote>
+<p>Potentiel q : 24312821138947295842939811430266614164483390266044923887694157098746040509093637457237135603411011833287827123602619771315554896936017168546924189851322281151620644250524117043049673777703814283705410796690775974401304283378519985368125276766049671207507190418663428295243489814095988104136549989630636041063221268290523766428047760530245982382697752496455539057488593944136069627708927281633167017337393918797915410963972736328647804191560830879679674669676405585810075964267210384497030345823969704188597922024875674517047635080525199694836436149951817779893116507111781865061463859626764914849867030257100120765229<br>
+Potentiel p : 531728207659942301795253901084381737110883040097313053322913639565173847736026567062658310606998607620829538859271019692779574663546063949380410110347896571016088740644703155824678492122200126954702690666327960507428268541835210899166622764600001960907380213645069024205628211424497796451244548457631029653033974543275052835017313659168468855844022055884671115800091077092022099362967367260138515603050906837518856621847732055920780974661504255852004514803319931650360002033069998882446652627303752496381522697600057253746343547131595999387666854098155533978693698059492388066835684589123085776392908036740654319726890609<br>
+Potentiel p : 32155793883644309494149365087347710275210633774631897274003001908876018851960968012981271807389852904017267710405842990613181825323298497180721462889930852141756696942713059737825259562300443091116514916928396257101370860052927606384048304583938193088254729901128992755541135185322798527530512122498248043845789461978413935354215871986482151417756534584220556107891332673683000687165418919940645597668777626845600908432978474596080126672805046918964956144371065049005805638187590643592564866189148070656840995258832683463131564291944605671726345796937320632480267178246999762145360703260951002442725449730325007240379</p>
+</blockquote>
+<p>Problem <strong>with script returning 2 p</strong> we don&rsquo;t know which one is correct, given that we know n and q  and that by definition <em>n = p * q</em> then <em>q = n / p</em> :</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">n <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0xbfa246a891be9d2e53bcf3d92d7052ae0332dbbc2732e489764e2548573ce26defbd15f1f65b4447b50e40dda22f8db64a9de431832f4488df94dbc0cea7dc815b8cc0835d54efb56db85e76f16a79029c3037c4940f960f050b2c8770859ba6caaa0f8ef45f7727eff087303c4062fc0b6118acdfc1a4e51224a76cd00cfa718626deca8447e890eb84436bd2b64eb3b981f3ff8b20533b274f0f464d2dbbec3cc364e98cee343fa98d11b0b47f6fc55e60d07d4f6a4d64fad5eb7144a0a609cd909e46a6d9b90a00b4a85e72c51ffe0cccbf74e01cee352121931e5f5b164ddf6b4d2b9030007fc377ce35eeb25cd0716806af8b9c37a350aeef181350e601527018697fb4ec0a93aaef4f4eb4a92b4f1b66b9cb7f7a08b5d01432c352b48e038aac5b7585fa4dc71ca9d60b23b09bdc775b04d46e332de5db965e9524720da153ed95e732c1826dc5a0dd49c46c60ae740307cd4e5a14b0d864952942c81841b952c3d105ed1fce2daf2ecb9ec20466aaa0cd30b54e7a036b0e3d31956c3545d8798e6e0eab8a3aa7e08e8d050b017ac8403488a5fda9b0d3c30965554aee33580cbadeb76de4cbfb92c8efc845da7429c0725a4eef116dfa2768ad40e91184a0550203c83b756e75ecfce5362845bf04480678389b6b04c3f497aea59d7739f8bf6479c90a2d9a76e033646fde542ddda0ffbfe3a85b6fea0cc56a66fddf</span>
+q <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">24312821138947295842939811430266614164483390266044923887694157098746040509093637457237135603411011833287827123602619771315554896936017168546924189851322281151620644250524117043049673777703814283705410796690775974401304283378519985368125276766049671207507190418663428295243489814095988104136549989630636041063221268290523766428047760530245982382697752496455539057488593944136069627708927281633167017337393918797915410963972736328647804191560830879679674669676405585810075964267210384497030345823969704188597922024875674517047635080525199694836436149951817779893116507111781865061463859626764914849867030257100120765229</span>
+<span style="color:#ff79c6">print</span>(n<span style="color:#ff79c6">//</span>q)
+</code></pre></div><blockquote>
+<p>32155793883644309494149365087347710275210633774631897274003001908876018851960968012981271807389852904017267710405842990613181825323298497180721462889930852141756696942713059737825259562300443091116514916928396257101370860052927606384048304583938193088254729901128992755541135185322798527530512122498248043845789461978413935354215871986482151417756534584220556107891332673683000687165418919940645597668777626845600908432978474596080126672805046918964956144371065049005805638187590643592564866189148070656840995258832683463131564291944605671726345796937320632480267178246999762145360703260951002442725449730325007240379</p>
+</blockquote>
+<p>Now we know the <strong>correct p.</strong>
+And so we just need to build a now key:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#ff79c6">from</span> Crypto.PublicKey <span style="color:#ff79c6">import</span> RSA
+
+n <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0xbfa246a891be9d2e53bcf3d92d7052ae0332dbbc2732e489764e2548573ce26defbd15f1f65b4447b50e40dda22f8db64a9de431832f4488df94dbc0cea7dc815b8cc0835d54efb56db85e76f16a79029c3037c4940f960f050b2c8770859ba6caaa0f8ef45f7727eff087303c4062fc0b6118acdfc1a4e51224a76cd00cfa718626deca8447e890eb84436bd2b64eb3b981f3ff8b20533b274f0f464d2dbbec3cc364e98cee343fa98d11b0b47f6fc55e60d07d4f6a4d64fad5eb7144a0a609cd909e46a6d9b90a00b4a85e72c51ffe0cccbf74e01cee352121931e5f5b164ddf6b4d2b9030007fc377ce35eeb25cd0716806af8b9c37a350aeef181350e601527018697fb4ec0a93aaef4f4eb4a92b4f1b66b9cb7f7a08b5d01432c352b48e038aac5b7585fa4dc71ca9d60b23b09bdc775b04d46e332de5db965e9524720da153ed95e732c1826dc5a0dd49c46c60ae740307cd4e5a14b0d864952942c81841b952c3d105ed1fce2daf2ecb9ec20466aaa0cd30b54e7a036b0e3d31956c3545d8798e6e0eab8a3aa7e08e8d050b017ac8403488a5fda9b0d3c30965554aee33580cbadeb76de4cbfb92c8efc845da7429c0725a4eef116dfa2768ad40e91184a0550203c83b756e75ecfce5362845bf04480678389b6b04c3f497aea59d7739f8bf6479c90a2d9a76e033646fde542ddda0ffbfe3a85b6fea0cc56a66fddf</span>
+e <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x10001</span>
+q <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">24312821138947295842939811430266614164483390266044923887694157098746040509093637457237135603411011833287827123602619771315554896936017168546924189851322281151620644250524117043049673777703814283705410796690775974401304283378519985368125276766049671207507190418663428295243489814095988104136549989630636041063221268290523766428047760530245982382697752496455539057488593944136069627708927281633167017337393918797915410963972736328647804191560830879679674669676405585810075964267210384497030345823969704188597922024875674517047635080525199694836436149951817779893116507111781865061463859626764914849867030257100120765229</span>
+p <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">32155793883644309494149365087347710275210633774631897274003001908876018851960968012981271807389852904017267710405842990613181825323298497180721462889930852141756696942713059737825259562300443091116514916928396257101370860052927606384048304583938193088254729901128992755541135185322798527530512122498248043845789461978413935354215871986482151417756534584220556107891332673683000687165418919940645597668777626845600908432978474596080126672805046918964956144371065049005805638187590643592564866189148070656840995258832683463131564291944605671726345796937320632480267178246999762145360703260951002442725449730325007240379</span>
+phi <span style="color:#ff79c6">=</span> (p<span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>)<span style="color:#ff79c6">*</span>(q<span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>)
+d <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">pow</span>(e,<span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>,phi)
+
+key <span style="color:#ff79c6">=</span> RSA<span style="color:#ff79c6">.</span>construct((n,e,d,p,q))
+pem <span style="color:#ff79c6">=</span> key<span style="color:#ff79c6">.</span>exportKey(<span style="color:#f1fa8c">&#39;PEM&#39;</span>)
+<span style="color:#ff79c6">print</span>(pem<span style="color:#ff79c6">.</span>decode())
+</code></pre></div><p>Which returns a private key :</p>
+<pre><code>-----BEGIN RSA PRIVATE KEY-----
+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
+-----END RSA PRIVATE KEY-----
+</code></pre><p>And send a <strong>request</strong> to the ssh server with this authentication key to obtain the flag.</p>
+<pre><code>&gt;&gt; chmod 600 final_key.pem
+&gt;&gt; ssh -i final_key.pem -p 2222 frank@backup-01.play.midnightsunctf.se
+</code></pre><p>And the ssh server returns the flag to us : <strong>midnight{D0_n07_s0w_p4r75_0f_y0ur_pr1v473}</strong>.
+;)</p>
+<h4 id="zeynn--archie-bloom--supersnail">Zeynn &amp; Archie Bloom &amp; supersnail</h4>
+
+    </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>

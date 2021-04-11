@@ -3,7 +3,43 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://ret2school.github.io/tags/2021/</loc>
-    <lastmod>2021-03-23T00:00:00+00:00</lastmod>
+    <lastmod>2021-04-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/post/writeuprsa/</loc>
+    <lastmod>2021-04-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/tags/archie/</loc>
+    <lastmod>2021-04-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/tags/crypto/</loc>
+    <lastmod>2021-04-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/tags/ctf/</loc>
+    <lastmod>2021-04-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/tags/midnightsun/</loc>
+    <lastmod>2021-04-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/tags/midnightsun-ctf/</loc>
+    <lastmod>2021-04-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/post/</loc>
+    <lastmod>2021-04-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/</loc>
+    <lastmod>2021-04-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/tags/rsa/</loc>
+    <lastmod>2021-04-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/tags/supersnail/</loc>
+    <lastmod>2021-04-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/tags/</loc>
+    <lastmod>2021-04-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/tags/zeynn/</loc>
+    <lastmod>2021-04-11T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://ret2school.github.io/post/rev_securinets/</loc>
     <lastmod>2021-03-23T00:00:00+00:00</lastmod>
@@ -14,16 +50,10 @@
     <loc>https://ret2school.github.io/tags/antidebug/</loc>
     <lastmod>2021-03-23T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://ret2school.github.io/tags/ctf/</loc>
-    <lastmod>2021-03-23T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>https://ret2school.github.io/tags/keygen/</loc>
     <lastmod>2021-03-23T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://ret2school.github.io/tags/pe/</loc>
-    <lastmod>2021-03-23T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://ret2school.github.io/post/</loc>
     <lastmod>2021-03-23T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://ret2school.github.io/tags/re/</loc>
@@ -32,19 +62,10 @@
     <loc>https://ret2school.github.io/tags/ret2school/</loc>
     <lastmod>2021-03-23T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://ret2school.github.io/</loc>
-    <lastmod>2021-03-23T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>https://ret2school.github.io/tags/reverse-engineering/</loc>
     <lastmod>2021-03-23T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://ret2school.github.io/tags/securinets-ctf/</loc>
-    <lastmod>2021-03-23T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://ret2school.github.io/tags/supersnail/</loc>
-    <lastmod>2021-03-23T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://ret2school.github.io/tags/</loc>
     <lastmod>2021-03-23T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://ret2school.github.io/tags/virtual-machine/</loc>
@@ -116,9 +137,6 @@
     <loc>https://ret2school.github.io/tags/rc4/</loc>
     <lastmod>2021-02-22T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://ret2school.github.io/tags/rsa/</loc>
-    <lastmod>2021-02-22T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>https://ret2school.github.io/tags/unionctf-2021/</loc>
     <lastmod>2021-02-22T00:00:00+00:00</lastmod>
   </url><url>
@@ -150,9 +168,6 @@
     <lastmod>2020-12-01T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://ret2school.github.io/tags/hitconctf-2020/</loc>
-    <lastmod>2020-12-01T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://ret2school.github.io/tags/zeynn/</loc>
     <lastmod>2020-12-01T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://ret2school.github.io/post/aero_ctf_2020/</loc>

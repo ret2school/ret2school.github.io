@@ -5,13 +5,85 @@
     <link>https://ret2school.github.io/tags/</link>
     <description>Recent content in Tags on ret2school</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Tue, 23 Mar 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 11 Apr 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>2021</title>
       <link>https://ret2school.github.io/tags/2021/</link>
-      <pubDate>Tue, 23 Mar 2021 00:00:00 +0000</pubDate>
+      <pubDate>Sun, 11 Apr 2021 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/tags/2021/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Archie</title>
+      <link>https://ret2school.github.io/tags/archie/</link>
+      <pubDate>Sun, 11 Apr 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/archie/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>crypto</title>
+      <link>https://ret2school.github.io/tags/crypto/</link>
+      <pubDate>Sun, 11 Apr 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/crypto/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>ctf</title>
+      <link>https://ret2school.github.io/tags/ctf/</link>
+      <pubDate>Sun, 11 Apr 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/ctf/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Midnightsun</title>
+      <link>https://ret2school.github.io/tags/midnightsun/</link>
+      <pubDate>Sun, 11 Apr 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/midnightsun/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Midnightsun CTF</title>
+      <link>https://ret2school.github.io/tags/midnightsun-ctf/</link>
+      <pubDate>Sun, 11 Apr 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/midnightsun-ctf/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>RSA</title>
+      <link>https://ret2school.github.io/tags/rsa/</link>
+      <pubDate>Sun, 11 Apr 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/rsa/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>supersnail</title>
+      <link>https://ret2school.github.io/tags/supersnail/</link>
+      <pubDate>Sun, 11 Apr 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/supersnail/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Zeynn</title>
+      <link>https://ret2school.github.io/tags/zeynn/</link>
+      <pubDate>Sun, 11 Apr 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/zeynn/</guid>
       <description></description>
     </item>
     
@@ -30,15 +102,6 @@
       <pubDate>Tue, 23 Mar 2021 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/tags/antidebug/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>ctf</title>
-      <link>https://ret2school.github.io/tags/ctf/</link>
-      <pubDate>Tue, 23 Mar 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/ctf/</guid>
       <description></description>
     </item>
     
@@ -93,15 +156,6 @@
       <pubDate>Tue, 23 Mar 2021 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/tags/securinets-ctf/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>supersnail</title>
-      <link>https://ret2school.github.io/tags/supersnail/</link>
-      <pubDate>Tue, 23 Mar 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/supersnail/</guid>
       <description></description>
     </item>
     
@@ -259,15 +313,6 @@
     </item>
     
     <item>
-      <title>RSA</title>
-      <link>https://ret2school.github.io/tags/rsa/</link>
-      <pubDate>Mon, 22 Feb 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/rsa/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>unionCTF 2021</title>
       <link>https://ret2school.github.io/tags/unionctf-2021/</link>
       <pubDate>Mon, 22 Feb 2021 00:00:00 +0000</pubDate>
@@ -345,15 +390,6 @@
       <pubDate>Tue, 01 Dec 2020 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/tags/hitconctf-2020/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Zeynn</title>
-      <link>https://ret2school.github.io/tags/zeynn/</link>
-      <pubDate>Tue, 01 Dec 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/zeynn/</guid>
       <description></description>
     </item>
     
