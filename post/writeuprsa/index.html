@@ -13,14 +13,12 @@
     <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="[Midnight Sun CTF 2021 - Crypto] frank"/>
 <meta name="twitter:description" content="Welcome folks,
-This writeup is about Midnight Sun CTF [frank] challenge on how to recover a full RSA private key, when half of it is erased.
-Challenge therefore requires recovering the entire RSA key from this image :
+This writeup is about the Midnight Sun CTF frank challenge on how to recover a full RSA private key, when half of it is erased. Challenge therefore requires recovering the entire RSA key from this image:
 Get the part of the private key visible: The first step of the challenge is to recover the visible part, to do this I quickly created a small OCR script with the pytesseract module in Python, to facilitate the recovery task."/>
 
     <meta property="og:title" content="[Midnight Sun CTF 2021 - Crypto] frank" />
 <meta property="og:description" content="Welcome folks,
-This writeup is about Midnight Sun CTF [frank] challenge on how to recover a full RSA private key, when half of it is erased.
-Challenge therefore requires recovering the entire RSA key from this image :
+This writeup is about the Midnight Sun CTF frank challenge on how to recover a full RSA private key, when half of it is erased. Challenge therefore requires recovering the entire RSA key from this image:
 Get the part of the private key visible: The first step of the challenge is to recover the visible part, to do this I quickly created a small OCR script with the pytesseract module in Python, to facilitate the recovery task." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://ret2school.github.io/post/writeuprsa/" /><meta property="article:section" content="post" />
@@ -92,8 +90,8 @@ Get the part of the private key visible: The first step of the challenge is to r
     </header>
     <div class="post-content">
       <p>Welcome folks,</p>
-<p>This writeup is about Midnight Sun CTF [frank] challenge on how to recover a full RSA private key, when half of it is erased.<br>
-Challenge therefore requires recovering the entire RSA key from this image :</p>
+<p>This writeup is about the Midnight Sun CTF frank challenge on how to recover a full RSA private key, when half of it is erased.
+Challenge therefore requires recovering the entire RSA key from this image:</p>
 <p><img src="/images/rsa.png" alt="image"></p>
 <h4 id="get-the-part-of-the-private-key-visible">Get the part of the private key visible:</h4>
 <p>The first step of the challenge is to <strong>recover the visible part</strong>, to do this I quickly created a small <strong>OCR</strong> script with the <strong>pytesseract</strong> module in Python, to facilitate the recovery task.</p>
@@ -133,7 +131,7 @@ ywaauJBnYEsIz2A22cMp4f rY/unZxeWRK82rN4d+j SYmy f9NCXwK9mXuq/pXj laB
 XqIB6+n3swDFGQX732iPBGu9iDbhsQ6vdoRBAtqcHmCTLB2dqXhrnvUSMMUS
 
 END RSA PRIVATE KEY
-</code></pre><p>We can observe that there are still many errors on what the script returned. We have no other choice than to check by hand and really be careful to avoid mistakes, in which case the next steps won&rsquo;t work.</p>
+</code></pre><p>We can see that there are still many errors on what the script returned. We have no other choice than to check by hand and really be careful not to make a mistake on any character, in which case the next steps won&rsquo;t work.</p>
 <pre><code class="language------BEGIN" data-lang="-----BEGIN">[                             Hide!                            ]
 [                             Hide!                            ]
 [                             Hide!                            ]
@@ -183,8 +181,7 @@ t2Z6w77B+OMi8T6rIpeLOLxR5pEJmCCfojM8gVRGMFb7IHc9Hp1XlJpePh1OyWQF
 ywaauJBnYEsIz2A22cMp4frY/unZxeWRK82rN4d+jSYmyf9NCXwK9mXuq/pXjlaB
 XqIB6+n3swDFGQX732iPBGu9iDbhsQ6vdoRBAtqcHmCTLB2dqXhrnvUSMMUS
 -----END RSA PRIVATE KEY-----
-</code></pre><p>With the size of the image we deduce that the key is coded on <strong>4096 bits</strong>. Now as we know that the rsa key is encoded in <strong>base 64</strong> we can convert it to <strong>hexadecimal</strong>
-(base 16).</p>
+</code></pre><p>Based on the size of the image, we can deduce that the key is coded on <strong>4096 bits</strong>. Plus, we know that the RSA key is encoded in <strong>base 64</strong>, so we can convert it to <strong>hexadecimal</strong> (base 16).</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#ff79c6">from</span> Crypto.Util.number <span style="color:#ff79c6">import</span> bytes_to_long, isPrime
 <span style="color:#ff79c6">import</span> base64
 
@@ -296,7 +293,7 @@ egNrDj0xlWw1Rdh5jm4Oq4o6p+COjQULAXrIQDSIpf2psNPDCWVVSu4zWAy63rdt
 5Mv7ksjvyEXadCnAclpO7xFt+idorUDpEYSgVQIDyDt1bnXs/OU2KEW/BEgGeDib
 awTD9JeupZ13Ofi/ZHnJCi2aduAzZG/eVC3doP+/46hbb+oMxWpm/d8CAwEAAQ==
 -----END RSA PUBLIC KEY-----
-</code></pre><p>With this <a href="https://8gwifi.org/PemParserFunctions.jsp">site</a> I was able to obtain <em>encryption module (n)</em> and <em>public exponent (e)</em>:</p>
+</code></pre><p>With this <a href="https://8gwifi.org/PemParserFunctions.jsp">site</a>, were are now able to obtain the encryption module (n) and public exponent (e).</p>
 <pre><code>Algo RSA
 Format X.509
  ASN1 Dump

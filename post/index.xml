@@ -13,8 +13,7 @@
       
       <guid>https://ret2school.github.io/post/writeuprsa/</guid>
       <description>Welcome folks,
-This writeup is about Midnight Sun CTF [frank] challenge on how to recover a full RSA private key, when half of it is erased.
-Challenge therefore requires recovering the entire RSA key from this image :
+This writeup is about the Midnight Sun CTF frank challenge on how to recover a full RSA private key, when half of it is erased. Challenge therefore requires recovering the entire RSA key from this image:
 Get the part of the private key visible: The first step of the challenge is to recover the visible part, to do this I quickly created a small OCR script with the pytesseract module in Python, to facilitate the recovery task.</description>
     </item>
     
