@@ -133,7 +133,7 @@ ywaauJBnYEsIz2A22cMp4f rY/unZxeWRK82rN4d+j SYmy f9NCXwK9mXuq/pXj laB
 XqIB6+n3swDFGQX732iPBGu9iDbhsQ6vdoRBAtqcHmCTLB2dqXhrnvUSMMUS
 
 END RSA PRIVATE KEY
-</code></pre><p>We can observe that there are still many errors on what the script returned. We have no other choice than to check by hand and really be careful not to make a mistake on any character, in which case the next steps won&rsquo;t work.</p>
+</code></pre><p>We can observe that there are still many errors on what the script returned. We have no other choice than to check by hand and really be careful to avoid mistakes, in which case the next steps won&rsquo;t work.</p>
 <pre><code class="language------BEGIN" data-lang="-----BEGIN">[                             Hide!                            ]
 [                             Hide!                            ]
 [                             Hide!                            ]
@@ -212,9 +212,8 @@ privet_key1 <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">b</
 </span><span style="color:#f1fa8c">XqIB6+n3swDFGQX732iPBGu9iDbhsQ6vdoRBAtqcHmCTLB2dqXhrnvUSMMUS&#34;&#34;&#34;</span>
 
 <span style="color:#ff79c6">print</span>(<span style="color:#8be9fd;font-style:italic">hex</span>(bytes_to_long(base64<span style="color:#ff79c6">.</span>b64decode(privet_key1))))     
-</code></pre></div><p>Which returns the part of the key in hexa :</p>
-<blockquote>
-<p>0x61913bc6bd1b13de093b872aae2b50704f9d27858e99fe07be685a484972c1ca7dc4df3106e70de439
+</code></pre></div><p>Which returns the part of the key in hexa:</p>
+<pre><code>0x61913bc6bd1b13de093b872aae2b50704f9d27858e99fe07be685a484972c1ca7dc4df3106e70de439
 f1957b7c3046e399eeee754351bd30d81dd164bf6e8fd4ae1785eb3c76e469401112fd3c4de180f8dad7
 763fc3c24a12e7bd0e492d6b987029d841af706c41fcccbf65c652677b9fb455cd4177b5fb3843514f10
 47a58260dbc9bf703794b3c28752f9727861caa891a3cc800edca5e3bd0ce3d185a2fcc18a08195e7a85
@@ -237,10 +236,9 @@ c79581eeaa1480ad5a11a44d78af533e1485ced12d3941f97644757c05d7c5028201010094162ecb
 a1dc30fdeccf8566acd4aa5235a7515bdcda4a85ab5f63b620b7667ac3bec1f8e322f13eab22978b38bc
 51e6910998209fa2333c8154463056fb20773d1e9d57949a5e3e1d4ec96405cb069ab89067604b08cf60
 36d9c329e1fad8fee9d9c5e5912bcdab37877e8d2626c9ff4d097c0af665eeabfa578e56815ea201ebe9
-f7b300c51905fbdf688f046bbd8836e1b10eaf76844102da9c1e60932c1d9da9786b9ef51230c512</p>
-</blockquote>
-<h4 id="look-at-the-parts-we-have">Look at the parts we have</h4>
-<p>After being interested on how a private rsa key was created, we can observe that there is precisely a certain logic in the encoding in the order: <em>n, e, d, p, q, d mod(p-1), d mod(q-1) and q^-1 mod p</em>.</p>
+f7b300c51905fbdf688f046bbd8836e1b10eaf76844102da9c1e60932c1d9da9786b9ef51230c512
+</code></pre><h4 id="look-at-the-parts-we-have">Look at the parts we have</h4>
+<p>After being interested on how a private rsa key was created, we can notice a particular structure: <em>n, e, d, p, q, d mod(p-1), d mod(q-1) and q^-1 mod p</em>.</p>
 <pre><code>PrivateKeyInfo ::= SEQUENCE {
    version Version,
    privateKeyAlgorithm AlgorithmIdentifier ,
@@ -260,16 +258,15 @@ RSAPrivateKey ::= SEQUENCE {
   coefficient       INTEGER,  -- (inverse of q) mod p
   otherPrimeInfos   OtherPrimeInfos OPTIONAL
 }
-</code></pre><p>As before we have just decoded the rsa key we can observe the structure and see that its parts are separated by <strong>02 82 01 01</strong> and as they showed it on the cryptohack <a href="https://blog.cryptohack.org/twitter-secrets">site</a> with a fictitious key and the key to recover 02 82 01 01 is indeed used to separate :  <em>n, e, d, p, q, d mod (p-1), d mod (q-1) and q ^ -1 mod p</em> .</p>
+</code></pre><p>According to the previous analysis, we can study the structure and see that its parts are separated by the <strong>02 82 01 01</strong> pattern as it&rsquo;s explained on <a href="https://blog.cryptohack.org/twitter-secrets">cryptohack</a>.</p>
 <p><img src="/images/example.png" alt="image"></p>
-<p>As cryptohack <a href="https://blog.cryptohack.org/twitter-secrets">says</a> they precisely indicate that <strong>02 82 01 01</strong> corresponds to :</p>
-<p>Here the ASN.1 header for the integers values are <strong>02 82 01 01</strong>, which is decomposed as follow :</p>
+<p>As cryptohack <a href="https://blog.cryptohack.org/twitter-secrets">says</a> they precisely indicate that <strong>02 82 01 01</strong> corresponds to:</p>
 <blockquote>
 <p>02 for the data type, here Integer.<br>
 82 meaning that the length of the integer value will be encoded in the 2 following bytes.<br>
 0101, the actual length, which integer value is 257, meaning that the integer value will be encoded in the following 257 bytes. Retrieving the 257 next bytes in Big Endian and taking their integer values yield the rsa values we are looking for.</p>
 </blockquote>
-<p>And bingo precisely after <strong>decoding</strong> our key we get pretty much the same thing :</p>
+<p>And bingo precisely after <strong>decoding</strong> our key we get pretty much the same thing:</p>
 <p><img src="/images/key.png" alt="image"></p>
 <p>So we now know that we have:</p>
 <blockquote>
@@ -338,7 +335,7 @@ e <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x10001</span
 Potentiel p : 531728207659942301795253901084381737110883040097313053322913639565173847736026567062658310606998607620829538859271019692779574663546063949380410110347896571016088740644703155824678492122200126954702690666327960507428268541835210899166622764600001960907380213645069024205628211424497796451244548457631029653033974543275052835017313659168468855844022055884671115800091077092022099362967367260138515603050906837518856621847732055920780974661504255852004514803319931650360002033069998882446652627303752496381522697600057253746343547131595999387666854098155533978693698059492388066835684589123085776392908036740654319726890609<br>
 Potentiel p : 32155793883644309494149365087347710275210633774631897274003001908876018851960968012981271807389852904017267710405842990613181825323298497180721462889930852141756696942713059737825259562300443091116514916928396257101370860052927606384048304583938193088254729901128992755541135185322798527530512122498248043845789461978413935354215871986482151417756534584220556107891332673683000687165418919940645597668777626845600908432978474596080126672805046918964956144371065049005805638187590643592564866189148070656840995258832683463131564291944605671726345796937320632480267178246999762145360703260951002442725449730325007240379</p>
 </blockquote>
-<p>Problem <strong>with script returning 2 p</strong> we don&rsquo;t know which one is correct, given that we know n and q  and that by definition <em>n = p * q</em> then <em>q = n / p</em> :</p>
+<p>Problem <strong>with script returning 2 p</strong> we don&rsquo;t know which one is correct, given that we know n and q and that by definition <em>n = p * q</em> then <em>q = n / p</em> :</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">n <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0xbfa246a891be9d2e53bcf3d92d7052ae0332dbbc2732e489764e2548573ce26defbd15f1f65b4447b50e40dda22f8db64a9de431832f4488df94dbc0cea7dc815b8cc0835d54efb56db85e76f16a79029c3037c4940f960f050b2c8770859ba6caaa0f8ef45f7727eff087303c4062fc0b6118acdfc1a4e51224a76cd00cfa718626deca8447e890eb84436bd2b64eb3b981f3ff8b20533b274f0f464d2dbbec3cc364e98cee343fa98d11b0b47f6fc55e60d07d4f6a4d64fad5eb7144a0a609cd909e46a6d9b90a00b4a85e72c51ffe0cccbf74e01cee352121931e5f5b164ddf6b4d2b9030007fc377ce35eeb25cd0716806af8b9c37a350aeef181350e601527018697fb4ec0a93aaef4f4eb4a92b4f1b66b9cb7f7a08b5d01432c352b48e038aac5b7585fa4dc71ca9d60b23b09bdc775b04d46e332de5db965e9524720da153ed95e732c1826dc5a0dd49c46c60ae740307cd4e5a14b0d864952942c81841b952c3d105ed1fce2daf2ecb9ec20466aaa0cd30b54e7a036b0e3d31956c3545d8798e6e0eab8a3aa7e08e8d050b017ac8403488a5fda9b0d3c30965554aee33580cbadeb76de4cbfb92c8efc845da7429c0725a4eef116dfa2768ad40e91184a0550203c83b756e75ecfce5362845bf04480678389b6b04c3f497aea59d7739f8bf6479c90a2d9a76e033646fde542ddda0ffbfe3a85b6fea0cc56a66fddf</span>
 q <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">24312821138947295842939811430266614164483390266044923887694157098746040509093637457237135603411011833287827123602619771315554896936017168546924189851322281151620644250524117043049673777703814283705410796690775974401304283378519985368125276766049671207507190418663428295243489814095988104136549989630636041063221268290523766428047760530245982382697752496455539057488593944136069627708927281633167017337393918797915410963972736328647804191560830879679674669676405585810075964267210384497030345823969704188597922024875674517047635080525199694836436149951817779893116507111781865061463859626764914849867030257100120765229</span>
 <span style="color:#ff79c6">print</span>(n<span style="color:#ff79c6">//</span>q)
@@ -346,7 +343,7 @@ q <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">2431282113894
 <p>32155793883644309494149365087347710275210633774631897274003001908876018851960968012981271807389852904017267710405842990613181825323298497180721462889930852141756696942713059737825259562300443091116514916928396257101370860052927606384048304583938193088254729901128992755541135185322798527530512122498248043845789461978413935354215871986482151417756534584220556107891332673683000687165418919940645597668777626845600908432978474596080126672805046918964956144371065049005805638187590643592564866189148070656840995258832683463131564291944605671726345796937320632480267178246999762145360703260951002442725449730325007240379</p>
 </blockquote>
 <p>Now we know the <strong>correct p.</strong>
-And so we just need to build a now key:</p>
+And we can build the entirely key:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#ff79c6">from</span> Crypto.PublicKey <span style="color:#ff79c6">import</span> RSA
 
 n <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0xbfa246a891be9d2e53bcf3d92d7052ae0332dbbc2732e489764e2548573ce26defbd15f1f65b4447b50e40dda22f8db64a9de431832f4488df94dbc0cea7dc815b8cc0835d54efb56db85e76f16a79029c3037c4940f960f050b2c8770859ba6caaa0f8ef45f7727eff087303c4062fc0b6118acdfc1a4e51224a76cd00cfa718626deca8447e890eb84436bd2b64eb3b981f3ff8b20533b274f0f464d2dbbec3cc364e98cee343fa98d11b0b47f6fc55e60d07d4f6a4d64fad5eb7144a0a609cd909e46a6d9b90a00b4a85e72c51ffe0cccbf74e01cee352121931e5f5b164ddf6b4d2b9030007fc377ce35eeb25cd0716806af8b9c37a350aeef181350e601527018697fb4ec0a93aaef4f4eb4a92b4f1b66b9cb7f7a08b5d01432c352b48e038aac5b7585fa4dc71ca9d60b23b09bdc775b04d46e332de5db965e9524720da153ed95e732c1826dc5a0dd49c46c60ae740307cd4e5a14b0d864952942c81841b952c3d105ed1fce2daf2ecb9ec20466aaa0cd30b54e7a036b0e3d31956c3545d8798e6e0eab8a3aa7e08e8d050b017ac8403488a5fda9b0d3c30965554aee33580cbadeb76de4cbfb92c8efc845da7429c0725a4eef116dfa2768ad40e91184a0550203c83b756e75ecfce5362845bf04480678389b6b04c3f497aea59d7739f8bf6479c90a2d9a76e033646fde542ddda0ffbfe3a85b6fea0cc56a66fddf</span>
@@ -359,7 +356,7 @@ d <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:ita
 key <span style="color:#ff79c6">=</span> RSA<span style="color:#ff79c6">.</span>construct((n,e,d,p,q))
 pem <span style="color:#ff79c6">=</span> key<span style="color:#ff79c6">.</span>exportKey(<span style="color:#f1fa8c">&#39;PEM&#39;</span>)
 <span style="color:#ff79c6">print</span>(pem<span style="color:#ff79c6">.</span>decode())
-</code></pre></div><p>Which returns a private key :</p>
+</code></pre></div><p>Which returns this private key:</p>
 <pre><code>-----BEGIN RSA PRIVATE KEY-----
 MIIJKQIBAAKCAgEAv6JGqJG+nS5TvPPZLXBSrgMy27wnMuSJdk4lSFc84m3vvRXx
 9ltER7UOQN2iL422Sp3kMYMvRIjflNvAzqfcgVuMwINdVO+1bbhedvFqeQKcMDfE
@@ -411,10 +408,10 @@ t2Z6w77B+OMi8T6rIpeLOLxR5pEJmCCfojM8gVRGMFb7IHc9Hp1XlJpePh1OyWQF
 ywaauJBnYEsIz2A22cMp4frY/unZxeWRK82rN4d+jSYmyf9NCXwK9mXuq/pXjlaB
 XqIB6+n3swDFGQX732iPBGu9iDbhsQ6vdoRBAtqcHmCTLB2dqXhrnvUSMMUS
 -----END RSA PRIVATE KEY-----
-</code></pre><p>And send a <strong>request</strong> to the ssh server with this authentication key to obtain the flag.</p>
+</code></pre><p>Now we just have to send a <strong>request</strong> to the ssh server with this authentication key to obtain the flag.</p>
 <pre><code>&gt;&gt; chmod 600 final_key.pem
 &gt;&gt; ssh -i final_key.pem -p 2222 frank@backup-01.play.midnightsunctf.se
-</code></pre><p>And the ssh server returns the flag to us : <strong>midnight{D0_n07_s0w_p4r75_0f_y0ur_pr1v473}</strong>.
+</code></pre><p>And the ssh server returns: <strong>midnight{D0_n07_s0w_p4r75_0f_y0ur_pr1v473}</strong>.
 ;)</p>
 <h4 id="zeynn--archie-bloom--supersnail">Zeynn &amp; Archie Bloom &amp; supersnail</h4>
 
