@@ -13,12 +13,12 @@
     <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="[Midnight Sun CTF 2021 - Crypto] frank"/>
 <meta name="twitter:description" content="Welcome folks,
-This writeup is about the Midnight Sun CTF frank challenge on how to recover a full RSA private key, when half of it is erased. Challenge therefore requires recovering the entire RSA key from this image:
+This writeup is about the Midnight Sun CTF frank challenge on how to recover a full RSA private key, when half of it is erased. Thanks to this recent cryptohack write-up from which this challenge is (for me) inspired. Challenge therefore requires recovering the entire RSA key from this image:
 Get the part of the private key visible: The first step of the challenge is to recover the visible part, to do this I quickly created a small OCR script with the pytesseract module in Python, to facilitate the recovery task."/>
 
     <meta property="og:title" content="[Midnight Sun CTF 2021 - Crypto] frank" />
 <meta property="og:description" content="Welcome folks,
-This writeup is about the Midnight Sun CTF frank challenge on how to recover a full RSA private key, when half of it is erased. Challenge therefore requires recovering the entire RSA key from this image:
+This writeup is about the Midnight Sun CTF frank challenge on how to recover a full RSA private key, when half of it is erased. Thanks to this recent cryptohack write-up from which this challenge is (for me) inspired. Challenge therefore requires recovering the entire RSA key from this image:
 Get the part of the private key visible: The first step of the challenge is to recover the visible part, to do this I quickly created a small OCR script with the pytesseract module in Python, to facilitate the recovery task." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://ret2school.github.io/post/writeuprsa/" /><meta property="article:section" content="post" />
@@ -90,7 +90,7 @@ Get the part of the private key visible: The first step of the challenge is to r
     </header>
     <div class="post-content">
       <p>Welcome folks,</p>
-<p>This writeup is about the Midnight Sun CTF frank challenge on how to recover a full RSA private key, when half of it is erased.
+<p>This writeup is about the Midnight Sun CTF frank challenge on how to recover a full RSA private key, when half of it is erased. Thanks to <a href="https://blog.cryptohack.org/twitter-secrets">this recent cryptohack write-up</a> from which this challenge is (for me) inspired.
 Challenge therefore requires recovering the entire RSA key from this image:</p>
 <p><img src="/images/rsa.png" alt="image"></p>
 <h4 id="get-the-part-of-the-private-key-visible">Get the part of the private key visible:</h4>
