@@ -5,7 +5,22 @@
     <link>https://ret2school.github.io/tags/supersnail/</link>
     <description>Recent content in supersnail on ret2school</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Sun, 11 Apr 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/supersnail/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 29 Apr 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/supersnail/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>[HeroCTF v3 - RE] ARMada, JNI, Password Keeper, RustInPeace, WTF, fatBoy</title>
+      <link>https://ret2school.github.io/post/heroctfv3/</link>
+      <pubDate>Thu, 29 Apr 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/heroctfv3/</guid>
+      <description>HeroCTF v3  The files can be found here
+ Here is a Write-Up of some RE tasks solved by supersnail.
+sELF control (75 pts)  I found a program to read the flag but it seems to be broken&amp;hellip; Could you help me patching patching two bytes to make it functional ?
+Challenge : nc chall0.heroctf.fr 2048
+Format : Hero{}
+Author : SoEasY
+ The binary given is an ELF File, but IDA detects it as &amp;ldquo;IA64&amp;rdquo; ELF.</description>
+    </item>
+    
     <item>
       <title>[Midnight Sun CTF 2021 - Crypto] frank</title>
       <link>https://ret2school.github.io/post/writeuprsa/</link>

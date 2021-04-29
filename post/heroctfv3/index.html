@@ -1,0 +1,514 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title>[HeroCTF v3 - RE] ARMada, JNI, Password Keeper, RustInPeace, WTF, fatBoy // ret2school</title>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.81.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="nasm" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="https://ret2school.github.io/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css" />
+
+    
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="[HeroCTF v3 - RE] ARMada, JNI, Password Keeper, RustInPeace, WTF, fatBoy"/>
+<meta name="twitter:description" content="HeroCTF v3  The files can be found here
+ Here is a Write-Up of some RE tasks solved by supersnail.
+sELF control (75 pts)  I found a program to read the flag but it seems to be broken&hellip; Could you help me patching patching two bytes to make it functional ?
+Challenge : nc chall0.heroctf.fr 2048
+Format : Hero{}
+Author : SoEasY
+ The binary given is an ELF File, but IDA detects it as &ldquo;IA64&rdquo; ELF."/>
+
+    <meta property="og:title" content="[HeroCTF v3 - RE] ARMada, JNI, Password Keeper, RustInPeace, WTF, fatBoy" />
+<meta property="og:description" content="HeroCTF v3  The files can be found here
+ Here is a Write-Up of some RE tasks solved by supersnail.
+sELF control (75 pts)  I found a program to read the flag but it seems to be broken&hellip; Could you help me patching patching two bytes to make it functional ?
+Challenge : nc chall0.heroctf.fr 2048
+Format : Hero{}
+Author : SoEasY
+ The binary given is an ELF File, but IDA detects it as &ldquo;IA64&rdquo; ELF." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ret2school.github.io/post/heroctfv3/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2021-04-29T00:00:00&#43;00:00" />
+<meta property="article:modified_time" content="2021-04-29T00:00:00&#43;00:00" />
+
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://ret2school.github.io"><img class="app-header-avatar" src="/pic.jpeg" alt="nasm" /></a>
+      <h1>ret2school</h1>
+      <nav class="app-header-menu">
+          <a class="app-header-menu-item" href="/">Home</a>
+             / 
+          
+          <a class="app-header-menu-item" href="/tags/">Tags</a>
+      </nav>
+      <p>Just a bunch of french ctf players</p>
+      <div class="app-header-social">
+        
+          <a target="_blank" href="https://github.com/ret2school" rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github">
+  <title>github</title>
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+</svg></a>
+        
+          <a target="_blank" href="https://twitter.com/ret2school_fr" rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-twitter">
+  <title>twitter</title>
+  <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
+</svg></a>
+        
+      </div>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">[HeroCTF v3 - RE] ARMada, JNI, Password Keeper, RustInPeace, WTF, fatBoy</h1>
+      <div class="post-meta">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          Apr 29, 2021
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          13 min read
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tag">
+  <title>tag</title>
+  <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line>
+</svg>
+              <a class="tag" href="https://ret2school.github.io/tags/ctf/">ctf</a>
+              <a class="tag" href="https://ret2school.github.io/tags/ret2school/">ret2school</a>
+              <a class="tag" href="https://ret2school.github.io/tags/re/">RE</a>
+              <a class="tag" href="https://ret2school.github.io/tags/supersnail/">supersnail</a>
+              <a class="tag" href="https://ret2school.github.io/tags/aassfxxx/">aaSSfxxx</a>
+              <a class="tag" href="https://ret2school.github.io/tags/2021/">2021</a>
+        </div>
+      </div>
+    </header>
+    <div class="post-content">
+      <h1 id="heroctf-v3">HeroCTF v3</h1>
+<blockquote>
+<p>The files can be found <a href="https://github.com/ret2school/ctf/tree/master/2021/heroctf_v3/rev">here</a></p>
+</blockquote>
+<p>Here is a Write-Up of some RE tasks solved by <a href="/tags/supersnail/">supersnail</a>.</p>
+<h3 id="self-control-75-pts">sELF control (75 pts)</h3>
+<blockquote>
+<p>I found a program to read the flag but it seems to be broken&hellip; Could you help me patching patching two bytes to make it functional ?</p>
+<p>Challenge : nc chall0.heroctf.fr 2048</p>
+<p>Format : Hero{}</p>
+<p>Author : SoEasY</p>
+</blockquote>
+<p>The binary given is an ELF File, but IDA detects it as &ldquo;IA64&rdquo; ELF. Looking up at it on radare2
+show that&rsquo;s machine code is indeed x86_64, and the ELF header is messed up.</p>
+<p>To fix that, we must patch the header to correct the architecture, which is the field <code>e_machine</code>
+of the ELF header, at offset 0x12, with the value EM_X86_64, defined to 0x3e.</p>
+<p>Now, trying to run the binary triggers a segfault, so we open GDB to check what happens and we see this:</p>
+<pre><code>#0  0x0000555d375c90a1 in _start ()
+(gdb) disass
+Dump of assembler code for function _start:
+   0x0000555d375c90a0 &lt;+0&gt;:	xor    ebp,ebp
+</code></pre><p>The low byte of the start address (e_entry) at 0x18 is wrong, and we need to patch it to 0xa0, too. After those patches, the binary runs correctly, and we can connect to the server:</p>
+<pre><code>
+Position of the byte to patch in hex (example: 08) : 12
+Value to put at this offset in hex (example: 17) : 3e
+
+Position of the byte to patch in hex (example: 03) : 18
+Value to put at this offset in hex (example: 04) : a0
+
+[+] Execution : 
+Hero{W0w_s0_y0u_4r3_4n_ELF_h34d3r_M4sT3r???}
+</code></pre><h3 id="jni-90-pts">JNI (90 pts)</h3>
+<blockquote>
+<p>Find the flag in this android application.</p>
+<p>Format : Hero{}</p>
+<p>Author : xanhacks</p>
+</blockquote>
+<p>We are given an Android application (in APK). But, as the challenge title says, the flag verification check happens in a native library, which is called by the application through Java Native Interface.</p>
+<p>So, we decompress the APK (which is just a zip file), and extract the &ldquo;lib/&rdquo; folder which contains native libs. Luckily we have a x86_64 version of the native lib, which spares us the burden of reversing ARM assembly.</p>
+<p>In IDA, we find an interesting function, <code>Java_fr_heroctf_jni_MainActivity_checkFlag</code>, which seems to be the flag checker. Let&rsquo;s look at its code:</p>
+<pre><code>.text:00000000000007AF                 mov     rdi, [rbp+s]    ; s
+.text:00000000000007B3                 call    _strlen
+.text:00000000000007B8                 mov     [rbp+var_18], rax
+.text:00000000000007BC
+.text:00000000000007BC loc_7BC:                                ; CODE XREF: Java_fr_heroctf_jni_MainActivity_checkFlag+7A↑j
+.text:00000000000007BC                 cmp     [rbp+var_18], 3
+.text:00000000000007C1                 jnz     loc_802
+.text:00000000000007C7                 mov     rax, [rbp+var_58]
+.text:00000000000007CB                 movsx   ecx, byte ptr [rax]
+.text:00000000000007CE                 cmp     ecx, 36h ; '6'
+.text:00000000000007D1                 jnz     loc_802
+.text:00000000000007D7                 mov     rax, [rbp+var_58]
+.text:00000000000007DB                 movsx   ecx, byte ptr [rax+1]
+.text:00000000000007DF                 cmp     ecx, 36h ; '6'
+.text:00000000000007E2                 jnz     loc_802
+.text:00000000000007E8                 mov     rax, [rbp+var_58]
+.text:00000000000007EC                 movsx   ecx, byte ptr [rax+2]
+.text:00000000000007F0                 cmp     ecx, 36h ; '6'
+.text:00000000000007F3                 jnz     loc_802
+.text:00000000000007F9                 mov     [rbp+var_31], 1
+.text:00000000000007FD                 jmp     loc_80B
+</code></pre><p>It&rsquo;s pretty obvious that the input string is compared with &ldquo;666&rdquo;, and we can validate the challenge with <code>Hero{666}</code>.</p>
+<h3 id="password-keeper-100-pts">Password Keeper (100 pts)</h3>
+<blockquote>
+<p>You are mandated to pentest a new password manager application. Try to log your self to the application !</p>
+<p>Format : Hero{user:password}</p>
+<p>Author : SoEasY</p>
+</blockquote>
+<p>This time we are given a Mach-O executable from OS X. As usual, we open it in IDA, which warns us it&rsquo;s written in Objective-C, and asks us if we want to analyze this (yes plz).</p>
+<p>We have an interesting function <code>-[ViewController logMe:]</code>, which is decompiled like this with hex-rays:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">this <span style="color:#ff79c6">=</span> self;
+location[<span style="color:#bd93f9">1</span>] <span style="color:#ff79c6">=</span> (id)a2;
+location[<span style="color:#bd93f9">0</span>] <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0LL</span>;
+objc_storeStrong(location, a3);
+dico <span style="color:#ff79c6">=</span> (id)<span style="color:#ff79c6">*</span>((_QWORD <span style="color:#ff79c6">*</span>)this <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">3</span>);
+user_txt <span style="color:#ff79c6">=</span> objc_msgSend(<span style="color:#ff79c6">*</span>((id <span style="color:#ff79c6">*</span>)this <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">1</span>), <span style="color:#f1fa8c">&#34;text&#34;</span>); <span style="color:#6272a4">// fetches user name
+</span><span style="color:#6272a4"></span>usertxtbuf <span style="color:#ff79c6">=</span> objc_retainAutoreleasedReturnValue(user_txt);
+v4 <span style="color:#ff79c6">=</span> objc_msgSend(dico, <span style="color:#f1fa8c">&#34;objectForKey:&#34;</span>, usertxtbuf);
+v14 <span style="color:#ff79c6">=</span> objc_retainAutoreleasedReturnValue(v4);
+v5 <span style="color:#ff79c6">=</span> objc_msgSend(<span style="color:#ff79c6">*</span>((id <span style="color:#ff79c6">*</span>)this <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">2</span>), <span style="color:#f1fa8c">&#34;text&#34;</span>); <span style="color:#6272a4">// fetches password
+</span><span style="color:#6272a4"></span>v13 <span style="color:#ff79c6">=</span> objc_retainAutoreleasedReturnValue(v5);
+v12 <span style="color:#ff79c6">=</span> (<span style="color:#8be9fd">unsigned</span> <span style="color:#ff79c6">__int8</span>)objc_msgSend(v14, <span style="color:#f1fa8c">&#34;isEqualToString:&#34;</span>, v13);
+objc_release(v13);
+objc_release(v14);
+objc_release(usertxtbuf);
+<span style="color:#ff79c6">if</span> ( (v12 <span style="color:#ff79c6">&amp;</span> <span style="color:#bd93f9">1</span>) <span style="color:#ff79c6">!=</span> <span style="color:#bd93f9">0</span> )
+{
+  v6 <span style="color:#ff79c6">=</span> objc_msgSend(
+         <span style="color:#ff79c6">&amp;</span>OBJC_CLASS___UIAlertController,
+         <span style="color:#f1fa8c">&#34;alertControllerWithTitle:message:preferredStyle:&#34;</span>,
+         CFSTR(<span style="color:#f1fa8c">&#34;Good password&#34;</span>),
+         CFSTR(<span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">You found the good password ! But you didn&#39;t store anything here ¯</span><span style="color:#f1fa8c">\\</span><span style="color:#f1fa8c">_(ツ)_/¯&#34;</span>),
+         <span style="color:#bd93f9">1LL</span>);
+</code></pre></div><p>We can see that the contents of the user input is used as key in a dictionary, whose value is the password, which is then compared to the password input. Now, we have to find where this dictionary is constructed. There is a <code>-[ViewController viewDidLoad]</code> function that seems interesting:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#6272a4">// call the &#34;viewDidLoad&#34; method to the superclass
+</span><span style="color:#6272a4"></span>v21.super_class <span style="color:#ff79c6">=</span> (Class)<span style="color:#ff79c6">&amp;</span>OBJC_CLASS___ViewController;
+objc_msgSendSuper2(<span style="color:#ff79c6">&amp;</span>v21, <span style="color:#f1fa8c">&#34;viewDidLoad&#34;</span>);
+<span style="color:#6272a4">// Call &#34;GetRandomNumberBetween1and10&#34; method with the string Sw4gGP4ssw0rd
+</span><span style="color:#6272a4"></span>swag <span style="color:#ff79c6">=</span> objc_retain(CFSTR(<span style="color:#f1fa8c">&#34;Sw4gGP4ssw0rd&#34;</span>));
+md5swag <span style="color:#ff79c6">=</span> objc_msgSend(swag, <span style="color:#f1fa8c">&#34;GetRandomNumberBetween1and10&#34;</span>);
+md5 <span style="color:#ff79c6">=</span> objc_retainAutoreleasedReturnValue(md5swag);
+<span style="color:#6272a4">// Concatenate Sw4gGP4ssw0rd, - and the string computed before
+</span><span style="color:#6272a4"></span>swag_tiret <span style="color:#ff79c6">=</span> objc_msgSend(swag, <span style="color:#f1fa8c">&#34;stringByAppendingString:&#34;</span>, CFSTR(<span style="color:#f1fa8c">&#34;-&#34;</span>));
+swgt <span style="color:#ff79c6">=</span> objc_retainAutoreleasedReturnValue(swag_tiret);
+v4 <span style="color:#ff79c6">=</span> objc_msgSend(swgt, <span style="color:#f1fa8c">&#34;stringByAppendingString:&#34;</span>, md5);
+v17 <span style="color:#ff79c6">=</span> objc_retainAutoreleasedReturnValue(v4);
+<span style="color:#6272a4">// Decode base64-encoded string
+</span><span style="color:#6272a4"></span>v16 <span style="color:#ff79c6">=</span> objc_retain(CFSTR(<span style="color:#f1fa8c">&#34;eFhENHJLX0szdjFuWHg=&#34;</span>));
+v5 <span style="color:#ff79c6">=</span> objc_alloc(<span style="color:#ff79c6">&amp;</span>OBJC_CLASS___NSData);
+v15 <span style="color:#ff79c6">=</span> objc_msgSend(v5, <span style="color:#f1fa8c">&#34;initWithBase64EncodedString:options:&#34;</span>, v16, <span style="color:#bd93f9">0LL</span>);
+v6 <span style="color:#ff79c6">=</span> objc_alloc(<span style="color:#ff79c6">&amp;</span>OBJC_CLASS___NSString);
+location <span style="color:#ff79c6">=</span> objc_msgSend(v6, <span style="color:#f1fa8c">&#34;initWithData:encoding:&#34;</span>, v15, <span style="color:#bd93f9">4LL</span>);
+v7 <span style="color:#ff79c6">=</span> objc_msgSend(<span style="color:#ff79c6">&amp;</span>OBJC_CLASS___NSArray, <span style="color:#f1fa8c">&#34;arrayWithObjects:&#34;</span>, v17, <span style="color:#bd93f9">0LL</span>);
+v13 <span style="color:#ff79c6">=</span> objc_retainAutoreleasedReturnValue(v7);
+v8 <span style="color:#ff79c6">=</span> objc_msgSend(<span style="color:#ff79c6">&amp;</span>OBJC_CLASS___NSArray, <span style="color:#f1fa8c">&#34;arrayWithObjects:&#34;</span>, location, <span style="color:#bd93f9">0LL</span>);
+v12 <span style="color:#ff79c6">=</span> objc_retainAutoreleasedReturnValue(v8);
+v9 <span style="color:#ff79c6">=</span> objc_msgSend(<span style="color:#ff79c6">&amp;</span>OBJC_CLASS___NSDictionary, <span style="color:#f1fa8c">&#34;dictionaryWithObjects:forKeys:&#34;</span>, v13, v12);
+v10 <span style="color:#ff79c6">=</span> (NSDictionary <span style="color:#ff79c6">*</span>)objc_retainAutoreleasedReturnValue(v9);
+dico <span style="color:#ff79c6">=</span> v23<span style="color:#ff79c6">-&gt;</span>dico;
+v23<span style="color:#ff79c6">-&gt;</span>dico <span style="color:#ff79c6">=</span> v10;
+</code></pre></div><p>The GetRandomNumberBetween1and10 method just computes the MD5 sum of the string given to it:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">data <span style="color:#ff79c6">=</span> (<span style="color:#ff79c6">const</span> <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>)objc_msgSend(v2, <span style="color:#f1fa8c">&#34;UTF8String&#34;</span>);
+v3 <span style="color:#ff79c6">=</span> strlen(data);
+CC_MD5(data, v3, v19);
+<span style="color:#6272a4">// then code to format md5 hash to hex
+</span></code></pre></div><p>So, let&rsquo;s decode the base64 string, so we get the username: <code>xXD4rK_K3v1nXx</code>. And the password is <code>Sw4gGP4ssw0rd-d6e3698efe051ace727202e0d8bc56a1</code>, which gives us the flag: <code>Hero{xXD4rK_K3v1nXx:Sw4gGP4ssw0rd-d6e3698efe051ace727202e0d8bc56a1}</code>.</p>
+<h3 id="rustinpeace-100-pts">RustInPeace (100 pts)</h3>
+<blockquote>
+<p>Could you break my super encryption algorithm ?</p>
+<p>Format : Hero{}</p>
+<p>Author : SoEasY</p>
+</blockquote>
+<p>This challenge, as the name says, is a Linux binary written in Rust. Unfortunately, the binary is stripped, making it a bit harder to reverse, because we&rsquo;ll have to reverse rust standard library along with useful code.</p>
+<p>Let&rsquo;s have a look in the main function:</p>
+<pre><code>push    rax
+movsxd  rax, edi
+lea     rdi, rust_main
+mov     [rsp+8+var_8], rsi
+mov     rsi, rax
+mov     rdx, [rsp+8+var_8]
+call    rust_init
+pop     rcx
+retn
+</code></pre><p>It just calls Rust&rsquo;s runtime init function with the real rust main function as argument (which will be called by the runtime).</p>
+<p>The disassembly of this function is quite scary (thanks Rust compiler which generate ugly code, even worse than C++), and I executed the program inside IDA&rsquo;s debugger to have a global overview.</p>
+<p>Then, I used my best friend hex-rays which generated unreadable pseudo-C code, because analysis engine had trouble identifying the correct number of arguments used in functions. During debugging sessions, I figured out that the code used a lot of Rust strings (which can be seen as a C struct with a pointer to the buffer and a length), and a &ldquo;slice&rdquo; which represents a subset of the string (and contains a pointer to the buffer, a pointer to the start of the slice in the bufer and a pointer to the end).</p>
+<p>So, after defining those structs in IDA and identifying functions and redefining prototypes, I was able to get a nice pseudocode.</p>
+<p>The crackme first expects two arguments: a number (which must be &ldquo;60&rdquo;), and a path to the file which contains the flag:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">argv_elt2 <span style="color:#ff79c6">=</span> (<span style="color:#8be9fd">void</span> <span style="color:#ff79c6">*</span>)get_list_elt((<span style="color:#ff79c6">__int64</span>)argv_list, <span style="color:#bd93f9">2LL</span>);
+arg2_ptr <span style="color:#ff79c6">=</span> getbuf(argv_elt2);
+CreateFile(wrap_fileobj, arg2_ptr);
+file_unwrap(file_obj, wrap_fileobj);
+v1 <span style="color:#ff79c6">=</span> getbuf(file_obj);
+strend <span style="color:#ff79c6">=</span> adder_lol(v1.s_ptr, v1.len);
+s_endptr <span style="color:#ff79c6">=</span> strend.s_ptr;
+s_endbuf <span style="color:#ff79c6">=</span> strend.len;
+v3 <span style="color:#ff79c6">=</span> getbuf(file_obj);
+v4 <span style="color:#ff79c6">=</span> adder_lol(v3.s_ptr, v3.len);
+strlen_utf8(v4.s_ptr, v4.len);
+correctinput <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
+first_arg <span style="color:#ff79c6">=</span> get_list_elt((<span style="color:#ff79c6">__int64</span>)argv_list, <span style="color:#bd93f9">1LL</span>);
+<span style="color:#ff79c6">if</span> ( (string_compare(<span style="color:#ff79c6">&amp;</span>first_arg, <span style="color:#ff79c6">&amp;</span>str_60) <span style="color:#ff79c6">&amp;</span> <span style="color:#bd93f9">1</span>) <span style="color:#ff79c6">!=</span> <span style="color:#bd93f9">0</span> )
+{
+correctinput <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>;
+}
+
+</code></pre></div><p>Then the crackme does slice stuff with the string, check if the file content begins with &ldquo;FLAG=&rdquo; string, and then does this:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
+<span style="color:#ff79c6">if</span> ( pos2 <span style="color:#ff79c6">&gt;=</span> <span style="color:#bd93f9">47</span> )
+  ZN4core9panicking18panic_bounds_check17h4b3d0dcda831e378E();
+<span style="color:#ff79c6">if</span> ( __CFADD__(xorkey, pos2) )
+  core<span style="color:#ff79c6">::</span>panicking<span style="color:#ff79c6">::</span>panic();
+<span style="color:#ff79c6">if</span> ( encryptedflag[pos2] <span style="color:#ff79c6">!=</span> ((xorkey <span style="color:#ff79c6">+</span> pos2) <span style="color:#ff79c6">^</span> chr2) )
+  correctinput <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>;
+  <span style="color:#ff79c6">break</span>;
+
+</code></pre></div><p>The input flag is xored with <code>xorkey + pos</code> where &ldquo;pos&rdquo; is the i-th char of the user input being read.
+So, we can recover the flag:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">flag <span style="color:#ff79c6">=</span> [<span style="color:#bd93f9">163</span>, <span style="color:#bd93f9">221</span>, <span style="color:#bd93f9">65</span>, <span style="color:#bd93f9">246</span>, <span style="color:#bd93f9">49</span>, <span style="color:#bd93f9">9</span>, <span style="color:#bd93f9">39</span>, <span style="color:#bd93f9">49</span>, <span style="color:#bd93f9">43</span>, <span style="color:#bd93f9">62</span>, <span style="color:#bd93f9">2</span>, <span style="color:#bd93f9">118</span>, <span style="color:#bd93f9">44</span>, <span style="color:#bd93f9">22</span>, <span style="color:#bd93f9">51</span>, <span style="color:#bd93f9">123</span>, <span style="color:#bd93f9">57</span>, <span style="color:#bd93f9">18</span>, <span style="color:#bd93f9">37</span>, <span style="color:#bd93f9">33</span>, <span style="color:#bd93f9">96</span>, <span style="color:#bd93f9">38</span>, <span style="color:#bd93f9">13</span>, <span style="color:#bd93f9">103</span>, <span style="color:#bd93f9">54</span>, <span style="color:#bd93f9">101</span>, <span style="color:#bd93f9">35</span>, <span style="color:#bd93f9">35</span>, <span style="color:#bd93f9">7</span>, <span style="color:#bd93f9">11</span>, <span style="color:#bd93f9">47</span>, <span style="color:#bd93f9">110</span>, <span style="color:#bd93f9">40</span>, <span style="color:#bd93f9">2</span>, <span style="color:#bd93f9">44</span>, <span style="color:#bd93f9">108</span>, <span style="color:#bd93f9">22</span>, <span style="color:#bd93f9">82</span>, <span style="color:#bd93f9">16</span>, <span style="color:#bd93f9">16</span>, <span style="color:#bd93f9">85</span>, <span style="color:#bd93f9">11</span>, <span style="color:#bd93f9">1</span>, <span style="color:#bd93f9">88</span>, <span style="color:#bd93f9">87</span>, <span style="color:#bd93f9">20</span>, <span style="color:#bd93f9">96</span>]
+<span style="color:#ff79c6">print</span>(<span style="color:#8be9fd;font-style:italic">bytes</span>([x <span style="color:#ff79c6">^</span> (<span style="color:#bd93f9">0x3c</span> <span style="color:#ff79c6">+</span> i) <span style="color:#ff79c6">for</span> i,x <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">enumerate</span>(flag)][<span style="color:#bd93f9">5</span>:]))
+</code></pre></div><p>which gives <code>Hero{D1d_y0u_kn0w_4b0ut_Ru5t_r3v3rs1ng??}</code></p>
+<h3 id="armada-100-pts">ARMada (100 pts)</h3>
+<blockquote>
+<p>You are commissioned to test a new military-grade encryption, but apparently the developers haven&rsquo;t invented much&hellip;</p>
+<p>nc chall0.heroctf.fr 3000</p>
+<p>Format : Hero{}</p>
+<p>Author : SoEasY</p>
+</blockquote>
+<p>This time, the binary is a 32-bit ARM C++ program (I couldn&rsquo;t use hex-rays because I don&rsquo;t have 32-bit decompilers yay, and Ghidra&rsquo;s decompiler gave shitty useless code), so let&rsquo;s dig in the assembly.</p>
+<p>The binary starts by asking the user an input and computes its length:</p>
+<pre><code>MOV     R0, #0x40 ; '@' ; unsigned int
+BL      _Znaj           ; operator new[](uint)
+MOV     R3, R0
+STR     R3, [R11,#user_input]
+LDR     R1, =aEntrezUnInput ; &quot;Entrez un input : &quot;
+LDR     R0, =_ZSt4cout__GLIBCXX_3.4
+BL      _ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_PKc ; std::operator&lt;&lt;&lt;std::char_traits&lt;char&gt;&gt;(std::ostream &amp;,char const*)
+MOV     R3, #0xA        ; delimiter
+MOV     R2, #0x41 ; 'A' ; buf_len
+LDR     R1, [R11,#user_input] ; buffer
+LDR     R0, =0x23148    ; this
+BL      _ZNSi7getlineEPcic ; std::istream::getline(char *,int,char)
+</code></pre><p>Then it allocates a vector from the user buffer, and another copy that will be given to a &ldquo;yolo&rdquo; function, along with a string that will contain encrypted input:</p>
+<pre><code>SUB     R3, R11, #-encbuf
+SUB     R2, R11, #-input_copy
+MOV     R1, R2          ; input
+MOV     R0, R3          ; encrypted
+;   try {
+BL      _Z4yoloB5cxx11St6vectorIhSaIhEE ; yolo(std::vector&lt;uchar&gt;)
+</code></pre><p>The &ldquo;yolo&rdquo; function seems to be a bit scary at first, because of those</p>
+<pre><code>LDR     R3, =0xAAAAAAAB
+UMULL   R2, R3, R3, R1
+MOV     R2, R3,LSR#1
+</code></pre><p>which are just a division by 3, optimized by the compiler. So, this function just read the string by 3 chars, and for each block, does something like this:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd">long</span> block <span style="color:#ff79c6">=</span> (<span style="color:#ff79c6">*</span>buf<span style="color:#ff79c6">++</span>) <span style="color:#ff79c6">&lt;&lt;</span> <span style="color:#bd93f9">16</span> <span style="color:#ff79c6">+</span> (<span style="color:#ff79c6">*</span>buf<span style="color:#ff79c6">++</span>) <span style="color:#ff79c6">&lt;&lt;</span> <span style="color:#bd93f9">8</span> <span style="color:#ff79c6">+</span> (<span style="color:#ff79c6">*</span>buf<span style="color:#ff79c6">++</span>);
+out.append(encodeLookup[((block <span style="color:#ff79c6">&gt;&gt;</span> <span style="color:#bd93f9">18</span>) <span style="color:#ff79c6">&amp;</span> <span style="color:#bd93f9">0x3f</span>)] <span style="color:#ff79c6">^</span> <span style="color:#bd93f9">0x42</span>);
+out.append(encodeLookup[((block <span style="color:#ff79c6">&gt;&gt;</span> <span style="color:#bd93f9">12</span>) <span style="color:#ff79c6">&amp;</span> <span style="color:#bd93f9">0x3f</span>)] <span style="color:#ff79c6">^</span> <span style="color:#bd93f9">0x42</span>);
+out.append(encodeLookup[((block <span style="color:#ff79c6">&gt;&gt;</span> <span style="color:#bd93f9">6</span>) <span style="color:#ff79c6">&amp;</span> <span style="color:#bd93f9">0x3f</span>)] <span style="color:#ff79c6">^</span> <span style="color:#bd93f9">0x42</span>);
+out.append(encodeLookup[((block) <span style="color:#ff79c6">&amp;</span> <span style="color:#bd93f9">0x3f</span>)] <span style="color:#ff79c6">^</span> <span style="color:#bd93f9">0x42</span>);
+</code></pre></div><p>Some people may have recognized that <em>really</em> looks like base64 encoding algorithm. And actually, if we xor the &ldquo;encodeLookup&rdquo; array with 0x42 we get this:
+<code>CTwGhcJj+nKSqARsQ27omX0Iley91ufDbPxVY4ar5UgMNt/L3BvzkFiHZW6dOp8E</code>, which really looks like a custom base64 ;)</p>
+<p>Now, let&rsquo;s have a look to the server given in the challenge <code>nc chall0.heroctf.fr 3000</code>:</p>
+<pre><code>=================== ARMada (by SoEasY) ===================
+
+New cipher : XipH+jukexCE
+--&gt; Your answer : 
+</code></pre><p>it looks like we&rsquo;ll have to &ldquo;decrypt&rdquo; this string, and sending back the cleartext. Let&rsquo;s reimplement the algorithm and automate answers with pwntools:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#ff79c6">import</span> pwn
+
+look <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">bytes</span><span style="color:#ff79c6">.</span>fromhex(<span style="color:#f1fa8c">&#34;011635052A210828692C0911330310311370752D2F1A720B2E273B7B7337240620123A141B7623307717250F0C366D0E7100343829042B0A181574260D327A07&#34;</span>)
+look <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">bytes</span>([x <span style="color:#ff79c6">^</span> <span style="color:#bd93f9">0x42</span> <span style="color:#ff79c6">for</span> x <span style="color:#ff79c6">in</span> look])
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">dec</span>(lol):
+    buf <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&#34;</span>
+    <span style="color:#ff79c6">for</span> i <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#bd93f9">0</span>, <span style="color:#8be9fd;font-style:italic">len</span>(lol) <span style="color:#ff79c6">//</span> <span style="color:#bd93f9">4</span>):
+        bloc <span style="color:#ff79c6">=</span> lol[<span style="color:#bd93f9">4</span><span style="color:#ff79c6">*</span>i:<span style="color:#bd93f9">4</span><span style="color:#ff79c6">*</span>i<span style="color:#ff79c6">+</span><span style="color:#bd93f9">4</span>]
+        i0 <span style="color:#ff79c6">=</span> look<span style="color:#ff79c6">.</span>find(bloc[<span style="color:#bd93f9">0</span>])
+        i1 <span style="color:#ff79c6">=</span> look<span style="color:#ff79c6">.</span>find(bloc[<span style="color:#bd93f9">1</span>])
+        i2 <span style="color:#ff79c6">=</span> look<span style="color:#ff79c6">.</span>find(bloc[<span style="color:#bd93f9">2</span>])
+        i3 <span style="color:#ff79c6">=</span> look<span style="color:#ff79c6">.</span>find(bloc[<span style="color:#bd93f9">3</span>])
+        <span style="color:#ff79c6">if</span> i3 <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>:
+            tmp <span style="color:#ff79c6">=</span> (i3) <span style="color:#ff79c6">|</span> (i2 <span style="color:#ff79c6">&lt;&lt;</span> <span style="color:#bd93f9">6</span>) <span style="color:#ff79c6">|</span> (i1 <span style="color:#ff79c6">&lt;&lt;</span> <span style="color:#bd93f9">12</span>) <span style="color:#ff79c6">|</span> (i0 <span style="color:#ff79c6">&lt;&lt;</span> <span style="color:#bd93f9">18</span>)
+            buf <span style="color:#ff79c6">+=</span> <span style="color:#8be9fd;font-style:italic">bytes</span>([(tmp <span style="color:#ff79c6">&gt;&gt;</span> <span style="color:#bd93f9">16</span>), (tmp <span style="color:#ff79c6">&gt;&gt;</span> <span style="color:#bd93f9">8</span>) <span style="color:#ff79c6">&amp;</span> <span style="color:#bd93f9">0xff</span>, (tmp) <span style="color:#ff79c6">&amp;</span> <span style="color:#bd93f9">0xff</span>])
+            <span style="color:#ff79c6">continue</span>
+        <span style="color:#ff79c6">if</span> i2 <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>:
+            tmp <span style="color:#ff79c6">=</span> (i2 <span style="color:#ff79c6">&lt;&lt;</span> <span style="color:#bd93f9">6</span>) <span style="color:#ff79c6">|</span> (i1 <span style="color:#ff79c6">&lt;&lt;</span> <span style="color:#bd93f9">12</span>) <span style="color:#ff79c6">|</span> (i0 <span style="color:#ff79c6">&lt;&lt;</span> <span style="color:#bd93f9">18</span>)
+            tmp <span style="color:#ff79c6">&gt;&gt;=</span> <span style="color:#bd93f9">8</span>
+            buf <span style="color:#ff79c6">+=</span> <span style="color:#8be9fd;font-style:italic">bytes</span>([(tmp <span style="color:#ff79c6">&gt;&gt;</span> <span style="color:#bd93f9">8</span>) <span style="color:#ff79c6">&amp;</span> <span style="color:#bd93f9">0xff</span>, (tmp) <span style="color:#ff79c6">&amp;</span> <span style="color:#bd93f9">0xff</span>])
+            <span style="color:#ff79c6">continue</span>
+        <span style="color:#ff79c6">if</span> i1 <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>:
+            tmp <span style="color:#ff79c6">=</span> i1 <span style="color:#ff79c6">|</span> (i0 <span style="color:#ff79c6">&lt;&lt;</span> <span style="color:#bd93f9">6</span>)
+            buf <span style="color:#ff79c6">+=</span> <span style="color:#8be9fd;font-style:italic">bytes</span>([tmp <span style="color:#ff79c6">&gt;&gt;</span> <span style="color:#bd93f9">4</span>])
+    <span style="color:#ff79c6">return</span> buf
+    
+
+
+blop <span style="color:#ff79c6">=</span> {}
+<span style="color:#ff79c6">for</span> i <span style="color:#ff79c6">in</span> look:
+    <span style="color:#ff79c6">if</span> <span style="color:#8be9fd;font-style:italic">chr</span>(i) <span style="color:#ff79c6">not</span> <span style="color:#ff79c6">in</span> blop:
+        blop[<span style="color:#8be9fd;font-style:italic">chr</span>(i)] <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>
+    blop[<span style="color:#8be9fd;font-style:italic">chr</span>(i)] <span style="color:#ff79c6">+=</span> <span style="color:#bd93f9">1</span>
+
+remote <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>remote(<span style="color:#f1fa8c">&#34;chall0.heroctf.fr&#34;</span>, <span style="color:#bd93f9">3000</span>)
+i <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>
+<span style="color:#ff79c6">for</span> i <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#bd93f9">40</span>):
+    remote<span style="color:#ff79c6">.</span>recvuntil(<span style="color:#f1fa8c">&#34;New cipher : &#34;</span>)
+    deco <span style="color:#ff79c6">=</span> remote<span style="color:#ff79c6">.</span>recvline()
+    bop <span style="color:#ff79c6">=</span> dec(deco)<span style="color:#ff79c6">.</span>rstrip()
+    remote<span style="color:#ff79c6">.</span>recvuntil(<span style="color:#f1fa8c">&#34; answer : &#34;</span>)
+    remote<span style="color:#ff79c6">.</span>sendline(bop)
+<span style="color:#ff79c6">print</span>(remote<span style="color:#ff79c6">.</span>recvall())
+</code></pre></div><p>We finally get the flag after a short time: <code>Hero{0h_w0W_s0_y0u_not1c3d_1t_w4s_cust0m_b64_?}</code></p>
+<h3 id="fatbin-125-pts">fatBin (125 pts)</h3>
+<blockquote>
+<p>You&rsquo;ll never find my flag.</p>
+<p>Format : Hero{}</p>
+<p>Author : SoEasY</p>
+</blockquote>
+<p>So, challenge accepted ;). It&rsquo;s (again) a Mach-O binary, more precisely, according to &ldquo;file&rdquo; command: <code>fatBoy: Mach-O universal binary with 2 architectures: [x86_64:Mach-O 64-bit x86_64 executable, flags:&lt;NOUNDEFS|DYLDLINK|TWOLEVEL|PIE&gt;] [arm64:Mach-O 64-bit arm64 executable, flags:&lt;NOUNDEFS|DYLDLINK|TWOLEVEL|PIE&gt;]</code>.</p>
+<p>As usual we open it on IDA, which asks us which binary we want to analyze. Because Intel assembly is cool, I choosed the x86_64 bin to reverse. The algorithm is pretty straightforward (thanks Hex-Rays again):</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#6272a4">// key initialization
+</span><span style="color:#6272a4"></span>key[<span style="color:#bd93f9">0</span>] <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">~</span>KEY[<span style="color:#bd93f9">0</span>];
+key[<span style="color:#bd93f9">1</span>] <span style="color:#ff79c6">=</span> KEY[<span style="color:#bd93f9">1</span>] <span style="color:#ff79c6">^</span> <span style="color:#bd93f9">0xAB</span>;
+key[<span style="color:#bd93f9">2</span>] <span style="color:#ff79c6">=</span> KEY[<span style="color:#bd93f9">2</span>] <span style="color:#ff79c6">^</span> <span style="color:#bd93f9">0xE5</span>;
+key[<span style="color:#bd93f9">3</span>] <span style="color:#ff79c6">=</span> KEY[<span style="color:#bd93f9">3</span>] <span style="color:#ff79c6">^</span> <span style="color:#bd93f9">0x8A</span>;
+key[<span style="color:#bd93f9">4</span>] <span style="color:#ff79c6">=</span> KEY[<span style="color:#bd93f9">4</span>] <span style="color:#ff79c6">^</span> <span style="color:#bd93f9">0x5C</span>;
+key[<span style="color:#bd93f9">5</span>] <span style="color:#ff79c6">=</span> KEY[<span style="color:#bd93f9">5</span>] <span style="color:#ff79c6">^</span> <span style="color:#bd93f9">0x44</span>;
+key[<span style="color:#bd93f9">6</span>] <span style="color:#ff79c6">=</span> KEY[<span style="color:#bd93f9">6</span>] <span style="color:#ff79c6">^</span> <span style="color:#bd93f9">0x20</span>;
+key[<span style="color:#bd93f9">7</span>] <span style="color:#ff79c6">=</span> KEY[<span style="color:#bd93f9">7</span>] <span style="color:#ff79c6">^</span> <span style="color:#bd93f9">0x47</span>;
+key[<span style="color:#bd93f9">8</span>] <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>;
+inputlen <span style="color:#ff79c6">=</span> strlen(a1);
+v15 <span style="color:#ff79c6">=</span> strlen(key);
+v12 <span style="color:#ff79c6">=</span> v5;
+v9 <span style="color:#ff79c6">=</span> inputlen;
+<span style="color:#6272a4">// snipped useless code
+</span><span style="color:#6272a4"></span>i <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>;
+v13 <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>;
+__s1 <span style="color:#ff79c6">=</span> (<span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>)v5;
+<span style="color:#ff79c6">while</span> ( i <span style="color:#ff79c6">&lt;</span> (<span style="color:#8be9fd">int</span>)inputlen )
+{
+  <span style="color:#ff79c6">if</span> ( v13 <span style="color:#ff79c6">==</span> v15 )
+  v13 <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>;
+  v8[i<span style="color:#ff79c6">++</span>] <span style="color:#ff79c6">=</span> key[v13<span style="color:#ff79c6">++</span>];
+}
+v8[i] <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>;
+<span style="color:#ff79c6">for</span> ( i <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>; i <span style="color:#ff79c6">&lt;</span> (<span style="color:#8be9fd">int</span>)inputlen; <span style="color:#ff79c6">++</span>i )
+  __s1[i] <span style="color:#ff79c6">=</span> (v8[i] <span style="color:#ff79c6">+</span> __s[i]) <span style="color:#ff79c6">%</span> <span style="color:#bd93f9">26</span> <span style="color:#ff79c6">+</span> <span style="color:#f1fa8c">&#39;B&#39;</span>;
+v3 <span style="color:#ff79c6">=</span> __s1;
+__s1[i] <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>;
+v5[<span style="color:#bd93f9">5</span>] <span style="color:#ff79c6">=</span> puts(v3);
+</code></pre></div><p>It seems to be some kind of Caesar/Vigenere cipher, but weirdly implemented, so we&rsquo;ll need extra care to decrypt it, which gives us as script:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">dec</span>(key, txt):
+  res <span style="color:#ff79c6">=</span> []
+  <span style="color:#ff79c6">for</span> i <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#8be9fd;font-style:italic">len</span>(txt)):
+      byte <span style="color:#ff79c6">=</span> txt[i] <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">0x42</span>
+      k <span style="color:#ff79c6">=</span> key[i <span style="color:#ff79c6">%</span> <span style="color:#8be9fd;font-style:italic">len</span>(key)] <span style="color:#ff79c6">%</span> <span style="color:#bd93f9">26</span>
+      <span style="color:#ff79c6">if</span> byte <span style="color:#ff79c6">&lt;</span> k:
+          res<span style="color:#ff79c6">.</span>append(byte <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">26</span> <span style="color:#ff79c6">-</span> k)
+      <span style="color:#ff79c6">else</span>:
+          res<span style="color:#ff79c6">.</span>append(byte <span style="color:#ff79c6">-</span> k)
+  <span style="color:#ff79c6">return</span> res
+
+k1 <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;BESTRONG&#34;</span>
+
+buf <span style="color:#ff79c6">=</span> []
+<span style="color:#ff79c6">for</span> c <span style="color:#ff79c6">in</span> dec(k1, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;KRLIJGMIWYMB[HWZPTMNZTTSCL&#34;</span>):
+    tmp <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">3</span><span style="color:#ff79c6">*</span><span style="color:#bd93f9">26</span> <span style="color:#ff79c6">+</span> c
+    <span style="color:#ff79c6">if</span> tmp <span style="color:#ff79c6">&gt;</span> <span style="color:#8be9fd;font-style:italic">ord</span>(<span style="color:#f1fa8c">&#34;Z&#34;</span>):
+        tmp <span style="color:#ff79c6">=</span> tmp <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">26</span>
+    buf<span style="color:#ff79c6">.</span>append(tmp)
+<span style="color:#ff79c6">print</span>(<span style="color:#8be9fd;font-style:italic">bytes</span>(buf))
+
+</code></pre></div><p>Unfortunately, this gives us: <code>IMSORRYBUTTHISISNOTTHEFLAG</code>, which isn&rsquo;t our flag oubviously. But remember, we have an ARM64 binary to reverse inside our &ldquo;fat&rdquo; binary. Let&rsquo;s open it on IDA. Luckily for us, it&rsquo;s the same algorithm, but the key and ciphertext changed. The key decodes as <code>FATMACHO</code> this time, and when running the script this those arguments:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">k1 <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;FATMACHO&#34;</span>
+
+buf <span style="color:#ff79c6">=</span> []
+<span style="color:#ff79c6">for</span> c <span style="color:#ff79c6">in</span> dec(k1, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;CUZVTWPXYGOPLLVVLJFRGRZBGU&#34;</span>):
+    tmp <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">3</span><span style="color:#ff79c6">*</span><span style="color:#bd93f9">26</span> <span style="color:#ff79c6">+</span> c
+    <span style="color:#ff79c6">if</span> tmp <span style="color:#ff79c6">&gt;</span> <span style="color:#8be9fd;font-style:italic">ord</span>(<span style="color:#f1fa8c">&#34;Z&#34;</span>):
+        tmp <span style="color:#ff79c6">=</span> tmp <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">26</span>
+    buf<span style="color:#ff79c6">.</span>append(tmp)
+<span style="color:#ff79c6">print</span>(<span style="color:#8be9fd;font-style:italic">bytes</span>(buf))
+
+</code></pre></div><p>We get <code>WTFISTHISFUCKINGFILEFORMAT</code>, and the flag is <code>Hero{WTFISTHISFUCKINGFILEFORMAT}</code></p>
+<h3 id="wtf-350-pts">WTF (350 pts)</h3>
+<blockquote>
+<p>Find the flag in this android application.</p>
+<p>Format : Hero{}</p>
+<p>Author : SoEasY</p>
+</blockquote>
+<p>This time, the challenge author is lying to us and the &ldquo;android&rdquo; application is again a Mach-O binary (he&rsquo;s probably an OSX lover).</p>
+<p>The function starts by filling a 81-byte buffer with spaces, and then puts some numbers between 0 and 9 at &ldquo;random&rdquo; places in this buffer.
+Then the function looks likes this:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
+v3 <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">*</span>user_input
+<span style="color:#ff79c6">while</span> ( <span style="color:#bd93f9">1</span> )
+{
+  input0 <span style="color:#ff79c6">=</span> v3 <span style="color:#ff79c6">-</span> <span style="color:#f1fa8c">&#39;1&#39;</span>;
+  input1 <span style="color:#ff79c6">=</span> user_input[<span style="color:#bd93f9">1</span>] <span style="color:#ff79c6">-</span> <span style="color:#f1fa8c">&#39;1&#39;</span>;
+  input2 <span style="color:#ff79c6">=</span> user_input[<span style="color:#bd93f9">2</span>];
+  <span style="color:#ff79c6">if</span> ( checkfunc(v11, input0, user_input[<span style="color:#bd93f9">1</span>] <span style="color:#ff79c6">-</span> <span style="color:#f1fa8c">&#39;1&#39;</span>, input2) )
+    v11[<span style="color:#bd93f9">9</span> <span style="color:#ff79c6">*</span> input0 <span style="color:#ff79c6">+</span> input1] <span style="color:#ff79c6">=</span> input2;
+  user_input <span style="color:#ff79c6">+=</span> <span style="color:#bd93f9">3</span>;
+  v7 <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>;
+  <span style="color:#ff79c6">for</span> ( i <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">8LL</span>; i <span style="color:#ff79c6">!=</span> <span style="color:#bd93f9">89</span>; i <span style="color:#ff79c6">+=</span> <span style="color:#bd93f9">9LL</span> )
+    v7 <span style="color:#ff79c6">+=</span> (v10[i] <span style="color:#ff79c6">!=</span> <span style="color:#bd93f9">32</span>)
+        <span style="color:#ff79c6">+</span> (v10[i <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">1</span>] <span style="color:#ff79c6">!=</span> <span style="color:#bd93f9">32</span>)
+        <span style="color:#ff79c6">+</span> (v10[i <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">2</span>] <span style="color:#ff79c6">!=</span> <span style="color:#bd93f9">32</span>)
+        <span style="color:#ff79c6">+</span> (v10[i <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">3</span>] <span style="color:#ff79c6">!=</span> <span style="color:#bd93f9">32</span>)
+        <span style="color:#ff79c6">+</span> (v10[i <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">4</span>] <span style="color:#ff79c6">!=</span> <span style="color:#bd93f9">32</span>)
+        <span style="color:#ff79c6">+</span> (v10[i <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">5</span>] <span style="color:#ff79c6">!=</span> <span style="color:#bd93f9">32</span>)
+        <span style="color:#ff79c6">+</span> (v10[i <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">6</span>] <span style="color:#ff79c6">!=</span> <span style="color:#bd93f9">32</span>)
+        <span style="color:#ff79c6">+</span> (v10[i <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">7</span>] <span style="color:#ff79c6">!=</span> <span style="color:#bd93f9">32</span>)
+        <span style="color:#ff79c6">+</span> (v11[i] <span style="color:#ff79c6">!=</span> <span style="color:#bd93f9">32</span>);
+  <span style="color:#ff79c6">if</span> ( v7 <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">81</span> )
+    <span style="color:#ff79c6">break</span>;
+  v3 <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">*</span>user_input;
+  <span style="color:#ff79c6">if</span> ( <span style="color:#ff79c6">!*</span>user_input )
+  {
+    puts(<span style="color:#f1fa8c">&#34;Nope.&#34;</span>);
+    <span style="color:#ff79c6">return</span> <span style="color:#bd93f9">1LL</span>;
+  }
+}
+
+</code></pre></div><p>The checkfunc is quite ugly so I won&rsquo;t paste it here, but we can deduce that the 81-byte buffer is actually a 9x9 grid, and &ldquo;input0&rdquo; and &ldquo;input1&rdquo; are (x,y) coordinates in this grid, while &ldquo;input2&rdquo; is the number to place in the grid. Also the functions ends if we reached the end of user input, or if there are no &ldquo;space&rdquo; chars left in the grid.</p>
+<p>Those things made me to think this check function was just checking if the grid was still a valid Sudoku grid after trying to add the number. So, I wrote a little program that printed the buffer into a 9*9 grid:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">
+v11  <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;   546  9 2      7  39    49 5    7 7      2     93    56  8    1  39         8 6&#34;</span>
+
+<span style="color:#ff79c6">for</span> i <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#bd93f9">9</span>):
+  <span style="color:#ff79c6">print</span>(<span style="color:#f1fa8c">&#34;|&#34;</span><span style="color:#ff79c6">.</span>join([x <span style="color:#ff79c6">for</span> x <span style="color:#ff79c6">in</span> v11[<span style="color:#bd93f9">9</span><span style="color:#ff79c6">*</span>i:<span style="color:#bd93f9">9</span><span style="color:#ff79c6">*</span>(i<span style="color:#ff79c6">+</span><span style="color:#bd93f9">1</span>)]]))
+
+</code></pre></div><p>which gave me:</p>
+<pre><code> | | |5|4|6| | |9
+ |2| | | | | | |7
+ | |3|9| | | | |4
+9| |5| | | | |7| 
+7| | | | | | |2| 
+ | | | |9|3| | | 
+ |5|6| | |8| | | 
+ |1| | |3|9| | | 
+ | | | | | |8| |6
+
+</code></pre><p>So I copied this grid into an online Sudoku solver which solved it, and copied back the completed Sudoku grid line by line, which gave the flag:
+<code>Hero{178546239429381567563927184935214678741865923682793415256478391814639752397152846}</code></p>
+
+    </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>
