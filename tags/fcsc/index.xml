@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>FCSC on ret2school</title>
+    <link>https://ret2school.github.io/tags/fcsc/</link>
+    <description>Recent content in FCSC on ret2school</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Mon, 03 May 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/fcsc/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>[FCSC 2021 - pwn] Blind Date</title>
+      <link>https://ret2school.github.io/post/blindate/</link>
+      <pubDate>Mon, 03 May 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/blindate/</guid>
+      <description>Blind Date (489 pts)  Une société souhaite créer un service en ligne protégeant les informations de ses clients. Pouvez-vous leur montrer qu&amp;rsquo;elle n&amp;rsquo;est pas sûre en lisant le fichier flag.txt sur leur serveur ? Les gérants de cette société n&amp;rsquo;ont pas souhaité vous donner ni le code source de leur solution, ni le binaire compilé, mais ils vous proposent uniquement un accès distant à leur service.
+  nc challenges2.</description>
+    </item>
+    
+    <item>
+      <title>[FCSC 2021 - pwn] cheapie</title>
+      <link>https://ret2school.github.io/post/cheapie/</link>
+      <pubDate>Mon, 03 May 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/cheapie/</guid>
+      <description>Cheapie (pwn - 198 pts)  Êtes-vous familier avec le tas ?
+ Yay a heap challenge !
+Setup The given libc didn&amp;rsquo;t have any symbols and no loader was provided, so I ran pwninit to retrieve a libc with symbols and a loader. Which I didn&amp;rsquo;t realise until me writing this, is that pwninit gave me a different libc, that changed the final part of the exploit : getting a shell !</description>
+    </item>
+    
+    <item>
+      <title>[FCSC 2021 - pwn] Itsy Mipsy router</title>
+      <link>https://ret2school.github.io/post/mipsy/</link>
+      <pubDate>Mon, 03 May 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/mipsy/</guid>
+      <description>Itsy Mipsy Router (200 pts) Itsy Mipsy Router is a pwn challenge I did during the FCSC event. It&amp;rsquo;s not a very hard challenge but I found it very interesting because it was my first mips pwn challenge !
+Setup So basically we got this:
+ On vous demander d&amp;rsquo;auditer un routeur à l&amp;rsquo;interface entre Internet et un réseau interne d&amp;rsquo;une entreprise. Le client vous demande si il est possible de lire les fichiers stockés sur la machine filer qui sert de serveur de fichiers HTTP.</description>
+    </item>
+    
+    <item>
+      <title>[FCSC 2021 - pwn] Privesc Me (2) - &#34;ALED&#34; - Your randomness checker</title>
+      <link>https://ret2school.github.io/post/privesc_two/</link>
+      <pubDate>Mon, 03 May 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/privesc_two/</guid>
+      <description>Privesc Me (2) - &amp;ldquo;ALED&amp;rdquo; - Your randomness checker (misc - 194 pts)  Le dernier stagiaire de l&amp;rsquo;équipe nous a pondu un nouveau programme pour tester la robustesse des clés d&amp;rsquo;authentification que notre administrateur système utilise. Son outil est disponible dans le dossier stage1. Le chef a poussé un soupir d&amp;rsquo;agacement en voyant le code.
+ I found this one pretty fun and I think it was my favorite along with &amp;ldquo;It&amp;rsquo;s mipsy router&amp;rdquo;.</description>
+    </item>
+    
+    <item>
+      <title>[FCSC 2021 - pwn] reporter</title>
+      <link>https://ret2school.github.io/post/reporter/</link>
+      <pubDate>Mon, 03 May 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/reporter/</guid>
+      <description>Reporter (pwn - 499 pts)  Vous arrivez dans une nouvelle entreprise qui utilise un navigateur conçu en interne. Pouvez-vous obtenir un shell sur la machine de la personne qui vérifie les liens qu&amp;rsquo;on lui envoie ? http://challenges2.france-cybersecurity-challenge.fr:4009/
+ Testing the water As soon as I saw this description, I got hyped, &amp;ldquo;Cool a browser exploit !&amp;rdquo; I thought. &amp;ldquo;It&amp;rsquo;s the perfect occasion to learn more about WebKit and JavaScriptCore&amp;rdquo;&amp;hellip; What a fool.</description>
+    </item>
+    
+  </channel>
+</rss>

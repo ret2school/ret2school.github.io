@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Privesc Me on ret2school</title>
+    <link>https://ret2school.github.io/tags/privesc-me/</link>
+    <description>Recent content in Privesc Me on ret2school</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Mon, 03 May 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/privesc-me/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>[FCSC 2021 - pwn] Privesc Me (2) - &#34;ALED&#34; - Your randomness checker</title>
+      <link>https://ret2school.github.io/post/privesc_two/</link>
+      <pubDate>Mon, 03 May 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/privesc_two/</guid>
+      <description>Privesc Me (2) - &amp;ldquo;ALED&amp;rdquo; - Your randomness checker (misc - 194 pts)  Le dernier stagiaire de l&amp;rsquo;équipe nous a pondu un nouveau programme pour tester la robustesse des clés d&amp;rsquo;authentification que notre administrateur système utilise. Son outil est disponible dans le dossier stage1. Le chef a poussé un soupir d&amp;rsquo;agacement en voyant le code.
+ I found this one pretty fun and I think it was my favorite along with &amp;ldquo;It&amp;rsquo;s mipsy router&amp;rdquo;.</description>
+    </item>
+    
+  </channel>
+</rss>
