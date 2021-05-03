@@ -28,6 +28,16 @@ Setup The given libc didn&amp;rsquo;t have any symbols and no loader was provide
     </item>
     
     <item>
+      <title>[FCSC 2021 - pwn] reporter</title>
+      <link>https://ret2school.github.io/post/reporter/</link>
+      <pubDate>Mon, 03 May 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/reporter/</guid>
+      <description>Reporter (pwn - 499 pts)  Vous arrivez dans une nouvelle entreprise qui utilise un navigateur conçu en interne. Pouvez-vous obtenir un shell sur la machine de la personne qui vérifie les liens qu&amp;rsquo;on lui envoie ? http://challenges2.france-cybersecurity-challenge.fr:4009/
+ Testing the water As soon as I saw this description, I got hyped, &amp;ldquo;Cool a browser exploit !&amp;rdquo; I thought. &amp;ldquo;It&amp;rsquo;s the perfect occasion to learn more about WebKit and JavaScriptCore&amp;rdquo;&amp;hellip; What a fool.</description>
+    </item>
+    
+    <item>
       <title>[Midnight Sun CTF 2021 - RE] Labyrevnt</title>
       <link>https://ret2school.github.io/post/wu_labyrevnt/</link>
       <pubDate>Sun, 11 Apr 2021 00:00:00 +0000</pubDate>

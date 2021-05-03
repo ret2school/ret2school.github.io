@@ -27,15 +27,5 @@ Setup So basically we got this:
  On vous demander d&amp;rsquo;auditer un routeur à l&amp;rsquo;interface entre Internet et un réseau interne d&amp;rsquo;une entreprise. Le client vous demande si il est possible de lire les fichiers stockés sur la machine filer qui sert de serveur de fichiers HTTP.</description>
     </item>
     
-    <item>
-      <title>[FCSC 2021 - pwn] reporter</title>
-      <link>https://ret2school.github.io/post/reporter/</link>
-      <pubDate>Mon, 03 May 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/post/reporter/</guid>
-      <description>Reporter (pwn - 499 pts)  Vous arrivez dans une nouvelle entreprise qui utilise un navigateur conçu en interne. Pouvez-vous obtenir un shell sur la machine de la personne qui vérifie les liens qu&amp;rsquo;on lui envoie ? http://challenges2.france-cybersecurity-challenge.fr:4009/
- Testing the water As soon as I saw this description, I got hyped, &amp;ldquo;Cool a browser exploit !&amp;rdquo; I thought. &amp;ldquo;It&amp;rsquo;s the perfect occasion to learn more about WebKit and JavaScriptCore&amp;rdquo;&amp;hellip; What a fool.</description>
-    </item>
-    
   </channel>
 </rss>
