@@ -7,6 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <lastBuildDate>Mon, 03 May 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/fcsc/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>[FCSC 2021 - misc] Privesc Me (2) - &#34;ALED&#34; - Your randomness checker</title>
+      <link>https://ret2school.github.io/post/privesc_two/</link>
+      <pubDate>Mon, 03 May 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/privesc_two/</guid>
+      <description>Privesc Me (2) - &amp;ldquo;ALED&amp;rdquo; - Your randomness checker (misc - 194 pts)  Le dernier stagiaire de l&amp;rsquo;équipe nous a pondu un nouveau programme pour tester la robustesse des clés d&amp;rsquo;authentification que notre administrateur système utilise. Son outil est disponible dans le dossier stage1. Le chef a poussé un soupir d&amp;rsquo;agacement en voyant le code.
+ I found this one pretty fun and I think it was my favorite along with &amp;ldquo;It&amp;rsquo;s mipsy router&amp;rdquo;.</description>
+    </item>
+    
+    <item>
       <title>[FCSC 2021 - pwn] Blind Date</title>
       <link>https://ret2school.github.io/post/blindate/</link>
       <pubDate>Mon, 03 May 2021 00:00:00 +0000</pubDate>
@@ -36,16 +46,6 @@ Setup The given libc didn&amp;rsquo;t have any symbols and no loader was provide
       <description>Itsy Mipsy Router (200 pts) Itsy Mipsy Router is a pwn challenge I did during the FCSC event. It&amp;rsquo;s not a very hard challenge but I found it very interesting because it was my first mips pwn challenge !
 Setup So basically we got this:
  On vous demander d&amp;rsquo;auditer un routeur à l&amp;rsquo;interface entre Internet et un réseau interne d&amp;rsquo;une entreprise. Le client vous demande si il est possible de lire les fichiers stockés sur la machine filer qui sert de serveur de fichiers HTTP.</description>
-    </item>
-    
-    <item>
-      <title>[FCSC 2021 - pwn] Privesc Me (2) - &#34;ALED&#34; - Your randomness checker</title>
-      <link>https://ret2school.github.io/post/privesc_two/</link>
-      <pubDate>Mon, 03 May 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/post/privesc_two/</guid>
-      <description>Privesc Me (2) - &amp;ldquo;ALED&amp;rdquo; - Your randomness checker (misc - 194 pts)  Le dernier stagiaire de l&amp;rsquo;équipe nous a pondu un nouveau programme pour tester la robustesse des clés d&amp;rsquo;authentification que notre administrateur système utilise. Son outil est disponible dans le dossier stage1. Le chef a poussé un soupir d&amp;rsquo;agacement en voyant le code.
- I found this one pretty fun and I think it was my favorite along with &amp;ldquo;It&amp;rsquo;s mipsy router&amp;rdquo;.</description>
     </item>
     
     <item>
