@@ -5,7 +5,19 @@
     <link>https://ret2school.github.io/tags/pwn/</link>
     <description>Recent content in pwn on ret2school</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Mon, 03 May 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/pwn/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 30 Sep 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/pwn/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>[DownUnderCTF 2021 - pwn] DUCTFnote</title>
+      <link>https://ret2school.github.io/post/ductf_note/</link>
+      <pubDate>Thu, 30 Sep 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/ductf_note/</guid>
+      <description>DownUnderCTF - DUCTFnote (471 points) DUCTFnote was a heap exploitation challenge.
+The main difficulty was that we could only have one active note at a time, so if we create a new note, the old one is no longer accessible.
+Source code analysis I spotted one bug in the source code which leads to another bug :
+135 void edit_note(datanote_t * note) { 136 if(!note) { 137 printf(&amp;#34;No Note.\n&amp;#34;); 138 return; 139 } 140 141 signed char idx = 0; 142 while(idx &amp;lt;= note-&amp;gt;size) { // note-&amp;gt;size can takes values from 0 to 127 (0x7f) 143 *(&amp;amp;(note-&amp;gt;data)+idx) = fgetc(stdin); 144 if (*(&amp;amp;(note-&amp;gt;data)+idx) == &amp;#39;\n&amp;#39;) {*(&amp;amp;(note-&amp;gt;data)+idx) = &amp;#39;\0&amp;#39;; break;} 145 idx++; 146 } 147 } In the function edit_note the condition of the while is incorrect and the loop is executed once too often : while(idx &amp;lt;= note-&amp;gt;size) should have been while(idx &amp;lt; note-&amp;gt;size).</description>
+    </item>
+    
     <item>
       <title>[FCSC 2021 - pwn] Blind Date</title>
       <link>https://ret2school.github.io/post/blindate/</link>
