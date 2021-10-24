@@ -5,22 +5,76 @@
     <link>https://ret2school.github.io/tags/</link>
     <description>Recent content in Tags on ret2school</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Thu, 30 Sep 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 24 Oct 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>2021</title>
       <link>https://ret2school.github.io/tags/2021/</link>
-      <pubDate>Thu, 30 Sep 2021 00:00:00 +0000</pubDate>
+      <pubDate>Sun, 24 Oct 2021 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/tags/2021/</guid>
       <description></description>
     </item>
     
     <item>
+      <title>ASIS CTF</title>
+      <link>https://ret2school.github.io/tags/asis-ctf/</link>
+      <pubDate>Sun, 24 Oct 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/asis-ctf/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>ctf</title>
       <link>https://ret2school.github.io/tags/ctf/</link>
-      <pubDate>Thu, 30 Sep 2021 00:00:00 +0000</pubDate>
+      <pubDate>Sun, 24 Oct 2021 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/tags/ctf/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>heap</title>
+      <link>https://ret2school.github.io/tags/heap/</link>
+      <pubDate>Sun, 24 Oct 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/heap/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>nasm</title>
+      <link>https://ret2school.github.io/tags/nasm/</link>
+      <pubDate>Sun, 24 Oct 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/nasm/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>oob write</title>
+      <link>https://ret2school.github.io/tags/oob-write/</link>
+      <pubDate>Sun, 24 Oct 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/oob-write/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>pwn</title>
+      <link>https://ret2school.github.io/tags/pwn/</link>
+      <pubDate>Sun, 24 Oct 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/pwn/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>ret2school</title>
+      <link>https://ret2school.github.io/tags/ret2school/</link>
+      <pubDate>Sun, 24 Oct 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/ret2school/</guid>
       <description></description>
     </item>
     
@@ -34,47 +88,11 @@
     </item>
     
     <item>
-      <title>heap</title>
-      <link>https://ret2school.github.io/tags/heap/</link>
-      <pubDate>Thu, 30 Sep 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/heap/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>integer overflow</title>
       <link>https://ret2school.github.io/tags/integer-overflow/</link>
       <pubDate>Thu, 30 Sep 2021 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/tags/integer-overflow/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>oob write</title>
-      <link>https://ret2school.github.io/tags/oob-write/</link>
-      <pubDate>Thu, 30 Sep 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/oob-write/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>pwn</title>
-      <link>https://ret2school.github.io/tags/pwn/</link>
-      <pubDate>Thu, 30 Sep 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/pwn/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>ret2school</title>
-      <link>https://ret2school.github.io/tags/ret2school/</link>
-      <pubDate>Thu, 30 Sep 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/ret2school/</guid>
       <description></description>
     </item>
     
@@ -165,15 +183,6 @@
       <pubDate>Mon, 03 May 2021 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/tags/n4sm/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>nasm</title>
-      <link>https://ret2school.github.io/tags/nasm/</link>
-      <pubDate>Mon, 03 May 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/nasm/</guid>
       <description></description>
     </item>
     

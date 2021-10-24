@@ -3,39 +3,48 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://ret2school.github.io/tags/2021/</loc>
-    <lastmod>2021-09-30T00:00:00+00:00</lastmod>
+    <lastmod>2021-10-24T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://ret2school.github.io/post/ductf_note/</loc>
-    <lastmod>2021-09-30T00:00:00+00:00</lastmod>
+    <loc>https://ret2school.github.io/post/pwnasis/</loc>
+    <lastmod>2021-10-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/tags/asis-ctf/</loc>
+    <lastmod>2021-10-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://ret2school.github.io/tags/ctf/</loc>
+    <lastmod>2021-10-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/tags/heap/</loc>
+    <lastmod>2021-10-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/tags/nasm/</loc>
+    <lastmod>2021-10-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/tags/oob-write/</loc>
+    <lastmod>2021-10-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/post/</loc>
+    <lastmod>2021-10-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/tags/pwn/</loc>
+    <lastmod>2021-10-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/tags/ret2school/</loc>
+    <lastmod>2021-10-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/</loc>
+    <lastmod>2021-10-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/tags/</loc>
+    <lastmod>2021-10-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/post/ductf_note/</loc>
     <lastmod>2021-09-30T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://ret2school.github.io/tags/downunderctf/</loc>
     <lastmod>2021-09-30T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://ret2school.github.io/tags/heap/</loc>
-    <lastmod>2021-09-30T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>https://ret2school.github.io/tags/integer-overflow/</loc>
-    <lastmod>2021-09-30T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://ret2school.github.io/tags/oob-write/</loc>
-    <lastmod>2021-09-30T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://ret2school.github.io/post/</loc>
-    <lastmod>2021-09-30T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://ret2school.github.io/tags/pwn/</loc>
-    <lastmod>2021-09-30T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://ret2school.github.io/tags/ret2school/</loc>
-    <lastmod>2021-09-30T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://ret2school.github.io/</loc>
-    <lastmod>2021-09-30T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://ret2school.github.io/tags/</loc>
     <lastmod>2021-09-30T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://ret2school.github.io/tags/tek/</loc>
@@ -81,9 +90,6 @@
     <lastmod>2021-05-03T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://ret2school.github.io/tags/n4sm/</loc>
-    <lastmod>2021-05-03T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://ret2school.github.io/tags/nasm/</loc>
     <lastmod>2021-05-03T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://ret2school.github.io/tags/privesc/</loc>

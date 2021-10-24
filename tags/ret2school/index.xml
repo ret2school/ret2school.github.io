@@ -5,7 +5,18 @@
     <link>https://ret2school.github.io/tags/ret2school/</link>
     <description>Recent content on ret2school</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Thu, 30 Sep 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/ret2school/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 24 Oct 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/ret2school/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>[ASIS CTF QUALS 2021 - pwn] abbr &amp; justpwnit</title>
+      <link>https://ret2school.github.io/post/pwnasis/</link>
+      <pubDate>Sun, 24 Oct 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/pwnasis/</guid>
+      <description>Hello folks ! Here is a write up for the two first pwn challenges of the ASIS CTF. You can find the related files here.
+justpwnit justpwnit was a warmup pwn challenge. That&amp;rsquo;s only a basic stack overflow. The binary is statically linked and here is the checksec&amp;rsquo;s output:
+[*] &#39;/home/nasm/justpwnit&#39; Arch: amd64-64-little RELRO: Partial RELRO Stack: No canary found NX: NX enabled PIE: No PIE (0x400000) Morever the source code is provided as it is the case for all the pwn tasks !</description>
+    </item>
+    
     <item>
       <title>[DownUnderCTF 2021 - pwn] DUCTFnote</title>
       <link>https://ret2school.github.io/post/ductf_note/</link>

