@@ -165,7 +165,7 @@ Furthermore, <code>index</code> is a signed integer, which means we can input a 
 ... ↓            4 skipped
 0e:0070│         0x7ffef0386550 —▸ 0x7ffef0386560 ◂— 0x1
 0f:0078│         0x7ffef0386558 —▸ 0x401295 (main+88) ◂— mov    eax, 0
-</code></pre><p>That&rsquo;s the stack&rsquo;s state when we are calling calloc. We can see the <code>set_element</code>&rsquo;s stackframe which ends up in <code>$rsp+38</code> with the saved return address. And right after we see that <code>$rax</code> contains the address of the <code>parray</code> buffer. Which means that if we send -2 as index, <code>$rbp</code> will point to the newly allocated buffer to chich we will write right after with <code>fgets</code>.</p>
+</code></pre><p>That&rsquo;s the stack&rsquo;s state when we are calling calloc. We can see the <code>set_element</code>&rsquo;s stackframe which ends up in <code>$rsp+38</code> with the saved return address. And right after we see that <code>$rax</code> contains the address of the <code>parray</code> buffer. Which means that if we send -2 as index, <code>$rbp</code> will point to the newly allocated buffer to which we will write right after with <code>fgets</code>.</p>
 <p>Then, if we do so, the stack&rsquo;s state looks like this:</p>
 <pre><code>00:0000│ rsp     0x7ffef03864e0 ◂— 0x0                                                                                                                                                         
 01:0008│         0x7ffef03864e8 —▸ 0x7ffef0386520 ◂— 0xb4                                                                                                                                      
@@ -183,7 +183,7 @@ Furthermore, <code>index</code> is a signed integer, which means we can input a 
 </code></pre><p>The saved <code>$rbp</code> has been overwritten with a pointer to the user input. Then, at the end of the <code>set_element</code> function, <code>$rbp</code> is popped from the stack and contains a pointer to the user input. Which causes at the end of the <code>justpwnit</code> function, the <code>leave</code> instruction moves the pointer to the user input in <code>$rsp</code>.</p>
 <h2 id="ropchain">ROPchain</h2>
 <p>Once we can pivot the stack to makes it point to some user controlled areas, we just have to rop through all the gadgets we can find in the binary.
-The binary is statically linked, so we can&rsquo;t make a ret2system, we have to make a <code>execve(&quot;/bin/sh\0&quot;, NULL, NULL)</code>.</p>
+The binary is statically linked, and there is no system function in the binary, so we can&rsquo;t make a ret2system, we have to make a <code>execve(&quot;/bin/sh\0&quot;, NULL, NULL)</code>.</p>
 <p>And so what we need is:</p>
 <ul>
 <li>pop rdi gadget</li>
@@ -193,7 +193,7 @@ The binary is statically linked, so we can&rsquo;t make a ret2system, we have to
 <li>syscall gadget</li>
 <li>mov qword ptr [reg], reg [to write &ldquo;/bin/sh\0&rdquo;] in a writable area</li>
 </ul>
-<p>We can easily find these gadgets with the help (ROPgadget)[https://github.com/JonathanSalwan/ROPgadget].
+<p>We can easily find these gadgets with the help <a href="https://github.com/JonathanSalwan/ROPgadget">ROPgadget</a>.
 We got:</p>
 <pre><code>0x0000000000406c32 : mov qword ptr [rax], rsi ; ret
 0x0000000000401001 : pop rax ; ret
@@ -321,7 +321,7 @@ io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">
 
 io<span style="color:#ff79c6">.</span>interactive()
 </code></pre></div><h1 id="abbr">abbr</h1>
-<p>abbr is very basic heap overflow, we just have to overwrite a function pointer to a stack pivot gadget with the help of a user controlled register. Then, we can drop a shell with a similar ROP as for the <code>justpwnit</code> challenge (the binary is also statically linked).</p>
+<p>abbr is very basic heap overflow, we just have to overwrite a function pointer to a stack pivot gadget with the help of a user controlled register. Then, we can drop a shell with a similar ROP as for the <code>justpwnit</code> challenge (the binary is also statically linked without the system function).</p>
 <p>Here is the source code:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;stdio.h&gt;</span><span style="color:#ff79c6">
 </span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;stdlib.h&gt;</span><span style="color:#ff79c6">

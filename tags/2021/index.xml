@@ -5,7 +5,17 @@
     <link>https://ret2school.github.io/tags/2021/</link>
     <description>Recent content in 2021 on ret2school</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Sun, 24 Oct 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/2021/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 07 Nov 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/2021/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>[Hack.lu 2021 - pwn] Cloudinspect</title>
+      <link>https://ret2school.github.io/post/cloudinspect/</link>
+      <pubDate>Sun, 07 Nov 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/cloudinspect/</guid>
+      <description>CloudInspect CloundInpect was a hypervisor exploitation challenge I did for the Hack.lu event. I didn&amp;rsquo;t succeed to flag it within the 48 hours :(. But anyway I hope this write up will be interesting to read! The related files can be found right here
+ After Whiterock released it&amp;rsquo;s trading bot cloud with special Stonks Sockets another hedge fund, Castel, comes with some competition. The special feature here is called &amp;ldquo;cloudinspect&amp;rdquo;.</description>
+    </item>
+    
     <item>
       <title>[ASIS CTF QUALS 2021 - pwn] abbr &amp; justpwnit</title>
       <link>https://ret2school.github.io/post/pwnasis/</link>
