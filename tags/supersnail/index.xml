@@ -5,7 +5,18 @@
     <link>https://ret2school.github.io/tags/supersnail/</link>
     <description>Recent content in supersnail on ret2school</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Thu, 29 Apr 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/supersnail/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 29 Nov 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/supersnail/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>[CyberSecurityRumble 2021 - RE / Game Hacking] CSRunner</title>
+      <link>https://ret2school.github.io/post/csrunner/</link>
+      <pubDate>Mon, 29 Nov 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/csrunner/</guid>
+      <description>Collect green stuff, avoid red guys. Easy as pie, right? Not even your speedhacks will help you here! You might have to take a closer look and inspect it carefully. Have fun &amp;amp; good luck!
+ This challenge is a game, according to its description. Since I gave up on the challenge I was trying to do (NOdeBANKing), I went to help other teammates blocked on this challenge.
+This game was using Unity3D as engine, where game logic is usually written in C# or other language that compiles to MSIL.</description>
+    </item>
+    
     <item>
       <title>[HeroCTF v3 - RE] ARMada, JNI, Password Keeper, RustInPeace, WTF, fatBoy</title>
       <link>https://ret2school.github.io/post/heroctfv3/</link>
