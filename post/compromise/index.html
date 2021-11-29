@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title>[CyberSecurityRumble 2021 - RE / Forensics] The Compromise // ret2school</title>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.81.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="nasm" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="https://ret2school.github.io/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css" />
+
+    
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'G-8K5XT0SJN8', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="[CyberSecurityRumble 2021 - RE / Forensics] The Compromise"/>
+<meta name="twitter:description" content="The Compromise (300 pts)  The SOC team of the BrighSoul QPL (Quantum Physic Labs) is continuously monitoring HTTP proxy and DNS outbound traffic and has identified suspicious DNS traffic to the server authoritative (NS) for the domain thedarkestside.org.
+Upon investigation, they presume that an internal windows workstation with has been compromised with a Colbalt Strike beacon running as the executable named ntupdate.exe. The workstation belongs to the R&amp;D team and they are suspicions that files containing critical Intellectual Property information have been exfiltrated."/>
+
+    <meta property="og:title" content="[CyberSecurityRumble 2021 - RE / Forensics] The Compromise" />
+<meta property="og:description" content="The Compromise (300 pts)  The SOC team of the BrighSoul QPL (Quantum Physic Labs) is continuously monitoring HTTP proxy and DNS outbound traffic and has identified suspicious DNS traffic to the server authoritative (NS) for the domain thedarkestside.org.
+Upon investigation, they presume that an internal windows workstation with has been compromised with a Colbalt Strike beacon running as the executable named ntupdate.exe. The workstation belongs to the R&amp;D team and they are suspicions that files containing critical Intellectual Property information have been exfiltrated." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ret2school.github.io/post/compromise/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2021-11-29T00:00:00&#43;00:00" />
+<meta property="article:modified_time" content="2021-11-29T00:00:00&#43;00:00" />
+
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://ret2school.github.io"><img class="app-header-avatar" src="/pic.jpeg" alt="nasm" /></a>
+      <h1>ret2school</h1>
+      <nav class="app-header-menu">
+          <a class="app-header-menu-item" href="/">Home</a>
+             / 
+          
+          <a class="app-header-menu-item" href="/tags/">Tags</a>
+      </nav>
+      <p>Just a bunch of french ctf players</p>
+      <div class="app-header-social">
+        
+          <a target="_blank" href="https://github.com/ret2school" rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github">
+  <title>github</title>
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+</svg></a>
+        
+          <a target="_blank" href="https://twitter.com/ret2school_fr" rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-twitter">
+  <title>twitter</title>
+  <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
+</svg></a>
+        
+      </div>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">[CyberSecurityRumble 2021 - RE / Forensics] The Compromise</h1>
+      <div class="post-meta">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          Nov 29, 2021
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          8 min read
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tag">
+  <title>tag</title>
+  <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line>
+</svg>
+              <a class="tag" href="https://ret2school.github.io/tags/ctf/">ctf</a>
+              <a class="tag" href="https://ret2school.github.io/tags/ret2school/">ret2school</a>
+              <a class="tag" href="https://ret2school.github.io/tags/cybersecurityrumble/">CyberSecurityRumble</a>
+              <a class="tag" href="https://ret2school.github.io/tags/supersnail/">supersnail</a>
+              <a class="tag" href="https://ret2school.github.io/tags/aassfxxx/">aaSSfxxx</a>
+              <a class="tag" href="https://ret2school.github.io/tags/reverse/">reverse</a>
+              <a class="tag" href="https://ret2school.github.io/tags/re/">RE</a>
+              <a class="tag" href="https://ret2school.github.io/tags/fofo/">fofo</a>
+              <a class="tag" href="https://ret2school.github.io/tags/forensic/">forensic</a>
+              <a class="tag" href="https://ret2school.github.io/tags/forensics/">forensics</a>
+              <a class="tag" href="https://ret2school.github.io/tags/2021/">2021</a>
+        </div>
+      </div>
+    </header>
+    <div class="post-content">
+      <h1 id="the-compromise-300-pts">The Compromise (300 pts)</h1>
+<blockquote>
+<p>The SOC team of the BrighSoul QPL (Quantum Physic Labs) is continuously monitoring HTTP proxy and DNS outbound traffic and has identified suspicious DNS traffic to the server authoritative (NS) for the domain thedarkestside.org.</p>
+<p>Upon investigation, they presume that an internal windows workstation with has been compromised with a Colbalt Strike beacon running as the executable named ntupdate.exe. The workstation belongs to the R&amp;D team and they are suspicions that files containing critical Intellectual Property information have been exfiltrated.</p>
+<p>You are a member of the CSIRT team and your objective is to identify which data has been leaked. You receive the following information:</p>
+<ul>
+<li>A pcap file of the DNS traffic that transitted through the internal DNS server during the estimated timespan of the attack.</li>
+<li>A bin file with the memory dump of the ntupdate.exe process (procdump –ma ntupdate.exe) on the victim workstation.</li>
+</ul>
+</blockquote>
+<p>As the challenge&rsquo;s description says, we are given a pcap file, along with a memory dump. A first looks at the pcap file show a lot of traffic, and instead of going blindly, let&rsquo;s have a look on the dump file instead.</p>
+<p>The dump file is a classic Minidump file, that opens nicely in WinDBG (I used WinDBG preview because it has a lot nicer interface). We can see there are two threads launched, both sleeping. So we have to analyze the backtrace of the threads to have a clue on what&rsquo;s going on.</p>
+<p>The first thread seems to call SleepEx from ntupdate.exe directly, which can be legitimate. But, in the second thread, SleepEx is called from <code>0x0018ef06</code> which seem more suspicious. To understand what happens, let&rsquo;s dump ntupdate.exe (with <code>.writemem z:\ntupdate.mem 400000 L?004e000</code> WinDBG command, module size is <code>0x4e000</code> according to windbg&rsquo;s module view), and &ldquo;unmap&rdquo; the PE <a href="https://github.com/hasherezade/libpeconv/tree/master/pe_unmapper">with this</a>, yeah I was lazy to code my own tool.</p>
+<p>After opening the &ldquo;reconstructed&rdquo; PE in IDA, the first thing we notice is the <code>%c%c%c%c%c%c%c%c%cMSSE-%d-server</code>, which indicates it seems to be a Cobalt Stike stager (and code really looks like this <a href="https://blog.nviso.eu/2021/04/26/anatomy-of-cobalt-strike-dll-stagers/)">https://blog.nviso.eu/2021/04/26/anatomy-of-cobalt-strike-dll-stagers/)</a>. Good luck, the binary embeds the payload, which can be decrypted using this IDAPython script (don&rsquo;t judge my high quality variable naming):</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">sheep <span style="color:#ff79c6">=</span> []
+key <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\x13\x4a\x5b\x22</span><span style="color:#f1fa8c">&#34;</span>
+<span style="color:#ff79c6">for</span> i <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#bd93f9">0x40000</span>):
+    sheep<span style="color:#ff79c6">.</span>append(idaapi<span style="color:#ff79c6">.</span>get_byte(<span style="color:#bd93f9">0x404008</span> <span style="color:#ff79c6">+</span> i) <span style="color:#ff79c6">^</span> key[i <span style="color:#ff79c6">%</span> <span style="color:#bd93f9">4</span>])
+
+f <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">open</span>(<span style="color:#f1fa8c">&#34;/tmp/payload.dump&#34;</span>, <span style="color:#f1fa8c">&#34;wb&#34;</span>)
+f<span style="color:#ff79c6">.</span>write(<span style="color:#8be9fd;font-style:italic">bytes</span>(sheep))
+f<span style="color:#ff79c6">.</span>close()
+</code></pre></div><p>We get some garbage &ldquo;headers&rdquo;, followed by a classic MZ header: after removing the garbage, we get a PE file that loads nicely in IDA, and we are lucky because it&rsquo;s that PE which is mapped in 0x180000 (the mysterious code in the second thread). So we can see that the sleep is called in a function that does DNS resolving.</p>
+<p>A few moments later, after having analyzed a part of the implant, I figured that it contacted its C&amp;C with DNS, and had several &ldquo;handlers&rdquo; for it:</p>
+<ul>
+<li>if the requested name starts by &ldquo;www.&rdquo;, the malware sends RSA-encrypted &ldquo;fingerprint&rdquo; of the machine to the C&amp;C, along with an AES sesion key to talk to the server</li>
+<li>if the requested name start directly by a random hex number, the bot queries orders from the C&amp;C. The response is in a A DNS record and xored with &ldquo;8.8.4.4&rdquo; IP in big endian</li>
+<li>If the requested name starts by &ldquo;api.&rdquo;, the client first sends a A request to get the payload size (always xored by 8.8.4.4), and then issues TXT queries, and server replies with base64 data</li>
+<li>If the request starts by &ldquo;cdn.&rdquo;, then the first A request contains payload size, and further A requests the payload data xored by 8.8.4.4 (big endian DWORD)</li>
+<li>There is also &ldquo;www6.&rdquo; handler, which seem to be the same with cdn. but with AAAA records (IPv6 addresses are longer, so more data can be sent as response)</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">    <span style="color:#ff79c6">if</span> ( (<span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd">int</span>)QueryCnCOrder(fetchOrderDns, <span style="color:#ff79c6">&amp;</span>ip_obf) )
+      {
+        v15 <span style="color:#ff79c6">=</span> v12 <span style="color:#ff79c6">^</span> ntohl(ip_obf);
+        ip_obf <span style="color:#ff79c6">=</span> v15;
+        <span style="color:#ff79c6">if</span> ( v15 <span style="color:#ff79c6">&amp;&amp;</span> (v15 <span style="color:#ff79c6">&amp;</span> <span style="color:#bd93f9">0xFFFFFFF0</span>) <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">240</span> )
+        {
+          sub_18000EF14(v15);
+          v16 <span style="color:#ff79c6">=</span> ip_obf;
+          <span style="color:#ff79c6">if</span> ( (ip_obf <span style="color:#ff79c6">&amp;</span> <span style="color:#bd93f9">1</span>) <span style="color:#ff79c6">!=</span> <span style="color:#bd93f9">0</span> )
+          {
+            exfiltrateData(v13, a1, (<span style="color:#ff79c6">__int64</span>)<span style="color:#ff79c6">&amp;</span>encryptedFingerprint, encryptedFingerprintSize);
+            v16 <span style="color:#ff79c6">=</span> ip_obf;
+          }
+          <span style="color:#ff79c6">if</span> ( (v16 <span style="color:#ff79c6">&amp;</span> <span style="color:#bd93f9">2</span>) <span style="color:#ff79c6">!=</span> <span style="color:#bd93f9">0</span> )
+          {
+            cncLen <span style="color:#ff79c6">=</span> get_encrypted_int(<span style="color:#bd93f9">4u</span>);
+            v18 <span style="color:#ff79c6">=</span> sendTxtRequest(a1, (<span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>)bufferFromServer, cncLen);
+          }
+          <span style="color:#ff79c6">else</span> <span style="color:#ff79c6">if</span> ( (v16 <span style="color:#ff79c6">&amp;</span> <span style="color:#bd93f9">4</span>) <span style="color:#ff79c6">!=</span> <span style="color:#bd93f9">0</span> )
+          {
+            www6Len <span style="color:#ff79c6">=</span> get_encrypted_int(<span style="color:#bd93f9">4u</span>);
+            v18 <span style="color:#ff79c6">=</span> sendWww6Typ(a1, bufferFromServer, www6Len);
+          }
+          <span style="color:#ff79c6">else</span>
+          {
+            cdnLen <span style="color:#ff79c6">=</span> get_encrypted_int(<span style="color:#bd93f9">4u</span>);
+            v18 <span style="color:#ff79c6">=</span> sendCdnRequest(a1, bufferFromServer, cdnLen);
+          }
+          <span style="color:#ff79c6">if</span> ( v18 <span style="color:#ff79c6">&gt;</span> <span style="color:#bd93f9">0</span> )
+          {
+            v21 <span style="color:#ff79c6">=</span> decryptResponse(bufferFromServer, v18);
+            <span style="color:#ff79c6">if</span> ( v21 <span style="color:#ff79c6">&gt;</span> <span style="color:#bd93f9">0</span> )
+              doStuffWithResponse(bufferFromServer, (<span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd">int</span>)v21);
+          }
+        }
+</code></pre></div><p>Unfortunately, this data is encrypted by the AES session key, and since we only have the last part of the &ldquo;fingerprint&rdquo;, we&rsquo;ll need to figure out where the AES key is generated/stored, and extract it from the dump with WinDBG. Before the &ldquo;main&rdquo; loop of DNS queries, some initialization function are quite interesting:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#8be9fd">void</span> <span style="color:#ff79c6">*</span><span style="color:#ff79c6">__fastcall</span> <span style="color:#50fa7b">GrabInfo</span>(GetInfoStruct <span style="color:#ff79c6">*</span>Src, <span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd">int</span> len)
+{
+  DWORD CurrentProcessId; <span style="color:#6272a4">// ebx
+</span><span style="color:#6272a4"></span>  DWORD TickCount; <span style="color:#6272a4">// eax
+</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">char</span> someflags; <span style="color:#6272a4">// bl
+</span><span style="color:#6272a4"></span>  HANDLE CurrentProcess; <span style="color:#6272a4">// rax
+</span><span style="color:#6272a4"></span>  DWORD v8; <span style="color:#6272a4">// eax
+</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd">int</span> v9; <span style="color:#6272a4">// edi
+</span><span style="color:#6272a4"></span>  <span style="color:#ff79c6">__int64</span> pubKey; <span style="color:#6272a4">// rax
+</span><span style="color:#6272a4"></span>  block_iterator a1; <span style="color:#6272a4">// [rsp+30h] [rbp-20h] BYREF
+</span><span style="color:#6272a4"></span>  BYTE rand1[<span style="color:#bd93f9">16</span>]; <span style="color:#6272a4">// [rsp+40h] [rbp-10h] BYREF
+</span><span style="color:#6272a4"></span>  <span style="color:#ff79c6">__int16</span> a2; <span style="color:#6272a4">// [rsp+90h] [rbp+40h] BYREF
+</span><span style="color:#6272a4"></span>  <span style="color:#ff79c6">__int16</span> OEMCP; <span style="color:#6272a4">// [rsp+98h] [rbp+48h] BYREF
+</span><span style="color:#6272a4"></span>
+  a2 <span style="color:#ff79c6">=</span> GetACP();
+  OEMCP <span style="color:#ff79c6">=</span> GetOEMCP();
+  randomGenerator(rand1, <span style="color:#bd93f9">0x10u</span>, <span style="color:#bd93f9">0</span>i64);
+  aesCreateContext((<span style="color:#ff79c6">__int64</span>)rand1);
+  CurrentProcessId <span style="color:#ff79c6">=</span> GetCurrentProcessId();
+  TickCount <span style="color:#ff79c6">=</span> GetTickCount();
+
+  <span style="color:#6272a4">/* some snipped useless stuff */</span>
+
+  <span style="color:#6272a4">/* construct the blob to be sent to the C&amp;C */</span>
+  make_block_iterator(<span style="color:#ff79c6">&amp;</span>a1, Src, len);
+  packMem(<span style="color:#ff79c6">&amp;</span>a1, rand1, <span style="color:#bd93f9">16</span>);
+  packMem(<span style="color:#ff79c6">&amp;</span>a1, <span style="color:#ff79c6">&amp;</span>a2, <span style="color:#bd93f9">2</span>);
+  packMem(<span style="color:#ff79c6">&amp;</span>a1, <span style="color:#ff79c6">&amp;</span>OEMCP, <span style="color:#bd93f9">2</span>);
+  pack_int_bigendian(<span style="color:#ff79c6">&amp;</span>a1, sessionRandIdentifier);
+  v8 <span style="color:#ff79c6">=</span> GetCurrentProcessId();
+  pack_int_bigendian(<span style="color:#ff79c6">&amp;</span>a1, v8);
+  pack_short_bigendian(<span style="color:#ff79c6">&amp;</span>a1, <span style="color:#bd93f9">0</span>);
+  pack_char(<span style="color:#ff79c6">&amp;</span>a1, someflags);
+  sub_180014750(<span style="color:#ff79c6">&amp;</span>a1);
+  v9 <span style="color:#ff79c6">=</span> set_buf(<span style="color:#ff79c6">&amp;</span>a1);
+  memset(<span style="color:#ff79c6">&amp;</span>encryptedFingerprint, <span style="color:#bd93f9">0</span>, <span style="color:#bd93f9">0x400u</span>i64);
+  encryptedFingerprintSize <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">128</span>;
+  memmove(<span style="color:#ff79c6">&amp;</span>encryptedFingerprint, Src, v9);
+
+  <span style="color:#6272a4">/* decode pubkey and encrypt blob */</span>
+  pubKey <span style="color:#ff79c6">=</span> cryptoshitFunc(<span style="color:#bd93f9">7</span>i64);
+  rsa_encrypt(pubKey, (<span style="color:#8be9fd">int</span>)Src, v9, (<span style="color:#8be9fd">int</span>)<span style="color:#ff79c6">&amp;</span>encryptedFingerprint, (<span style="color:#ff79c6">__int64</span>)<span style="color:#ff79c6">&amp;</span>encryptedFingerprintSize);
+  <span style="color:#6272a4">/* wipe cleartext blob */</span>
+  <span style="color:#ff79c6">return</span> memset(Src, <span style="color:#bd93f9">0</span>, v9);
+}
+</code></pre></div><p>We can see that a random 16-byte buffer is filled, which is then passed to a &ldquo;aesCreateContext&rdquo; function which does this:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#ff79c6">__int64</span> <span style="color:#ff79c6">__fastcall</span> <span style="color:#50fa7b">aesCreateContext</span>(<span style="color:#ff79c6">__int64</span> a1)
+{
+  <span style="color:#ff79c6">__int64</span> result; <span style="color:#6272a4">// rax
+</span><span style="color:#6272a4"></span>  __int128 hash[<span style="color:#bd93f9">2</span>]; <span style="color:#6272a4">// [rsp+30h] [rbp-28h] BYREF
+</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd">int</span> hashlen; <span style="color:#6272a4">// [rsp+68h] [rbp+10h] BYREF
+</span><span style="color:#6272a4"></span>
+  hashlen <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">32</span>;
+  addHashTable(<span style="color:#ff79c6">&amp;</span>sha256_crypt_callback);
+  hashMethodIdx <span style="color:#ff79c6">=</span> lookup_hash_func(<span style="color:#f1fa8c">&#34;sha256&#34;</span>);
+  <span style="color:#ff79c6">if</span> ( (<span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd">int</span>)call_hash_method(hashMethodIdx, a1, <span style="color:#bd93f9">0x10u</span>, hash, <span style="color:#ff79c6">&amp;</span>hashlen) )
+    exit(<span style="color:#bd93f9">1</span>);
+  aes_key <span style="color:#ff79c6">=</span> hash[<span style="color:#bd93f9">0</span>];
+  hmac_key <span style="color:#ff79c6">=</span> hash[<span style="color:#bd93f9">1</span>];
+  iv <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">*</span>(_OWORD <span style="color:#ff79c6">*</span>)<span style="color:#f1fa8c">&#34;abcdefghijklmnop&#34;</span>;
+  constructCryptoTable(<span style="color:#ff79c6">&amp;</span>aes_crypt_callback);
+  cryptoMethodIdx <span style="color:#ff79c6">=</span> lookup_crypto_func(<span style="color:#f1fa8c">&#34;aes&#34;</span>);
+  result <span style="color:#ff79c6">=</span> aes_create_context((<span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd">int</span> <span style="color:#ff79c6">*</span>)<span style="color:#ff79c6">&amp;</span>aes_key, <span style="color:#bd93f9">16</span>, <span style="color:#bd93f9">0</span>, aes_ctx);
+  <span style="color:#ff79c6">if</span> ( (_DWORD)result )
+    exit(<span style="color:#bd93f9">1</span>);
+  <span style="color:#ff79c6">return</span> result;
+}
+</code></pre></div><p>While the initial seed is forever lost because stored as local var, the AES key and HMAC keys derived from SHA256 hash of the &ldquo;initial seed&rdquo; are stored in the .data section of the binary, making them &ldquo;easy&rdquo; to extract from the dump (just convert imagebase from 0x180000000 to 0x180000).</p>
+<p>Now come the final part of the challenge, parsing the pcap and reconstructing and decrypting the traffic between the C&amp;C and the bot. For this, I made this quick and dirty Python script using pcapy and ImPacket:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#6272a4">#!/usr/bin/python</span>
+
+<span style="color:#ff79c6">import</span> base64
+<span style="color:#ff79c6">import</span> struct
+<span style="color:#ff79c6">import</span> pcapy
+<span style="color:#ff79c6">import</span> impacket.ImpactDecoder <span style="color:#ff79c6">as</span> Decoders
+<span style="color:#ff79c6">import</span> impacket.ImpactPacket <span style="color:#ff79c6">as</span> Packets
+<span style="color:#ff79c6">from</span> impacket.dns <span style="color:#ff79c6">import</span> DNS
+<span style="color:#ff79c6">from</span> Crypto.Cipher <span style="color:#ff79c6">import</span> AES
+
+pattern <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x08080404</span>
+key <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;U</span><span style="color:#f1fa8c">\n\xe2\x98</span><span style="color:#f1fa8c">8</span><span style="color:#f1fa8c">\xb3\xdc</span><span style="color:#f1fa8c">(X</span><span style="color:#f1fa8c">\r</span><span style="color:#f1fa8c">l</span><span style="color:#f1fa8c">\x0f\xf1\x96\xde\xb2\x0e</span><span style="color:#f1fa8c">3</span><span style="color:#f1fa8c">\xaf</span><span style="color:#f1fa8c">[</span><span style="color:#f1fa8c">\xf1\x9f\xe0\x16\x1e\x0b\xa9</span><span style="color:#f1fa8c">x</span><span style="color:#f1fa8c">\x00</span><span style="color:#f1fa8c">fp</span><span style="color:#f1fa8c">\xe8</span><span style="color:#f1fa8c">&#34;</span>
+
+pcap <span style="color:#ff79c6">=</span> pcapy<span style="color:#ff79c6">.</span>open_offline(<span style="color:#f1fa8c">&#34;the_compromise/traffic.pcap&#34;</span>)
+CLIENT_IP <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#39;192.168.111.6&#39;</span>
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">decrypt</span>(data):
+    aeskey <span style="color:#ff79c6">=</span> key[<span style="color:#bd93f9">0</span>:<span style="color:#bd93f9">16</span>]
+    iv <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;abcdefghijklmnop&#34;</span>
+    aes <span style="color:#ff79c6">=</span> AES<span style="color:#ff79c6">.</span>new(aeskey, AES<span style="color:#ff79c6">.</span>MODE_CBC, iv)
+    <span style="color:#ff79c6">return</span> aes<span style="color:#ff79c6">.</span>decrypt(data[:<span style="color:#ff79c6">-</span><span style="color:#bd93f9">16</span>])
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">get_int_raw_resp</span>(dns_resp: DNS):
+    data <span style="color:#ff79c6">=</span> dns_resp<span style="color:#ff79c6">.</span>get_body_as_string()
+    
+    offset   <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>
+    qdcount <span style="color:#ff79c6">=</span> dns_resp<span style="color:#ff79c6">.</span>get_qdcount()
+    <span style="color:#ff79c6">for</span> _ <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(qdcount): <span style="color:#6272a4"># number of questions</span>
+        offset, qname <span style="color:#ff79c6">=</span> dns_resp<span style="color:#ff79c6">.</span>parseCompressedMessage(data, offset)
+        qtype  <span style="color:#ff79c6">=</span> data[offset:offset<span style="color:#ff79c6">+</span><span style="color:#bd93f9">2</span>]
+        offset  <span style="color:#ff79c6">+=</span> <span style="color:#bd93f9">2</span>
+        qclass <span style="color:#ff79c6">=</span> data[offset:offset<span style="color:#ff79c6">+</span><span style="color:#bd93f9">2</span>]
+        offset  <span style="color:#ff79c6">+=</span> <span style="color:#bd93f9">2</span>
+        qtype  <span style="color:#ff79c6">=</span> struct<span style="color:#ff79c6">.</span>unpack(<span style="color:#f1fa8c">&#34;!H&#34;</span>, qtype)[<span style="color:#bd93f9">0</span>]
+        qclass <span style="color:#ff79c6">=</span> struct<span style="color:#ff79c6">.</span>unpack(<span style="color:#f1fa8c">&#34;!H&#34;</span>, qclass)[<span style="color:#bd93f9">0</span>]
+
+    offset, _ <span style="color:#ff79c6">=</span> dns_resp<span style="color:#ff79c6">.</span>parseCompressedMessage(data, offset)
+    qtype  <span style="color:#ff79c6">=</span> data[offset:offset<span style="color:#ff79c6">+</span><span style="color:#bd93f9">2</span>]
+    qtype  <span style="color:#ff79c6">=</span> struct<span style="color:#ff79c6">.</span>unpack(<span style="color:#f1fa8c">&#34;!H&#34;</span>, qtype)[<span style="color:#bd93f9">0</span>]
+    offset  <span style="color:#ff79c6">+=</span> <span style="color:#bd93f9">2</span>
+
+    qclass <span style="color:#ff79c6">=</span> data[offset:offset<span style="color:#ff79c6">+</span><span style="color:#bd93f9">2</span>]
+    qclass <span style="color:#ff79c6">=</span> struct<span style="color:#ff79c6">.</span>unpack(<span style="color:#f1fa8c">&#34;!H&#34;</span>, qclass)[<span style="color:#bd93f9">0</span>]
+    offset  <span style="color:#ff79c6">+=</span> <span style="color:#bd93f9">2</span>
+
+    qttl_raw <span style="color:#ff79c6">=</span> data[offset:offset<span style="color:#ff79c6">+</span><span style="color:#bd93f9">4</span>]
+    qttl <span style="color:#ff79c6">=</span> struct<span style="color:#ff79c6">.</span>unpack(<span style="color:#f1fa8c">&#34;!L&#34;</span>, qttl_raw)[<span style="color:#bd93f9">0</span>]
+    offset  <span style="color:#ff79c6">+=</span> <span style="color:#bd93f9">4</span>
+
+    qrdlength <span style="color:#ff79c6">=</span> data[offset:offset<span style="color:#ff79c6">+</span><span style="color:#bd93f9">2</span>]
+    qrdlength <span style="color:#ff79c6">=</span> struct<span style="color:#ff79c6">.</span>unpack(<span style="color:#f1fa8c">&#34;!H&#34;</span>, qrdlength)[<span style="color:#bd93f9">0</span>]
+    offset  <span style="color:#ff79c6">+=</span> <span style="color:#bd93f9">2</span>
+
+    <span style="color:#ff79c6">return</span> qtype, data[offset:offset<span style="color:#ff79c6">+</span>qrdlength]
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">get_next_dns_pkt</span>():
+    ethernet_decoder <span style="color:#ff79c6">=</span> Decoders<span style="color:#ff79c6">.</span>EthDecoder()
+    ip_decoder <span style="color:#ff79c6">=</span> Decoders<span style="color:#ff79c6">.</span>IPDecoder()
+
+    hdr <span style="color:#ff79c6">=</span> True
+    packets <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>
+
+    <span style="color:#ff79c6">while</span> hdr <span style="color:#ff79c6">is</span> <span style="color:#ff79c6">not</span> None:
+        hdr, body <span style="color:#ff79c6">=</span> pcap<span style="color:#ff79c6">.</span>next()
+        eth <span style="color:#ff79c6">=</span> ethernet_decoder<span style="color:#ff79c6">.</span>decode(body)
+        <span style="color:#ff79c6">if</span> eth<span style="color:#ff79c6">.</span>get_ether_type() <span style="color:#ff79c6">!=</span> Packets<span style="color:#ff79c6">.</span>IP<span style="color:#ff79c6">.</span>ethertype:
+            <span style="color:#ff79c6">continue</span>
+        ip <span style="color:#ff79c6">=</span> ip_decoder<span style="color:#ff79c6">.</span>decode(eth<span style="color:#ff79c6">.</span>get_data_as_string())
+        <span style="color:#ff79c6">if</span> CLIENT_IP <span style="color:#ff79c6">not</span> <span style="color:#ff79c6">in</span> [ip<span style="color:#ff79c6">.</span>get_ip_src(), ip<span style="color:#ff79c6">.</span>get_ip_dst()]:
+            <span style="color:#ff79c6">continue</span>
+        <span style="color:#ff79c6">if</span> ip<span style="color:#ff79c6">.</span>get_ip_p() <span style="color:#ff79c6">!=</span> Packets<span style="color:#ff79c6">.</span>UDP<span style="color:#ff79c6">.</span>protocol:
+            <span style="color:#ff79c6">continue</span>
+        udp <span style="color:#ff79c6">=</span> ip_decoder<span style="color:#ff79c6">.</span>udp_decoder<span style="color:#ff79c6">.</span>decode(ip<span style="color:#ff79c6">.</span>get_data_as_string())
+        <span style="color:#ff79c6">if</span> udp<span style="color:#ff79c6">.</span>get_uh_dport() <span style="color:#ff79c6">!=</span> <span style="color:#bd93f9">53</span> <span style="color:#ff79c6">and</span> udp<span style="color:#ff79c6">.</span>get_uh_sport() <span style="color:#ff79c6">!=</span> <span style="color:#bd93f9">53</span>:
+            <span style="color:#ff79c6">continue</span>
+        <span style="color:#ff79c6">if</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;thedarkestside</span><span style="color:#f1fa8c">\x03</span><span style="color:#f1fa8c">org&#34;</span> <span style="color:#ff79c6">not</span> <span style="color:#ff79c6">in</span> body:
+            <span style="color:#ff79c6">continue</span>
+        dns <span style="color:#ff79c6">=</span> DNS(udp<span style="color:#ff79c6">.</span>get_data_as_string())
+        <span style="color:#ff79c6">if</span> (dns<span style="color:#ff79c6">.</span>get_flags() <span style="color:#ff79c6">&amp;</span> <span style="color:#bd93f9">0x8000</span>) <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">0</span>:
+            <span style="color:#ff79c6">continue</span>
+        packets <span style="color:#ff79c6">+=</span> <span style="color:#bd93f9">1</span>
+        <span style="color:#ff79c6">if</span> packets <span style="color:#ff79c6">&lt;</span> <span style="color:#bd93f9">2</span>:
+            <span style="color:#ff79c6">continue</span>
+        <span style="color:#ff79c6">yield</span> (ip<span style="color:#ff79c6">.</span>get_ip_src(), ip<span style="color:#ff79c6">.</span>get_ip_dst(), dns)
+
+pkts <span style="color:#ff79c6">=</span> get_next_dns_pkt()
+<span style="color:#ff79c6">while</span> True:
+    <span style="color:#8be9fd;font-style:italic">buffer</span> <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&#34;</span>
+    (src, dst, dns) <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">next</span>(pkts)
+    qry <span style="color:#ff79c6">=</span> dns<span style="color:#ff79c6">.</span>get_questions()[<span style="color:#bd93f9">0</span>]
+    qry_array <span style="color:#ff79c6">=</span> qry[<span style="color:#bd93f9">0</span>]<span style="color:#ff79c6">.</span>split(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;.&#34;</span>)
+    <span style="color:#ff79c6">if</span> qry_array[<span style="color:#bd93f9">0</span>] <span style="color:#ff79c6">==</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;api&#34;</span>:
+        <span style="color:#6272a4"># base64 sent information</span>
+        <span style="color:#8be9fd;font-style:italic">type</span>, rawdata <span style="color:#ff79c6">=</span> get_int_raw_resp(dns)
+        <span style="color:#ff79c6">if</span> <span style="color:#8be9fd;font-style:italic">type</span> <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">1</span>:
+            buflen <span style="color:#ff79c6">=</span> struct<span style="color:#ff79c6">.</span>unpack(<span style="color:#f1fa8c">&#34;!L&#34;</span>, rawdata)[<span style="color:#bd93f9">0</span>] <span style="color:#ff79c6">^</span> pattern
+        trunc <span style="color:#ff79c6">=</span> buflen
+        <span style="color:#ff79c6">while</span> buflen <span style="color:#ff79c6">&gt;</span> <span style="color:#bd93f9">0</span>:
+            src, dst, resp <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">next</span>(pkts)
+            <span style="color:#8be9fd;font-style:italic">type</span>, rawdata <span style="color:#ff79c6">=</span> get_int_raw_resp(resp)
+            rawdata <span style="color:#ff79c6">=</span> base64<span style="color:#ff79c6">.</span>b64decode(rawdata)
+            buflen <span style="color:#ff79c6">-=</span> <span style="color:#8be9fd;font-style:italic">len</span>(rawdata)
+            <span style="color:#8be9fd;font-style:italic">buffer</span> <span style="color:#ff79c6">+=</span> rawdata
+        <span style="color:#8be9fd;font-style:italic">buffer</span> <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">buffer</span>[:trunc]
+        <span style="color:#ff79c6">print</span>(decrypt(<span style="color:#8be9fd;font-style:italic">buffer</span>))
+    <span style="color:#ff79c6">elif</span> qry_array[<span style="color:#bd93f9">0</span>] <span style="color:#ff79c6">==</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;cdn&#34;</span>:
+        <span style="color:#8be9fd;font-style:italic">type</span>, rawdata <span style="color:#ff79c6">=</span> get_int_raw_resp(resp)
+        <span style="color:#ff79c6">if</span> <span style="color:#8be9fd;font-style:italic">type</span> <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">1</span>:
+            buflen <span style="color:#ff79c6">=</span> struct<span style="color:#ff79c6">.</span>unpack(<span style="color:#f1fa8c">&#34;!L&#34;</span>, rawdata)[<span style="color:#bd93f9">0</span>] <span style="color:#ff79c6">^</span> pattern
+            <span style="color:#ff79c6">while</span> <span style="color:#8be9fd;font-style:italic">len</span>(<span style="color:#8be9fd;font-style:italic">buffer</span>) <span style="color:#ff79c6">&lt;</span> buflen:
+                src, dst, resp <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">next</span>(pkts)
+                <span style="color:#8be9fd;font-style:italic">type</span>, rawdata <span style="color:#ff79c6">=</span> get_int_raw_resp(resp)
+                <span style="color:#8be9fd;font-style:italic">buffer</span> <span style="color:#ff79c6">+=</span> rawdata
+            <span style="color:#ff79c6">print</span>(decrypt(<span style="color:#8be9fd;font-style:italic">buffer</span>))
+    <span style="color:#ff79c6">elif</span> qry_array[<span style="color:#bd93f9">0</span>] <span style="color:#ff79c6">==</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;post&#34;</span>:
+        alen <span style="color:#ff79c6">=</span> qry_array[<span style="color:#bd93f9">1</span>]
+        len_chunk <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">int</span>(<span style="color:#8be9fd;font-style:italic">str</span>(alen[<span style="color:#bd93f9">1</span>:], <span style="color:#f1fa8c">&#34;ascii&#34;</span>), <span style="color:#bd93f9">16</span>)
+        <span style="color:#ff79c6">while</span> <span style="color:#8be9fd;font-style:italic">len</span>(<span style="color:#8be9fd;font-style:italic">buffer</span>) <span style="color:#ff79c6">&lt;</span> len_chunk:
+            (src, dst, dns) <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">next</span>(pkts)
+            qry <span style="color:#ff79c6">=</span> dns<span style="color:#ff79c6">.</span>get_questions()[<span style="color:#bd93f9">0</span>]
+            qry_array <span style="color:#ff79c6">=</span> qry[<span style="color:#bd93f9">0</span>]<span style="color:#ff79c6">.</span>split(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;.&#34;</span>)
+            num_chunks <span style="color:#ff79c6">=</span> qry_array[<span style="color:#bd93f9">1</span>][<span style="color:#bd93f9">0</span>]
+            num_chunks <span style="color:#ff79c6">-=</span> <span style="color:#bd93f9">0x30</span>
+            <span style="color:#8be9fd;font-style:italic">buffer</span> <span style="color:#ff79c6">+=</span> <span style="color:#8be9fd;font-style:italic">bytes</span><span style="color:#ff79c6">.</span>fromhex(<span style="color:#8be9fd;font-style:italic">str</span>(qry_array[<span style="color:#bd93f9">1</span>][<span style="color:#bd93f9">1</span>:], <span style="color:#f1fa8c">&#39;ascii&#39;</span>))
+            <span style="color:#ff79c6">if</span> num_chunks <span style="color:#ff79c6">&gt;=</span> <span style="color:#bd93f9">2</span>:
+                <span style="color:#8be9fd;font-style:italic">buffer</span> <span style="color:#ff79c6">+=</span> <span style="color:#8be9fd;font-style:italic">bytes</span><span style="color:#ff79c6">.</span>fromhex(<span style="color:#8be9fd;font-style:italic">str</span>(qry_array[<span style="color:#bd93f9">2</span>], <span style="color:#f1fa8c">&#39;ascii&#39;</span>))
+            <span style="color:#ff79c6">if</span> num_chunks <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">3</span>:
+                <span style="color:#8be9fd;font-style:italic">buffer</span> <span style="color:#ff79c6">+=</span> <span style="color:#8be9fd;font-style:italic">bytes</span><span style="color:#ff79c6">.</span>fromhex(<span style="color:#8be9fd;font-style:italic">str</span>(qry_array[<span style="color:#bd93f9">3</span>], <span style="color:#f1fa8c">&#39;ascii&#39;</span>))
+        <span style="color:#ff79c6">print</span>(decrypt(<span style="color:#8be9fd;font-style:italic">buffer</span>))
+</code></pre></div><p>which gives us the flag: <code>CSR{Schro3dinger%%3quation_}</code></p>
+<p>Author: <a href="https://github.com/aaSSfxxx">supersnail</a></p>
+
+    </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>

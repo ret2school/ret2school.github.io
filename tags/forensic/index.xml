@@ -5,7 +5,17 @@
     <link>https://ret2school.github.io/tags/forensic/</link>
     <description>Recent content in forensic on ret2school</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Tue, 01 Dec 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/forensic/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 29 Nov 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/forensic/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>[CyberSecurityRumble 2021 - RE / Forensics] The Compromise</title>
+      <link>https://ret2school.github.io/post/compromise/</link>
+      <pubDate>Mon, 29 Nov 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/compromise/</guid>
+      <description>The Compromise (300 pts)  The SOC team of the BrighSoul QPL (Quantum Physic Labs) is continuously monitoring HTTP proxy and DNS outbound traffic and has identified suspicious DNS traffic to the server authoritative (NS) for the domain thedarkestside.org.
+Upon investigation, they presume that an internal windows workstation with has been compromised with a Colbalt Strike beacon running as the executable named ntupdate.exe. The workstation belongs to the R&amp;amp;D team and they are suspicions that files containing critical Intellectual Property information have been exfiltrated.</description>
+    </item>
+    
     <item>
       <title>[Hitcon CTF 2020 - forensic] AC1750</title>
       <link>https://ret2school.github.io/post/forensic/</link>
