@@ -91,7 +91,6 @@ if (!doNotTrack) {
               <a class="tag" href="https://ret2school.github.io/tags/ret2school/">ret2school</a>
               <a class="tag" href="https://ret2school.github.io/tags/tracs/">TRACS</a>
               <a class="tag" href="https://ret2school.github.io/tags/nasm/">nasm</a>
-              <a class="tag" href="https://ret2school.github.io/tags/alois/">Alois</a>
               <a class="tag" href="https://ret2school.github.io/tags/alol/">Alol</a>
               <a class="tag" href="https://ret2school.github.io/tags/reverse/">reverse</a>
               <a class="tag" href="https://ret2school.github.io/tags/re/">RE</a>
@@ -110,10 +109,10 @@ if (!doNotTrack) {
 En tant que stagiaire vous avez accès aux locaux de la NSB. Vous allez collecter des informations dans les locaux. Un coffre est présent dans les locaux en salle rideau. Il appartient à Richard Cresus de la Tune. Essayez d’ouvrir ce coffre. Quel est l’IBAN contenu dans le coffre ? Format de la réponse : IBAN sans séparateur.</li>
 </ul>
 </blockquote>
-<p>Basically, we have to crack open an electronic safe. It&rsquo;s locked with an electromagnet and requires a pin to open, moreover it prints an id right before asking for the pin. We previously were given a link to the download page for the safe&rsquo;s software update (<code>http://safe-locks.tracs.viarezo.fr/download</code>).</p>
+<p>Basically, we have to crack open an electronic safe. It&rsquo;s locked with an electromagnet and requires a pin to open, moreover it prints an id right before asking for the pin. We previously were given a link to the download page one of the safe&rsquo;s software update (<code>http://safe-locks.tracs.viarezo.fr/download</code>).</p>
 <h2 id="reversing-the-custom-libcryptoso-library">Reversing the custom libcrypto.so library</h2>
-<p>According to the software update we have a <code>.maj</code>  archive that we extracted to get two <code>libcrypto.so</code> libraries (one for x86, the other one for arm64 v7). We checked if the files were equivalent by looking at their code structure, and we finally choose to reverse the x86 library even though the safe probably used the arm one because it was easier.</p>
-<p>Firstly, we look at how the pin is checked, more specifically at the <code>libsafe_test_passcode</code> in IDA:</p>
+<p>The software update comes in the from of a <code>.maj</code> archive that we extracted to get two <code>libcrypto.so</code> libraries (one for x86, the other one for arm64 v7). We checked if the files were equivalent by looking at their code structure, and we finally choose to reverse the x86 library (even though the safe probably used the arm one) because it was easier.</p>
+<p>Firstly, we looked at how the pin was checked, more specifically at the <code>libsafe_test_passcode</code> in IDA:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">_BOOL8 <span style="color:#ff79c6">__fastcall</span> <span style="color:#50fa7b">libsafe_test_passcode</span>(<span style="color:#ff79c6">const</span> <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>a1)
 {
   <span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd">int</span> v2; <span style="color:#6272a4">// eax
@@ -132,7 +131,7 @@ En tant que stagiaire vous avez accès aux locaux de la NSB. Vous allez collecte
   sha256sum(a1, v2, s1);
   <span style="color:#ff79c6">return</span> memcmp(s1, <span style="color:#ff79c6">&amp;</span>buf[<span style="color:#bd93f9">4</span>], <span style="color:#bd93f9">0x20uLL</span>) <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">0</span>;
 }
-</code></pre></div><p>We guess the argument is a pointer to the pin, for which we compute its <code>sha256sum</code>. And if it is equal to <code>buf[4:0x24]</code>, it means the is pin the right one! So we have to understand what <code>buf[4:0x24]</code> is, which is stored in the <code>.safe_db</code> file. To do so we look at the <code>libsafe_generate_new_passcode</code> function:</p>
+</code></pre></div><p>We assume the argument is a pointer to the pin, for which we compute its <code>sha256sum</code>. And if it is equal to <code>buf[4:0x24]</code>, it means the pin correct! So we have to understand what <code>buf[4:0x24]</code> is, which is stored in the <code>.safe_db</code> file. To do so we look at the <code>libsafe_generate_new_passcode</code> function:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#ff79c6">__int64</span> <span style="color:#ff79c6">__fastcall</span> <span style="color:#50fa7b">libsafe_generate_new_passcode</span>(<span style="color:#8be9fd">unsigned</span> <span style="color:#ff79c6">__int8</span> <span style="color:#ff79c6">*</span>a1)
 {
   <span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd">int</span> v1; <span style="color:#6272a4">// eax
@@ -162,11 +161,12 @@ En tant que stagiaire vous avez accès aux locaux de la NSB. Vous allez collecte
 }
 </code></pre></div><p>The function is very basic:</p>
 <ul>
-<li>It takes as argument a pointer to buffer to cipher for which we compute the hash to fill out the <code>.safe_db</code> file.</li>
-<li>At the very begin of the function, it initializes the prng with <code>srand</code> with <code>time(NULL)</code> and then creates an array of <code>1024</code> random bytes with the use of <code>rand</code>. This array is hashed with <code>sha256sum</code> and its hash is given to the <code>_build_passcode</code> function. Which will fill out the <code>a1</code> argument.</li>
-<li>The argument is hashed and in the target file, we write at <code>file_content[:4]</code> the first <code>rand</code> value, and at <code>file_content[4:0x24]</code> the hash of the previous ciphered buffer.</li>
+<li>It takes as argument a pointer to the buffer to cipher for which we compute the hash to fill out the <code>.safe_db</code> file.</li>
+<li>It initializes the PRNG with <code>time(NULL)</code> passed as an argument to<code>srand</code>. It then creates an array of <code>1024</code> random bytes with the use of <code>rand</code>.</li>
+<li>Then, this array is hashed with <code>sha256sum</code> and its hash is given to the <code>_build_passcode</code> function. The result is stored in the <code>a1</code> argument.</li>
+<li>The argument is hashed again and in the target file we write at <code>file_content[:4]</code> the first <code>rand</code> value and at <code>file_content[4:0x24]</code> the hash of the previous ciphered buffer.</li>
 </ul>
-<p>The core of the encryption system is in the <code>_build_passcode</code> function:</p>
+<p>The core of the encryption algorithm is in the <code>build_passcode</code> function:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#ff79c6">__int64</span> <span style="color:#ff79c6">__fastcall</span> <span style="color:#50fa7b">build_passcode</span>(
         <span style="color:#8be9fd">unsigned</span> <span style="color:#ff79c6">__int8</span> <span style="color:#ff79c6">*</span>hash_rand_buf,
         <span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd">int</span> length_hash,
@@ -175,7 +175,7 @@ En tant que stagiaire vous avez accès aux locaux de la NSB. Vous allez collecte
 {
   <span style="color:#ff79c6">__int64</span> result; <span style="color:#6272a4">// rax
 </span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd">int</span> i; <span style="color:#6272a4">// [rsp+20h] [rbp-10h]
-</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd">int</span> lenght_base; <span style="color:#6272a4">// [rsp+24h] [rbp-Ch]
+</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd">int</span> length_base; <span style="color:#6272a4">// [rsp+24h] [rbp-Ch]
 </span><span style="color:#6272a4"></span>
   lenght_base <span style="color:#ff79c6">=</span> strlen(<span style="color:#f1fa8c">&#34;1234567890ABCD&#34;</span>);
   <span style="color:#ff79c6">for</span> ( i <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>; ; <span style="color:#ff79c6">++</span>i )
@@ -183,12 +183,12 @@ En tant que stagiaire vous avez accès aux locaux de la NSB. Vous allez collecte
     result <span style="color:#ff79c6">=</span> i;
     <span style="color:#ff79c6">if</span> ( i <span style="color:#ff79c6">&gt;=</span> opaque_8 )
       <span style="color:#ff79c6">break</span>;
-    out[i] <span style="color:#ff79c6">=</span> base[hash_rand_buf[i <span style="color:#ff79c6">%</span> length_hash] <span style="color:#ff79c6">%</span> lenght_base];
+    out[i] <span style="color:#ff79c6">=</span> base[hash_rand_buf[i <span style="color:#ff79c6">%</span> length_hash] <span style="color:#ff79c6">%</span> length_base];
   }
   <span style="color:#ff79c6">return</span> result;
 }
-</code></pre></div><p>That&rsquo;s just basically filling out the <code>out</code> buffer to <code>base[hash_rand_buf[i % length_hash] % lenght_base]</code>.</p>
-<p>Now we have a good understanding of the encryption system, we can take a look at the what is exactly the <code>id</code> printed right before the pin input. The function taht generates the <code>id</code> is <code>libsafe_get_userid</code>:</p>
+</code></pre></div><p>That&rsquo;s just basically filling out the <code>out</code> buffer with <code>base[hash_rand_buf[i % length_hash] % lenght_base]</code>.</p>
+<p>Now we have a good understanding of the encryption algorithm, we can take a look at what exactly the <code>id</code> printed right before the pin input is. The function that generates the <code>id</code> is <code>libsafe_get_userid</code>:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#ff79c6">__int64</span> <span style="color:#ff79c6">__fastcall</span> <span style="color:#50fa7b">libsafe_get_userid</span>(_DWORD <span style="color:#ff79c6">*</span>id)
 {
   <span style="color:#8be9fd">int</span> fd; <span style="color:#6272a4">// [rsp+1Ch] [rbp-34h]
@@ -204,9 +204,9 @@ En tant que stagiaire vous avez accès aux locaux de la NSB. Vous allez collecte
   <span style="color:#ff79c6">*</span>id <span style="color:#ff79c6">=</span> buf[<span style="color:#bd93f9">0</span>];
   <span style="color:#ff79c6">return</span> <span style="color:#bd93f9">0LL</span>;
 }
-</code></pre></div><p>The function is very basic, it opens the <code>.safe_db</code> file and initializes the id to the first four bytes of the file which is the first value of rand as seen in the previous functions.</p>
+</code></pre></div><p>The function is very basic, it opens the <code>.safe_db</code> file and initializes the <code>id</code> to the first four bytes of the file which is the first value of rand as seen in the previous functions.</p>
 <h2 id="cracking-the-seed">Cracking the seed</h2>
-<p>To recover the pin, we have to know to what hash the hash of the pin will be compared. To do so, we have to recover the random buffer, hash it, give it to the &ldquo;core&rdquo; encryption layer and hash what it outs. That will be the final hash which will be compared to the hash of the pin we send. The main part of the challenge is so to recover the <code>rand</code> values, more specifically the seed given to <code>srand</code> to initialize the PRNG. We know the seed in the program is <code>time(NULL)</code>. Which means this is a timestamp we can reasonably bruteforce (the 2020 edition of the CTF has been cancelled because fo COVID so we took a range of one year to bruteforce the timestamp, from the date of the software update). The bruteforce is very fast because given we know the <code>id</code> which is the value for the first call to <code>rand</code>, we have just to ensure the first value of <code>rand</code> for the seed we bruteforce is equal to the <code>id</code> value.</p>
+<p>To recover the pin, we have to know what hash the hash of the pin will be compared to. To do so, we have to recover the random buffer, hash it, give it to the &ldquo;core&rdquo; encryption layer and hash what it outputs. That will be the final hash which will be compared to the hash of the pin we send. The main part of the challenge is so to recover the <code>rand</code> values, more specifically the seed given to <code>srand</code> to initialize the PRNG. We know the seed in the program is <code>time(NULL)</code>. Which means that this is a timestamp that can be bruteforced in a reasonable amount of time (the 2020 edition of the CTF was cancelled because of COVID so we took as range the date of the software update until today). The bruteforce is very fast because given we know the <code>id</code> which is the value for the first call to <code>rand</code>, we have just to ensure the first value of <code>rand</code> for the seed we bruteforce is equal to the <code>id</code> value.</p>
 <p>Which gives:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#ff79c6">from</span> tqdm <span style="color:#ff79c6">import</span> tqdm
 <span style="color:#ff79c6">import</span> hashlib
@@ -236,13 +236,13 @@ CHARLEN      <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;fon
         v6 <span style="color:#ff79c6">=</span> h(<span style="color:#8be9fd;font-style:italic">bytearray</span>(v6))
 
         <span style="color:#ff79c6">print</span>(f<span style="color:#f1fa8c">&#34;Timestamp: {t=}, hash: {v6.hex()}&#34;</span>)
-</code></pre></div><p>And when we found the right seed, we just have to generate, hash, cipher and hash again the right random buffer to get the right hash to which the hash of the pin will be compared.</p>
-<pre><code>$ python3 /tmp/solve.py 
+</code></pre></div><p>And when we found the right seed, we just have to generate, hash, cipher and hash again the right random buffer to get the right hash to which the hash of the pin will be compared to.</p>
+<pre><code>$ python3 solve.py 
  94%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▏       | 31691218/33580546 [01:29&lt;00:05, 351593.81it/s]
 Timestamp: t=1636749762, hash: 88c71c0cc0950acfe3835a009f8931cee0f12ab7410538f96d058184a4c90e11
 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 33580546/33580546 [01:34&lt;00:00, 356533.87it/s]
 </code></pre><h2 id="hashcat--profit">Hashcat + PROFIT</h2>
-<p>Now we know the final hash to which the hash of the pin is compared, we can just launch hashcat for a 8 bytes pin (we tried for every length up to the right size: 8).</p>
+<p>Now we know the final hash to which the hash of the pin is compared to, we can just run a mask attack using hashcat with a mask of 8 hexadecimal characters in uppercase (we tried for every length up to the right size: 8).</p>
 <pre><code>$ hashcat -a 3 -m 1400 pincode.hash ?H?H?H?H?H?H?H?H
 [skip]
 88c71c0cc0950acfe3835a009f8931cee0f12ab7410538f96d058184a4c90e11:4233246D
@@ -262,11 +262,10 @@ Rejected.........: 0/3342925824 (0.00%)
 Restore.Point....: 816128/1048576 (77.83%)
 Restore.Sub.#1...: Salt:0 Amplifier:0-64 Iteration:0-64
 Candidates.#1....: 1234515D -&gt; EBCF585D
-</code></pre><p>Since we cracked the pin we can open the safe and read the target IBAN stored in!</p>
-<p>The challenge was pretty funny because of the IRL part, and because we solved it together (<a href="https://github.com/n4sm">nasm</a> and <a href="https://github.com/yarienkiva">Alol</a>).</p>
-<p>Authors: <a href="https://github.com/n4sm">nasm</a> and <a href="https://github.com/yarienkiva">Alol</a>.</p>
+</code></pre><p>The challenge was pretty funny because of the IRL part, and because we solved it together (<a href="https://github.com/n4sm">nasm</a> and <a href="https://twitter.com/yarienkiva">Alol</a>).</p>
+<p>Authors: <a href="https://github.com/n4sm">nasm</a> and <a href="https://twitter.com/yarienkiva">Alol</a>.</p>
 <h2 id="annexes">Annexes</h2>
-<p><img src="../../images/coffre.jpg" alt="The safe"></p>
+<p><img src="https://ret2school.github.io/images/coffre.jpg" alt="The safe"></p>
 
     </div>
     <div class="post-footer">
