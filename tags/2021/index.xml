@@ -5,7 +5,16 @@
     <link>https://ret2school.github.io/tags/2021/</link>
     <description>Recent content in 2021 on ret2school</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Mon, 29 Nov 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/2021/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 05 Dec 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/2021/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>[TRACS 2021 - RE] Coffre</title>
+      <link>https://ret2school.github.io/post/safe/</link>
+      <pubDate>Sun, 05 Dec 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/safe/</guid>
+      <description>Coffre Intro   Epreuve 12-3 – Coffre En tant que stagiaire vous avez accès aux locaux de la NSB. Vous allez collecter des informations dans les locaux. Un coffre est présent dans les locaux en salle rideau. Il appartient à Richard Cresus de la Tune. Essayez d’ouvrir ce coffre. Quel est l’IBAN contenu dans le coffre ? Format de la réponse : IBAN sans séparateur.   Basically, we have to crack open an electronic safe.</description>
+    </item>
+    
     <item>
       <title>[CyberSecurityRumble 2021 - RE / Forensics] The Compromise</title>
       <link>https://ret2school.github.io/post/compromise/</link>
