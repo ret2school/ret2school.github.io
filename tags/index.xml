@@ -5,13 +5,58 @@
     <link>https://ret2school.github.io/tags/</link>
     <description>Recent content in Tags on ret2school</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Sun, 05 Dec 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 02 Jan 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>2021</title>
       <link>https://ret2school.github.io/tags/2021/</link>
-      <pubDate>Sun, 05 Dec 2021 00:00:00 +0000</pubDate>
+      <pubDate>Sun, 02 Jan 2022 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/tags/2021/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>ctf</title>
+      <link>https://ret2school.github.io/tags/ctf/</link>
+      <pubDate>Sun, 02 Jan 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/ctf/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>hitcon</title>
+      <link>https://ret2school.github.io/tags/hitcon/</link>
+      <pubDate>Sun, 02 Jan 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/hitcon/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>ret2school</title>
+      <link>https://ret2school.github.io/tags/ret2school/</link>
+      <pubDate>Sun, 02 Jan 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/ret2school/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Tek</title>
+      <link>https://ret2school.github.io/tags/tek/</link>
+      <pubDate>Sun, 02 Jan 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/tek/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>web</title>
+      <link>https://ret2school.github.io/tags/web/</link>
+      <pubDate>Sun, 02 Jan 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/web/</guid>
       <description></description>
     </item>
     
@@ -21,15 +66,6 @@
       <pubDate>Sun, 05 Dec 2021 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/tags/alol/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>ctf</title>
-      <link>https://ret2school.github.io/tags/ctf/</link>
-      <pubDate>Sun, 05 Dec 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/ctf/</guid>
       <description></description>
     </item>
     
@@ -66,15 +102,6 @@
       <pubDate>Sun, 05 Dec 2021 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/tags/re/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>ret2school</title>
-      <link>https://ret2school.github.io/tags/ret2school/</link>
-      <pubDate>Sun, 05 Dec 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/ret2school/</guid>
       <description></description>
     </item>
     
@@ -264,15 +291,6 @@
       <pubDate>Thu, 30 Sep 2021 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/tags/integer-overflow/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Tek</title>
-      <link>https://ret2school.github.io/tags/tek/</link>
-      <pubDate>Thu, 30 Sep 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/tek/</guid>
       <description></description>
     </item>
     
@@ -592,15 +610,6 @@
     </item>
     
     <item>
-      <title>web</title>
-      <link>https://ret2school.github.io/tags/web/</link>
-      <pubDate>Tue, 02 Mar 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/web/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>Aero CTF 2021</title>
       <link>https://ret2school.github.io/tags/aero-ctf-2021/</link>
       <pubDate>Sun, 28 Feb 2021 00:00:00 +0000</pubDate>
@@ -687,15 +696,6 @@
       <pubDate>Tue, 01 Dec 2020 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/tags/2020/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>hitcon</title>
-      <link>https://ret2school.github.io/tags/hitcon/</link>
-      <pubDate>Tue, 01 Dec 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/hitcon/</guid>
       <description></description>
     </item>
     

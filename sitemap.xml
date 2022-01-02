@@ -3,15 +3,39 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://ret2school.github.io/tags/2021/</loc>
-    <lastmod>2021-12-05T00:00:00+00:00</lastmod>
+    <lastmod>2022-01-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/post/vulpixelize/</loc>
+    <lastmod>2022-01-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/tags/ctf/</loc>
+    <lastmod>2022-01-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/tags/hitcon/</loc>
+    <lastmod>2022-01-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/post/</loc>
+    <lastmod>2022-01-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/tags/ret2school/</loc>
+    <lastmod>2022-01-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/</loc>
+    <lastmod>2022-01-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/tags/</loc>
+    <lastmod>2022-01-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/tags/tek/</loc>
+    <lastmod>2022-01-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/tags/web/</loc>
+    <lastmod>2022-01-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://ret2school.github.io/post/safe/</loc>
     <lastmod>2021-12-05T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://ret2school.github.io/tags/alol/</loc>
-    <lastmod>2021-12-05T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://ret2school.github.io/tags/ctf/</loc>
     <lastmod>2021-12-05T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://ret2school.github.io/tags/irl/</loc>
@@ -20,25 +44,13 @@
     <loc>https://ret2school.github.io/tags/nasm/</loc>
     <lastmod>2021-12-05T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://ret2school.github.io/post/</loc>
-    <lastmod>2021-12-05T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>https://ret2school.github.io/tags/rand/</loc>
     <lastmod>2021-12-05T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://ret2school.github.io/tags/re/</loc>
     <lastmod>2021-12-05T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://ret2school.github.io/tags/ret2school/</loc>
-    <lastmod>2021-12-05T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://ret2school.github.io/</loc>
-    <lastmod>2021-12-05T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>https://ret2school.github.io/tags/reverse/</loc>
-    <lastmod>2021-12-05T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://ret2school.github.io/tags/</loc>
     <lastmod>2021-12-05T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://ret2school.github.io/tags/tracs/</loc>
@@ -114,9 +126,6 @@
     <lastmod>2021-09-30T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://ret2school.github.io/tags/integer-overflow/</loc>
-    <lastmod>2021-09-30T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://ret2school.github.io/tags/tek/</loc>
     <lastmod>2021-09-30T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://ret2school.github.io/tags/0p/</loc>
@@ -260,9 +269,6 @@
     <loc>https://ret2school.github.io/tags/thymeleaf/</loc>
     <lastmod>2021-03-02T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://ret2school.github.io/tags/web/</loc>
-    <lastmod>2021-03-02T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>https://ret2school.github.io/post/bashd00r/</loc>
     <lastmod>2021-02-28T00:00:00+00:00</lastmod>
   </url><url>
@@ -309,9 +315,6 @@
     <lastmod>2020-12-01T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://ret2school.github.io/post/forensic/</loc>
-    <lastmod>2020-12-01T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://ret2school.github.io/tags/hitcon/</loc>
     <lastmod>2020-12-01T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://ret2school.github.io/tags/hitconctf/</loc>
