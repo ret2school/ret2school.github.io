@@ -5,7 +5,17 @@
     <link>https://ret2school.github.io/tags/nasm/</link>
     <description>Recent content in nasm on ret2school</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Sun, 05 Dec 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/nasm/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 04 Mar 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/nasm/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>[Breizh CTF 2022- reverse] Faible Ty Reseau</title>
+      <link>https://ret2school.github.io/post/ftm/</link>
+      <pubDate>Fri, 04 Mar 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/ftm/</guid>
+      <description>Faible Ty Réseau is a basic heap-like challenge, it allows us to create a configuration, edit it, call a function pointer on it and finally to free it:
+int __cdecl main(int argc, const char **argv, const char **envp) { int v4; // [rsp+4h] [rbp-Ch] BYREF  unsigned __int64 v5; // [rsp+8h] [rbp-8h]  v5 = __readfsqword(0x28u); while ( 1 ) { puts(aVousN); printf(a1ModifierLesPa, argv); fflush(stdout); v4 = 0; argv = &amp;amp;v4; __isoc99_scanf(&amp;amp;unk_21F3, &amp;amp;v4); switch ( v4 ) { case 0: printf(&amp;#34;wtf ?</description>
+    </item>
+    
     <item>
       <title>[TRACS 2021 - RE] Coffre</title>
       <link>https://ret2school.github.io/post/safe/</link>
