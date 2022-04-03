@@ -64,7 +64,7 @@ int __cdecl main(int argc, const char **argv, const char **envp) { int v4; // [r
       <pubDate>Fri, 04 Mar 2022 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/post/app-secrete-du-breizhctf/</guid>
-      <description>[BreizhCTF2020 - Reverse] L&amp;rsquo;appli secrète du breizhCTF Value: 131 Description: En arrivant à Rennes au BreizhCTF, vous avez trouvé un téléphone par terre et avez décidé de le garder avec vous. Vous vous rendez compte que sur ce téléphone, il y a une appli &#39;SuperSecretApp&#39;. Malheureusement, pour accéder à son contenu, vous devez avoir la bonne combinaison du username et du password. Vous avez donc décidé de reverse l&#39;application pour trouvez cela!</description>
+      <description>Value: 131 Description: En arrivant à Rennes au BreizhCTF, vous avez trouvé un téléphone par terre et avez décidé de le garder avec vous. Vous vous rendez compte que sur ce téléphone, il y a une appli &#39;SuperSecretApp&#39;. Malheureusement, pour accéder à son contenu, vous devez avoir la bonne combinaison du username et du password. Vous avez donc décidé de reverse l&#39;application pour trouvez cela! Auteur: Worty Format : BZHCTF{username-password}  The file provided is an .</description>
     </item>
     
     <item>
