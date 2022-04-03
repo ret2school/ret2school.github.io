@@ -5,7 +5,25 @@
     <link>https://ret2school.github.io/tags/forensic/</link>
     <description>Recent content in forensic on ret2school</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Mon, 29 Nov 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/forensic/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 04 Mar 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/forensic/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>[Breizh CTF 2022- Forensic] La livraison de pizza</title>
+      <link>https://ret2school.github.io/post/livraison-de-pizza/</link>
+      <pubDate>Fri, 04 Mar 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/livraison-de-pizza/</guid>
+      <description>Value: 50 Description: Un nouvel employé travaille tranquillement à son bureau, quand quelqu&#39;un se présente devant pour &#39;Livraison de galettes saucisses&#39;. Il est nouveau, mais il se dit qu&#39;en Bretagne, après tout, cela doit arriver. Il est donc venu dans votre bureau vous demandez si vous aviez commandé, mais votre réponse est non. Il revient tout paniqué en vous disant que son anvitirus a enregistré un traffic USB inhabituel. L&#39;anvitirus de votre entreprise est configuré pour prendre des dumps réseaux de tout le traffic, même le traffic USB !</description>
+    </item>
+    
+    <item>
+      <title>[Breizh CTF 2022- reverse] L&#39;appli secrète du breizhCTF</title>
+      <link>https://ret2school.github.io/post/app-secrete-du-breizhctf/</link>
+      <pubDate>Fri, 04 Mar 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/app-secrete-du-breizhctf/</guid>
+      <description>[BreizhCTF2020 - Reverse] L&amp;rsquo;appli secrète du breizhCTF Value: 131 Description: En arrivant à Rennes au BreizhCTF, vous avez trouvé un téléphone par terre et avez décidé de le garder avec vous. Vous vous rendez compte que sur ce téléphone, il y a une appli &#39;SuperSecretApp&#39;. Malheureusement, pour accéder à son contenu, vous devez avoir la bonne combinaison du username et du password. Vous avez donc décidé de reverse l&#39;application pour trouvez cela!</description>
+    </item>
+    
     <item>
       <title>[CyberSecurityRumble 2021 - RE / Forensics] The Compromise</title>
       <link>https://ret2school.github.io/post/compromise/</link>

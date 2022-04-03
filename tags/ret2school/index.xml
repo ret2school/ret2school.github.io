@@ -5,7 +5,47 @@
     <link>https://ret2school.github.io/tags/ret2school/</link>
     <description>Recent content on ret2school</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Sun, 02 Jan 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/ret2school/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 04 Mar 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/ret2school/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>[Breizh CTF 2022 - prog] PYCTHON</title>
+      <link>https://ret2school.github.io/post/pycthon/</link>
+      <pubDate>Fri, 04 Mar 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/pycthon/</guid>
+      <description>Description: Nous n&#39;arrivons pas à retrouver l&#39;information cachée à partir de ce fichier... Auteur: T0fix Format : BZHCTF{}  The provided file is a .pyc which contains compiled pseudo-code for a program written in Python.
+You just have to use the uncompyle6 package with the following command: uncompyle6 -o .pycthon.cpython-38.pyc
+We obtain then, the source python code:
+def hoflag(): tab = [ &amp;#39;U&amp;#39;, &amp;#39;n&amp;#39;, &amp;#39;c&amp;#39;, &amp;#39;0&amp;#39;, &amp;#39;m&amp;#39;, &amp;#39;p&amp;#39;, &amp;#39;y&amp;#39;, &amp;#39;l&amp;#39;, &amp;#39;3&amp;#39;, &amp;#39;d&amp;#39;, &amp;#39;_&amp;#39;, &amp;#39;P&amp;#39;, &amp;#39;y&amp;#39;, &amp;#39;t&amp;#39;, &amp;#39;h&amp;#39;, &amp;#39;0&amp;#39;, &amp;#39;n&amp;#39;, &amp;#39;_&amp;#39;, &amp;#39;f&amp;#39;, &amp;#39;1&amp;#39;, &amp;#39;l&amp;#39;, &amp;#39;E&amp;#39;] flag = &amp;#39;&amp;#39;.</description>
+    </item>
+    
+    <item>
+      <title>[Breizh CTF 2022- Forensic] La livraison de pizza</title>
+      <link>https://ret2school.github.io/post/livraison-de-pizza/</link>
+      <pubDate>Fri, 04 Mar 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/livraison-de-pizza/</guid>
+      <description>Value: 50 Description: Un nouvel employé travaille tranquillement à son bureau, quand quelqu&#39;un se présente devant pour &#39;Livraison de galettes saucisses&#39;. Il est nouveau, mais il se dit qu&#39;en Bretagne, après tout, cela doit arriver. Il est donc venu dans votre bureau vous demandez si vous aviez commandé, mais votre réponse est non. Il revient tout paniqué en vous disant que son anvitirus a enregistré un traffic USB inhabituel. L&#39;anvitirus de votre entreprise est configuré pour prendre des dumps réseaux de tout le traffic, même le traffic USB !</description>
+    </item>
+    
+    <item>
+      <title>[Breizh CTF 2022- misc] My homework... NO !</title>
+      <link>https://ret2school.github.io/post/my-homework...-no-/</link>
+      <pubDate>Fri, 04 Mar 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/my-homework...-no-/</guid>
+      <description>Description: Je dois rendre mon tp ce soir mais j&#39;ai supprimé le dossier où se trouvaient mes bianires. Par chance il tourne encore, pouvez-vous m&#39;aider à le récupérer ? Login/Password : gaston:gaston ssh challenges.ctf.bzh:24001 Auteur: LaChenilleBarbue Format : BZHCTF{sha512sum(binaire)}  Let&amp;rsquo;s start by connecting to the server with the credentials we have been given and list the processes that are running:
+&amp;gt; ssh challenges.ctf.bzh -p 24001 -l gaston gaston@challenges.ctf.bzh&#39;s password: gaston@726bc5597730:~$ ps -aux USER PID %CPU %MEM VSZ RSS TTY STAT START TIME COMMAND root 1 0.</description>
+    </item>
+    
+    <item>
+      <title>[Breizh CTF 2022- reverse] L&#39;appli secrète du breizhCTF</title>
+      <link>https://ret2school.github.io/post/app-secrete-du-breizhctf/</link>
+      <pubDate>Fri, 04 Mar 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/app-secrete-du-breizhctf/</guid>
+      <description>[BreizhCTF2020 - Reverse] L&amp;rsquo;appli secrète du breizhCTF Value: 131 Description: En arrivant à Rennes au BreizhCTF, vous avez trouvé un téléphone par terre et avez décidé de le garder avec vous. Vous vous rendez compte que sur ce téléphone, il y a une appli &#39;SuperSecretApp&#39;. Malheureusement, pour accéder à son contenu, vous devez avoir la bonne combinaison du username et du password. Vous avez donc décidé de reverse l&#39;application pour trouvez cela!</description>
+    </item>
+    
     <item>
       <title>[Hitcon 2021 - web] Vulpixelize</title>
       <link>https://ret2school.github.io/post/vulpixelize/</link>

@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title> // ret2school</title>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.81.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="nasm" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="https://ret2school.github.io/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css" />
+
+    
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'G-8K5XT0SJN8', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content=""/>
+<meta name="twitter:description" content="[BreizhCTF2020 - Reverse] Baby Value: 50 Description: Le reverse c&#39;est quand même vachement compliqué... ou pas ? Auteur: Worty Format : BZHCTF{}  Like all the CTF challenges named &ldquo;Baby&rdquo;, this challenge was very simple.
+You just had to open the source code in radare2 to see the flag in clear:
+&gt; r2 baby [0x00001070]&gt; aaa [Cannot find function at 0x00001070 sym. and entry0 (aa) [x] Analyze all flags starting with sym."/>
+
+    <meta property="og:title" content="" />
+<meta property="og:description" content="[BreizhCTF2020 - Reverse] Baby Value: 50 Description: Le reverse c&#39;est quand même vachement compliqué... ou pas ? Auteur: Worty Format : BZHCTF{}  Like all the CTF challenges named &ldquo;Baby&rdquo;, this challenge was very simple.
+You just had to open the source code in radare2 to see the flag in clear:
+&gt; r2 baby [0x00001070]&gt; aaa [Cannot find function at 0x00001070 sym. and entry0 (aa) [x] Analyze all flags starting with sym." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ret2school.github.io/post/baby/" /><meta property="article:section" content="post" />
+
+
+
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://ret2school.github.io"><img class="app-header-avatar" src="/pic.jpeg" alt="nasm" /></a>
+      <h1>ret2school</h1>
+      <nav class="app-header-menu">
+          <a class="app-header-menu-item" href="/">Home</a>
+             / 
+          
+          <a class="app-header-menu-item" href="/tags/">Tags</a>
+      </nav>
+      <p>Just a bunch of french ctf players</p>
+      <div class="app-header-social">
+        
+          <a target="_blank" href="https://github.com/ret2school" rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github">
+  <title>github</title>
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+</svg></a>
+        
+          <a target="_blank" href="https://twitter.com/ret2school_fr" rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-twitter">
+  <title>twitter</title>
+  <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
+</svg></a>
+        
+      </div>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title"></h1>
+      <div class="post-meta">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          Jan 1, 0001
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          3 min read
+        </div>
+      </div>
+    </header>
+    <div class="post-content">
+      <h1 id="breizhctf2020---reverse-baby">[BreizhCTF2020 - Reverse] Baby</h1>
+<pre><code>Value: 50
+
+Description:
+
+Le reverse c'est quand même vachement compliqué... ou pas ?
+
+Auteur: Worty
+
+Format : BZHCTF{}
+</code></pre>
+<p>Like all the CTF challenges named &ldquo;Baby&rdquo;, this challenge was very simple.</p>
+<p>You just had to open the source code in <code>radare2</code> to see the flag in clear:</p>
+<pre><code>&gt; r2 baby
+[0x00001070]&gt; aaa
+[Cannot find function at 0x00001070 sym. and entry0 (aa)
+[x] Analyze all flags starting with sym. and entry0 (aa)
+[x] Analyze function calls (aac)
+[x] Analyze len bytes of instructions for references (aar)
+[x] Check for objc references
+[x] Check for vtables
+[x] Type matching analysis for all functions (aaft)
+[x] Propagate noreturn information
+[x] Use -AA or aaaa to perform additional experimental analysis.
+[0x00001070]&gt; s main
+[0x00001169]&gt; pdf
+            ; DATA XREF from entry0 @ +0x18
+┌ 157: int main (int argc, char **argv);
+│           ; var char **var_40h @ rbp-0x40
+│           ; var int64_t var_34h @ rbp-0x34
+│           ; var char *s1 @ rbp-0x30
+│           ; var int64_t canary @ rbp-0x8
+│           ; arg int argc @ rdi
+│           ; arg char **argv @ rsi
+│           0x00001169      55             push rbp
+│           0x0000116a      4889e5         mov rbp, rsp
+│           0x0000116d      4883ec40       sub rsp, 0x40
+│           0x00001171      897dcc         mov dword [var_34h], edi    ; argc
+│           0x00001174      488975c0       mov qword [var_40h], rsi    ; argv
+│           0x00001178      64488b042528.  mov rax, qword fs:[0x28]
+│           0x00001181      488945f8       mov qword [canary], rax
+│           0x00001185      31c0           xor eax, eax
+│           0x00001187      488d057a0e00.  lea rax, qword str.What_is_the_password ; 0x2008 ; &quot;What is the password?&quot;
+│           0x0000118e      4889c7         mov rdi, rax                ; const char *s
+│           0x00001191      e89afeffff     call sym.imp.puts           ; int puts(const char *s)
+│           0x00001196      488d45d0       lea rax, qword [s1]
+│           0x0000119a      4889c6         mov rsi, rax
+│           0x0000119d      488d057a0e00.  lea rax, qword str.35s      ; 0x201e ; &quot;%35s&quot;
+│           0x000011a4      4889c7         mov rdi, rax                ; const char *format
+│           0x000011a7      b800000000     mov eax, 0
+│           0x000011ac      e8affeffff     call sym.imp.__isoc99_scanf ; int scanf(const char *format)
+│           0x000011b1      488d45d0       lea rax, qword [s1]
+│           0x000011b5      488d156c0e00.  lea rdx, qword str.BZHCTF_b4by_r3_f0r_y0u_g00d_luck ; 0x2028 ; &quot;BZHCTF{b4by_r3_f0r_y0u_g00d_luck!!}&quot;
+│           0x000011bc      4889d6         mov rsi, rdx                ; const char *s2
+│           0x000011bf      4889c7         mov rdi, rax                ; const char *s1
+│           0x000011c2      e889feffff     call sym.imp.strcmp         ; int strcmp(const char *s1, const char *s2)
+│           0x000011c7      85c0           test eax, eax
+│       ┌─&lt; 0x000011c9      7511           jne 0x11dc
+│       │   0x000011cb      488d057e0e00.  lea rax, qword str.Well_done__You_can_validate_with_this_flag ; 0x2050 ; &quot;Well done! You can validate with this flag!&quot;
+│       │   0x000011d2      4889c7         mov rdi, rax                ; const char *s
+│       │   0x000011d5      e856feffff     call sym.imp.puts           ; int puts(const char *s)
+│      ┌──&lt; 0x000011da      eb0f           jmp 0x11eb
+│      ││   ; CODE XREF from main @ 0x11c9
+│      │└─&gt; 0x000011dc      488d05990e00.  lea rax, qword str.No...    ; 0x207c ; &quot;No...&quot;
+│      │    0x000011e3      4889c7         mov rdi, rax                ; const char *s
+│      │    0x000011e6      e845feffff     call sym.imp.puts           ; int puts(const char *s)
+│      │    ; CODE XREF from main @ 0x11da
+│      └──&gt; 0x000011eb      b800000000     mov eax, 0
+│           0x000011f0      488b55f8       mov rdx, qword [canary]
+│           0x000011f4      64482b142528.  sub rdx, qword fs:[0x28]
+│       ┌─&lt; 0x000011fd      7405           je 0x1204
+│       │   0x000011ff      e83cfeffff     call sym.imp.__stack_chk_fail ; void __stack_chk_fail(void)
+│       │   ; CODE XREF from main @ 0x11fd
+│       └─&gt; 0x00001204      c9             leave
+└           0x00001205      c3             ret
+</code></pre><pre><code>BZHCTF{b4by_r3_f0r_y0u_g00d_luck!!}
+</code></pre>
+    </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>

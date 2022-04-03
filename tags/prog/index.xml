@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>prog on ret2school</title>
+    <link>https://ret2school.github.io/tags/prog/</link>
+    <description>Recent content in prog on ret2school</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Fri, 04 Mar 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/prog/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>[Breizh CTF 2022 - prog] PYCTHON</title>
+      <link>https://ret2school.github.io/post/pycthon/</link>
+      <pubDate>Fri, 04 Mar 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/pycthon/</guid>
+      <description>Description: Nous n&#39;arrivons pas à retrouver l&#39;information cachée à partir de ce fichier... Auteur: T0fix Format : BZHCTF{}  The provided file is a .pyc which contains compiled pseudo-code for a program written in Python.
+You just have to use the uncompyle6 package with the following command: uncompyle6 -o .pycthon.cpython-38.pyc
+We obtain then, the source python code:
+def hoflag(): tab = [ &amp;#39;U&amp;#39;, &amp;#39;n&amp;#39;, &amp;#39;c&amp;#39;, &amp;#39;0&amp;#39;, &amp;#39;m&amp;#39;, &amp;#39;p&amp;#39;, &amp;#39;y&amp;#39;, &amp;#39;l&amp;#39;, &amp;#39;3&amp;#39;, &amp;#39;d&amp;#39;, &amp;#39;_&amp;#39;, &amp;#39;P&amp;#39;, &amp;#39;y&amp;#39;, &amp;#39;t&amp;#39;, &amp;#39;h&amp;#39;, &amp;#39;0&amp;#39;, &amp;#39;n&amp;#39;, &amp;#39;_&amp;#39;, &amp;#39;f&amp;#39;, &amp;#39;1&amp;#39;, &amp;#39;l&amp;#39;, &amp;#39;E&amp;#39;] flag = &amp;#39;&amp;#39;.</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -5,7 +5,17 @@
     <link>https://ret2school.github.io/tags/misc/</link>
     <description>Recent content in misc on ret2school</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Mon, 03 May 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/misc/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 04 Mar 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/misc/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>[Breizh CTF 2022- misc] My homework... NO !</title>
+      <link>https://ret2school.github.io/post/my-homework...-no-/</link>
+      <pubDate>Fri, 04 Mar 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/my-homework...-no-/</guid>
+      <description>Description: Je dois rendre mon tp ce soir mais j&#39;ai supprimé le dossier où se trouvaient mes bianires. Par chance il tourne encore, pouvez-vous m&#39;aider à le récupérer ? Login/Password : gaston:gaston ssh challenges.ctf.bzh:24001 Auteur: LaChenilleBarbue Format : BZHCTF{sha512sum(binaire)}  Let&amp;rsquo;s start by connecting to the server with the credentials we have been given and list the processes that are running:
+&amp;gt; ssh challenges.ctf.bzh -p 24001 -l gaston gaston@challenges.ctf.bzh&#39;s password: gaston@726bc5597730:~$ ps -aux USER PID %CPU %MEM VSZ RSS TTY STAT START TIME COMMAND root 1 0.</description>
+    </item>
+    
     <item>
       <title>[FCSC 2021 - misc] Privesc Me (2) - &#34;ALED&#34; - Your randomness checker</title>
       <link>https://ret2school.github.io/post/privesc_two/</link>

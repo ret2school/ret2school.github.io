@@ -5,7 +5,79 @@
     <link>https://ret2school.github.io/tags/</link>
     <description>Recent content in Tags on ret2school</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Sun, 02 Jan 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 04 Mar 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>2022</title>
+      <link>https://ret2school.github.io/tags/2022/</link>
+      <pubDate>Fri, 04 Mar 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/2022/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Breizh CTF</title>
+      <link>https://ret2school.github.io/tags/breizh-ctf/</link>
+      <pubDate>Fri, 04 Mar 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/breizh-ctf/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>ctf</title>
+      <link>https://ret2school.github.io/tags/ctf/</link>
+      <pubDate>Fri, 04 Mar 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/ctf/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>forensic</title>
+      <link>https://ret2school.github.io/tags/forensic/</link>
+      <pubDate>Fri, 04 Mar 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/forensic/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>misc</title>
+      <link>https://ret2school.github.io/tags/misc/</link>
+      <pubDate>Fri, 04 Mar 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/misc/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>MorpheusH3x</title>
+      <link>https://ret2school.github.io/tags/morpheush3x/</link>
+      <pubDate>Fri, 04 Mar 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/morpheush3x/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>prog</title>
+      <link>https://ret2school.github.io/tags/prog/</link>
+      <pubDate>Fri, 04 Mar 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/prog/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>ret2school</title>
+      <link>https://ret2school.github.io/tags/ret2school/</link>
+      <pubDate>Fri, 04 Mar 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/ret2school/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>2021</title>
       <link>https://ret2school.github.io/tags/2021/</link>
@@ -16,29 +88,11 @@
     </item>
     
     <item>
-      <title>ctf</title>
-      <link>https://ret2school.github.io/tags/ctf/</link>
-      <pubDate>Sun, 02 Jan 2022 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/ctf/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>hitcon</title>
       <link>https://ret2school.github.io/tags/hitcon/</link>
       <pubDate>Sun, 02 Jan 2022 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/tags/hitcon/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>ret2school</title>
-      <link>https://ret2school.github.io/tags/ret2school/</link>
-      <pubDate>Sun, 02 Jan 2022 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/ret2school/</guid>
       <description></description>
     </item>
     
@@ -156,15 +210,6 @@
       <pubDate>Mon, 29 Nov 2021 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/tags/fofo/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>forensic</title>
-      <link>https://ret2school.github.io/tags/forensic/</link>
-      <pubDate>Mon, 29 Nov 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/forensic/</guid>
       <description></description>
     </item>
     
@@ -354,15 +399,6 @@
       <pubDate>Mon, 03 May 2021 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/tags/mipsy/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>misc</title>
-      <link>https://ret2school.github.io/tags/misc/</link>
-      <pubDate>Mon, 03 May 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/misc/</guid>
       <description></description>
     </item>
     
