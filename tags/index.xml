@@ -5,11 +5,11 @@
     <link>https://ret2school.github.io/tags/</link>
     <description>Recent content in Tags on ret2school</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Fri, 04 Mar 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 05 Apr 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>2022</title>
       <link>https://ret2school.github.io/tags/2022/</link>
-      <pubDate>Fri, 04 Mar 2022 00:00:00 +0000</pubDate>
+      <pubDate>Tue, 05 Apr 2022 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/tags/2022/</guid>
       <description></description>
@@ -18,7 +18,7 @@
     <item>
       <title>Breizh CTF</title>
       <link>https://ret2school.github.io/tags/breizh-ctf/</link>
-      <pubDate>Fri, 04 Mar 2022 00:00:00 +0000</pubDate>
+      <pubDate>Tue, 05 Apr 2022 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/tags/breizh-ctf/</guid>
       <description></description>
@@ -27,9 +27,36 @@
     <item>
       <title>ctf</title>
       <link>https://ret2school.github.io/tags/ctf/</link>
-      <pubDate>Fri, 04 Mar 2022 00:00:00 +0000</pubDate>
+      <pubDate>Tue, 05 Apr 2022 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/tags/ctf/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>ret2school</title>
+      <link>https://ret2school.github.io/tags/ret2school/</link>
+      <pubDate>Tue, 05 Apr 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/ret2school/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Tek</title>
+      <link>https://ret2school.github.io/tags/tek/</link>
+      <pubDate>Tue, 05 Apr 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/tek/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>web</title>
+      <link>https://ret2school.github.io/tags/web/</link>
+      <pubDate>Tue, 05 Apr 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/web/</guid>
       <description></description>
     </item>
     
@@ -88,15 +115,6 @@
     </item>
     
     <item>
-      <title>ret2school</title>
-      <link>https://ret2school.github.io/tags/ret2school/</link>
-      <pubDate>Fri, 04 Mar 2022 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/ret2school/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>reverse</title>
       <link>https://ret2school.github.io/tags/reverse/</link>
       <pubDate>Fri, 04 Mar 2022 00:00:00 +0000</pubDate>
@@ -120,24 +138,6 @@
       <pubDate>Sun, 02 Jan 2022 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/tags/hitcon/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Tek</title>
-      <link>https://ret2school.github.io/tags/tek/</link>
-      <pubDate>Sun, 02 Jan 2022 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/tek/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>web</title>
-      <link>https://ret2school.github.io/tags/web/</link>
-      <pubDate>Sun, 02 Jan 2022 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/web/</guid>
       <description></description>
     </item>
     
