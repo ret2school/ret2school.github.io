@@ -26,11 +26,11 @@ if (!doNotTrack) {
     <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="[DCTF 2022 - pwn] phonebook"/>
 <meta name="twitter:description" content="Intro phonebook is a basic heap challenge I did during the dctf event. It&rsquo;s basically just a heap overflow wich allows us to overflow a function pointer with for example the address of system. You can find the related files there.
-The bug $ ./phonebook Choose an option: [1-5] 1. Store someone&#39;s information 2. Edit information 3. Call someone 4. Unfriend someone 5. Add the hidden_note &gt; We can create an entity and then initialize: a name, a numero and a function pointer."/>
+The bug $ ./phonebook Choose an option: [1-5] 1. Store someone&#39;s information 2. Edit information 3. Call someone 4. Unfriend someone 5. Add the hidden_note &gt; We can create an entity and then initialize: a name, a phone number and a function pointer."/>
 
     <meta property="og:title" content="[DCTF 2022 - pwn] phonebook" />
 <meta property="og:description" content="Intro phonebook is a basic heap challenge I did during the dctf event. It&rsquo;s basically just a heap overflow wich allows us to overflow a function pointer with for example the address of system. You can find the related files there.
-The bug $ ./phonebook Choose an option: [1-5] 1. Store someone&#39;s information 2. Edit information 3. Call someone 4. Unfriend someone 5. Add the hidden_note &gt; We can create an entity and then initialize: a name, a numero and a function pointer." />
+The bug $ ./phonebook Choose an option: [1-5] 1. Store someone&#39;s information 2. Edit information 3. Call someone 4. Unfriend someone 5. Add the hidden_note &gt; We can create an entity and then initialize: a name, a phone number and a function pointer." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://ret2school.github.io/post/phonebook/" />
 <meta property="article:published_time" content="2022-04-17T00:00:00+00:00" />
@@ -109,7 +109,7 @@ Choose an option: [1-5]
 4. Unfriend someone
 5. Add the hidden_note
 &gt; 
-</code></pre><p>We can create an entity and then initialize: a name, a numero and a function pointer.</p>
+</code></pre><p>We can create an entity and then initialize: a name, a phone number and a function pointer.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#8be9fd">int</span> <span style="color:#ff79c6">__fastcall</span> <span style="color:#50fa7b">create</span>(<span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd">int</span> a1)
 {
   <span style="color:#8be9fd">int</span> result; <span style="color:#6272a4">// eax

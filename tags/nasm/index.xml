@@ -13,7 +13,7 @@
       
       <guid>https://ret2school.github.io/post/phonebook/</guid>
       <description>Intro phonebook is a basic heap challenge I did during the dctf event. It&amp;rsquo;s basically just a heap overflow wich allows us to overflow a function pointer with for example the address of system. You can find the related files there.
-The bug $ ./phonebook Choose an option: [1-5] 1. Store someone&#39;s information 2. Edit information 3. Call someone 4. Unfriend someone 5. Add the hidden_note &amp;gt; We can create an entity and then initialize: a name, a numero and a function pointer.</description>
+The bug $ ./phonebook Choose an option: [1-5] 1. Store someone&#39;s information 2. Edit information 3. Call someone 4. Unfriend someone 5. Add the hidden_note &amp;gt; We can create an entity and then initialize: a name, a phone number and a function pointer.</description>
     </item>
     
     <item>
