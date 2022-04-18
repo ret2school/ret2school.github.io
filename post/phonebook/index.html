@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title>[DCTF 2022 - pwn] phonebook // ret2school</title>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.80.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="nasm" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="https://ret2school.github.io/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css" />
+
+    
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'G-8K5XT0SJN8', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="[DCTF 2022 - pwn] phonebook"/>
+<meta name="twitter:description" content="Intro phonebook is a basic heap challenge I did during the dctf event. It&rsquo;s basically just a heap overflow wich allows us to overflow a function pointer with for example the address of system. You can find the related files there.
+The bug $ ./phonebook Choose an option: [1-5] 1. Store someone&#39;s information 2. Edit information 3. Call someone 4. Unfriend someone 5. Add the hidden_note &gt; We can create an entity and then initialize: a name, a numero and a function pointer."/>
+
+    <meta property="og:title" content="[DCTF 2022 - pwn] phonebook" />
+<meta property="og:description" content="Intro phonebook is a basic heap challenge I did during the dctf event. It&rsquo;s basically just a heap overflow wich allows us to overflow a function pointer with for example the address of system. You can find the related files there.
+The bug $ ./phonebook Choose an option: [1-5] 1. Store someone&#39;s information 2. Edit information 3. Call someone 4. Unfriend someone 5. Add the hidden_note &gt; We can create an entity and then initialize: a name, a numero and a function pointer." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ret2school.github.io/post/phonebook/" />
+<meta property="article:published_time" content="2022-04-17T00:00:00+00:00" />
+<meta property="article:modified_time" content="2022-04-17T00:00:00+00:00" />
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://ret2school.github.io"><img class="app-header-avatar" src="/pic.jpeg" alt="nasm" /></a>
+      <h1>ret2school</h1>
+      <nav class="app-header-menu">
+          <a class="app-header-menu-item" href="/">Home</a>
+             / 
+          
+          <a class="app-header-menu-item" href="/tags/">Tags</a>
+      </nav>
+      <p>Just a bunch of french ctf players</p>
+      <div class="app-header-social">
+        
+          <a target="_blank" href="https://github.com/ret2school" rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github">
+  <title>github</title>
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+</svg></a>
+        
+          <a target="_blank" href="https://twitter.com/ret2school_fr" rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-twitter">
+  <title>twitter</title>
+  <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
+</svg></a>
+        
+      </div>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">[DCTF 2022 - pwn] phonebook</h1>
+      <div class="post-meta">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          Apr 17, 2022
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          4 min read
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tag">
+  <title>tag</title>
+  <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line>
+</svg>
+              <a class="tag" href="https://ret2school.github.io/tags/ctf/">ctf</a>
+              <a class="tag" href="https://ret2school.github.io/tags/ret2school/">ret2school</a>
+              <a class="tag" href="https://ret2school.github.io/tags/dctf/">DCTF</a>
+              <a class="tag" href="https://ret2school.github.io/tags/nasm/">nasm</a>
+              <a class="tag" href="https://ret2school.github.io/tags/pwn/">pwn</a>
+              <a class="tag" href="https://ret2school.github.io/tags/2022/">2022</a>
+        </div>
+      </div>
+    </header>
+    <div class="post-content">
+      <h2 id="intro">Intro</h2>
+<p>phonebook is a basic heap challenge I did during the dctf event. It&rsquo;s basically just a heap overflow wich allows us to overflow a function pointer with for example the address of system. You can find the related files <a href="https://github.com/ret2school/ctf/tree/master/2022/dctf/pwn/phonebook">there</a>.</p>
+<h2 id="the-bug">The bug</h2>
+<pre><code>$ ./phonebook
+Choose an option: [1-5]
+1. Store someone's information
+2. Edit information
+3. Call someone
+4. Unfriend someone
+5. Add the hidden_note
+&gt; 
+</code></pre><p>We can create an entity and then initialize: a name, a numero and a function pointer.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#8be9fd">int</span> <span style="color:#ff79c6">__fastcall</span> <span style="color:#50fa7b">create</span>(<span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd">int</span> a1)
+{
+  <span style="color:#8be9fd">int</span> result; <span style="color:#6272a4">// eax
+</span><span style="color:#6272a4"></span>  <span style="color:#ff79c6">struct</span> entity <span style="color:#ff79c6">*</span>s; <span style="color:#6272a4">// [rsp+18h] [rbp-8h]
+</span><span style="color:#6272a4"></span>
+  <span style="color:#ff79c6">if</span> ( people[a1] )
+    <span style="color:#ff79c6">return</span> printf(<span style="color:#f1fa8c">&#34;Person with id %d already exists!&#34;</span>, a1);
+  s <span style="color:#ff79c6">=</span> malloc(<span style="color:#bd93f9">0x20uLL</span>);
+  s<span style="color:#ff79c6">-&gt;</span>name <span style="color:#ff79c6">=</span> get_name();
+  LODWORD(s<span style="color:#ff79c6">-&gt;</span>name_size) <span style="color:#ff79c6">=</span> strlen(s<span style="color:#ff79c6">-&gt;</span>name);
+  printf(<span style="color:#f1fa8c">&#34;Phone number: &#34;</span>);
+  fgets(s, <span style="color:#bd93f9">8</span>, _bss_start); <span style="color:#6272a4">// phone number
+</span><span style="color:#6272a4"></span>  s<span style="color:#ff79c6">-&gt;</span>func <span style="color:#ff79c6">=</span> choose_relation();
+  result <span style="color:#ff79c6">=</span> s;
+  people[a1] <span style="color:#ff79c6">=</span> s;
+  <span style="color:#ff79c6">return</span> result;
+}
+</code></pre></div><p>The bug lies <code>edit_name</code> function:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#8be9fd">unsigned</span> <span style="color:#ff79c6">__int64</span> <span style="color:#ff79c6">__fastcall</span> <span style="color:#50fa7b">edit_name</span>(<span style="color:#8be9fd">int</span> a1)
+{
+  <span style="color:#8be9fd">int</span> n; <span style="color:#6272a4">// [rsp+18h] [rbp-18h] BYREF
+</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">int</span> name_size; <span style="color:#6272a4">// [rsp+1Ch] [rbp-14h]
+</span><span style="color:#6272a4"></span>  <span style="color:#ff79c6">struct</span> entity <span style="color:#ff79c6">*</span>v4; <span style="color:#6272a4">// [rsp+20h] [rbp-10h]
+</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">unsigned</span> <span style="color:#ff79c6">__int64</span> v5; <span style="color:#6272a4">// [rsp+28h] [rbp-8h]
+</span><span style="color:#6272a4"></span>
+  v5 <span style="color:#ff79c6">=</span> __readfsqword(<span style="color:#bd93f9">0x28u</span>);
+  v4 <span style="color:#ff79c6">=</span> people[a1];
+  name_size <span style="color:#ff79c6">=</span> v4<span style="color:#ff79c6">-&gt;</span>name_size;
+  printf(<span style="color:#f1fa8c">&#34;Name length: &#34;</span>);
+  __isoc99_scanf(<span style="color:#f1fa8c">&#34;%d&#34;</span>, <span style="color:#ff79c6">&amp;</span>n);
+  fgets(v4<span style="color:#ff79c6">-&gt;</span>name, <span style="color:#bd93f9">2</span>, _bss_start);
+  <span style="color:#ff79c6">if</span> ( name_size <span style="color:#ff79c6">!=</span> n )
+  {
+    free(v4<span style="color:#ff79c6">-&gt;</span>name);
+    v4<span style="color:#ff79c6">-&gt;</span>name <span style="color:#ff79c6">=</span> malloc(n <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">1</span>);
+  }
+  printf(<span style="color:#f1fa8c">&#34;Name: &#34;</span>);
+  fgets(v4<span style="color:#ff79c6">-&gt;</span>name, n, _bss_start);
+  v4<span style="color:#ff79c6">-&gt;</span>name[n] <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>;
+  <span style="color:#ff79c6">return</span> __readfsqword(<span style="color:#bd93f9">0x28u</span>) <span style="color:#ff79c6">^</span> v5;
+}
+</code></pre></div><p>We can give it a new lentgh and if that&rsquo;s not equal to the current size field it frees the current name pointer and allocates a new name pointer <strong>without</strong> updating the size field. Which means if we edit the name pointer with a smaller size, the name pointer will be smaller compared to the size field, then we just have to edit again the size field to make it equal to <code>v4-&gt;name_size</code> to trigger a heap overflow through the <code>v4-&gt;name</code> pointer.</p>
+<h2 id="leak-libc">Leak libc</h2>
+<p>Now we&rsquo;re able to overflow through the name pointer we have to find how the leak the libc, a nice way would be to leak it by using free&rsquo;d chunks in the unsortedbin. Or we can leak the <code>entity-&gt;func</code> function pointer which would give us a leak of the binary base address, then we would have to edit the name pointer with the got entry of <code>puts</code> to leak its address within the libc.</p>
+<p>To do so we can create another entity right after the name pointer:</p>
+<pre><code>0x559b0d4d16b0	0x0000000000000000	0x0000000000000031	........1.......
+0x559b0d4d16c0	0x3131313131313131	0x0000559b0c84f2a1	11111111.....U..
+0x559b0d4d16d0	0x0000559b0d4d1800	0x00000000000000fe	..M..U..........
+0x559b0d4d16e0	0x0000000000000000	0x0000000000000111	................
+0x559b0d4d16f0	0x4141414141414141	0x4141414141414141	AAAAAAAAAAAAAAAA
+0x559b0d4d1700	0x4141414141414141	0x4141414141414141	AAAAAAAAAAAAAAAA
+0x559b0d4d1710	0x4141414141414141	0x4141414141414141	AAAAAAAAAAAAAAAA
+0x559b0d4d1720	0x4141414141414141	0x4141414141414141	AAAAAAAAAAAAAAAA
+0x559b0d4d1730	0x4141414141414141	0x4141414141414141	AAAAAAAAAAAAAAAA
+0x559b0d4d1740	0x4141414141414141	0x4141414141414141	AAAAAAAAAAAAAAAA
+0x559b0d4d1750	0x4141414141414141	0x4141414141414141	AAAAAAAAAAAAAAAA
+0x559b0d4d1760	0x4141414141414141	0x4141414141414141	AAAAAAAAAAAAAAAA
+0x559b0d4d1770	0x4141414141414141	0x4141414141414141	AAAAAAAAAAAAAAAA
+0x559b0d4d1780	0x4141414141414141	0x4141414141414141	AAAAAAAAAAAAAAAA
+0x559b0d4d1790	0x4141414141414141	0x4141414141414141	AAAAAAAAAAAAAAAA
+0x559b0d4d17a0	0x4141414141414141	0x4141414141414141	AAAAAAAAAAAAAAAA
+0x559b0d4d17b0	0x4141414141414141	0x4141414141414141	AAAAAAAAAAAAAAAA
+0x559b0d4d17c0	0x4141414141414141	0x4141414141414141	AAAAAAAAAAAAAAAA
+0x559b0d4d17d0	0x4141414141414141	0x4141414141414141	AAAAAAAAAAAAAAAA
+0x559b0d4d17e0	0x4141414141414141	0x0000414141414141	AAAAAAAAAAAAAA..
+0x559b0d4d17f0	0x0000000000000000	0x0000000000000031	........1.......
+0x559b0d4d1800	0x6161616161616161	0x6161616161616161	aaaaaaaaaaaaaaaa
+0x559b0d4d1810	0x6161616161616161	0x6161616161616161	aaaaaaaaaaaaaaaa
+0x559b0d4d1820	0x0000000000000000	0x0000000000000031	........1.......
+0x559b0d4d1830	0x3131313131313131	0x0000559b0c84f2a1	11111111.....U..
+0x559b0d4d1840	0x0000559b0c851fa0	0x000000000000000a	.....U..........
+0x559b0d4d1850	0x0000000000000000	0x000000000001f7b1	................	 &lt;-- Top chunk
+</code></pre><p>The <code>edit_phone_number</code> overwrites the null byte:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#ff79c6">__int64</span> <span style="color:#ff79c6">__fastcall</span> <span style="color:#50fa7b">edit_phone_number</span>(<span style="color:#8be9fd">int</span> a1)
+{
+  printf(<span style="color:#f1fa8c">&#34;Enter new phone number: &#34;</span>);
+  <span style="color:#ff79c6">return</span> __isoc99_scanf(<span style="color:#f1fa8c">&#34;%8s&#34;</span>, people[a1]);
+}
+</code></pre></div><p>To summarise:</p>
+<ul>
+<li>leak binary base address by overwriting the null byte (<code>edit_phone_number</code>) and then print the phone numer.</li>
+<li>leak libc base address by overwriting the name field of the second entity with the got entry of <code>puts</code></li>
+</ul>
+<h2 id="profit">PROFIT</h2>
+<p>Then we just have to overwrite the function pointer with the address of <code>system</code> which takes as first argument a pointer to the entity structure of edit the phone number of the entity we wanna use because that&rsquo;s the first field of the structure which means we make it equivalent to a <code>system(&quot;/bin/sh&quot;)</code>.</p>
+<pre><code>00000000 entity          struc ; (sizeof=0x20, mappedto_8)
+00000000 num             dq ?
+00000008 func            dq ?
+00000010 name            dq ?                    ; offset
+00000018 name_size       dq ?
+00000020 entity          ends
+</code></pre><p>Then here we are:</p>
+<pre><code>$ python3 exploit.py REMOTE HOST=51.124.222.205 PORT=13380
+[*] '/home/nasm/Documents/phonebook/chall/phonebook_patched_patched'
+    Arch:     amd64-64-little
+    RELRO:    Full RELRO
+    Stack:    Canary found
+    NX:       NX enabled
+    PIE:      PIE enabled
+    RUNPATH:  b'.'
+[+] Opening connection to 51.124.222.205 on port 13380: Done
+[*] binary: 0x558980fdd000
+[*] libc @ 0x7fabfec57000
+[*] system @ 0x7fabfeca92c0
+[*] Switching to interactive mode
+$ id
+uid=1337 gid=1337 groups=1337
+$ cat flag.txt
+DCTF{C4n_1_g3t_y0ur_numb3r?}
+</code></pre>
+    </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>

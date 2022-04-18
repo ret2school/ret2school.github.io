@@ -5,13 +5,58 @@
     <link>https://ret2school.github.io/tags/</link>
     <description>Recent content in Tags on ret2school</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Tue, 05 Apr 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 17 Apr 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>2022</title>
       <link>https://ret2school.github.io/tags/2022/</link>
-      <pubDate>Tue, 05 Apr 2022 00:00:00 +0000</pubDate>
+      <pubDate>Sun, 17 Apr 2022 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/tags/2022/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>ctf</title>
+      <link>https://ret2school.github.io/tags/ctf/</link>
+      <pubDate>Sun, 17 Apr 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/ctf/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>DCTF</title>
+      <link>https://ret2school.github.io/tags/dctf/</link>
+      <pubDate>Sun, 17 Apr 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/dctf/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>nasm</title>
+      <link>https://ret2school.github.io/tags/nasm/</link>
+      <pubDate>Sun, 17 Apr 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/nasm/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>pwn</title>
+      <link>https://ret2school.github.io/tags/pwn/</link>
+      <pubDate>Sun, 17 Apr 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/pwn/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>ret2school</title>
+      <link>https://ret2school.github.io/tags/ret2school/</link>
+      <pubDate>Sun, 17 Apr 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/ret2school/</guid>
       <description></description>
     </item>
     
@@ -21,24 +66,6 @@
       <pubDate>Tue, 05 Apr 2022 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/tags/breizh-ctf/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>ctf</title>
-      <link>https://ret2school.github.io/tags/ctf/</link>
-      <pubDate>Tue, 05 Apr 2022 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/ctf/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>ret2school</title>
-      <link>https://ret2school.github.io/tags/ret2school/</link>
-      <pubDate>Tue, 05 Apr 2022 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/ret2school/</guid>
       <description></description>
     </item>
     
@@ -88,29 +115,11 @@
     </item>
     
     <item>
-      <title>nasm</title>
-      <link>https://ret2school.github.io/tags/nasm/</link>
-      <pubDate>Fri, 04 Mar 2022 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/nasm/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>prog</title>
       <link>https://ret2school.github.io/tags/prog/</link>
       <pubDate>Fri, 04 Mar 2022 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/tags/prog/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>pwn</title>
-      <link>https://ret2school.github.io/tags/pwn/</link>
-      <pubDate>Fri, 04 Mar 2022 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/pwn/</guid>
       <description></description>
     </item>
     
@@ -646,6 +655,15 @@
     </item>
     
     <item>
+      <title>x</title>
+      <link>https://ret2school.github.io/tags/x/</link>
+      <pubDate>Tue, 02 Mar 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/x/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Aero CTF 2021</title>
       <link>https://ret2school.github.io/tags/aero-ctf-2021/</link>
       <pubDate>Sun, 28 Feb 2021 00:00:00 +0000</pubDate>
@@ -813,15 +831,6 @@
       <pubDate>Tue, 25 Feb 2020 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/tags/members/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>x.</title>
-      <link>https://ret2school.github.io/tags/x./</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/x./</guid>
       <description></description>
     </item>
     

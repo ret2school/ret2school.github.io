@@ -3,7 +3,7 @@
   <head>
     <title>[Securinets CTF 2021 - RE] RUN! &amp; YAY! // ret2school</title>
     <meta charset="utf-8" />
-    <meta name="generator" content="Hugo 0.81.0" />
+    <meta name="generator" content="Hugo 0.80.0" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="author" content="nasm" />
     <meta name="description" content="" />
@@ -34,10 +34,9 @@ The algorithm was &ldquo;simple&rdquo;, you just had to deal with C&#43;&#43; ov
 The algorithm was &ldquo;simple&rdquo;, you just had to deal with C&#43;&#43; overhead for std::string, and was basically:
  The programs take the username and computes the sum of each char of the username (with some SSE2 wizardry) This sum is then given as seed to srand() The user serial is split into 2-char blocks, and each block is decoded as hex string and the integer is added to an array The program then searches the highest value in the decoded serial array and allocated a int array with this size The array is filled with rand() values mod 13371337 A valid serial is a sequences of indexes into the random array whose sum is equals to 0xbcdb6 mod 1337  So, the tricky part was to generate this sequence of indexes." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://ret2school.github.io/post/rev_securinets/" /><meta property="article:section" content="post" />
-<meta property="article:published_time" content="2021-03-23T00:00:00&#43;00:00" />
-<meta property="article:modified_time" content="2021-03-23T00:00:00&#43;00:00" />
-
+<meta property="og:url" content="https://ret2school.github.io/post/rev_securinets/" />
+<meta property="article:published_time" content="2021-03-23T00:00:00+00:00" />
+<meta property="article:modified_time" content="2021-03-23T00:00:00+00:00" />
 
 
   </head>

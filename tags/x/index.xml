@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>x. on ret2school</title>
-    <link>https://ret2school.github.io/tags/x./</link>
-    <description>Recent content in x. on ret2school</description>
-    <generator>Hugo -- gohugo.io</generator><atom:link href="https://ret2school.github.io/tags/x./index.xml" rel="self" type="application/rss+xml" />
+    <title>x on ret2school</title>
+    <link>https://ret2school.github.io/tags/x/</link>
+    <description>Recent content in x on ret2school</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Tue, 02 Mar 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/x/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>[AeroCTF 2021 - web] Localization is hard</title>
       <link>https://ret2school.github.io/post/localization_is_hard_wu/</link>

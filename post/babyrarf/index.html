@@ -3,7 +3,7 @@
   <head>
     <title>[UnionCTF 2021 - pwn] babyrarf // ret2school</title>
     <meta charset="utf-8" />
-    <meta name="generator" content="Hugo 0.81.0" />
+    <meta name="generator" content="Hugo 0.80.0" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="author" content="nasm" />
     <meta name="description" content="" />
@@ -38,10 +38,9 @@ This Write-Up is about de first pwn challenge of unionctf: babyrarf. It was a re
 Let&rsquo;s take a look at the src!
 #include &lt;stdio.h&gt;#include &lt;stdlib.h&gt;#include &lt;stdint.h&gt;#include &lt;unistd.h&gt; typedef struct attack { uint64_t id; uint64_t dmg; } attack; typedef struct character { char name[10]; int health; } character; uint8_t score; int read_int(){ char buf[10]; fgets(buf, 10, stdin); return atoi(buf); } void get_shell(){ execve(&#34;/bin/sh&#34;, NULL, NULL); } attack choose_attack(){ attack a; int id; puts(&#34;Choose an attack:\n&#34;); puts(&#34;1." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://ret2school.github.io/post/babyrarf/" /><meta property="article:section" content="post" />
-<meta property="article:published_time" content="2021-02-21T00:00:00&#43;00:00" />
-<meta property="article:modified_time" content="2021-02-21T00:00:00&#43;00:00" />
-
+<meta property="og:url" content="https://ret2school.github.io/post/babyrarf/" />
+<meta property="article:published_time" content="2021-02-21T00:00:00+00:00" />
+<meta property="article:modified_time" content="2021-02-21T00:00:00+00:00" />
 
 
   </head>

@@ -3,7 +3,7 @@
   <head>
     <title>[DownUnderCTF 2021 - pwn] DUCTFnote // ret2school</title>
     <meta charset="utf-8" />
-    <meta name="generator" content="Hugo 0.81.0" />
+    <meta name="generator" content="Hugo 0.80.0" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="author" content="nasm" />
     <meta name="description" content="" />
@@ -36,10 +36,9 @@ The main difficulty was that we could only have one active note at a time, so if
 Source code analysis I spotted one bug in the source code which leads to another bug :
 135 void edit_note(datanote_t * note) { 136 if(!note) { 137 printf(&#34;No Note.\n&#34;); 138 return; 139 } 140 141 signed char idx = 0; 142 while(idx &lt;= note-&gt;size) { // note-&gt;size can takes values from 0 to 127 (0x7f) 143 *(&amp;(note-&gt;data)&#43;idx) = fgetc(stdin); 144 if (*(&amp;(note-&gt;data)&#43;idx) == &#39;\n&#39;) {*(&amp;(note-&gt;data)&#43;idx) = &#39;\0&#39;; break;} 145 idx&#43;&#43;; 146 } 147 } In the function edit_note the condition of the while is incorrect and the loop is executed once too often : while(idx &lt;= note-&gt;size) should have been while(idx &lt; note-&gt;size)." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://ret2school.github.io/post/ductf_note/" /><meta property="article:section" content="post" />
-<meta property="article:published_time" content="2021-09-30T00:00:00&#43;00:00" />
-<meta property="article:modified_time" content="2021-09-30T00:00:00&#43;00:00" />
-
+<meta property="og:url" content="https://ret2school.github.io/post/ductf_note/" />
+<meta property="article:published_time" content="2021-09-30T00:00:00+00:00" />
+<meta property="article:modified_time" content="2021-09-30T00:00:00+00:00" />
 
 
   </head>
