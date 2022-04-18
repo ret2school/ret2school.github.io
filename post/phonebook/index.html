@@ -127,7 +127,7 @@ Choose an option: [1-5]
   people[a1] <span style="color:#ff79c6">=</span> s;
   <span style="color:#ff79c6">return</span> result;
 }
-</code></pre></div><p>The bug lies <code>edit_name</code> function:</p>
+</code></pre></div><p>The bug lies in the <code>edit_name</code> function:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#8be9fd">unsigned</span> <span style="color:#ff79c6">__int64</span> <span style="color:#ff79c6">__fastcall</span> <span style="color:#50fa7b">edit_name</span>(<span style="color:#8be9fd">int</span> a1)
 {
   <span style="color:#8be9fd">int</span> n; <span style="color:#6272a4">// [rsp+18h] [rbp-18h] BYREF
@@ -151,7 +151,7 @@ Choose an option: [1-5]
   v4<span style="color:#ff79c6">-&gt;</span>name[n] <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>;
   <span style="color:#ff79c6">return</span> __readfsqword(<span style="color:#bd93f9">0x28u</span>) <span style="color:#ff79c6">^</span> v5;
 }
-</code></pre></div><p>We can give it a new lentgh and if that&rsquo;s not equal to the current size field it frees the current name pointer and allocates a new name pointer <strong>without</strong> updating the size field. Which means if we edit the name pointer with a smaller size, the name pointer will be smaller compared to the size field, then we just have to edit again the size field to make it equal to <code>v4-&gt;name_size</code> to trigger a heap overflow through the <code>v4-&gt;name</code> pointer.</p>
+</code></pre></div><p>We can give it a new lentgh and if that&rsquo;s not equal to the current size field it frees the current name pointer and allocates a new name pointer <strong>without</strong> updating the size field. Which means if we edit the name pointer with a smaller size, the name pointer will be smaller compared to the size field, then we just have to edit again to make the size equal to <code>v4-&gt;name_size</code> to trigger a heap overflow through the <code>v4-&gt;name</code> pointer.</p>
 <h2 id="leak-libc">Leak libc</h2>
 <p>Now we&rsquo;re able to overflow through the name pointer we have to find how the leak the libc, a nice way would be to leak it by using free&rsquo;d chunks in the unsortedbin. Or we can leak the <code>entity-&gt;func</code> function pointer which would give us a leak of the binary base address, then we would have to edit the name pointer with the got entry of <code>puts</code> to leak its address within the libc.</p>
 <p>To do so we can create another entity right after the name pointer:</p>
@@ -190,11 +190,11 @@ Choose an option: [1-5]
 }
 </code></pre></div><p>To summarise:</p>
 <ul>
-<li>leak binary base address by overwriting the null byte (<code>edit_phone_number</code>) and then print the phone numer.</li>
+<li>leak binary base address by overwriting the null byte (<code>edit_phone_number</code>) and then print the phone number.</li>
 <li>leak libc base address by overwriting the name field of the second entity with the got entry of <code>puts</code></li>
 </ul>
 <h2 id="profit">PROFIT</h2>
-<p>Then we just have to overwrite the function pointer with the address of <code>system</code> which takes as first argument a pointer to the entity structure of edit the phone number of the entity we wanna use because that&rsquo;s the first field of the structure which means we make it equivalent to a <code>system(&quot;/bin/sh&quot;)</code>.</p>
+<p>Then we just have to overwrite the function pointer with the address of <code>system</code> which takes as first argument a pointer to the entity structure. Then we edit the phone number of the entity we wanna use because that&rsquo;s stored in the first field of the structure which means we make it equivalent the call to <code>v4-&gt;func</code> to a <code>system(&quot;/bin/sh&quot;)</code>.</p>
 <pre><code>00000000 entity          struc ; (sizeof=0x20, mappedto_8)
 00000000 num             dq ?
 00000008 func            dq ?
