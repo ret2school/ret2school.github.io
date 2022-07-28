@@ -3,23 +3,21 @@
   <head>
     <title>[HeroCTF v3 - RE] ARMada, JNI, Password Keeper, RustInPeace, WTF, fatBoy // ret2school</title>
     <meta charset="utf-8" />
-    <meta name="generator" content="Hugo 0.80.0" />
+    <meta name="generator" content="Hugo 0.92.2" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="author" content="nasm" />
     <meta name="description" content="" />
     <link rel="stylesheet" href="https://ret2school.github.io/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css" />
 
     
-<script type="application/javascript">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8K5XT0SJN8"></script>
+<script>
 var doNotTrack = false;
 if (!doNotTrack) {
-	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-	ga('create', 'G-8K5XT0SJN8', 'auto');
-	
-	ga('send', 'pageview');
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-8K5XT0SJN8', { 'anonymize_ip': false });
 }
 </script>
 
@@ -42,9 +40,10 @@ Format : Hero{}
 Author : SoEasY
  The binary given is an ELF File, but IDA detects it as &ldquo;IA64&rdquo; ELF." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://ret2school.github.io/post/heroctfv3/" />
+<meta property="og:url" content="https://ret2school.github.io/post/heroctfv3/" /><meta property="article:section" content="post" />
 <meta property="article:published_time" content="2021-04-29T00:00:00+00:00" />
 <meta property="article:modified_time" content="2021-04-29T00:00:00+00:00" />
+
 
 
   </head>
@@ -125,12 +124,12 @@ show that&rsquo;s machine code is indeed x86_64, and the ELF header is messed up
 <p>To fix that, we must patch the header to correct the architecture, which is the field <code>e_machine</code>
 of the ELF header, at offset 0x12, with the value EM_X86_64, defined to 0x3e.</p>
 <p>Now, trying to run the binary triggers a segfault, so we open GDB to check what happens and we see this:</p>
-<pre><code>#0  0x0000555d375c90a1 in _start ()
+<pre tabindex="0"><code>#0  0x0000555d375c90a1 in _start ()
 (gdb) disass
 Dump of assembler code for function _start:
    0x0000555d375c90a0 &lt;+0&gt;:	xor    ebp,ebp
 </code></pre><p>The low byte of the start address (e_entry) at 0x18 is wrong, and we need to patch it to 0xa0, too. After those patches, the binary runs correctly, and we can connect to the server:</p>
-<pre><code>
+<pre tabindex="0"><code>
 Position of the byte to patch in hex (example: 08) : 12
 Value to put at this offset in hex (example: 17) : 3e
 
@@ -148,7 +147,7 @@ Hero{W0w_s0_y0u_4r3_4n_ELF_h34d3r_M4sT3r???}
 <p>We are given an Android application (in APK). But, as the challenge title says, the flag verification check happens in a native library, which is called by the application through Java Native Interface.</p>
 <p>So, we decompress the APK (which is just a zip file), and extract the &ldquo;lib/&rdquo; folder which contains native libs. Luckily we have a x86_64 version of the native lib, which spares us the burden of reversing ARM assembly.</p>
 <p>In IDA, we find an interesting function, <code>Java_fr_heroctf_jni_MainActivity_checkFlag</code>, which seems to be the flag checker. Let&rsquo;s look at its code:</p>
-<pre><code>.text:00000000000007AF                 mov     rdi, [rbp+s]    ; s
+<pre tabindex="0"><code>.text:00000000000007AF                 mov     rdi, [rbp+s]    ; s
 .text:00000000000007B3                 call    _strlen
 .text:00000000000007B8                 mov     [rbp+var_18], rax
 .text:00000000000007BC
@@ -178,7 +177,7 @@ Hero{W0w_s0_y0u_4r3_4n_ELF_h34d3r_M4sT3r???}
 </blockquote>
 <p>This time we are given a Mach-O executable from OS X. As usual, we open it in IDA, which warns us it&rsquo;s written in Objective-C, and asks us if we want to analyze this (yes plz).</p>
 <p>We have an interesting function <code>-[ViewController logMe:]</code>, which is decompiled like this with hex-rays:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">this <span style="color:#ff79c6">=</span> self;
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">this <span style="color:#ff79c6">=</span> self;
 location[<span style="color:#bd93f9">1</span>] <span style="color:#ff79c6">=</span> (id)a2;
 location[<span style="color:#bd93f9">0</span>] <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0LL</span>;
 objc_storeStrong(location, a3);
@@ -202,7 +201,7 @@ objc_release(usertxtbuf);
          CFSTR(<span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">You found the good password ! But you didn&#39;t store anything here ¯</span><span style="color:#f1fa8c">\\</span><span style="color:#f1fa8c">_(ツ)_/¯&#34;</span>),
          <span style="color:#bd93f9">1LL</span>);
 </code></pre></div><p>We can see that the contents of the user input is used as key in a dictionary, whose value is the password, which is then compared to the password input. Now, we have to find where this dictionary is constructed. There is a <code>-[ViewController viewDidLoad]</code> function that seems interesting:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#6272a4">// call the &#34;viewDidLoad&#34; method to the superclass
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#6272a4">// call the &#34;viewDidLoad&#34; method to the superclass
 </span><span style="color:#6272a4"></span>v21.super_class <span style="color:#ff79c6">=</span> (Class)<span style="color:#ff79c6">&amp;</span>OBJC_CLASS___ViewController;
 objc_msgSendSuper2(<span style="color:#ff79c6">&amp;</span>v21, <span style="color:#f1fa8c">&#34;viewDidLoad&#34;</span>);
 <span style="color:#6272a4">// Call &#34;GetRandomNumberBetween1and10&#34; method with the string Sw4gGP4ssw0rd
@@ -229,7 +228,7 @@ v10 <span style="color:#ff79c6">=</span> (NSDictionary <span style="color:#ff79c
 dico <span style="color:#ff79c6">=</span> v23<span style="color:#ff79c6">-&gt;</span>dico;
 v23<span style="color:#ff79c6">-&gt;</span>dico <span style="color:#ff79c6">=</span> v10;
 </code></pre></div><p>The GetRandomNumberBetween1and10 method just computes the MD5 sum of the string given to it:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">data <span style="color:#ff79c6">=</span> (<span style="color:#ff79c6">const</span> <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>)objc_msgSend(v2, <span style="color:#f1fa8c">&#34;UTF8String&#34;</span>);
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">data <span style="color:#ff79c6">=</span> (<span style="color:#ff79c6">const</span> <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>)objc_msgSend(v2, <span style="color:#f1fa8c">&#34;UTF8String&#34;</span>);
 v3 <span style="color:#ff79c6">=</span> strlen(data);
 CC_MD5(data, v3, v19);
 <span style="color:#6272a4">// then code to format md5 hash to hex
@@ -242,7 +241,7 @@ CC_MD5(data, v3, v19);
 </blockquote>
 <p>This challenge, as the name says, is a Linux binary written in Rust. Unfortunately, the binary is stripped, making it a bit harder to reverse, because we&rsquo;ll have to reverse rust standard library along with useful code.</p>
 <p>Let&rsquo;s have a look in the main function:</p>
-<pre><code>push    rax
+<pre tabindex="0"><code>push    rax
 movsxd  rax, edi
 lea     rdi, rust_main
 mov     [rsp+8+var_8], rsi
@@ -256,7 +255,7 @@ retn
 <p>Then, I used my best friend hex-rays which generated unreadable pseudo-C code, because analysis engine had trouble identifying the correct number of arguments used in functions. During debugging sessions, I figured out that the code used a lot of Rust strings (which can be seen as a C struct with a pointer to the buffer and a length), and a &ldquo;slice&rdquo; which represents a subset of the string (and contains a pointer to the buffer, a pointer to the start of the slice in the bufer and a pointer to the end).</p>
 <p>So, after defining those structs in IDA and identifying functions and redefining prototypes, I was able to get a nice pseudocode.</p>
 <p>The crackme first expects two arguments: a number (which must be &ldquo;60&rdquo;), and a path to the file which contains the flag:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">argv_elt2 <span style="color:#ff79c6">=</span> (<span style="color:#8be9fd">void</span> <span style="color:#ff79c6">*</span>)get_list_elt((<span style="color:#ff79c6">__int64</span>)argv_list, <span style="color:#bd93f9">2LL</span>);
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">argv_elt2 <span style="color:#ff79c6">=</span> (<span style="color:#8be9fd">void</span> <span style="color:#ff79c6">*</span>)get_list_elt((<span style="color:#ff79c6">__int64</span>)argv_list, <span style="color:#bd93f9">2LL</span>);
 arg2_ptr <span style="color:#ff79c6">=</span> getbuf(argv_elt2);
 CreateFile(wrap_fileobj, arg2_ptr);
 file_unwrap(file_obj, wrap_fileobj);
@@ -275,7 +274,7 @@ correctinput <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0<
 }
 
 </code></pre></div><p>Then the crackme does slice stuff with the string, check if the file content begins with &ldquo;FLAG=&rdquo; string, and then does this:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
 <span style="color:#ff79c6">if</span> ( pos2 <span style="color:#ff79c6">&gt;=</span> <span style="color:#bd93f9">47</span> )
   ZN4core9panicking18panic_bounds_check17h4b3d0dcda831e378E();
 <span style="color:#ff79c6">if</span> ( __CFADD__(xorkey, pos2) )
@@ -286,8 +285,8 @@ correctinput <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0<
 
 </code></pre></div><p>The input flag is xored with <code>xorkey + pos</code> where &ldquo;pos&rdquo; is the i-th char of the user input being read.
 So, we can recover the flag:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">flag <span style="color:#ff79c6">=</span> [<span style="color:#bd93f9">163</span>, <span style="color:#bd93f9">221</span>, <span style="color:#bd93f9">65</span>, <span style="color:#bd93f9">246</span>, <span style="color:#bd93f9">49</span>, <span style="color:#bd93f9">9</span>, <span style="color:#bd93f9">39</span>, <span style="color:#bd93f9">49</span>, <span style="color:#bd93f9">43</span>, <span style="color:#bd93f9">62</span>, <span style="color:#bd93f9">2</span>, <span style="color:#bd93f9">118</span>, <span style="color:#bd93f9">44</span>, <span style="color:#bd93f9">22</span>, <span style="color:#bd93f9">51</span>, <span style="color:#bd93f9">123</span>, <span style="color:#bd93f9">57</span>, <span style="color:#bd93f9">18</span>, <span style="color:#bd93f9">37</span>, <span style="color:#bd93f9">33</span>, <span style="color:#bd93f9">96</span>, <span style="color:#bd93f9">38</span>, <span style="color:#bd93f9">13</span>, <span style="color:#bd93f9">103</span>, <span style="color:#bd93f9">54</span>, <span style="color:#bd93f9">101</span>, <span style="color:#bd93f9">35</span>, <span style="color:#bd93f9">35</span>, <span style="color:#bd93f9">7</span>, <span style="color:#bd93f9">11</span>, <span style="color:#bd93f9">47</span>, <span style="color:#bd93f9">110</span>, <span style="color:#bd93f9">40</span>, <span style="color:#bd93f9">2</span>, <span style="color:#bd93f9">44</span>, <span style="color:#bd93f9">108</span>, <span style="color:#bd93f9">22</span>, <span style="color:#bd93f9">82</span>, <span style="color:#bd93f9">16</span>, <span style="color:#bd93f9">16</span>, <span style="color:#bd93f9">85</span>, <span style="color:#bd93f9">11</span>, <span style="color:#bd93f9">1</span>, <span style="color:#bd93f9">88</span>, <span style="color:#bd93f9">87</span>, <span style="color:#bd93f9">20</span>, <span style="color:#bd93f9">96</span>]
-<span style="color:#ff79c6">print</span>(<span style="color:#8be9fd;font-style:italic">bytes</span>([x <span style="color:#ff79c6">^</span> (<span style="color:#bd93f9">0x3c</span> <span style="color:#ff79c6">+</span> i) <span style="color:#ff79c6">for</span> i,x <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">enumerate</span>(flag)][<span style="color:#bd93f9">5</span>:]))
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">flag <span style="color:#ff79c6">=</span> [<span style="color:#bd93f9">163</span>, <span style="color:#bd93f9">221</span>, <span style="color:#bd93f9">65</span>, <span style="color:#bd93f9">246</span>, <span style="color:#bd93f9">49</span>, <span style="color:#bd93f9">9</span>, <span style="color:#bd93f9">39</span>, <span style="color:#bd93f9">49</span>, <span style="color:#bd93f9">43</span>, <span style="color:#bd93f9">62</span>, <span style="color:#bd93f9">2</span>, <span style="color:#bd93f9">118</span>, <span style="color:#bd93f9">44</span>, <span style="color:#bd93f9">22</span>, <span style="color:#bd93f9">51</span>, <span style="color:#bd93f9">123</span>, <span style="color:#bd93f9">57</span>, <span style="color:#bd93f9">18</span>, <span style="color:#bd93f9">37</span>, <span style="color:#bd93f9">33</span>, <span style="color:#bd93f9">96</span>, <span style="color:#bd93f9">38</span>, <span style="color:#bd93f9">13</span>, <span style="color:#bd93f9">103</span>, <span style="color:#bd93f9">54</span>, <span style="color:#bd93f9">101</span>, <span style="color:#bd93f9">35</span>, <span style="color:#bd93f9">35</span>, <span style="color:#bd93f9">7</span>, <span style="color:#bd93f9">11</span>, <span style="color:#bd93f9">47</span>, <span style="color:#bd93f9">110</span>, <span style="color:#bd93f9">40</span>, <span style="color:#bd93f9">2</span>, <span style="color:#bd93f9">44</span>, <span style="color:#bd93f9">108</span>, <span style="color:#bd93f9">22</span>, <span style="color:#bd93f9">82</span>, <span style="color:#bd93f9">16</span>, <span style="color:#bd93f9">16</span>, <span style="color:#bd93f9">85</span>, <span style="color:#bd93f9">11</span>, <span style="color:#bd93f9">1</span>, <span style="color:#bd93f9">88</span>, <span style="color:#bd93f9">87</span>, <span style="color:#bd93f9">20</span>, <span style="color:#bd93f9">96</span>]
+<span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#8be9fd;font-style:italic">bytes</span>([x <span style="color:#ff79c6">^</span> (<span style="color:#bd93f9">0x3c</span> <span style="color:#ff79c6">+</span> i) <span style="color:#ff79c6">for</span> i,x <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">enumerate</span>(flag)][<span style="color:#bd93f9">5</span>:]))
 </code></pre></div><p>which gives <code>Hero{D1d_y0u_kn0w_4b0ut_Ru5t_r3v3rs1ng??}</code></p>
 <h3 id="armada-100-pts">ARMada (100 pts)</h3>
 <blockquote>
@@ -298,7 +297,7 @@ So, we can recover the flag:</p>
 </blockquote>
 <p>This time, the binary is a 32-bit ARM C++ program (I couldn&rsquo;t use hex-rays because I don&rsquo;t have 32-bit decompilers yay, and Ghidra&rsquo;s decompiler gave shitty useless code), so let&rsquo;s dig in the assembly.</p>
 <p>The binary starts by asking the user an input and computes its length:</p>
-<pre><code>MOV     R0, #0x40 ; '@' ; unsigned int
+<pre tabindex="0"><code>MOV     R0, #0x40 ; '@' ; unsigned int
 BL      _Znaj           ; operator new[](uint)
 MOV     R3, R0
 STR     R3, [R11,#user_input]
@@ -311,18 +310,18 @@ LDR     R1, [R11,#user_input] ; buffer
 LDR     R0, =0x23148    ; this
 BL      _ZNSi7getlineEPcic ; std::istream::getline(char *,int,char)
 </code></pre><p>Then it allocates a vector from the user buffer, and another copy that will be given to a &ldquo;yolo&rdquo; function, along with a string that will contain encrypted input:</p>
-<pre><code>SUB     R3, R11, #-encbuf
+<pre tabindex="0"><code>SUB     R3, R11, #-encbuf
 SUB     R2, R11, #-input_copy
 MOV     R1, R2          ; input
 MOV     R0, R3          ; encrypted
 ;   try {
 BL      _Z4yoloB5cxx11St6vectorIhSaIhEE ; yolo(std::vector&lt;uchar&gt;)
 </code></pre><p>The &ldquo;yolo&rdquo; function seems to be a bit scary at first, because of those</p>
-<pre><code>LDR     R3, =0xAAAAAAAB
+<pre tabindex="0"><code>LDR     R3, =0xAAAAAAAB
 UMULL   R2, R3, R3, R1
 MOV     R2, R3,LSR#1
 </code></pre><p>which are just a division by 3, optimized by the compiler. So, this function just read the string by 3 chars, and for each block, does something like this:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd">long</span> block <span style="color:#ff79c6">=</span> (<span style="color:#ff79c6">*</span>buf<span style="color:#ff79c6">++</span>) <span style="color:#ff79c6">&lt;&lt;</span> <span style="color:#bd93f9">16</span> <span style="color:#ff79c6">+</span> (<span style="color:#ff79c6">*</span>buf<span style="color:#ff79c6">++</span>) <span style="color:#ff79c6">&lt;&lt;</span> <span style="color:#bd93f9">8</span> <span style="color:#ff79c6">+</span> (<span style="color:#ff79c6">*</span>buf<span style="color:#ff79c6">++</span>);
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd">long</span> block <span style="color:#ff79c6">=</span> (<span style="color:#ff79c6">*</span>buf<span style="color:#ff79c6">++</span>) <span style="color:#ff79c6">&lt;&lt;</span> <span style="color:#bd93f9">16</span> <span style="color:#ff79c6">+</span> (<span style="color:#ff79c6">*</span>buf<span style="color:#ff79c6">++</span>) <span style="color:#ff79c6">&lt;&lt;</span> <span style="color:#bd93f9">8</span> <span style="color:#ff79c6">+</span> (<span style="color:#ff79c6">*</span>buf<span style="color:#ff79c6">++</span>);
 out.append(encodeLookup[((block <span style="color:#ff79c6">&gt;&gt;</span> <span style="color:#bd93f9">18</span>) <span style="color:#ff79c6">&amp;</span> <span style="color:#bd93f9">0x3f</span>)] <span style="color:#ff79c6">^</span> <span style="color:#bd93f9">0x42</span>);
 out.append(encodeLookup[((block <span style="color:#ff79c6">&gt;&gt;</span> <span style="color:#bd93f9">12</span>) <span style="color:#ff79c6">&amp;</span> <span style="color:#bd93f9">0x3f</span>)] <span style="color:#ff79c6">^</span> <span style="color:#bd93f9">0x42</span>);
 out.append(encodeLookup[((block <span style="color:#ff79c6">&gt;&gt;</span> <span style="color:#bd93f9">6</span>) <span style="color:#ff79c6">&amp;</span> <span style="color:#bd93f9">0x3f</span>)] <span style="color:#ff79c6">^</span> <span style="color:#bd93f9">0x42</span>);
@@ -330,12 +329,12 @@ out.append(encodeLookup[((block) <span style="color:#ff79c6">&amp;</span> <span 
 </code></pre></div><p>Some people may have recognized that <em>really</em> looks like base64 encoding algorithm. And actually, if we xor the &ldquo;encodeLookup&rdquo; array with 0x42 we get this:
 <code>CTwGhcJj+nKSqARsQ27omX0Iley91ufDbPxVY4ar5UgMNt/L3BvzkFiHZW6dOp8E</code>, which really looks like a custom base64 ;)</p>
 <p>Now, let&rsquo;s have a look to the server given in the challenge <code>nc chall0.heroctf.fr 3000</code>:</p>
-<pre><code>=================== ARMada (by SoEasY) ===================
+<pre tabindex="0"><code>=================== ARMada (by SoEasY) ===================
 
 New cipher : XipH+jukexCE
 --&gt; Your answer : 
 </code></pre><p>it looks like we&rsquo;ll have to &ldquo;decrypt&rdquo; this string, and sending back the cleartext. Let&rsquo;s reimplement the algorithm and automate answers with pwntools:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#ff79c6">import</span> pwn
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#ff79c6">import</span> pwn
 
 look <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">bytes</span><span style="color:#ff79c6">.</span>fromhex(<span style="color:#f1fa8c">&#34;011635052A210828692C0911330310311370752D2F1A720B2E273B7B7337240620123A141B7623307717250F0C366D0E7100343829042B0A181574260D327A07&#34;</span>)
 look <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">bytes</span>([x <span style="color:#ff79c6">^</span> <span style="color:#bd93f9">0x42</span> <span style="color:#ff79c6">for</span> x <span style="color:#ff79c6">in</span> look])
@@ -378,7 +377,7 @@ i <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>
     bop <span style="color:#ff79c6">=</span> dec(deco)<span style="color:#ff79c6">.</span>rstrip()
     remote<span style="color:#ff79c6">.</span>recvuntil(<span style="color:#f1fa8c">&#34; answer : &#34;</span>)
     remote<span style="color:#ff79c6">.</span>sendline(bop)
-<span style="color:#ff79c6">print</span>(remote<span style="color:#ff79c6">.</span>recvall())
+<span style="color:#8be9fd;font-style:italic">print</span>(remote<span style="color:#ff79c6">.</span>recvall())
 </code></pre></div><p>We finally get the flag after a short time: <code>Hero{0h_w0W_s0_y0u_not1c3d_1t_w4s_cust0m_b64_?}</code></p>
 <h3 id="fatbin-125-pts">fatBin (125 pts)</h3>
 <blockquote>
@@ -388,7 +387,7 @@ i <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>
 </blockquote>
 <p>So, challenge accepted ;). It&rsquo;s (again) a Mach-O binary, more precisely, according to &ldquo;file&rdquo; command: <code>fatBoy: Mach-O universal binary with 2 architectures: [x86_64:Mach-O 64-bit x86_64 executable, flags:&lt;NOUNDEFS|DYLDLINK|TWOLEVEL|PIE&gt;] [arm64:Mach-O 64-bit arm64 executable, flags:&lt;NOUNDEFS|DYLDLINK|TWOLEVEL|PIE&gt;]</code>.</p>
 <p>As usual we open it on IDA, which asks us which binary we want to analyze. Because Intel assembly is cool, I choosed the x86_64 bin to reverse. The algorithm is pretty straightforward (thanks Hex-Rays again):</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#6272a4">// key initialization
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#6272a4">// key initialization
 </span><span style="color:#6272a4"></span>key[<span style="color:#bd93f9">0</span>] <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">~</span>KEY[<span style="color:#bd93f9">0</span>];
 key[<span style="color:#bd93f9">1</span>] <span style="color:#ff79c6">=</span> KEY[<span style="color:#bd93f9">1</span>] <span style="color:#ff79c6">^</span> <span style="color:#bd93f9">0xAB</span>;
 key[<span style="color:#bd93f9">2</span>] <span style="color:#ff79c6">=</span> KEY[<span style="color:#bd93f9">2</span>] <span style="color:#ff79c6">^</span> <span style="color:#bd93f9">0xE5</span>;
@@ -419,7 +418,7 @@ v3 <span style="color:#ff79c6">=</span> __s1;
 __s1[i] <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>;
 v5[<span style="color:#bd93f9">5</span>] <span style="color:#ff79c6">=</span> puts(v3);
 </code></pre></div><p>It seems to be some kind of Caesar/Vigenere cipher, but weirdly implemented, so we&rsquo;ll need extra care to decrypt it, which gives us as script:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">
 <span style="color:#ff79c6">def</span> <span style="color:#50fa7b">dec</span>(key, txt):
   res <span style="color:#ff79c6">=</span> []
   <span style="color:#ff79c6">for</span> i <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#8be9fd;font-style:italic">len</span>(txt)):
@@ -439,10 +438,10 @@ buf <span style="color:#ff79c6">=</span> []
     <span style="color:#ff79c6">if</span> tmp <span style="color:#ff79c6">&gt;</span> <span style="color:#8be9fd;font-style:italic">ord</span>(<span style="color:#f1fa8c">&#34;Z&#34;</span>):
         tmp <span style="color:#ff79c6">=</span> tmp <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">26</span>
     buf<span style="color:#ff79c6">.</span>append(tmp)
-<span style="color:#ff79c6">print</span>(<span style="color:#8be9fd;font-style:italic">bytes</span>(buf))
+<span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#8be9fd;font-style:italic">bytes</span>(buf))
 
 </code></pre></div><p>Unfortunately, this gives us: <code>IMSORRYBUTTHISISNOTTHEFLAG</code>, which isn&rsquo;t our flag oubviously. But remember, we have an ARM64 binary to reverse inside our &ldquo;fat&rdquo; binary. Let&rsquo;s open it on IDA. Luckily for us, it&rsquo;s the same algorithm, but the key and ciphertext changed. The key decodes as <code>FATMACHO</code> this time, and when running the script this those arguments:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">k1 <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;FATMACHO&#34;</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">k1 <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;FATMACHO&#34;</span>
 
 buf <span style="color:#ff79c6">=</span> []
 <span style="color:#ff79c6">for</span> c <span style="color:#ff79c6">in</span> dec(k1, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;CUZVTWPXYGOPLLVVLJFRGRZBGU&#34;</span>):
@@ -450,7 +449,7 @@ buf <span style="color:#ff79c6">=</span> []
     <span style="color:#ff79c6">if</span> tmp <span style="color:#ff79c6">&gt;</span> <span style="color:#8be9fd;font-style:italic">ord</span>(<span style="color:#f1fa8c">&#34;Z&#34;</span>):
         tmp <span style="color:#ff79c6">=</span> tmp <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">26</span>
     buf<span style="color:#ff79c6">.</span>append(tmp)
-<span style="color:#ff79c6">print</span>(<span style="color:#8be9fd;font-style:italic">bytes</span>(buf))
+<span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#8be9fd;font-style:italic">bytes</span>(buf))
 
 </code></pre></div><p>We get <code>WTFISTHISFUCKINGFILEFORMAT</code>, and the flag is <code>Hero{WTFISTHISFUCKINGFILEFORMAT}</code></p>
 <h3 id="wtf-350-pts">WTF (350 pts)</h3>
@@ -462,7 +461,7 @@ buf <span style="color:#ff79c6">=</span> []
 <p>This time, the challenge author is lying to us and the &ldquo;android&rdquo; application is again a Mach-O binary (he&rsquo;s probably an OSX lover).</p>
 <p>The function starts by filling a 81-byte buffer with spaces, and then puts some numbers between 0 and 9 at &ldquo;random&rdquo; places in this buffer.
 Then the function looks likes this:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
 v3 <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">*</span>user_input
 <span style="color:#ff79c6">while</span> ( <span style="color:#bd93f9">1</span> )
 {
@@ -495,14 +494,14 @@ v3 <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">*</span>user
 
 </code></pre></div><p>The checkfunc is quite ugly so I won&rsquo;t paste it here, but we can deduce that the 81-byte buffer is actually a 9x9 grid, and &ldquo;input0&rdquo; and &ldquo;input1&rdquo; are (x,y) coordinates in this grid, while &ldquo;input2&rdquo; is the number to place in the grid. Also the functions ends if we reached the end of user input, or if there are no &ldquo;space&rdquo; chars left in the grid.</p>
 <p>Those things made me to think this check function was just checking if the grid was still a valid Sudoku grid after trying to add the number. So, I wrote a little program that printed the buffer into a 9*9 grid:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">
 v11  <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;   546  9 2      7  39    49 5    7 7      2     93    56  8    1  39         8 6&#34;</span>
 
 <span style="color:#ff79c6">for</span> i <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#bd93f9">9</span>):
-  <span style="color:#ff79c6">print</span>(<span style="color:#f1fa8c">&#34;|&#34;</span><span style="color:#ff79c6">.</span>join([x <span style="color:#ff79c6">for</span> x <span style="color:#ff79c6">in</span> v11[<span style="color:#bd93f9">9</span><span style="color:#ff79c6">*</span>i:<span style="color:#bd93f9">9</span><span style="color:#ff79c6">*</span>(i<span style="color:#ff79c6">+</span><span style="color:#bd93f9">1</span>)]]))
+  <span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">&#34;|&#34;</span><span style="color:#ff79c6">.</span>join([x <span style="color:#ff79c6">for</span> x <span style="color:#ff79c6">in</span> v11[<span style="color:#bd93f9">9</span><span style="color:#ff79c6">*</span>i:<span style="color:#bd93f9">9</span><span style="color:#ff79c6">*</span>(i<span style="color:#ff79c6">+</span><span style="color:#bd93f9">1</span>)]]))
 
 </code></pre></div><p>which gave me:</p>
-<pre><code> | | |5|4|6| | |9
+<pre tabindex="0"><code> | | |5|4|6| | |9
  |2| | | | | | |7
  | |3|9| | | | |4
 9| |5| | | | |7| 

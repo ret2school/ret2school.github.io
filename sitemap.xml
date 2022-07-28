@@ -1,679 +1,423 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
-  
   <url>
     <loc>https://ret2school.github.io/tags/2022/</loc>
-    <lastmod>2022-04-17T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+    <lastmod>2022-07-28T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/post/catastrophe/</loc>
+    <lastmod>2022-07-28T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/tags/aassfxxx/</loc>
+    <lastmod>2022-07-28T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/tags/ctf/</loc>
+    <lastmod>2022-07-28T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/tags/dicectf/</loc>
+    <lastmod>2022-07-28T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/tags/fsop/</loc>
+    <lastmod>2022-07-28T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/tags/heap/</loc>
+    <lastmod>2022-07-28T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/tags/nasm/</loc>
+    <lastmod>2022-07-28T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/post/</loc>
+    <lastmod>2022-07-28T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/tags/pwn/</loc>
+    <lastmod>2022-07-28T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/tags/ret2school/</loc>
+    <lastmod>2022-07-28T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/</loc>
+    <lastmod>2022-07-28T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/tags/</loc>
+    <lastmod>2022-07-28T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/post/onceandforall/</loc>
+    <lastmod>2022-05-19T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/tags/hackthebox/</loc>
+    <lastmod>2022-05-19T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://ret2school.github.io/post/phonebook/</loc>
     <lastmod>2022-04-17T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://ret2school.github.io/tags/ctf/</loc>
-    <lastmod>2022-04-17T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/dctf/</loc>
     <lastmod>2022-04-17T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://ret2school.github.io/tags/nasm/</loc>
-    <lastmod>2022-04-17T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://ret2school.github.io/post/</loc>
-    <lastmod>2022-04-17T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://ret2school.github.io/tags/pwn/</loc>
-    <lastmod>2022-04-17T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://ret2school.github.io/tags/ret2school/</loc>
-    <lastmod>2022-04-17T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://ret2school.github.io/</loc>
-    <lastmod>2022-04-17T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://ret2school.github.io/tags/</loc>
-    <lastmod>2022-04-17T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/post/galette/</loc>
     <lastmod>2022-04-05T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/post/cremes_mamie/</loc>
     <lastmod>2022-04-05T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/breizh-ctf/</loc>
     <lastmod>2022-04-05T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/tek/</loc>
     <lastmod>2022-04-05T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/web/</loc>
     <lastmod>2022-04-05T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/post/pycthon/</loc>
     <lastmod>2022-03-04T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/post/ftm/</loc>
     <lastmod>2022-03-04T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/post/livraison-de-pizza/</loc>
     <lastmod>2022-03-04T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/post/my-homework...-no-/</loc>
     <lastmod>2022-03-04T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/post/baby/</loc>
     <lastmod>2022-03-04T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/post/app-secrete-du-breizhctf/</loc>
     <lastmod>2022-03-04T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/forensic/</loc>
     <lastmod>2022-03-04T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/misc/</loc>
     <lastmod>2022-03-04T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/morpheush3x/</loc>
     <lastmod>2022-03-04T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/prog/</loc>
     <lastmod>2022-03-04T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/reverse/</loc>
     <lastmod>2022-03-04T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/2021/</loc>
     <lastmod>2022-01-02T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/post/vulpixelize/</loc>
     <lastmod>2022-01-02T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/hitcon/</loc>
     <lastmod>2022-01-02T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/post/safe/</loc>
     <lastmod>2021-12-05T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/alol/</loc>
     <lastmod>2021-12-05T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/irl/</loc>
     <lastmod>2021-12-05T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/rand/</loc>
     <lastmod>2021-12-05T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/re/</loc>
     <lastmod>2021-12-05T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/tracs/</loc>
     <lastmod>2021-12-05T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/tracs-2021/</loc>
     <lastmod>2021-12-05T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/post/compromise/</loc>
     <lastmod>2021-11-29T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/post/csrunner/</loc>
     <lastmod>2021-11-29T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://ret2school.github.io/tags/aassfxxx/</loc>
-    <lastmod>2021-11-29T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/cybersecurityrumble/</loc>
     <lastmod>2021-11-29T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/fofo/</loc>
     <lastmod>2021-11-29T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/forensics/</loc>
     <lastmod>2021-11-29T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/gamehacking/</loc>
     <lastmod>2021-11-29T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/supersnail/</loc>
     <lastmod>2021-11-29T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/post/cloudinspect/</loc>
     <lastmod>2021-11-07T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/arbitrary-read/</loc>
     <lastmod>2021-11-07T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/arbitrary-write/</loc>
     <lastmod>2021-11-07T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/hack.lu/</loc>
     <lastmod>2021-11-07T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://ret2school.github.io/tags/heap/</loc>
-    <lastmod>2021-11-07T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/hypervisor/</loc>
     <lastmod>2021-11-07T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/qemu/</loc>
     <lastmod>2021-11-07T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/post/pwnasis/</loc>
     <lastmod>2021-10-24T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/asis-ctf/</loc>
     <lastmod>2021-10-24T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/oob-write/</loc>
     <lastmod>2021-10-24T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/post/ductf_note/</loc>
     <lastmod>2021-09-30T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/downunderctf/</loc>
     <lastmod>2021-09-30T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/integer-overflow/</loc>
     <lastmod>2021-09-30T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/0p/</loc>
     <lastmod>2021-05-03T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/0poss/</loc>
     <lastmod>2021-05-03T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/post/privesc_two/</loc>
     <lastmod>2021-05-03T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/post/blindate/</loc>
     <lastmod>2021-05-03T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/post/cheapie/</loc>
     <lastmod>2021-05-03T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/post/mipsy/</loc>
     <lastmod>2021-05-03T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/post/reporter/</loc>
     <lastmod>2021-05-03T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/blind-date/</loc>
     <lastmod>2021-05-03T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/cheapie/</loc>
     <lastmod>2021-05-03T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/fcsc/</loc>
     <lastmod>2021-05-03T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/mips/</loc>
     <lastmod>2021-05-03T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/mipsy/</loc>
     <lastmod>2021-05-03T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/n4sm/</loc>
     <lastmod>2021-05-03T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/privesc/</loc>
     <lastmod>2021-05-03T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/privesc-me/</loc>
     <lastmod>2021-05-03T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/reporter/</loc>
     <lastmod>2021-05-03T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/post/heroctfv3/</loc>
     <lastmod>2021-04-29T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/heroctf-v3/</loc>
     <lastmod>2021-04-29T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/reverse-engineering/</loc>
     <lastmod>2021-04-29T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/post/writeuprsa/</loc>
     <lastmod>2021-04-11T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/post/wu_labyrevnt/</loc>
     <lastmod>2021-04-11T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/archie/</loc>
     <lastmod>2021-04-11T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/crypto/</loc>
     <lastmod>2021-04-11T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/midnight-sun/</loc>
     <lastmod>2021-04-11T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/midnight-sun-ctf-2021/</loc>
     <lastmod>2021-04-11T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/midnightsun-ctf/</loc>
     <lastmod>2021-04-11T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/oposs/</loc>
     <lastmod>2021-04-11T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/rsa/</loc>
     <lastmod>2021-04-11T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/zeynn/</loc>
     <lastmod>2021-04-11T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/post/rev_securinets/</loc>
     <lastmod>2021-03-23T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/antidebug/</loc>
     <lastmod>2021-03-23T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/keygen/</loc>
     <lastmod>2021-03-23T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/pe/</loc>
     <lastmod>2021-03-23T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/securinets-ctf/</loc>
     <lastmod>2021-03-23T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/virtual-machine/</loc>
     <lastmod>2021-03-23T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/post/dvctf_quotebook/</loc>
     <lastmod>2021-03-15T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/davincictf-2021/</loc>
     <lastmod>2021-03-15T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/post/wu_emulator/</loc>
     <lastmod>2021-03-12T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/btsctf/</loc>
     <lastmod>2021-03-12T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/r0da/</loc>
     <lastmod>2021-03-12T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/revers-engineering/</loc>
     <lastmod>2021-03-12T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/post/localization_is_hard_wu/</loc>
     <lastmod>2021-03-02T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/aeroctf-2021/</loc>
     <lastmod>2021-03-02T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/java/</loc>
     <lastmod>2021-03-02T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/ssti/</loc>
     <lastmod>2021-03-02T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/thymeleaf/</loc>
     <lastmod>2021-03-02T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://ret2school.github.io/tags/x/</loc>
-    <lastmod>2021-03-02T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/post/bashd00r/</loc>
     <lastmod>2021-02-28T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/post/dummyper/</loc>
     <lastmod>2021-02-28T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/aero-ctf-2021/</loc>
     <lastmod>2021-02-28T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/aes/</loc>
     <lastmod>2021-02-28T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/unpacking/</loc>
     <lastmod>2021-02-28T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/post/writeup_cr0wnair/</loc>
     <lastmod>2021-02-24T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/jwt/</loc>
     <lastmod>2021-02-24T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/post/unionware/</loc>
     <lastmod>2021-02-22T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/anti-debug/</loc>
     <lastmod>2021-02-22T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/powershell/</loc>
     <lastmod>2021-02-22T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/rc4/</loc>
     <lastmod>2021-02-22T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/unionctf-2021/</loc>
     <lastmod>2021-02-22T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/post/babyrarf/</loc>
     <lastmod>2021-02-21T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/buffer-overflow/</loc>
     <lastmod>2021-02-21T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/2020/</loc>
     <lastmod>2020-12-01T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/post/forensic/</loc>
     <lastmod>2020-12-01T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/hitconctf/</loc>
     <lastmod>2020-12-01T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/hitconctf-2020/</loc>
     <lastmod>2020-12-01T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/post/aero_ctf_2020/</loc>
     <lastmod>2020-11-26T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/aero-ctf-2020/</loc>
     <lastmod>2020-11-26T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/aeroctf/</loc>
     <lastmod>2020-11-26T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/post/1000_and_1_night/</loc>
     <lastmod>2020-11-25T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/post/crack_the_heart/</loc>
     <lastmod>2020-11-25T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/crack-the-heart/</loc>
     <lastmod>2020-11-25T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/utctf/</loc>
     <lastmod>2020-11-25T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/post/cuba/</loc>
     <lastmod>2020-09-13T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/csaw/</loc>
     <lastmod>2020-09-13T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/csaw-ctf-2020/</loc>
     <lastmod>2020-09-13T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/tags/members/</loc>
     <lastmod>2020-02-25T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/post/list_team/</loc>
     <lastmod>2020-02-25T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://ret2school.github.io/categories/</loc>
+  </url><url>
+    <loc>https://ret2school.github.io/tags/x./</loc>
   </url>
-  
 </urlset>

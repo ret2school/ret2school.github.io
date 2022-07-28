@@ -3,23 +3,21 @@
   <head>
     <title>[UTCTF 2020 - RE] Crack the heart // ret2school</title>
     <meta charset="utf-8" />
-    <meta name="generator" content="Hugo 0.80.0" />
+    <meta name="generator" content="Hugo 0.92.2" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="author" content="nasm" />
     <meta name="description" content="" />
     <link rel="stylesheet" href="https://ret2school.github.io/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css" />
 
     
-<script type="application/javascript">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8K5XT0SJN8"></script>
+<script>
 var doNotTrack = false;
 if (!doNotTrack) {
-	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-	ga('create', 'G-8K5XT0SJN8', 'auto');
-	
-	ga('send', 'pageview');
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-8K5XT0SJN8', { 'anonymize_ip': false });
 }
 </script>
 
@@ -36,9 +34,10 @@ For this challenge, I first noticed (like in every other writeups) a big structu
 The relative jump function:
 The first funclet just checks for the process being debugged, the &ldquo;load_r9&rdquo; funclet that jumps to the next funclet after skipping &ldquo;n&rdquo; bytes of garbage. Then the crackme calls a funclet &ldquo;write_message&rdquo; with the parameters (offset to &ldquo;Why should I go out with you?" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://ret2school.github.io/post/crack_the_heart/" />
+<meta property="og:url" content="https://ret2school.github.io/post/crack_the_heart/" /><meta property="article:section" content="post" />
 <meta property="article:published_time" content="2020-11-25T00:00:00+00:00" />
 <meta property="article:modified_time" content="2020-11-25T00:00:00+00:00" />
+
 
 
   </head>
@@ -116,7 +115,7 @@ Studying the crackme confirmed my doubts, we have an obfuscated &ldquo;keyState&
 <p>Now, since we located the key and the algorithm used, we need to locate where the encrypted data (probably the flag) is located. After a little debugging with radare2 (and a a breakpoint on the &ldquo;write_message&rdquo; function), I finally located it in the offset table</p>
 <p><img src="http://aassfxxx.infos.st/media/crack-the-heart/keyloc.png" alt="Key state">.</p>
 <p>Given this, I wrote a script relying a lot on r2pipe to crack the crackme and get the flag:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">
 <span style="color:#6272a4">#!/usr/bin/python</span>
 <span style="color:#ff79c6">import</span> r2pipe
 <span style="color:#ff79c6">import</span> struct
@@ -130,7 +129,7 @@ and_param <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x402
 
 r2 <span style="color:#ff79c6">=</span> r2pipe<span style="color:#ff79c6">.</span>open(<span style="color:#f1fa8c">&#34;./crackme&#34;</span>)
 
-is_key_loading <span style="color:#ff79c6">=</span> True
+is_key_loading <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">True</span>
 count <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>
 key <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&#34;</span>
 
@@ -143,21 +142,21 @@ key <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">b</span><sp
             addr <span style="color:#ff79c6">=</span> struct<span style="color:#ff79c6">.</span>unpack(<span style="color:#f1fa8c">&#34;&lt;Q&#34;</span>, buf)
             key <span style="color:#ff79c6">+=</span> <span style="color:#8be9fd;font-style:italic">bytes</span>(r2<span style="color:#ff79c6">.</span>cmdj(<span style="color:#f1fa8c">&#34;pxj 1 @0x</span><span style="color:#f1fa8c">%x</span><span style="color:#f1fa8c">&#34;</span> <span style="color:#ff79c6">%</span> addr))
             count <span style="color:#ff79c6">+=</span> <span style="color:#bd93f9">1</span>
-            is_key_loading <span style="color:#ff79c6">=</span> False
+            is_key_loading <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">False</span>
         <span style="color:#ff79c6">else</span>:
-            is_key_loading <span style="color:#ff79c6">=</span> True
+            is_key_loading <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">True</span>
         rop_buf <span style="color:#ff79c6">+=</span> <span style="color:#bd93f9">8</span>
     <span style="color:#ff79c6">elif</span> addr <span style="color:#ff79c6">==</span> and_param:
         rop_buf <span style="color:#ff79c6">+=</span> <span style="color:#bd93f9">8</span>
     <span style="color:#ff79c6">elif</span> addr <span style="color:#ff79c6">==</span> r9_caution:
         rop_buf <span style="color:#ff79c6">+=</span> <span style="color:#bd93f9">8</span> <span style="color:#ff79c6">+</span> r2<span style="color:#ff79c6">.</span>cmdj(<span style="color:#f1fa8c">&#34;pxj 1 @0x</span><span style="color:#f1fa8c">%x</span><span style="color:#f1fa8c">&#34;</span> <span style="color:#ff79c6">%</span> (rop_buf <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">8</span>))[<span style="color:#bd93f9">0</span>]
     rop_buf <span style="color:#ff79c6">+=</span> <span style="color:#bd93f9">8</span>
-<span style="color:#ff79c6">print</span>(key)
+<span style="color:#8be9fd;font-style:italic">print</span>(key)
 
 data <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x4022D5</span>
 buf <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">bytes</span>(r2<span style="color:#ff79c6">.</span>cmdj(<span style="color:#f1fa8c">&#34;pxj 256 @0x</span><span style="color:#f1fa8c">%x</span><span style="color:#f1fa8c">&#34;</span> <span style="color:#ff79c6">%</span> data))
 cipher <span style="color:#ff79c6">=</span> ARC4<span style="color:#ff79c6">.</span>new(key)
-<span style="color:#ff79c6">print</span>(cipher<span style="color:#ff79c6">.</span>encrypt(buf))
+<span style="color:#8be9fd;font-style:italic">print</span>(cipher<span style="color:#ff79c6">.</span>encrypt(buf))
 
 </code></pre></div>
     </div>

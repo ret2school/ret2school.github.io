@@ -3,23 +3,21 @@
   <head>
     <title>[Breizh CTF 2022- misc] My homework... NO ! // ret2school</title>
     <meta charset="utf-8" />
-    <meta name="generator" content="Hugo 0.80.0" />
+    <meta name="generator" content="Hugo 0.92.2" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="author" content="nasm" />
     <meta name="description" content="" />
     <link rel="stylesheet" href="https://ret2school.github.io/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css" />
 
     
-<script type="application/javascript">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8K5XT0SJN8"></script>
+<script>
 var doNotTrack = false;
 if (!doNotTrack) {
-	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-	ga('create', 'G-8K5XT0SJN8', 'auto');
-	
-	ga('send', 'pageview');
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-8K5XT0SJN8', { 'anonymize_ip': false });
 }
 </script>
 
@@ -32,9 +30,10 @@ if (!doNotTrack) {
 <meta property="og:description" content="Description: Je dois rendre mon tp ce soir mais j&#39;ai supprimé le dossier où se trouvaient mes bianires. Par chance il tourne encore, pouvez-vous m&#39;aider à le récupérer ? Login/Password : gaston:gaston ssh challenges.ctf.bzh:24001 Auteur: LaChenilleBarbue Format : BZHCTF{sha512sum(binaire)}  Let&rsquo;s start by connecting to the server with the credentials we have been given and list the processes that are running:
 &gt; ssh challenges.ctf.bzh -p 24001 -l gaston gaston@challenges.ctf.bzh&#39;s password: gaston@726bc5597730:~$ ps -aux USER PID %CPU %MEM VSZ RSS TTY STAT START TIME COMMAND root 1 0." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://ret2school.github.io/post/my-homework...-no-/" />
+<meta property="og:url" content="https://ret2school.github.io/post/my-homework...-no-/" /><meta property="article:section" content="post" />
 <meta property="article:published_time" content="2022-03-04T00:00:00+00:00" />
 <meta property="article:modified_time" content="2022-03-04T00:00:00+00:00" />
+
 
 
   </head>
@@ -109,7 +108,7 @@ Auteur: LaChenilleBarbue
 Format : BZHCTF{sha512sum(binaire)}
 </code></pre>
 <p>Let&rsquo;s start by connecting to the server with the credentials we have been given and list the processes that are running:</p>
-<pre><code>&gt; ssh challenges.ctf.bzh -p 24001 -l gaston
+<pre tabindex="0"><code>&gt; ssh challenges.ctf.bzh -p 24001 -l gaston
 gaston@challenges.ctf.bzh's password:
 gaston@726bc5597730:~$ ps -aux
 USER         PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
@@ -139,7 +138,7 @@ gaston      5967  0.0  0.0   6000  3900 pts/5    Ss   21:31   0:00 -bash
 gaston      5995  0.0  0.0   2516   516 ?        S    21:31   0:00 sleep 1
 gaston      5996  0.0  0.0   7892  3308 pts/5    R+   21:31   0:00 ps -aux
 </code></pre><p>Now that we have found the process we are interested in, we can dump it and make a sha512 of the obtained binary:</p>
-<pre><code>gaston@726bc5597730:~$ cat /proc/13/exe &gt; mh
+<pre tabindex="0"><code>gaston@726bc5597730:~$ cat /proc/13/exe &gt; mh
 gaston@726bc5597730:~$ sha512sum ./mh
 932abb57c2d1ccad065288579662af5216ed8a8aa4b8aa714d13feb6cb89570eed18bef0bcb7fda33e1b3bee9534c231a5ce349c01399687fe9495cf047db5ae  ./mh
 </code></pre><p>Which gives us: <code>BZHCTF{932abb57c2d1ccad065288579662af5216ed8a8aa4b8aa714d13feb6cb89570eed18bef0bcb7fda33e1b3bee9534c231a5ce349c01399687fe9495cf047db5ae}</code></p>

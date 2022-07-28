@@ -3,23 +3,21 @@
   <head>
     <title>[Midnight Sun CTF 2021 - RE] Labyrevnt // ret2school</title>
     <meta charset="utf-8" />
-    <meta name="generator" content="Hugo 0.80.0" />
+    <meta name="generator" content="Hugo 0.92.2" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="author" content="nasm" />
     <meta name="description" content="" />
     <link rel="stylesheet" href="https://ret2school.github.io/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css" />
 
     
-<script type="application/javascript">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8K5XT0SJN8"></script>
+<script>
 var doNotTrack = false;
 if (!doNotTrack) {
-	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-	ga('create', 'G-8K5XT0SJN8', 'auto');
-	
-	ga('send', 'pageview');
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-8K5XT0SJN8', { 'anonymize_ip': false });
 }
 </script>
 
@@ -32,9 +30,10 @@ We used the proximity browser in IDA with the &ldquo;Add node -&gt; Find path&rd
 <meta property="og:description" content="You can find the files here.
 We used the proximity browser in IDA with the &ldquo;Add node -&gt; Find path&rdquo; mini-trick to get the path between the main and walk_end function. Once all the function names in the path where dumped, in the same order as in IDA, inside functions.txt, we just have to tell angr to discard, avoid, every state wherein the callstack is different from the path linking main and walk_end." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://ret2school.github.io/post/wu_labyrevnt/" />
+<meta property="og:url" content="https://ret2school.github.io/post/wu_labyrevnt/" /><meta property="article:section" content="post" />
 <meta property="article:published_time" content="2021-04-11T00:00:00+00:00" />
 <meta property="article:modified_time" content="2021-04-11T00:00:00+00:00" />
+
 
 
   </head>
@@ -101,7 +100,7 @@ We used the proximity browser in IDA with the &ldquo;Add node -&gt; Find path&rd
       <p>You can find the files <a href="https://github.com/ret2school/ctf/tree/master/2021/midnightsunctf/rev/Labyrevnt">here</a>.</p>
 <p>We used the proximity browser in IDA with the &ldquo;Add node -&gt; Find path&rdquo; mini-trick to get the path between the <code>main</code> and <code>walk_end</code> function.
 Once all the function names in the path where dumped, in the same order as in IDA, inside <code>functions.txt</code>, we just have to tell angr to discard, avoid, every state wherein the callstack is different from the path linking <code>main</code> and <code>walk_end</code>.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#ff79c6">from</span> IPython <span style="color:#ff79c6">import</span> embed
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#ff79c6">from</span> IPython <span style="color:#ff79c6">import</span> embed
 <span style="color:#ff79c6">import</span> angr
 
 p <span style="color:#ff79c6">=</span> angr<span style="color:#ff79c6">.</span>Project(<span style="color:#f1fa8c">&#34;./chall&#34;</span>)
@@ -120,12 +119,12 @@ functions <span style="color:#ff79c6">=</span> functions<span style="color:#ff79
 functions <span style="color:#ff79c6">=</span> [MAIN, WALK_START] <span style="color:#ff79c6">+</span> [p<span style="color:#ff79c6">.</span>loader<span style="color:#ff79c6">.</span>find_symbol(name)<span style="color:#ff79c6">.</span>relative_addr <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x400000</span> <span style="color:#ff79c6">for</span> name <span style="color:#ff79c6">in</span> functions]
 
 <span style="color:#6272a4"># Wether the main function has be executed or not</span>
-main_passed <span style="color:#ff79c6">=</span> False
+main_passed <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">False</span>
 
 <span style="color:#ff79c6">def</span> <span style="color:#50fa7b">avoid</span>(s):
     <span style="color:#ff79c6">global</span> main_passed
     <span style="color:#ff79c6">if</span> s<span style="color:#ff79c6">.</span>callstack<span style="color:#ff79c6">.</span>func_addr <span style="color:#ff79c6">==</span> MAIN:
-        main_passed <span style="color:#ff79c6">=</span> True
+        main_passed <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">True</span>
 
     <span style="color:#ff79c6">if</span> main_passed:
         <span style="color:#6272a4"># Constructs the current callstack</span>
@@ -136,12 +135,12 @@ main_passed <span style="color:#ff79c6">=</span> False
         call_stack<span style="color:#ff79c6">.</span>reverse()
 
         <span style="color:#ff79c6">if</span> <span style="color:#ff79c6">not</span> call_stack:
-            <span style="color:#ff79c6">return</span> False
+            <span style="color:#ff79c6">return</span> <span style="color:#ff79c6">False</span>
 
         <span style="color:#ff79c6">return</span> functions[:<span style="color:#8be9fd;font-style:italic">len</span>(call_stack)] <span style="color:#ff79c6">!=</span> call_stack
 
     <span style="color:#ff79c6">else</span>:
-        <span style="color:#ff79c6">return</span> False
+        <span style="color:#ff79c6">return</span> <span style="color:#ff79c6">False</span>
 
 <span style="color:#ff79c6">try</span>:
     <span style="color:#6272a4"># Find the success message or the walk_end func</span>
@@ -149,13 +148,13 @@ main_passed <span style="color:#ff79c6">=</span> False
 <span style="color:#ff79c6">except</span> KeyboardInterrupt:
     <span style="color:#ff79c6">pass</span>
 
-<span style="color:#ff79c6">print</span>(simgr)
+<span style="color:#8be9fd;font-style:italic">print</span>(simgr)
 embed()
 </code></pre></div><p><code>OSEF</code> holds the function addresses inside the callstack that we ignore like all imported functions. The <code>0x526fc0</code> and the <code>0</code> are default addresses that angr pushed onto the callstack at the beginning of the execution, so we just ignore them.</p>
 <p>When the script is done, you get a IPython shell.
 Do a nice <code>simgr.found[0].posix.dumps(0)</code> to get the right input and upload it to the server
 We obtained, spaces stripped:</p>
-<pre><code>aBIksNPZlfMnluFMRqtNOAkdWfuMuTIICGGWvhbWYwMlbdlCGznVNVzAsHjynOjHuuuvM
+<pre tabindex="0"><code>aBIksNPZlfMnluFMRqtNOAkdWfuMuTIICGGWvhbWYwMlbdlCGznVNVzAsHjynOjHuuuvM
 kOmLMhYVeEWKjGLhmhLxyvtvxpzGCWuibxDhGzEmAfkepZDINxdHTQkKrir
 kJNnmyVRweEjBoEAwgTVEEkEVdRjzAFcxZrdSYbPQstuILsIjOSWgLLLXvkCAQVyYqJxa
 </code></pre><p><code>printf thesuperlongrightinput | nc labyrevnt-01.play.midnightsunctf.se 29285</code></p>

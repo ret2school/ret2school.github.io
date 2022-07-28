@@ -3,23 +3,21 @@
   <head>
     <title>[AeroCTF 2021 - RE] BashD00r // ret2school</title>
     <meta charset="utf-8" />
-    <meta name="generator" content="Hugo 0.80.0" />
+    <meta name="generator" content="Hugo 0.92.2" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="author" content="nasm" />
     <meta name="description" content="" />
     <link rel="stylesheet" href="https://ret2school.github.io/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css" />
 
     
-<script type="application/javascript">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8K5XT0SJN8"></script>
+<script>
 var doNotTrack = false;
 if (!doNotTrack) {
-	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-	ga('create', 'G-8K5XT0SJN8', 'auto');
-	
-	ga('send', 'pageview');
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-8K5XT0SJN8', { 'anonymize_ip': false });
 }
 </script>
 
@@ -38,9 +36,10 @@ Can you see if anyone has entered the backdoor?
 bash.7z
  So we are given a archive, which contains a &ldquo;bash&rdquo; binary. This binary was backdoored, so we need to find it to get the flag." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://ret2school.github.io/post/bashd00r/" />
+<meta property="og:url" content="https://ret2school.github.io/post/bashd00r/" /><meta property="article:section" content="post" />
 <meta property="article:published_time" content="2021-02-28T00:00:00+00:00" />
 <meta property="article:modified_time" content="2021-02-28T00:00:00+00:00" />
+
 
 
   </head>
@@ -115,7 +114,7 @@ bash.7z
 <p>So we are given a archive, which contains a &ldquo;bash&rdquo; binary. This binary was backdoored, so we need to find it to get the flag.</p>
 <h2 id="bash-backdoor-pt-i">Bash backdoor, Pt. I</h2>
 <p>While opening the file on IDA, the entry point isn&rsquo;t disassembled correctly. The entrypoint is placed straddling the &ldquo;.text&rdquo; and the &ldquo;.data&rdquo; section. After defining the instructions on the data section, we can locate the &ldquo;main&rdquo; function:</p>
-<pre><code>_data           segment dword public 'DATA' use64
+<pre tabindex="0"><code>_data           segment dword public 'DATA' use64
 .data:000000000001ECA2                 assume cs:_data
 .data:000000000001ECA2                 ;org 1ECA2h
 .data:000000000001ECA2                 db  1Eh
@@ -135,7 +134,7 @@ bash.7z
 .data:000000000001ECCE                 hlt
 .data:000000000001ECCF
 </code></pre><p>The main function is huge, thanks to inlined static functions. But we can quickly see that the main function belongs to the &ldquo;shell.c&rdquo; file thanks to some debug function, that look like this:</p>
-<pre><code>.data:00000000000206A5                 call    set_default_locale
+<pre tabindex="0"><code>.data:00000000000206A5                 call    set_default_locale
 .data:00000000000206AA                 call    getuid_0
 .data:00000000000206AF                 mov     ebx, eax
 .data:00000000000206B1                 cmp     eax, cs:cur_user__uid
@@ -147,14 +146,14 @@ bash.7z
 .data:00000000000206CA                 lea     rsi, aShellC    ; &quot;shell.c&quot;
 .data:00000000000206D1                 call    print_free
 </code></pre><p>So I downloaded the bash 5.1 source tarball (the version can be identified easily thanks to program&rsquo;s strings), and looked at this file. But the corresponding snippet in bash source</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
 u <span style="color:#ff79c6">=</span> getuid ();
   <span style="color:#ff79c6">if</span> (current_user.uid <span style="color:#ff79c6">!=</span> u)
     {
       FREE (current_user.user_name);
 
 </code></pre></div><p>is located at line 1292 instead of 1642. So we can tell that the binary has been recompiled from the source with the backdoor injected. I spent some time to identify the file&rsquo;s function, and came across this function that doesn&rsquo;t have anything looking like this in its sources:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
 v26 <span style="color:#ff79c6">=</span> __readfsqword(<span style="color:#bd93f9">0x28u</span>);
   v0 <span style="color:#ff79c6">=</span> (_QWORD <span style="color:#ff79c6">*</span>)sh_malloc(<span style="color:#bd93f9">4096LL</span>, <span style="color:#f1fa8c">&#34;shell.c&#34;</span>, <span style="color:#bd93f9">587LL</span>);
   v0[<span style="color:#bd93f9">511</span>] <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0LL</span>;
@@ -174,7 +173,7 @@ v26 <span style="color:#ff79c6">=</span> __readfsqword(<span style="color:#bd93f
   v4 <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">8</span>;
 
 </code></pre></div><p>This function is called as an init vector by <code>__libc_csu_init</code>, before <code>main</code> function is called. The backdoor checks if bash is being debugged by looking for TracerPid field in <code>/proc/self/status</code>. The strings are encrypted with a simple algorithm, I reimplemented in Python.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">
 <span style="color:#ff79c6">def</span> <span style="color:#50fa7b">decryptbuf</span>(s):
     outpt <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&#34;</span>
     key <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">24</span>
@@ -187,7 +186,7 @@ v26 <span style="color:#ff79c6">=</span> __readfsqword(<span style="color:#bd93f
 <p>Now, the real fun begins.</p>
 <h2 id="custom-crypto-and-feistel-ciphers">Custom crypto and Feistel ciphers</h2>
 <p>The contents of /proc/self/fd/777 is transformed by some encryption algorithm, and then checked against the ciphertext. The decompiled algorithm looks like this:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
 mysterious_array[<span style="color:#bd93f9">0</span>] <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0xE9B554BCBF7A0351LL</span>;
 mysterious_array[<span style="color:#bd93f9">1</span>] <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x200A845B757AFF88LL</span>;
 mysterious_array[<span style="color:#bd93f9">2</span>] <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x392848A34339A3EELL</span>;
@@ -227,7 +226,7 @@ bufread <span style="color:#ff79c6">=</span> (<span style="color:#8be9fd">char</
 
 </code></pre></div><p>By looking at the final check <code>mysterious_array[v17 / 8] != (seed2 &lt;&lt; 32) + v14</code>, we can see that fhe first 32 upper bytes of the &ldquo;mysterious_array&rdquo; are the &ldquo;state2&rdquo;, untouched, while the 32 lower bytes are computed with the &ldquo;state2&rdquo;.</p>
 <p>The encryption algorithm does 48 rounds of the following transformation (reimplemented in Python), where j is the round number:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">
 <span style="color:#ff79c6">def</span> <span style="color:#50fa7b">do_feistel_pass</span>(j, seed1, seed2):
     tmp <span style="color:#ff79c6">=</span> (seed1 <span style="color:#ff79c6">+</span> watconst[j <span style="color:#ff79c6">&amp;</span> <span style="color:#bd93f9">3</span>] <span style="color:#ff79c6">+</span> seed2 <span style="color:#ff79c6">+</span> j <span style="color:#ff79c6">+</span> ((seed2 <span style="color:#ff79c6">&gt;&gt;</span> <span style="color:#bd93f9">8</span>) <span style="color:#ff79c6">^</span> ((seed2 <span style="color:#ff79c6">&lt;&lt;</span> <span style="color:#bd93f9">6</span>) <span style="color:#ff79c6">&amp;</span> <span style="color:#bd93f9">0xffffffff</span>))) <span style="color:#ff79c6">&amp;</span> <span style="color:#bd93f9">0xffffffff</span>
     <span style="color:#ff79c6">return</span> (seed2, tmp)
@@ -239,9 +238,9 @@ bufread <span style="color:#ff79c6">=</span> (<span style="color:#8be9fd">char</
     <span style="color:#ff79c6">return</span> (seed1, seed2)
 
 </code></pre></div><p>This algorithm can be inverted, since we know seed2 thank to the way it&rsquo;s compared to the &ldquo;mysterious_array&rdquo;. We just need to take care of additions, which are truncated to 32 bits, which discards the additions overflow. So, the decryption function looks like this:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">
 <span style="color:#ff79c6">def</span> <span style="color:#50fa7b">undo_feistel_pass</span>(j, seed2, tmp):
-    <span style="color:#ff79c6">while</span> True:
+    <span style="color:#ff79c6">while</span> <span style="color:#ff79c6">True</span>:
         blup <span style="color:#ff79c6">=</span> watconst[j <span style="color:#ff79c6">&amp;</span> <span style="color:#bd93f9">3</span>] <span style="color:#ff79c6">+</span> seed2 <span style="color:#ff79c6">+</span> j <span style="color:#ff79c6">+</span> ((seed2 <span style="color:#ff79c6">&gt;&gt;</span> <span style="color:#bd93f9">8</span>) <span style="color:#ff79c6">^</span> ((seed2 <span style="color:#ff79c6">&lt;&lt;</span> <span style="color:#bd93f9">6</span>) <span style="color:#ff79c6">&amp;</span> <span style="color:#bd93f9">0xffffffff</span>))
         pass1 <span style="color:#ff79c6">=</span> tmp <span style="color:#ff79c6">-</span> blup
         <span style="color:#ff79c6">if</span> pass1 <span style="color:#ff79c6">&gt;</span> <span style="color:#bd93f9">0</span>:
@@ -256,7 +255,7 @@ bufread <span style="color:#ff79c6">=</span> (<span style="color:#8be9fd">char</
     <span style="color:#ff79c6">return</span> struct<span style="color:#ff79c6">.</span>pack(<span style="color:#f1fa8c">&#34;&lt;II&#34;</span>, seed2, tmp)
 
 </code></pre></div><p>So, after running it on our &ldquo;mysterious_array&rdquo; variable:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">
 bufd <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&#34;</span>
 <span style="color:#ff79c6">for</span> i <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#bd93f9">0</span>, <span style="color:#bd93f9">32</span>, <span style="color:#bd93f9">8</span>):
     bufd <span style="color:#ff79c6">+=</span> do_unhash_block(mysterious_array[i <span style="color:#ff79c6">&gt;&gt;</span> <span style="color:#bd93f9">3</span>])
@@ -265,7 +264,7 @@ bufd <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">b</span><s
 <p>The next steps decrypts another ELF file with some sort of Salsa20 (thanks the magic consts), but I gave up analyzing it and just dumped the decrypted bin with gdb from a coredump after having patched the binary with int3 instruction after.</p>
 <h2 id="analysis-of-the-second-stage">Analysis of the second stage</h2>
 <p>The second stage uses the same trick used by the &ldquo;bash&rdquo; binary, which places a part of entrypoint on the &ldquo;.data&rdquo; section. The main function just calls the decryption function with argv[1]. The decryption function looks like this:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
 <span style="color:#ff79c6">__int64</span> <span style="color:#ff79c6">__fastcall</span> <span style="color:#50fa7b">do_the_hustle</span>(<span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>serial)
 {
   <span style="color:#ff79c6">__m128i</span> <span style="color:#ff79c6">*</span>key; <span style="color:#6272a4">// rbp
@@ -304,22 +303,22 @@ bufd <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">b</span><s
   <span style="color:#ff79c6">return</span> free_0(v3);
 }
 
-</code></pre></div><p>The Serpent encryption key is just &ldquo;Dh1IuM7SV7xgZP8q&rdquo; with some XOR obfuscation. The &ldquo;hard&rdquo; part was to identify correctly the algorithm, mais thanks to the secret technique of searching S-Boxes on Google, I came across a chinese blog (<a href="https://ctf.njupt.edu.cn/271.html),">https://ctf.njupt.edu.cn/271.html),</a> that contained the interesting S-Box</p>
-<pre><code>0x03, 0x08, 0x0F, 0x01, 0x0A, 0x06, 0x05, 0x0B, 0x0E, 0x0D`
+</code></pre></div><p>The Serpent encryption key is just &ldquo;Dh1IuM7SV7xgZP8q&rdquo; with some XOR obfuscation. The &ldquo;hard&rdquo; part was to identify correctly the algorithm, mais thanks to the secret technique of searching S-Boxes on Google, I came across a chinese blog (<a href="https://ctf.njupt.edu.cn/271.html)">https://ctf.njupt.edu.cn/271.html)</a>, that contained the interesting S-Box</p>
+<pre tabindex="0"><code>0x03, 0x08, 0x0F, 0x01, 0x0A, 0x06, 0x05, 0x0B, 0x0E, 0x0D`
 </code></pre><p>This blog gave the CTF challenge&rsquo;s name it was taken from (&ldquo;Touch of Satan&rdquo;), and thanks to my OSINT skills, I found another chinese blog (<a href="https://blog.csdn.net/qq_38867330/article/details/102922423">https://blog.csdn.net/qq_38867330/article/details/102922423</a>) that identified it as Serpent.</p>
 <p>So I grabbed some ancient Python2 Serpent lib, tweaked it to make it run on Python 3, and after running</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">
 <span style="color:#ff79c6">import</span> serpent
 z <span style="color:#ff79c6">=</span> serpent<span style="color:#ff79c6">.</span>Serpent(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;Dh1IuM7SV7xgZP8q&#34;</span>)
 <span style="color:#8be9fd;font-style:italic">bin</span> <span style="color:#ff79c6">=</span> struct<span style="color:#ff79c6">.</span>pack(<span style="color:#f1fa8c">&#34;&lt;QQQQ&#34;</span>, <span style="color:#bd93f9">0x9601AAF388AB0192</span>, <span style="color:#bd93f9">0x2127591BB4E06735</span>, <span style="color:#bd93f9">0x582C4E2FDC6C7226</span>, <span style="color:#bd93f9">0xC00B8862110C7A9D</span>)
-<span style="color:#ff79c6">print</span>(z<span style="color:#ff79c6">.</span>decrypt(<span style="color:#8be9fd;font-style:italic">bin</span>))
+<span style="color:#8be9fd;font-style:italic">print</span>(z<span style="color:#ff79c6">.</span>decrypt(<span style="color:#8be9fd;font-style:italic">bin</span>))
 
 </code></pre></div><p>I got the key <code>0NSlH7m8C91boiGq10NtQKq4aP7mVyJ</code></p>
 <h2 id="bash-backdoor-pt-ii">Bash backdoor Pt. II</h2>
 <p>Since the previous binary does nothing except sending flag status through a FIFO pipe, we need to find another part of the backdoor in the bash binary.</p>
 <p>After losing time digging into the binary (which probably costed me the first blood for this challenge 😥), I found some <code>getenv(&quot;JAKWEULOD&quot;)</code> in the binary, that isn&rsquo;t present into official bash source code.</p>
 <p>The function doing the getenv is called at the beginning of the &ldquo;parse_and_execute&rdquo;, patched to run the backdoor. Let&rsquo;s have a look to the added code:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
 v3 <span style="color:#ff79c6">=</span> backdoor_enabled;
 <span style="color:#ff79c6">if</span> ( backdoor_enabled )
   {
@@ -348,9 +347,9 @@ v3 <span style="color:#ff79c6">=</span> backdoor_enabled;
 }
 
 </code></pre></div><p>The backdoor is triggered when entering &ldquo;1+2+3+4+5&rdquo; followed by the string we found before. The <code>((void (__fastcall *)(__int64))(v3 + 91))(a1 + 9)</code> function spawns the decrypted binary we analyzed thanks to a memfd, with the string we got as a parameter. So we can trigger the code with the command</p>
-<pre><code>1+2+3+4+50NSlH7m8C91boiGq10NtQKq4aP7mVyJ
+<pre tabindex="0"><code>1+2+3+4+50NSlH7m8C91boiGq10NtQKq4aP7mVyJ
 </code></pre><p>With that, we can reach <code>backdoor_activation</code> which call some crypto func with <code>0NSlH7m8C91boiGq10NtQKq4aP7mVyJ</code> as key to decrypt the function which will check the &ldquo;JAKWEULOD&rdquo; variable environment:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
 <span style="color:#8be9fd">void</span> <span style="color:#ff79c6">__fastcall</span> <span style="color:#50fa7b">backdoor_activation</span>(<span style="color:#ff79c6">const</span> <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>key)
 {
   <span style="color:#ff79c6">__int64</span> v1; <span style="color:#6272a4">// rbp
@@ -380,7 +379,7 @@ v3 <span style="color:#ff79c6">=</span> backdoor_enabled;
 <p>To avoid this, I replaced the &ldquo;int3&rdquo; by a &ldquo;jmp $0&rdquo; (<code>&quot;\xeb\xfe\&quot;</code>), and dumped the content of the allocated buffer after calling the crypto function after attaching to the process with gdb.</p>
 <p>The allocated buffer is called as function to check &ldquo;JAKWEULOD&rdquo; contents: <code>((unsigned int (__fastcall *)(const char *))(v1 + 143))(v2)</code>.</p>
 <p>The checking algorithm is pretty simple: it does a modular exponentiation on each char of the variable and check if the results equals a certain value. Unfortunately the modulus isn&rsquo;t a prime number, but since the modulus is small we can do dumb bruteforce to determine the correct char:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">
 <span style="color:#ff79c6">def</span> <span style="color:#50fa7b">bf_char</span>(n, p, res):
     selected <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>
     <span style="color:#ff79c6">for</span> i <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#bd93f9">0x10</span>, <span style="color:#bd93f9">0x7f</span>):
@@ -388,11 +387,11 @@ v3 <span style="color:#ff79c6">=</span> backdoor_enabled;
             <span style="color:#ff79c6">if</span> selected <span style="color:#ff79c6">==</span> <span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>:
                 selected <span style="color:#ff79c6">=</span> i
             <span style="color:#ff79c6">else</span>:
-                <span style="color:#ff79c6">print</span>(<span style="color:#f1fa8c">&#34;Other candidate </span><span style="color:#f1fa8c">%d</span><span style="color:#f1fa8c">&#34;</span> <span style="color:#ff79c6">%</span> i)
+                <span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">&#34;Other candidate </span><span style="color:#f1fa8c">%d</span><span style="color:#f1fa8c">&#34;</span> <span style="color:#ff79c6">%</span> i)
     <span style="color:#ff79c6">return</span> selected
 
 </code></pre></div><p>I was too lazy to make a script to extract the exponent, modulus and the powmod value so I did by hand (fortunately b33r helps to do boring tasks) to compute the JAKWEULOD value. So after running the script which looks like this:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">
 <span style="color:#ff79c6">def</span> <span style="color:#50fa7b">bf_char</span>(n, p, res):
     selected <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>
     <span style="color:#ff79c6">for</span> i <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#bd93f9">0x10</span>, <span style="color:#bd93f9">0x7f</span>):
@@ -400,7 +399,7 @@ v3 <span style="color:#ff79c6">=</span> backdoor_enabled;
             <span style="color:#ff79c6">if</span> selected <span style="color:#ff79c6">==</span> <span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>:
                 selected <span style="color:#ff79c6">=</span> i
             <span style="color:#ff79c6">else</span>:
-                <span style="color:#ff79c6">print</span>(<span style="color:#f1fa8c">&#34;Other candidate </span><span style="color:#f1fa8c">%d</span><span style="color:#f1fa8c">&#34;</span> <span style="color:#ff79c6">%</span> i)
+                <span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">&#34;Other candidate </span><span style="color:#f1fa8c">%d</span><span style="color:#f1fa8c">&#34;</span> <span style="color:#ff79c6">%</span> i)
     <span style="color:#ff79c6">return</span> selected
 
 flag <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">bytearray</span>(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;-&#34;</span><span style="color:#ff79c6">*</span><span style="color:#bd93f9">65</span>)
@@ -418,14 +417,14 @@ elts <span style="color:#ff79c6">=</span> [
     <span style="color:#6272a4">#print(hex(e[3]))</span>
     flag[e[<span style="color:#bd93f9">3</span>]] <span style="color:#ff79c6">=</span> c
 
-<span style="color:#ff79c6">print</span>(<span style="color:#8be9fd;font-style:italic">len</span>(elts))
-<span style="color:#ff79c6">print</span>(flag)
+<span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#8be9fd;font-style:italic">len</span>(elts))
+<span style="color:#8be9fd;font-style:italic">print</span>(flag)
 pos <span style="color:#ff79c6">=</span> [<span style="color:#8be9fd;font-style:italic">hex</span>(i) <span style="color:#ff79c6">for</span> i <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#8be9fd;font-style:italic">len</span>(flag)) <span style="color:#ff79c6">if</span> flag[i] <span style="color:#ff79c6">==</span> <span style="color:#8be9fd;font-style:italic">ord</span>(<span style="color:#f1fa8c">&#34;-&#34;</span>)]
-<span style="color:#ff79c6">print</span>(pos)
+<span style="color:#8be9fd;font-style:italic">print</span>(pos)
 
 </code></pre></div><p>we get the correct value for the env var: <code>mIB8vFxWAQ5RkO7MXzDKnjTbYIdbwQQbxSyU6XvIoS39zmdKrHHCOevfUt5oBDZh</code>.</p>
 <p>As usual, this value is a key to decrypt the next payload, but once again the <code>jmp $0</code> trick will help us and we can dump the &ldquo;final&rdquo; stage:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
 <span style="color:#8be9fd">void</span> <span style="color:#50fa7b">fork_and_spawn</span>()
 {
   <span style="color:#ff79c6">__m128i</span> <span style="color:#ff79c6">*</span>key; <span style="color:#6272a4">// rbx
@@ -461,7 +460,7 @@ pos <span style="color:#ff79c6">=</span> [<span style="color:#8be9fd;font-style:
 <h2 id="final-flash">Final flash</h2>
 <p>After having dumped the ELF, we open it on IDA. This time, no weird tricks and IDA shows us the main function directly. The main function is useless because it just calls &ldquo;sudoedit&rdquo; with shitty arguments.</p>
 <p>But remember, init functions can be called by <code>__libc_csu_init</code>, and it&rsquo;s the case here. We have a <code>setup</code> function, which does this:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
 <span style="color:#8be9fd">int</span> <span style="color:#ff79c6">__fastcall</span> <span style="color:#50fa7b">setup</span>(<span style="color:#ff79c6">__int64</span> a1, __mode_t a2)
 {
   FILE <span style="color:#ff79c6">*</span>s; <span style="color:#6272a4">// [rsp+8h] [rbp-8h]
@@ -477,7 +476,7 @@ pos <span style="color:#ff79c6">=</span> [<span style="color:#8be9fd;font-style:
 }
 
 </code></pre></div><p>Luckily for me, I analyzed the &ldquo;shellbind&rdquo; binary, and after seening its main function:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
 bind(fd, <span style="color:#ff79c6">&amp;</span>addr, <span style="color:#bd93f9">0x10u</span>);
 listen(fd, <span style="color:#bd93f9">0</span>);
 v8 <span style="color:#ff79c6">=</span> accept(fd, <span style="color:#bd93f9">0LL</span>, <span style="color:#bd93f9">0LL</span>);
@@ -495,10 +494,10 @@ v9 <span style="color:#ff79c6">=</span> recv(v8, buf, <span style="color:#bd93f9
 }
 
 </code></pre></div><p>I found the password of the backdoor:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">
 s <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">bytes</span><span style="color:#ff79c6">.</span>fromhex(<span style="color:#f1fa8c">&#34;183C2B36226D603B6861686A616E3F6C69606A6C3B6A60386969616C693B6E6E613A6F6F3F24&#34;</span>)
 
-<span style="color:#ff79c6">print</span>(<span style="color:#8be9fd;font-style:italic">bytes</span>([x <span style="color:#ff79c6">^</span> <span style="color:#bd93f9">0x59</span> <span style="color:#ff79c6">for</span> x <span style="color:#ff79c6">in</span> s]))
+<span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#8be9fd;font-style:italic">bytes</span>([x <span style="color:#ff79c6">^</span> <span style="color:#bd93f9">0x59</span> <span style="color:#ff79c6">for</span> x <span style="color:#ff79c6">in</span> s]))
 
 </code></pre></div><p>Which gives us the flag: <code>Aero{49b181387f50935b39a00850b778c66f}</code></p>
 

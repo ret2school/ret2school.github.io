@@ -5,15 +5,36 @@
     <link>https://ret2school.github.io/post/</link>
     <description>Recent content in Posts on ret2school</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Sun, 17 Apr 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 28 Jul 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>[diceCTF 2022 - pwn] catastrophe</title>
+      <link>https://ret2school.github.io/post/catastrophe/</link>
+      <pubDate>Thu, 28 Jul 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/catastrophe/</guid>
+      <description>Introduction  I just learned how to use malloc and free&amp;hellip; am I doing this right?
+ catastrophe is a heap challenge I did during the diceCTF 2022. I did have a lot of issues with the libc and the dynamic linker, thus I did a first time the challenge with the libc that was in /lib/libc.so.6, then I figured out thanks to my teammate supersnail that I was using the wrong libc.</description>
+    </item>
+    
+    <item>
+      <title>[HackTheBox Cyber Apocalypse 2022 - pwn] Once and for all</title>
+      <link>https://ret2school.github.io/post/onceandforall/</link>
+      <pubDate>Thu, 19 May 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/onceandforall/</guid>
+      <description>Once for all is a heap challenge I did during the HackTheBox Cyber Apocalypse event. This is a classic unsorted bin attack plus a FSOP on stdin. Find the tasks and the final exploit here and here.
+Reverse engineering All the snippets of pseudo-code are issued by IDA freeware:
+int __cdecl main(int argc, const char **argv, const char **envp) { int v4; // [rsp+18h] [rbp-8h] BYREF  int i; // [rsp+1Ch] [rbp-4h]  for ( i = 0; i &amp;lt;= 49; ++i ) { puts(s); printf(&amp;amp;unk_1310); __isoc99_scanf(&amp;amp;unk_13C8, &amp;amp;v4); puts(s); switch ( v4 ) { case 1: small_alloc(s); break; case 2: fix(s); break; case 3: examine(s); break; case 4: savebig(s); break; case 5: exit(0); default: puts(&amp;#34;[-] Invalid choice!</description>
+    </item>
+    
     <item>
       <title>[DCTF 2022 - pwn] phonebook</title>
       <link>https://ret2school.github.io/post/phonebook/</link>
       <pubDate>Sun, 17 Apr 2022 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/post/phonebook/</guid>
-      <description>Intro phonebook is a basic heap challenge I did during the dctf event. It&amp;rsquo;s basically just a heap overflow wich allows us to overflow a function pointer with for example the address of system. You can find the related files there.
-The bug $ ./phonebook Choose an option: [1-5] 1. Store someone&#39;s information 2. Edit information 3. Call someone 4. Unfriend someone 5. Add the hidden_note &amp;gt; We can create an entity and then initialize: a name, a phone number and a function pointer.</description>
+      <description>Intro phonebook is a basic heap challenge I did during the dctf event. It&amp;rsquo;s basically just a heap overflow wich allows us to overflow a function pointer with for example the address of system.
+The bug $ ./phonebook Choose an option: [1-5] 1. Store someone&#39;s information 2. Edit information 3. Call someone 4. Unfriend someone 5. Add the hidden_note &amp;gt; We can create an entity and then initialize: a name, a numero and a function pointer.</description>
     </item>
     
     <item>

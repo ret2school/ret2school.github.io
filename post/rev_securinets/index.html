@@ -3,23 +3,21 @@
   <head>
     <title>[Securinets CTF 2021 - RE] RUN! &amp; YAY! // ret2school</title>
     <meta charset="utf-8" />
-    <meta name="generator" content="Hugo 0.80.0" />
+    <meta name="generator" content="Hugo 0.92.2" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="author" content="nasm" />
     <meta name="description" content="" />
     <link rel="stylesheet" href="https://ret2school.github.io/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css" />
 
     
-<script type="application/javascript">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8K5XT0SJN8"></script>
+<script>
 var doNotTrack = false;
 if (!doNotTrack) {
-	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-	ga('create', 'G-8K5XT0SJN8', 'auto');
-	
-	ga('send', 'pageview');
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-8K5XT0SJN8', { 'anonymize_ip': false });
 }
 </script>
 
@@ -34,9 +32,10 @@ The algorithm was &ldquo;simple&rdquo;, you just had to deal with C&#43;&#43; ov
 The algorithm was &ldquo;simple&rdquo;, you just had to deal with C&#43;&#43; overhead for std::string, and was basically:
  The programs take the username and computes the sum of each char of the username (with some SSE2 wizardry) This sum is then given as seed to srand() The user serial is split into 2-char blocks, and each block is decoded as hex string and the integer is added to an array The program then searches the highest value in the decoded serial array and allocated a int array with this size The array is filled with rand() values mod 13371337 A valid serial is a sequences of indexes into the random array whose sum is equals to 0xbcdb6 mod 1337  So, the tricky part was to generate this sequence of indexes." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://ret2school.github.io/post/rev_securinets/" />
+<meta property="og:url" content="https://ret2school.github.io/post/rev_securinets/" /><meta property="article:section" content="post" />
 <meta property="article:published_time" content="2021-03-23T00:00:00+00:00" />
 <meta property="article:modified_time" content="2021-03-23T00:00:00+00:00" />
+
 
 
   </head>
@@ -126,7 +125,7 @@ The algorithm was &ldquo;simple&rdquo;, you just had to deal with C&#43;&#43; ov
 </li>
 </ul>
 <p>Which gives this implemented in Python:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">
 <span style="color:#6272a4">#!/usr/bin/python</span>
 <span style="color:#ff79c6">import</span> struct
 <span style="color:#ff79c6">import</span> ctypes
@@ -141,14 +140,14 @@ crt <span style="color:#ff79c6">=</span> ctypes<span style="color:#ff79c6">.</sp
         <span style="color:#ff79c6">return</span> (x <span style="color:#ff79c6">%</span> n)
 
 username <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;aaSSfxxx&#34;</span>
-<span style="color:#ff79c6">print</span>(username)
+<span style="color:#8be9fd;font-style:italic">print</span>(username)
 seed <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">sum</span>(username)
 
 crt<span style="color:#ff79c6">.</span>srand(seed)
 random_array <span style="color:#ff79c6">=</span> [crt<span style="color:#ff79c6">.</span>rand() <span style="color:#ff79c6">%</span> <span style="color:#bd93f9">13371337</span> <span style="color:#ff79c6">for</span> _ <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#bd93f9">256</span>)]
 
 dictcomb <span style="color:#ff79c6">=</span> {random_array[x]: [x] <span style="color:#ff79c6">for</span> x <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#8be9fd;font-style:italic">len</span>(random_array))}
-loop <span style="color:#ff79c6">=</span> True
+loop <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">True</span>
 <span style="color:#ff79c6">while</span> loop:
     keys <span style="color:#ff79c6">=</span> dictcomb<span style="color:#ff79c6">.</span>keys()
     <span style="color:#ff79c6">for</span> elt <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">list</span>(keys):
@@ -162,8 +161,8 @@ loop <span style="color:#ff79c6">=</span> True
                 dictcomb[result] <span style="color:#ff79c6">=</span> j
             <span style="color:#6272a4"># Check if (0xbcdb6 - checksum) is present. If so then concatenate the two sequences to form the array</span>
             <span style="color:#ff79c6">if</span> (<span style="color:#bd93f9">0xbcdb6</span> <span style="color:#ff79c6">-</span> result) <span style="color:#ff79c6">in</span> dictcomb:
-                <span style="color:#ff79c6">print</span>(<span style="color:#f1fa8c">&#34;&#34;</span><span style="color:#ff79c6">.</span>join([<span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">%02x</span><span style="color:#f1fa8c">&#34;</span> <span style="color:#ff79c6">%</span> x <span style="color:#ff79c6">for</span> x <span style="color:#ff79c6">in</span> (dictcomb[result] <span style="color:#ff79c6">+</span> dictcomb[(<span style="color:#bd93f9">0xbcdb6</span> <span style="color:#ff79c6">-</span> result)])]))
-                loop <span style="color:#ff79c6">=</span> False
+                <span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">&#34;&#34;</span><span style="color:#ff79c6">.</span>join([<span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">%02x</span><span style="color:#f1fa8c">&#34;</span> <span style="color:#ff79c6">%</span> x <span style="color:#ff79c6">for</span> x <span style="color:#ff79c6">in</span> (dictcomb[result] <span style="color:#ff79c6">+</span> dictcomb[(<span style="color:#bd93f9">0xbcdb6</span> <span style="color:#ff79c6">-</span> result)])]))
+                loop <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">False</span>
                 <span style="color:#ff79c6">break</span>
         <span style="color:#ff79c6">if</span> <span style="color:#ff79c6">not</span> loop:
             <span style="color:#ff79c6">break</span>
@@ -176,7 +175,7 @@ loop <span style="color:#ff79c6">=</span> True
 <p>unpackme if you can !</p>
 </blockquote>
 <p>which was a bit misleading as we&rsquo;ll see later. The binary had some &ldquo;weird&rdquo; anti-debugging tricks which were for the most by ScyllaHide on x64dbg for me. The first anti-debugger trick I encoutered was:</p>
-<pre><code>
+<pre tabindex="0"><code>
 push    0
 push    0
 push    ThreadHideFromDebugger
@@ -191,11 +190,11 @@ call    esi ; NtSetInformationThread
 </code></pre><p>which basically shuts down all debugging features of the process who calls this function (if not hooked by ScyllaHide :þ). Then there was a quite huge function in 0x4057B0 that seemed to scrap syscalls numbers from NTDLL, but I didn&rsquo;t spend time to identify what syscalls.</p>
 <p>Then another anti-debug function that did &ldquo;WinVerifyTrust&rdquo; calls to check some DLL integrity, calling scrapped syscall from previous function and putting vectored exception handler after that. For some reason, the function failed, but I just forced EIP to bypass the check after, so I could trigger the useful part of the binary.</p>
 <p>Once the antidebugs bypassed, the binary connects to a server to fetch a string, which is actually:</p>
-<pre><code>
+<pre tabindex="0"><code>
 0,1,7,13,9,0,8,4,1,0,10,1,0,11,25,12,2,1,14,2,1,1,1,5,10,16,18,17,0,4,1,0,10,1,0,11,53,19,2,20,3,10,2,3,11,48,21,6,1,1,1,5,32,22,6
 
 </code></pre><p>This string is then splitted by &ldquo;,&rdquo; character and each int is stored in array. This array is just bytecode for a custom VM, which contains 24 handlers. After some reversing, I was able to decode this bytecode and got this:</p>
-<pre><code>
+<pre tabindex="0"><code>
 0,1      // weird init
 7        // print welcome
 13       // input flag
@@ -224,7 +223,7 @@ call    esi ; NtSetInformationThread
 22,6     // print goodboy
 
 </code></pre><p>The interesting handler is &ldquo;crypt_input_buf&rdquo; handler, which looks like this:</p>
-<pre><code>
+<pre tabindex="0"><code>
 .text:004022BD                 cmp     [esi+VMContext.flagbuffer.sz1], 0 ; jumptable 00402151 case 16
 .text:004022C1                 mov     [ebp+i], 0
 .text:004022CB                 jbe     def_402151      ; jumptable 00402151 default case
@@ -260,7 +259,7 @@ call    esi ; NtSetInformationThread
 .text:0040231B                 call    vector_append
 
 </code></pre><p>It&rsquo;s basically a ROL unoptimized by the compiler, with the random array built by the &ldquo;8&rdquo; opcode. Then, the &ldquo;encrypted&rdquo; username is compared to some buffer defined at the beginning of the function:</p>
-<pre><code>
+<pre tabindex="0"><code>
 mov     dword ptr [ebp+var_44], 2F16F25Fh
 mov     dword ptr [ebp+var_44+4], 37CAE6AFh
 mov     dword ptr [ebp+var_44+8], 0D8D8B037h
@@ -276,7 +275,7 @@ mov     dword ptr [ebp+var_44+2Ch], 0C62C76F6h
 mov     word ptr [ebp+var_44+30h], 0CCh ; 'Ì'
 
 </code></pre><p>Given this, we can write a decode script to get the flag:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">
 <span style="color:#ff79c6">import</span> ctypes
 
 crt <span style="color:#ff79c6">=</span> ctypes<span style="color:#ff79c6">.</span>cdll<span style="color:#ff79c6">.</span>msvcrt
@@ -289,7 +288,7 @@ lol <span style="color:#ff79c6">=</span> []
 <span style="color:#ff79c6">for</span> i <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#8be9fd;font-style:italic">len</span>(arr)):
     ret <span style="color:#ff79c6">=</span> ((encodedflag[i] <span style="color:#ff79c6">&lt;&lt;</span> (<span style="color:#bd93f9">8</span> <span style="color:#ff79c6">-</span> decarr[i])) <span style="color:#ff79c6">|</span> (encodedflag[i] <span style="color:#ff79c6">&gt;&gt;</span> decarr[i])) <span style="color:#ff79c6">&amp;</span> <span style="color:#bd93f9">0xff</span>
     lol<span style="color:#ff79c6">.</span>append(ret)
-<span style="color:#ff79c6">print</span>(<span style="color:#8be9fd;font-style:italic">bytes</span>(lol[::<span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>]))
+<span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#8be9fd;font-style:italic">bytes</span>(lol[::<span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>]))
 
 </code></pre></div><p>Which gives <code>flag{vm_rotate_vectors_and__much_cpp_classes_yay}</code>.</p>
 

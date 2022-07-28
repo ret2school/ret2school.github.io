@@ -3,23 +3,21 @@
   <head>
     <title>[Hitcon CTF 2020 - forensic] AC1750 // ret2school</title>
     <meta charset="utf-8" />
-    <meta name="generator" content="Hugo 0.80.0" />
+    <meta name="generator" content="Hugo 0.92.2" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="author" content="nasm" />
     <meta name="description" content="" />
     <link rel="stylesheet" href="https://ret2school.github.io/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css" />
 
     
-<script type="application/javascript">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8K5XT0SJN8"></script>
+<script>
 var doNotTrack = false;
 if (!doNotTrack) {
-	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-	ga('create', 'G-8K5XT0SJN8', 'auto');
-	
-	ga('send', 'pageview');
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-8K5XT0SJN8', { 'anonymize_ip': false });
 }
 </script>
 
@@ -36,9 +34,10 @@ The write up is about the AC1750 challenge in HITCON ctf. It&rsquo;s a forensic 
 First, we need to analyze intercepted traffic with wireshark. We see a lot of HTTP packets, and some contain &ldquo;Archer&rdquo; references. We can see weird UDP packets with port 20002.
 After some google-fu on port 20002, we come accross this, and we can see there is a CVE targeting T-Link Archer devices." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://ret2school.github.io/post/forensic/" />
+<meta property="og:url" content="https://ret2school.github.io/post/forensic/" /><meta property="article:section" content="post" />
 <meta property="article:published_time" content="2020-12-01T00:00:00+00:00" />
 <meta property="article:modified_time" content="2020-12-01T00:00:00+00:00" />
+
 
 
   </head>
@@ -111,7 +110,7 @@ After some google-fu on port 20002, we come accross this, and we can see there i
 <p>After some google-fu on port 20002, we come accross <a href="https://www.speedguide.net/port.php?port=20002">this</a>, and we can see there is a CVE targeting T-Link Archer devices. Since we noticed &ldquo;archer&rdquo; reference, this could be a solution&hellip;</p>
 <p>One of the reference is an exploit <a href="https://packetstormsecurity.com/files/157255/TP-Link-Archer-A7-C7-Unauthenticated-LAN-Remote-Code-Execution.html">script</a>,  we need to analyze.</p>
 <p>The CVE tells us that the packets are encrypted with a default key and IV, and use AES-128. So to verify this, let&rsquo;s try to decrypt an UDP payload with those parameters:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">
 <span style="color:#ff79c6">&gt;&gt;&gt;</span> bob <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">bytes</span>([ <span style="color:#ff79c6">...</span> UDP packet contents <span style="color:#ff79c6">...</span>])
 <span style="color:#ff79c6">&gt;&gt;&gt;</span> iv <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;1234567890abcdef&#34;</span>
 <span style="color:#ff79c6">&gt;&gt;&gt;</span> key <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;TPONEMESH_Kf!xn?&#34;</span>
@@ -120,7 +119,7 @@ After some google-fu on port 20002, we come accross this, and we can see there i
 <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#39;</span><span style="color:#f1fa8c">\xd5\xee\x8f</span><span style="color:#f1fa8c">C</span><span style="color:#f1fa8c">\xb0\xc9\xd7\x06</span><span style="color:#f1fa8c">O&#34;@</span><span style="color:#f1fa8c">\xd7</span><span style="color:#f1fa8c">I</span><span style="color:#f1fa8c">\xe0</span><span style="color:#f1fa8c">(tK</span><span style="color:#f1fa8c">\xe0</span><span style="color:#f1fa8c">^V@NY</span><span style="color:#f1fa8c">\\\t</span><span style="color:#f1fa8c">&gt;</span><span style="color:#f1fa8c">\x17</span><span style="color:#f1fa8c">8GZ</span><span style="color:#f1fa8c">\xb6</span><span style="color:#f1fa8c">de_key_offer&#34;, &#34;data&#34;: {&#34;group_id&#34;: &#34;1234&#34;, &#34;ip&#34;: &#34;1.3.3.7&#34;, &#34;slave_mac&#34;: &#34;</span><span style="color:#f1fa8c">\&#39;</span><span style="color:#f1fa8c">;echo&gt;f;</span><span style="color:#f1fa8c">\&#39;</span><span style="color:#f1fa8c">&#34;, &#34;slave_private_account&#34;: &#34;aaaaa&#34;, &#34;slave_private_password&#34;: &#34;aaaaa&#34;, &#34;want_to_join&#34;: false, &#34;model&#34;: &#34;owned&#34;, &#34;product_type&#34;: &#34;archer&#34;, &#34;operation_mode&#34;: &#34;aaaaa&#34;}}      &#39;</span>
 
 </code></pre></div><p>Bingo, we get some readable json ! Now we need to automate this, to decrypt packets sent to port 20002. Using dpkt, we can quickly get this script:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">
 <span style="color:#ff79c6">from</span> Crypto.Cipher <span style="color:#ff79c6">import</span> AES
 <span style="color:#ff79c6">import</span> dpkt
 <span style="color:#ff79c6">from</span> json <span style="color:#ff79c6">import</span> loads
@@ -141,12 +140,12 @@ pcap<span style="color:#ff79c6">.</span>setfilter(<span style="color:#f1fa8c">&#
                 offset <span style="color:#ff79c6">=</span> json_inc<span style="color:#ff79c6">.</span>find(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\&#34;</span><span style="color:#f1fa8c">data</span><span style="color:#f1fa8c">\&#34;</span><span style="color:#f1fa8c">: &#34;</span>)
                 json <span style="color:#ff79c6">=</span> json_inc[offset<span style="color:#ff79c6">+</span><span style="color:#bd93f9">8</span>:<span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>]
                 obj <span style="color:#ff79c6">=</span> loads(json)
-                <span style="color:#ff79c6">print</span>(obj[<span style="color:#f1fa8c">&#34;slave_mac&#34;</span>][<span style="color:#bd93f9">2</span>:<span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>])
+                <span style="color:#8be9fd;font-style:italic">print</span>(obj[<span style="color:#f1fa8c">&#34;slave_mac&#34;</span>][<span style="color:#bd93f9">2</span>:<span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>])
             <span style="color:#ff79c6">except</span> ValueError:
                 <span style="color:#ff79c6">pass</span>
 
 </code></pre></div><p>Which returns some interesting commands:</p>
-<pre><code>'h'&gt;&gt;f;
+<pre tabindex="0"><code>'h'&gt;&gt;f;
 'i'&gt;&gt;f;
 't'&gt;&gt;f;
 'c'&gt;&gt;f;

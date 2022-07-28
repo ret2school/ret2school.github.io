@@ -3,23 +3,21 @@
   <head>
     <title>[Breizh CTF 2022- reverse] Baby // ret2school</title>
     <meta charset="utf-8" />
-    <meta name="generator" content="Hugo 0.80.0" />
+    <meta name="generator" content="Hugo 0.92.2" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="author" content="nasm" />
     <meta name="description" content="" />
     <link rel="stylesheet" href="https://ret2school.github.io/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css" />
 
     
-<script type="application/javascript">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8K5XT0SJN8"></script>
+<script>
 var doNotTrack = false;
 if (!doNotTrack) {
-	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-	ga('create', 'G-8K5XT0SJN8', 'auto');
-	
-	ga('send', 'pageview');
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-8K5XT0SJN8', { 'anonymize_ip': false });
 }
 </script>
 
@@ -34,9 +32,10 @@ You just had to open the source code in radare2 to see the flag in clear:
 You just had to open the source code in radare2 to see the flag in clear:
 &gt; r2 baby [0x00001070]&gt; aaa [Cannot find function at 0x00001070 sym. and entry0 (aa) [x] Analyze all flags starting with sym. and entry0 (aa) [x] Analyze function calls (aac) [x] Analyze len bytes of instructions for references (aar) [x] Check for objc references [x] Check for vtables [x] Type matching analysis for all functions (aaft) [x] Propagate noreturn information [x] Use -AA or aaaa to perform additional experimental analysis." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://ret2school.github.io/post/baby/" />
+<meta property="og:url" content="https://ret2school.github.io/post/baby/" /><meta property="article:section" content="post" />
 <meta property="article:published_time" content="2022-03-04T00:00:00+00:00" />
 <meta property="article:modified_time" content="2022-03-04T00:00:00+00:00" />
+
 
 
   </head>
@@ -111,7 +110,7 @@ Format : BZHCTF{}
 </code></pre>
 <p>Like all the CTF challenges named &ldquo;Baby&rdquo;, this challenge was very simple.</p>
 <p>You just had to open the source code in <code>radare2</code> to see the flag in clear:</p>
-<pre><code>&gt; r2 baby
+<pre tabindex="0"><code>&gt; r2 baby
 [0x00001070]&gt; aaa
 [Cannot find function at 0x00001070 sym. and entry0 (aa)
 [x] Analyze all flags starting with sym. and entry0 (aa)
@@ -173,7 +172,7 @@ Format : BZHCTF{}
 │       │   ; CODE XREF from main @ 0x11fd
 │       └─&gt; 0x00001204      c9             leave
 └           0x00001205      c3             ret
-</code></pre><pre><code>BZHCTF{b4by_r3_f0r_y0u_g00d_luck!!}
+</code></pre><pre tabindex="0"><code>BZHCTF{b4by_r3_f0r_y0u_g00d_luck!!}
 </code></pre>
     </div>
     <div class="post-footer">

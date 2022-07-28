@@ -3,23 +3,21 @@
   <head>
     <title>[AeroCTF 2021 - RE] dummyper // ret2school</title>
     <meta charset="utf-8" />
-    <meta name="generator" content="Hugo 0.80.0" />
+    <meta name="generator" content="Hugo 0.92.2" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="author" content="nasm" />
     <meta name="description" content="" />
     <link rel="stylesheet" href="https://ret2school.github.io/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css" />
 
     
-<script type="application/javascript">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8K5XT0SJN8"></script>
+<script>
 var doNotTrack = false;
 if (!doNotTrack) {
-	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-	ga('create', 'G-8K5XT0SJN8', 'auto');
-	
-	ga('send', 'pageview');
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-8K5XT0SJN8', { 'anonymize_ip': false });
 }
 </script>
 
@@ -38,9 +36,10 @@ We only have a dump left.
  With a mysterious &ldquo;dump.7z&rdquo; that contains a &ldquo;dump&rdquo; file. This file is an ELF binary, so we load it in IDA.
 Overview IDA complains about broken section table, but still succeeds to load the bin. We get classical glibc&rsquo;s __libc_start_main, and the &ldquo;main&rdquo; function which looks like this:" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://ret2school.github.io/post/dummyper/" />
+<meta property="og:url" content="https://ret2school.github.io/post/dummyper/" /><meta property="article:section" content="post" />
 <meta property="article:published_time" content="2021-02-28T00:00:00+00:00" />
 <meta property="article:modified_time" content="2021-02-28T00:00:00+00:00" />
+
 
 
   </head>
@@ -115,7 +114,7 @@ Overview IDA complains about broken section table, but still succeeds to load th
 <p>With a mysterious &ldquo;dump.7z&rdquo; that contains a &ldquo;dump&rdquo; file. This file is an ELF binary, so we load it in IDA.</p>
 <h2 id="overview">Overview</h2>
 <p>IDA complains about broken section table, but still succeeds to load the bin. We get classical glibc&rsquo;s <code>__libc_start_main</code>, and the &ldquo;main&rdquo; function which looks like this:</p>
-<pre><code>; int __fastcall main(int, char **, char **)
+<pre tabindex="0"><code>; int __fastcall main(int, char **, char **)
 main proc near
 endbr64
 push    rbp
@@ -129,7 +128,7 @@ retn
 main endp
 
 </code></pre><p>The first function contains garbage, such as:</p>
-<pre><code>
+<pre tabindex="0"><code>
 loc_1691:                               ; CODE XREF: main+8↓p
 LOAD:0000000000001691                 out     53h, al
 LOAD:0000000000001693                 pop     rbp
@@ -143,7 +142,7 @@ LOAD:000000000000169B ; --------------------------------------------------------
 LOAD:00000000000016A0                 dq 91870DBC4BC97160h, 1FEC1165698C4247h, 26B5D424EA599C8Ah
 
 </code></pre><p>which probably means that the binary was edited before the dump was taken. A quick look to the next function (<code>sub_172a</code>) confirms this:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
 _BYTE <span style="color:#ff79c6">*</span><span style="color:#50fa7b">sub_172A</span>()
 {
   _BYTE <span style="color:#ff79c6">*</span>result; <span style="color:#6272a4">// rax
@@ -177,7 +176,7 @@ _BYTE <span style="color:#ff79c6">*</span><span style="color:#50fa7b">sub_172A</
 <p>Luckily, we have an amd64 binary, and gcc puts an &ldquo;endbr64&rdquo; instruction at the beginning of each section, before the habitual prologue <code>push rbp, mov rbp, rsp</code>. So we can recover 8 bytes of the key with partial known plaintext.</p>
 <p>We have two encrypted functions, and luckily, the first function is at position 0 mod 32, and the second function at pos 8 mod 32, which means we know the first 16 bytes of the key, we have to xor the 8 first bytes of the function with &ldquo;f30f1efa554889e5&rdquo; (our prologue).</p>
 <p>Then, we can manage to &ldquo;guess&rdquo; some bytes looking at the partial disassembly, which gives this decoding script:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">
 <span style="color:#6272a4">#!/usr/bin/python</span>
 
 f <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">open</span>(<span style="color:#f1fa8c">&#34;dump&#34;</span>, <span style="color:#f1fa8c">&#34;rb&#34;</span>)
@@ -220,7 +219,7 @@ out<span style="color:#ff79c6">.</span>close()
 </code></pre></div><p>Now we have recovered the full code, we can analyze the dump.</p>
 <h2 id="analysis-of-the-decrypted-dump">Analysis of the decrypted dump</h2>
 <p>The main function didn&rsquo;t change a lot, but now the <code>sub_1691</code> function disassembles correctly. Let&rsquo;s have a look to the decompiled function:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
 <span style="color:#ff79c6">__int64</span> <span style="color:#50fa7b">sub_1691</span>()
 {
   <span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd">int</span> v0; <span style="color:#6272a4">// eax
@@ -238,7 +237,7 @@ out<span style="color:#ff79c6">.</span>close()
 }
 
 </code></pre></div><p>The function calls <code>alloc_mem</code> which looks like this:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
 <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span><span style="color:#ff79c6">__fastcall</span> <span style="color:#50fa7b">alloc_mem</span>(size_t a1)
 {
   <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>s; <span style="color:#6272a4">// [rsp+18h] [rbp-8h]
@@ -250,7 +249,7 @@ out<span style="color:#ff79c6">.</span>close()
 }
 
 </code></pre></div><p>to write the flag on it. Then the function calls <code>cryptostuff</code>, we&rsquo;ll look into.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"> 
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"> 
  <span style="color:#ff79c6">for</span> ( i <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>; i <span style="color:#ff79c6">&lt;=</span> <span style="color:#bd93f9">63</span>; <span style="color:#ff79c6">++</span>i )
   {
     v9 <span style="color:#ff79c6">=</span> rand() <span style="color:#ff79c6">%</span> <span style="color:#bd93f9">2047</span>;
@@ -286,7 +285,7 @@ out<span style="color:#ff79c6">.</span>close()
 
 </code></pre></div><p>The function calls the custom &ldquo;malloc&rdquo; to get the AES key and IV (the AES function could be identified thanks to its S-Box which begins with <code>63h, 7Ch, 77h, 7Bh, 0F2h, 6Bh, 6Fh, 0C5h, 30h, 1, 67h</code>). To avoid being found easily, a lot of junk allocation with random sizes are performed. Fortunately, those random allocation are performed with <code>rand</code>, which is initialized with <code>srand(time(NULL))</code>. So we just need to know when the program was run, you can know thanks to the modification date of the &ldquo;dump&rdquo; file in the archive.</p>
 <p>So, the solve script to fetch the flag (I use the offset of the xor key as a check to determine if we got the right seed):</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">
 <span style="color:#6272a4">#!/usr/bin/python</span>
 <span style="color:#ff79c6">from</span> ctypes <span style="color:#ff79c6">import</span> CDLL
 <span style="color:#ff79c6">from</span> Crypto.Cipher <span style="color:#ff79c6">import</span> AES
@@ -321,12 +320,12 @@ ts <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1614211200</
         blockpos <span style="color:#ff79c6">+=</span> libc<span style="color:#ff79c6">.</span>rand() <span style="color:#ff79c6">%</span> <span style="color:#bd93f9">2047</span>
     <span style="color:#6272a4"># If the computed offset is the offset of the xor key in the dump, we won</span>
     <span style="color:#ff79c6">if</span>(blockoff <span style="color:#ff79c6">+</span> blockpos <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">0x4ba74</span>):
-        <span style="color:#ff79c6">print</span>(<span style="color:#f1fa8c">&#34;Found candidate </span><span style="color:#f1fa8c">%d</span><span style="color:#f1fa8c">&#34;</span> <span style="color:#ff79c6">%</span> i)
+        <span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">&#34;Found candidate </span><span style="color:#f1fa8c">%d</span><span style="color:#f1fa8c">&#34;</span> <span style="color:#ff79c6">%</span> i)
         <span style="color:#ff79c6">break</span>
 
 c <span style="color:#ff79c6">=</span> AES<span style="color:#ff79c6">.</span>new(aeskey, AES<span style="color:#ff79c6">.</span>MODE_CBC, aesiv)
-<span style="color:#ff79c6">print</span>(i)
-<span style="color:#ff79c6">print</span>(c<span style="color:#ff79c6">.</span>decrypt(encflag))
+<span style="color:#8be9fd;font-style:italic">print</span>(i)
+<span style="color:#8be9fd;font-style:italic">print</span>(c<span style="color:#ff79c6">.</span>decrypt(encflag))
 
 </code></pre></div><p>And the flag we got is <code>Aero{d37fd6db2f8d562422aaf2a83dc62043}</code></p>
 

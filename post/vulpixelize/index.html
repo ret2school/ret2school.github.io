@@ -3,23 +3,21 @@
   <head>
     <title>[Hitcon 2021 - web] Vulpixelize // ret2school</title>
     <meta charset="utf-8" />
-    <meta name="generator" content="Hugo 0.80.0" />
+    <meta name="generator" content="Hugo 0.92.2" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="author" content="nasm" />
     <meta name="description" content="" />
     <link rel="stylesheet" href="https://ret2school.github.io/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css" />
 
     
-<script type="application/javascript">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8K5XT0SJN8"></script>
+<script>
 var doNotTrack = false;
 if (!doNotTrack) {
-	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-	ga('create', 'G-8K5XT0SJN8', 'auto');
-	
-	ga('send', 'pageview');
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-8K5XT0SJN8', { 'anonymize_ip': false });
 }
 </script>
 
@@ -36,9 +34,10 @@ It then takes a screenshot of the page, blurs it and returns us the result :
 It then takes a screenshot of the page, blurs it and returns us the result :
 @app.route(&#39;/submit&#39;, methods=[&#39;GET&#39;]) def submit(): path = &#39;static/images/%s.png&#39; % uuid.uuid4().hex url = request.args.get(&#39;url&#39;) if url: # secrity check if not url.startswith(&#39;http://&#39;) and not url." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://ret2school.github.io/post/vulpixelize/" />
+<meta property="og:url" content="https://ret2school.github.io/post/vulpixelize/" /><meta property="article:section" content="post" />
 <meta property="article:published_time" content="2022-01-02T00:00:00+00:00" />
 <meta property="article:modified_time" content="2022-01-02T00:00:00+00:00" />
+
 
 
   </head>
@@ -108,7 +107,7 @@ It then takes a screenshot of the page, blurs it and returns us the result :
 <p>We can send a URL that the bot will visit.<br>
 It then takes a screenshot of the page, blurs it and returns us the result :</p>
 <p><img src="https://raw.githubusercontent.com/ret2school/ctf/master/2021/hitcon/web/vulpixelize/img/vulpixelize.png" alt="vulpixelize"></p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py">@app.route(<span style="color:#f1fa8c">&#39;/submit&#39;</span>, methods<span style="color:#ff79c6">=</span>[<span style="color:#f1fa8c">&#39;GET&#39;</span>])
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py">@app<span style="color:#ff79c6">.</span>route(<span style="color:#f1fa8c">&#39;/submit&#39;</span>, methods<span style="color:#ff79c6">=</span>[<span style="color:#f1fa8c">&#39;GET&#39;</span>])
 <span style="color:#ff79c6">def</span> <span style="color:#50fa7b">submit</span>():
     path <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#39;static/images/</span><span style="color:#f1fa8c">%s</span><span style="color:#f1fa8c">.png&#39;</span> <span style="color:#ff79c6">%</span> uuid<span style="color:#ff79c6">.</span>uuid4()<span style="color:#ff79c6">.</span>hex
     url  <span style="color:#ff79c6">=</span> request<span style="color:#ff79c6">.</span>args<span style="color:#ff79c6">.</span>get(<span style="color:#f1fa8c">&#39;url&#39;</span>)
@@ -134,16 +133,16 @@ It then takes a screenshot of the page, blurs it and returns us the result :</p>
     <span style="color:#ff79c6">else</span>:
         <span style="color:#ff79c6">return</span> message(msg<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;url not found :(&#34;</span>)
 </code></pre></div><p>There is a special endpoint at <code>/flag</code> that displays the flag only if we come from <code>127.0.0.1</code>, so only the bot can view the flag :</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py">@app.route(<span style="color:#f1fa8c">&#39;/flag&#39;</span>)
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py">@app<span style="color:#ff79c6">.</span>route(<span style="color:#f1fa8c">&#39;/flag&#39;</span>)
 <span style="color:#ff79c6">def</span> <span style="color:#50fa7b">flag</span>():
-    <span style="color:#ff79c6">print</span>(request<span style="color:#ff79c6">.</span>remote_addr)
+    <span style="color:#8be9fd;font-style:italic">print</span>(request<span style="color:#ff79c6">.</span>remote_addr)
     <span style="color:#ff79c6">if</span> request<span style="color:#ff79c6">.</span>remote_addr <span style="color:#ff79c6">==</span> <span style="color:#f1fa8c">&#39;127.0.0.1&#39;</span>:
         <span style="color:#ff79c6">return</span> message(FLAG)
     <span style="color:#ff79c6">return</span> message(<span style="color:#f1fa8c">&#34;allow only from local&#34;</span>)
 </code></pre></div><p>The idea is to redirect the bot to a page we control that contains an iframe which refers to the <code>/flag</code> endpoint, and zooms on parts of the flag to have large enough characters to bypass the blur.</p>
 <p>I used a combo of <code>div</code> with an <code>iframe</code> embedded in it to get only a part of the flag, and <code>transform</code>, <code>left</code>, <code>top</code> CSS properties to zoom on these parts.<br>
 Here is the jinja template that does that :</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html"><span style="color:#ff79c6">&lt;!DOCTYPE html&gt;</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html"><span style="color:#ff79c6">&lt;!DOCTYPE html&gt;</span>
 &lt;<span style="color:#ff79c6">html</span>&gt;
     &lt;<span style="color:#ff79c6">head</span>&gt;
         &lt;<span style="color:#ff79c6">style</span>&gt;
@@ -178,7 +177,7 @@ Here is the jinja template that does that :</p>
 </code></pre></div><p>Each picture looks like this :<br>
 <img src="https://raw.githubusercontent.com/ret2school/ctf/master/2021/hitcon/web/vulpixelize/img/00.png" alt="first part of flag"></p>
 <p>The python script that automates the process (increment the <code>left</code> in the template and save the screenshot) :</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#ff79c6">from</span> jinja2 <span style="color:#ff79c6">import</span> Template
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#ff79c6">from</span> jinja2 <span style="color:#ff79c6">import</span> Template
 <span style="color:#ff79c6">from</span> bs4 <span style="color:#ff79c6">import</span> BeautifulSoup
 
 <span style="color:#ff79c6">import</span> requests
@@ -197,10 +196,10 @@ html <span style="color:#ff79c6">=</span> Template(<span style="color:#8be9fd;fo
     soup <span style="color:#ff79c6">=</span> BeautifulSoup(r<span style="color:#ff79c6">.</span>text, <span style="color:#f1fa8c">&#34;html.parser&#34;</span>)
 
     img <span style="color:#ff79c6">=</span> requests<span style="color:#ff79c6">.</span>get(HOST <span style="color:#ff79c6">+</span> soup<span style="color:#ff79c6">.</span>find(<span style="color:#8be9fd;font-style:italic">id</span><span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;msg&#34;</span>)<span style="color:#ff79c6">.</span>a[<span style="color:#f1fa8c">&#34;href&#34;</span>])
-    <span style="color:#ff79c6">with</span> <span style="color:#8be9fd;font-style:italic">open</span>(<span style="color:#f1fa8c">&#34;img/{:02d}.png&#34;</span><span style="color:#ff79c6">.</span>format(idx), <span style="color:#f1fa8c">&#34;wb&#34;</span>) <span style="color:#ff79c6">as</span> f:
+    <span style="color:#ff79c6">with</span> <span style="color:#8be9fd;font-style:italic">open</span>(<span style="color:#f1fa8c">&#34;img/</span><span style="color:#f1fa8c">{:02d}</span><span style="color:#f1fa8c">.png&#34;</span><span style="color:#ff79c6">.</span>format(idx), <span style="color:#f1fa8c">&#34;wb&#34;</span>) <span style="color:#ff79c6">as</span> f:
         f<span style="color:#ff79c6">.</span>write(img<span style="color:#ff79c6">.</span>content)
 
-    <span style="color:#ff79c6">print</span>(idx)
+    <span style="color:#8be9fd;font-style:italic">print</span>(idx)
 
 os<span style="color:#ff79c6">.</span>system(<span style="color:#f1fa8c">&#34;bash -c &#39;convert img/{00..06}.png +append img/flag-0.png&#39;&#34;</span>)
 os<span style="color:#ff79c6">.</span>system(<span style="color:#f1fa8c">&#34;bash -c &#39;convert img/{07..12}.png +append img/flag-1.png&#39;&#34;</span>)

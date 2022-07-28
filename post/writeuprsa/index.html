@@ -3,23 +3,21 @@
   <head>
     <title>[Midnight Sun CTF 2021 - Crypto] frank // ret2school</title>
     <meta charset="utf-8" />
-    <meta name="generator" content="Hugo 0.80.0" />
+    <meta name="generator" content="Hugo 0.92.2" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="author" content="nasm" />
     <meta name="description" content="" />
     <link rel="stylesheet" href="https://ret2school.github.io/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css" />
 
     
-<script type="application/javascript">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8K5XT0SJN8"></script>
+<script>
 var doNotTrack = false;
 if (!doNotTrack) {
-	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-	ga('create', 'G-8K5XT0SJN8', 'auto');
-	
-	ga('send', 'pageview');
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-8K5XT0SJN8', { 'anonymize_ip': false });
 }
 </script>
 
@@ -34,9 +32,10 @@ Get the part of the private key visible: The first step of the challenge is to r
 This writeup is about the Midnight Sun CTF frank challenge on how to recover a full RSA private key, when half of it is erased. Thanks to this recent cryptohack write-up from which this challenge is (for me) inspired. Challenge therefore requires recovering the entire RSA key from this image:
 Get the part of the private key visible: The first step of the challenge is to recover the visible part, to do this I quickly created a small OCR script with the pytesseract module in Python, to facilitate the recovery task." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://ret2school.github.io/post/writeuprsa/" />
+<meta property="og:url" content="https://ret2school.github.io/post/writeuprsa/" /><meta property="article:section" content="post" />
 <meta property="article:published_time" content="2021-04-11T00:00:00+00:00" />
 <meta property="article:modified_time" content="2021-04-11T00:00:00+00:00" />
+
 
 
   </head>
@@ -107,7 +106,7 @@ Challenge therefore requires recovering the entire RSA key from this image:</p>
 <p><img src="/images/rsa.png" alt="image"></p>
 <h4 id="get-the-part-of-the-private-key-visible">Get the part of the private key visible:</h4>
 <p>The first step of the challenge is to <strong>recover the visible part</strong>, to do this I quickly created a small <strong>OCR</strong> script with the <strong>pytesseract</strong> module in Python, to facilitate the recovery task.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#ff79c6">import</span> pytesseract
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#ff79c6">import</span> pytesseract
 
 <span style="color:#ff79c6">try</span>:
     <span style="color:#ff79c6">import</span> Image<span style="color:#ff79c6">,</span> ImageOps<span style="color:#ff79c6">,</span> ImageEnhance<span style="color:#ff79c6">,</span> imread
@@ -117,9 +116,9 @@ Challenge therefore requires recovering the entire RSA key from this image:</p>
 pytesseract<span style="color:#ff79c6">.</span>pytesseract<span style="color:#ff79c6">.</span>tesseract_cmd <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#39;C:</span><span style="color:#f1fa8c">\\</span><span style="color:#f1fa8c">Program Files</span><span style="color:#f1fa8c">\\</span><span style="color:#f1fa8c">Tesseract-OCR</span><span style="color:#f1fa8c">\\</span><span style="color:#f1fa8c">tesseract.exe&#39;</span>
 
 decode <span style="color:#ff79c6">=</span> pytesseract<span style="color:#ff79c6">.</span>image_to_string(<span style="color:#f1fa8c">r</span><span style="color:#f1fa8c">&#39;C:</span><span style="color:#f1fa8c">\\</span><span style="color:#f1fa8c">Users</span><span style="color:#f1fa8c">\\</span><span style="color:#f1fa8c">Zeynn</span><span style="color:#f1fa8c">\\</span><span style="color:#f1fa8c">Desktop</span><span style="color:#f1fa8c">\\</span><span style="color:#f1fa8c">file.png&#39;</span>)
-<span style="color:#ff79c6">print</span>(decode)
+<span style="color:#8be9fd;font-style:italic">print</span>(decode)
 </code></pre></div><p>Which gives:</p>
-<pre><code>YZE7xr8bE94J04cqritOcE+d)4WOmt 4HvmhaSElywep9xN8xBucNSDnx1XtaMeb
+<pre tabindex="0"><code>YZE7xr8bE94J04cqritOcE+d)4WOmt 4HvmhaSElywep9xN8xBucNSDnx1XtaMeb
 
 me7udUNRVTDYHdFkv26P1K4Xhes8duRpQBES/TxN4YD42td2P8PCShLnvQ5JLWuY
 cCnYQa9wbEH8zL91x1lJne5+0Vc1Bd7X70ENRTxBHpYJg28m/cDeUs8KHUvlyeGHK
@@ -144,7 +143,7 @@ XqIB6+n3swDFGQX732iPBGu9iDbhsQ6vdoRBAtqcHmCTLB2dqXhrnvUSMMUS
 
 END RSA PRIVATE KEY
 </code></pre><p>We can see that there are still many errors on what the script returned. We have no other choice than to check by hand and really be careful not to make a mistake on any character, in which case the next steps won&rsquo;t work.</p>
-<pre><code class="language------BEGIN" data-lang="-----BEGIN">[                             Hide!                            ]
+<pre tabindex="0"><code class="language------BEGIN" data-lang="-----BEGIN">[                             Hide!                            ]
 [                             Hide!                            ]
 [                             Hide!                            ]
 [                             Hide!                            ]
@@ -194,7 +193,7 @@ ywaauJBnYEsIz2A22cMp4frY/unZxeWRK82rN4d+jSYmyf9NCXwK9mXuq/pXjlaB
 XqIB6+n3swDFGQX732iPBGu9iDbhsQ6vdoRBAtqcHmCTLB2dqXhrnvUSMMUS
 -----END RSA PRIVATE KEY-----
 </code></pre><p>Based on the size of the image, we can deduce that the key is coded on <strong>4096 bits</strong>. Plus, we know that the RSA key is encoded in <strong>base 64</strong>, so we can convert it to <strong>hexadecimal</strong> (base 16).</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#ff79c6">from</span> Crypto.Util.number <span style="color:#ff79c6">import</span> bytes_to_long, isPrime
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#ff79c6">from</span> Crypto.Util.number <span style="color:#ff79c6">import</span> bytes_to_long, isPrime
 <span style="color:#ff79c6">import</span> base64
 
 
@@ -220,9 +219,9 @@ privet_key1 <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">b</
 </span><span style="color:#f1fa8c">ywaauJBnYEsIz2A22cMp4frY/unZxeWRK82rN4d+jSYmyf9NCXwK9mXuq/pXjlaB
 </span><span style="color:#f1fa8c">XqIB6+n3swDFGQX732iPBGu9iDbhsQ6vdoRBAtqcHmCTLB2dqXhrnvUSMMUS&#34;&#34;&#34;</span>
 
-<span style="color:#ff79c6">print</span>(<span style="color:#8be9fd;font-style:italic">hex</span>(bytes_to_long(base64<span style="color:#ff79c6">.</span>b64decode(privet_key1))))     
+<span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#8be9fd;font-style:italic">hex</span>(bytes_to_long(base64<span style="color:#ff79c6">.</span>b64decode(privet_key1))))     
 </code></pre></div><p>Which returns the part of the key in hexa:</p>
-<pre><code>0x61913bc6bd1b13de093b872aae2b50704f9d27858e99fe07be685a484972c1ca7dc4df3106e70de439
+<pre tabindex="0"><code>0x61913bc6bd1b13de093b872aae2b50704f9d27858e99fe07be685a484972c1ca7dc4df3106e70de439
 f1957b7c3046e399eeee754351bd30d81dd164bf6e8fd4ae1785eb3c76e469401112fd3c4de180f8dad7
 763fc3c24a12e7bd0e492d6b987029d841af706c41fcccbf65c652677b9fb455cd4177b5fb3843514f10
 47a58260dbc9bf703794b3c28752f9727861caa891a3cc800edca5e3bd0ce3d185a2fcc18a08195e7a85
@@ -248,7 +247,7 @@ a1dc30fdeccf8566acd4aa5235a7515bdcda4a85ab5f63b620b7667ac3bec1f8e322f13eab22978b
 f7b300c51905fbdf688f046bbd8836e1b10eaf76844102da9c1e60932c1d9da9786b9ef51230c512
 </code></pre><h4 id="look-at-the-parts-we-have">Look at the parts we have</h4>
 <p>After being interested on how a private rsa key was created, we can notice a particular structure: <em>n, e, d, p, q, d mod(p-1), d mod(q-1) and q^-1 mod p</em>.</p>
-<pre><code>PrivateKeyInfo ::= SEQUENCE {
+<pre tabindex="0"><code>PrivateKeyInfo ::= SEQUENCE {
    version Version,
    privateKeyAlgorithm AlgorithmIdentifier ,
    privateKey PrivateKey,
@@ -286,13 +285,13 @@ All =&gt; (inverse of q) mod p</p>
 </blockquote>
 <h4 id="recup-key-public-to-get-n-and-e">Recup key-public to get n and e:</h4>
 <p>We also have <em>access</em> to another <strong>authorized_keys file</strong> which contains the public keys <strong>n</strong> and <strong>e</strong>, so we can get them very easily with <strong>cat</strong>:</p>
-<pre><code>
+<pre tabindex="0"><code>
 ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC/okaokb6dLlO889ktcFKuAzLbvCcy5Il2TiVIVzzibe+9FfH2W0RHtQ5A3aIvjbZKneQxgy9EiN+U28DOp9yBW4zAg11U77VtuF528Wp5ApwwN8SUD5YPBQssh3CFm6bKqg+O9F93J+/whzA8QGL8C2EYrN/BpOUSJKds0Az6cYYm3sqER+iQ64RDa9K2TrO5gfP/iyBTOydPD0ZNLbvsPMNk6YzuND+pjRGwtH9vxV5g0H1Pak1k+tXrcUSgpgnNkJ5Gptm5CgC0qF5yxR/+DMy/dOAc7jUhIZMeX1sWTd9rTSuQMAB/w3fONe6yXNBxaAavi5w3o1Cu7xgTUOYBUnAYaX+07AqTqu9PTrSpK08bZrnLf3oItdAUMsNStI4DiqxbdYX6TcccqdYLI7Cb3HdbBNRuMy3l25ZelSRyDaFT7ZXnMsGCbcWg3UnEbGCudAMHzU5aFLDYZJUpQsgYQblSw9EF7R/OLa8uy57CBGaqoM0wtU56A2sOPTGVbDVF2HmObg6rijqn4I6NBQsBeshANIil/amw08MJZVVK7jNYDLret23ky/uSyO/IRdp0KcByWk7vEW36J2itQOkRhKBVAgPIO3Vudez85TYoRb8ESAZ4OJtrBMP0l66lnXc5+L9keckKLZp24DNkb95ULd2g/7/jqFtv6gzFamb93w== u@eniac
 
 </code></pre><p>Now we just have to use <strong>ssh-keygen</strong> to decode the key:</p>
 <p><code>&gt;ssh-keygen -e -f ~/.ssh/id_rsa.pub -m pem &gt;ssh-pub.pem</code></p>
 <p>Which gives this:</p>
-<pre><code>-----BEGIN RSA PUBLIC KEY-----
+<pre tabindex="0"><code>-----BEGIN RSA PUBLIC KEY-----
 MIICCgKCAgEAv6JGqJG+nS5TvPPZLXBSrgMy27wnMuSJdk4lSFc84m3vvRXx9ltE
 R7UOQN2iL422Sp3kMYMvRIjflNvAzqfcgVuMwINdVO+1bbhedvFqeQKcMDfElA+W
 DwULLIdwhZumyqoPjvRfdyfv8IcwPEBi/AthGKzfwaTlEiSnbNAM+nGGJt7KhEfo
@@ -306,7 +305,7 @@ egNrDj0xlWw1Rdh5jm4Oq4o6p+COjQULAXrIQDSIpf2psNPDCWVVSu4zWAy63rdt
 awTD9JeupZ13Ofi/ZHnJCi2aduAzZG/eVC3doP+/46hbb+oMxWpm/d8CAwEAAQ==
 -----END RSA PUBLIC KEY-----
 </code></pre><p>With this <a href="https://8gwifi.org/PemParserFunctions.jsp">site</a>, were are now able to obtain the encryption module (n) and public exponent (e).</p>
-<pre><code>Algo RSA
+<pre tabindex="0"><code>Algo RSA
 Format X.509
  ASN1 Dump
 RSA Public Key [6b:b1:23:93:9f:b6:83:23:3e:7b:fb:d0:14:eb:d7:1f:f8:df:46:53]
@@ -317,9 +316,9 @@ bfa246a891be9d2e53bcf3d92d7052ae0332dbbc2732e489764e2548573ce26defbd15f1f65b4447
 public exponent: 10001
 </code></pre><h4 id="recup-q-and-p">Recup q and p:</h4>
 <p>With some math formulas we can succeed in expressing <strong>p</strong> and <strong>q</strong> according to what we have, with <strong>kp</strong> and <strong>kq</strong> our only strangers:</p>
-<pre><code>p = (e*dp-1)/kp + 1   and q = (e*dq-1)/kq + 1
+<pre tabindex="0"><code>p = (e*dp-1)/kp + 1   and q = (e*dq-1)/kq + 1
 </code></pre><p>Perfect, you just have to make a script to recover its <strong>p</strong> and <strong>q</strong> potentials by trying to bruteforce <strong>kp</strong> and <strong>kq</strong>:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#ff79c6">from</span> Crypto.Util.number <span style="color:#ff79c6">import</span> bytes_to_long, isPrime
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#ff79c6">from</span> Crypto.Util.number <span style="color:#ff79c6">import</span> bytes_to_long, isPrime
 <span style="color:#ff79c6">from</span> sympy <span style="color:#ff79c6">import</span> <span style="color:#ff79c6">*</span>
 
 
@@ -333,33 +332,33 @@ e <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x10001</span
     <span style="color:#ff79c6">if</span> q_mul <span style="color:#ff79c6">%</span> kq <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">0</span>:
         q <span style="color:#ff79c6">=</span> (q_mul <span style="color:#ff79c6">//</span> kq) <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">1</span>
         <span style="color:#ff79c6">if</span> isPrime(q):
-        	<span style="color:#ff79c6">print</span>(<span style="color:#f1fa8c">&#34;Potential q: &#34;</span> <span style="color:#ff79c6">+</span> <span style="color:#8be9fd;font-style:italic">str</span>(q))
+        	<span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">&#34;Potential q: &#34;</span> <span style="color:#ff79c6">+</span> <span style="color:#8be9fd;font-style:italic">str</span>(q))
 
 <span style="color:#ff79c6">for</span> kp <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#bd93f9">1</span>, e):
     p_mul <span style="color:#ff79c6">=</span> dp <span style="color:#ff79c6">*</span> e <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">1</span>
     <span style="color:#ff79c6">if</span> p_mul <span style="color:#ff79c6">%</span> kp <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">0</span>:
         p <span style="color:#ff79c6">=</span> (p_mul <span style="color:#ff79c6">//</span> kp) <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">1</span>
         <span style="color:#ff79c6">if</span> isPrime(p):
-        	<span style="color:#ff79c6">print</span>(<span style="color:#f1fa8c">&#34;Potential p: &#34;</span> <span style="color:#ff79c6">+</span> <span style="color:#8be9fd;font-style:italic">str</span>(p))
+        	<span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">&#34;Potential p: &#34;</span> <span style="color:#ff79c6">+</span> <span style="color:#8be9fd;font-style:italic">str</span>(p))
 </code></pre></div><p>Which returns:</p>
-<pre><code>
+<pre tabindex="0"><code>
 &gt;Potential q: 24312821138947295842939811430266614164483390266044923887694157098746040509093637457237135603411011833287827123602619771315554896936017168546924189851322281151620644250524117043049673777703814283705410796690775974401304283378519985368125276766049671207507190418663428295243489814095988104136549989630636041063221268290523766428047760530245982382697752496455539057488593944136069627708927281633167017337393918797915410963972736328647804191560830879679674669676405585810075964267210384497030345823969704188597922024875674517047635080525199694836436149951817779893116507111781865061463859626764914849867030257100120765229  
 &gt;Potential p: 531728207659942301795253901084381737110883040097313053322913639565173847736026567062658310606998607620829538859271019692779574663546063949380410110347896571016088740644703155824678492122200126954702690666327960507428268541835210899166622764600001960907380213645069024205628211424497796451244548457631029653033974543275052835017313659168468855844022055884671115800091077092022099362967367260138515603050906837518856621847732055920780974661504255852004514803319931650360002033069998882446652627303752496381522697600057253746343547131595999387666854098155533978693698059492388066835684589123085776392908036740654319726890609  
 &gt;Potential p: 32155793883644309494149365087347710275210633774631897274003001908876018851960968012981271807389852904017267710405842990613181825323298497180721462889930852141756696942713059737825259562300443091116514916928396257101370860052927606384048304583938193088254729901128992755541135185322798527530512122498248043845789461978413935354215871986482151417756534584220556107891332673683000687165418919940645597668777626845600908432978474596080126672805046918964956144371065049005805638187590643592564866189148070656840995258832683463131564291944605671726345796937320632480267178246999762145360703260951002442725449730325007240379
 
 </code></pre><p>Problem <strong>with script returning 2 p</strong> we don&rsquo;t know which one is correct, given that we know n and q and that by definition <em>n = p * q</em> then <em>q = n / p</em> :</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">
 n <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0xbfa246a891be9d2e53bcf3d92d7052ae0332dbbc2732e489764e2548573ce26defbd15f1f65b4447b50e40dda22f8db64a9de431832f4488df94dbc0cea7dc815b8cc0835d54efb56db85e76f16a79029c3037c4940f960f050b2c8770859ba6caaa0f8ef45f7727eff087303c4062fc0b6118acdfc1a4e51224a76cd00cfa718626deca8447e890eb84436bd2b64eb3b981f3ff8b20533b274f0f464d2dbbec3cc364e98cee343fa98d11b0b47f6fc55e60d07d4f6a4d64fad5eb7144a0a609cd909e46a6d9b90a00b4a85e72c51ffe0cccbf74e01cee352121931e5f5b164ddf6b4d2b9030007fc377ce35eeb25cd0716806af8b9c37a350aeef181350e601527018697fb4ec0a93aaef4f4eb4a92b4f1b66b9cb7f7a08b5d01432c352b48e038aac5b7585fa4dc71ca9d60b23b09bdc775b04d46e332de5db965e9524720da153ed95e732c1826dc5a0dd49c46c60ae740307cd4e5a14b0d864952942c81841b952c3d105ed1fce2daf2ecb9ec20466aaa0cd30b54e7a036b0e3d31956c3545d8798e6e0eab8a3aa7e08e8d050b017ac8403488a5fda9b0d3c30965554aee33580cbadeb76de4cbfb92c8efc845da7429c0725a4eef116dfa2768ad40e91184a0550203c83b756e75ecfce5362845bf04480678389b6b04c3f497aea59d7739f8bf6479c90a2d9a76e033646fde542ddda0ffbfe3a85b6fea0cc56a66fddf</span>
 q <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">24312821138947295842939811430266614164483390266044923887694157098746040509093637457237135603411011833287827123602619771315554896936017168546924189851322281151620644250524117043049673777703814283705410796690775974401304283378519985368125276766049671207507190418663428295243489814095988104136549989630636041063221268290523766428047760530245982382697752496455539057488593944136069627708927281633167017337393918797915410963972736328647804191560830879679674669676405585810075964267210384497030345823969704188597922024875674517047635080525199694836436149951817779893116507111781865061463859626764914849867030257100120765229</span>
-<span style="color:#ff79c6">print</span>(n<span style="color:#ff79c6">//</span>q)
+<span style="color:#8be9fd;font-style:italic">print</span>(n<span style="color:#ff79c6">//</span>q)
 
 </code></pre></div><p>Which gives:</p>
-<pre><code>
+<pre tabindex="0"><code>
 32155793883644309494149365087347710275210633774631897274003001908876018851960968012981271807389852904017267710405842990613181825323298497180721462889930852141756696942713059737825259562300443091116514916928396257101370860052927606384048304583938193088254729901128992755541135185322798527530512122498248043845789461978413935354215871986482151417756534584220556107891332673683000687165418919940645597668777626845600908432978474596080126672805046918964956144371065049005805638187590643592564866189148070656840995258832683463131564291944605671726345796937320632480267178246999762145360703260951002442725449730325007240379
 
 </code></pre><p>Now we know the <strong>correct p.</strong>
 And we can build the entirely key:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#ff79c6">from</span> Crypto.PublicKey <span style="color:#ff79c6">import</span> RSA
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#ff79c6">from</span> Crypto.PublicKey <span style="color:#ff79c6">import</span> RSA
 
 n <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0xbfa246a891be9d2e53bcf3d92d7052ae0332dbbc2732e489764e2548573ce26defbd15f1f65b4447b50e40dda22f8db64a9de431832f4488df94dbc0cea7dc815b8cc0835d54efb56db85e76f16a79029c3037c4940f960f050b2c8770859ba6caaa0f8ef45f7727eff087303c4062fc0b6118acdfc1a4e51224a76cd00cfa718626deca8447e890eb84436bd2b64eb3b981f3ff8b20533b274f0f464d2dbbec3cc364e98cee343fa98d11b0b47f6fc55e60d07d4f6a4d64fad5eb7144a0a609cd909e46a6d9b90a00b4a85e72c51ffe0cccbf74e01cee352121931e5f5b164ddf6b4d2b9030007fc377ce35eeb25cd0716806af8b9c37a350aeef181350e601527018697fb4ec0a93aaef4f4eb4a92b4f1b66b9cb7f7a08b5d01432c352b48e038aac5b7585fa4dc71ca9d60b23b09bdc775b04d46e332de5db965e9524720da153ed95e732c1826dc5a0dd49c46c60ae740307cd4e5a14b0d864952942c81841b952c3d105ed1fce2daf2ecb9ec20466aaa0cd30b54e7a036b0e3d31956c3545d8798e6e0eab8a3aa7e08e8d050b017ac8403488a5fda9b0d3c30965554aee33580cbadeb76de4cbfb92c8efc845da7429c0725a4eef116dfa2768ad40e91184a0550203c83b756e75ecfce5362845bf04480678389b6b04c3f497aea59d7739f8bf6479c90a2d9a76e033646fde542ddda0ffbfe3a85b6fea0cc56a66fddf</span>
 e <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x10001</span>
@@ -370,10 +369,10 @@ d <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:ita
 
 key <span style="color:#ff79c6">=</span> RSA<span style="color:#ff79c6">.</span>construct((n,e,d,p,q))
 pem <span style="color:#ff79c6">=</span> key<span style="color:#ff79c6">.</span>exportKey(<span style="color:#f1fa8c">&#39;PEM&#39;</span>)
-<span style="color:#ff79c6">print</span>(pem<span style="color:#ff79c6">.</span>decode())
+<span style="color:#8be9fd;font-style:italic">print</span>(pem<span style="color:#ff79c6">.</span>decode())
 
 </code></pre></div><p>Which returns this private key:</p>
-<pre><code>-----BEGIN RSA PRIVATE KEY-----
+<pre tabindex="0"><code>-----BEGIN RSA PRIVATE KEY-----
 MIIJKQIBAAKCAgEAv6JGqJG+nS5TvPPZLXBSrgMy27wnMuSJdk4lSFc84m3vvRXx
 9ltER7UOQN2iL422Sp3kMYMvRIjflNvAzqfcgVuMwINdVO+1bbhedvFqeQKcMDfE
 lA+WDwULLIdwhZumyqoPjvRfdyfv8IcwPEBi/AthGKzfwaTlEiSnbNAM+nGGJt7K
@@ -425,7 +424,7 @@ ywaauJBnYEsIz2A22cMp4frY/unZxeWRK82rN4d+jSYmyf9NCXwK9mXuq/pXjlaB
 XqIB6+n3swDFGQX732iPBGu9iDbhsQ6vdoRBAtqcHmCTLB2dqXhrnvUSMMUS
 -----END RSA PRIVATE KEY-----
 </code></pre><p>Now we just have to send a <strong>request</strong> to the ssh server with this authentication key to obtain the flag.</p>
-<pre><code>&gt;&gt; chmod 600 final_key.pem
+<pre tabindex="0"><code>&gt;&gt; chmod 600 final_key.pem
 &gt;&gt; ssh -i final_key.pem -p 2222 frank@backup-01.play.midnightsunctf.se
 </code></pre><p>And the ssh server returns: <strong>midnight{D0_n07_s0w_p4r75_0f_y0ur_pr1v473}</strong>.
 ;)</p>

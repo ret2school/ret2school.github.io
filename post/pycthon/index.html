@@ -3,23 +3,21 @@
   <head>
     <title>[Breizh CTF 2022 - prog] PYCTHON // ret2school</title>
     <meta charset="utf-8" />
-    <meta name="generator" content="Hugo 0.80.0" />
+    <meta name="generator" content="Hugo 0.92.2" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="author" content="nasm" />
     <meta name="description" content="" />
     <link rel="stylesheet" href="https://ret2school.github.io/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css" />
 
     
-<script type="application/javascript">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8K5XT0SJN8"></script>
+<script>
 var doNotTrack = false;
 if (!doNotTrack) {
-	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-	ga('create', 'G-8K5XT0SJN8', 'auto');
-	
-	ga('send', 'pageview');
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-8K5XT0SJN8', { 'anonymize_ip': false });
 }
 </script>
 
@@ -36,9 +34,10 @@ You just have to use the uncompyle6 package with the following command: uncompyl
 We obtain then, the source python code:
 def hoflag(): tab = [ &#39;U&#39;, &#39;n&#39;, &#39;c&#39;, &#39;0&#39;, &#39;m&#39;, &#39;p&#39;, &#39;y&#39;, &#39;l&#39;, &#39;3&#39;, &#39;d&#39;, &#39;_&#39;, &#39;P&#39;, &#39;y&#39;, &#39;t&#39;, &#39;h&#39;, &#39;0&#39;, &#39;n&#39;, &#39;_&#39;, &#39;f&#39;, &#39;1&#39;, &#39;l&#39;, &#39;E&#39;] flag = &#39;&#39;." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://ret2school.github.io/post/pycthon/" />
+<meta property="og:url" content="https://ret2school.github.io/post/pycthon/" /><meta property="article:section" content="post" />
 <meta property="article:published_time" content="2022-03-04T00:00:00+00:00" />
 <meta property="article:modified_time" content="2022-03-04T00:00:00+00:00" />
+
 
 
   </head>
@@ -112,20 +111,20 @@ Format : BZHCTF{}
 <p>The provided file is a <code>.pyc</code> which contains compiled pseudo-code for a program written in Python.</p>
 <p>You just have to use the <code>uncompyle6</code> package with the following command: <code>uncompyle6 -o .pycthon.cpython-38.pyc</code></p>
 <p>We obtain then, the source python code:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#ff79c6">def</span> <span style="color:#50fa7b">hoflag</span>():
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#ff79c6">def</span> <span style="color:#50fa7b">hoflag</span>():
     tab <span style="color:#ff79c6">=</span> [
      <span style="color:#f1fa8c">&#39;U&#39;</span>, <span style="color:#f1fa8c">&#39;n&#39;</span>, <span style="color:#f1fa8c">&#39;c&#39;</span>, <span style="color:#f1fa8c">&#39;0&#39;</span>, <span style="color:#f1fa8c">&#39;m&#39;</span>, <span style="color:#f1fa8c">&#39;p&#39;</span>, <span style="color:#f1fa8c">&#39;y&#39;</span>, <span style="color:#f1fa8c">&#39;l&#39;</span>, <span style="color:#f1fa8c">&#39;3&#39;</span>, <span style="color:#f1fa8c">&#39;d&#39;</span>, <span style="color:#f1fa8c">&#39;_&#39;</span>, <span style="color:#f1fa8c">&#39;P&#39;</span>, <span style="color:#f1fa8c">&#39;y&#39;</span>, <span style="color:#f1fa8c">&#39;t&#39;</span>, <span style="color:#f1fa8c">&#39;h&#39;</span>, <span style="color:#f1fa8c">&#39;0&#39;</span>, <span style="color:#f1fa8c">&#39;n&#39;</span>, <span style="color:#f1fa8c">&#39;_&#39;</span>, <span style="color:#f1fa8c">&#39;f&#39;</span>, <span style="color:#f1fa8c">&#39;1&#39;</span>, <span style="color:#f1fa8c">&#39;l&#39;</span>, <span style="color:#f1fa8c">&#39;E&#39;</span>]
     flag <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#39;&#39;</span><span style="color:#ff79c6">.</span>join(tab)
-    <span style="color:#ff79c6">print</span>(<span style="color:#f1fa8c">&#39;Well done, the flag is --&gt; BZHCTF{&#39;</span> <span style="color:#ff79c6">+</span> flag <span style="color:#ff79c6">+</span> <span style="color:#f1fa8c">&#39;}&#39;</span>)
+    <span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">&#39;Well done, the flag is --&gt; BZHCTF{&#39;</span> <span style="color:#ff79c6">+</span> flag <span style="color:#ff79c6">+</span> <span style="color:#f1fa8c">&#39;}&#39;</span>)
 
 <span style="color:#ff79c6">def</span> <span style="color:#50fa7b">welcome</span>(hello):
-    <span style="color:#ff79c6">print</span>(hello)
+    <span style="color:#8be9fd;font-style:italic">print</span>(hello)
 
 welcome(<span style="color:#f1fa8c">&#39;WELCOME TO BREIZHCTF mate!&#39;</span>)
-<span style="color:#ff79c6">print</span>(<span style="color:#f1fa8c">&#39;Try to get my flag&#39;</span>)
+<span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">&#39;Try to get my flag&#39;</span>)
 hoflag()
 </code></pre></div><p>All that is left to do is to execute the source code:</p>
-<pre><code>BZHCTF{Unc0mpyl3d_Pyth0n_f1lE}
+<pre tabindex="0"><code>BZHCTF{Unc0mpyl3d_Pyth0n_f1lE}
 </code></pre>
     </div>
     <div class="post-footer">

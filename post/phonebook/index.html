@@ -3,38 +3,37 @@
   <head>
     <title>[DCTF 2022 - pwn] phonebook // ret2school</title>
     <meta charset="utf-8" />
-    <meta name="generator" content="Hugo 0.80.0" />
+    <meta name="generator" content="Hugo 0.92.2" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="author" content="nasm" />
     <meta name="description" content="" />
     <link rel="stylesheet" href="https://ret2school.github.io/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css" />
 
     
-<script type="application/javascript">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8K5XT0SJN8"></script>
+<script>
 var doNotTrack = false;
 if (!doNotTrack) {
-	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-	ga('create', 'G-8K5XT0SJN8', 'auto');
-	
-	ga('send', 'pageview');
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-8K5XT0SJN8', { 'anonymize_ip': false });
 }
 </script>
 
     <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="[DCTF 2022 - pwn] phonebook"/>
-<meta name="twitter:description" content="Intro phonebook is a basic heap challenge I did during the dctf event. It&rsquo;s basically just a heap overflow wich allows us to overflow a function pointer with for example the address of system. You can find the related files there.
-The bug $ ./phonebook Choose an option: [1-5] 1. Store someone&#39;s information 2. Edit information 3. Call someone 4. Unfriend someone 5. Add the hidden_note &gt; We can create an entity and then initialize: a name, a phone number and a function pointer."/>
+<meta name="twitter:description" content="Intro phonebook is a basic heap challenge I did during the dctf event. It&rsquo;s basically just a heap overflow wich allows us to overflow a function pointer with for example the address of system.
+The bug $ ./phonebook Choose an option: [1-5] 1. Store someone&#39;s information 2. Edit information 3. Call someone 4. Unfriend someone 5. Add the hidden_note &gt; We can create an entity and then initialize: a name, a numero and a function pointer."/>
 
     <meta property="og:title" content="[DCTF 2022 - pwn] phonebook" />
-<meta property="og:description" content="Intro phonebook is a basic heap challenge I did during the dctf event. It&rsquo;s basically just a heap overflow wich allows us to overflow a function pointer with for example the address of system. You can find the related files there.
-The bug $ ./phonebook Choose an option: [1-5] 1. Store someone&#39;s information 2. Edit information 3. Call someone 4. Unfriend someone 5. Add the hidden_note &gt; We can create an entity and then initialize: a name, a phone number and a function pointer." />
+<meta property="og:description" content="Intro phonebook is a basic heap challenge I did during the dctf event. It&rsquo;s basically just a heap overflow wich allows us to overflow a function pointer with for example the address of system.
+The bug $ ./phonebook Choose an option: [1-5] 1. Store someone&#39;s information 2. Edit information 3. Call someone 4. Unfriend someone 5. Add the hidden_note &gt; We can create an entity and then initialize: a name, a numero and a function pointer." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://ret2school.github.io/post/phonebook/" />
+<meta property="og:url" content="https://ret2school.github.io/post/phonebook/" /><meta property="article:section" content="post" />
 <meta property="article:published_time" content="2022-04-17T00:00:00+00:00" />
 <meta property="article:modified_time" content="2022-04-17T00:00:00+00:00" />
+
 
 
   </head>
@@ -88,20 +87,18 @@ The bug $ ./phonebook Choose an option: [1-5] 1. Store someone&#39;s information
   <title>tag</title>
   <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line>
 </svg>
-              <a class="tag" href="https://ret2school.github.io/tags/ctf/">ctf</a>
-              <a class="tag" href="https://ret2school.github.io/tags/ret2school/">ret2school</a>
-              <a class="tag" href="https://ret2school.github.io/tags/dctf/">DCTF</a>
-              <a class="tag" href="https://ret2school.github.io/tags/nasm/">nasm</a>
               <a class="tag" href="https://ret2school.github.io/tags/pwn/">pwn</a>
-              <a class="tag" href="https://ret2school.github.io/tags/2022/">2022</a>
+              <a class="tag" href="https://ret2school.github.io/tags/heap/">heap</a>
+              <a class="tag" href="https://ret2school.github.io/tags/dctf/">dctf</a>
+              <a class="tag" href="https://ret2school.github.io/tags/nasm/">nasm</a>
         </div>
       </div>
     </header>
     <div class="post-content">
       <h2 id="intro">Intro</h2>
-<p>phonebook is a basic heap challenge I did during the dctf event. It&rsquo;s basically just a heap overflow wich allows us to overflow a function pointer with for example the address of system. You can find the related files <a href="https://github.com/ret2school/ctf/tree/master/2022/dctf/pwn/phonebook">there</a>.</p>
+<p>phonebook is a basic heap challenge I did during the dctf event. It&rsquo;s basically just a heap overflow wich allows us to overflow a function pointer with for example the address of system.</p>
 <h2 id="the-bug">The bug</h2>
-<pre><code>$ ./phonebook
+<pre tabindex="0"><code>$ ./phonebook
 Choose an option: [1-5]
 1. Store someone's information
 2. Edit information
@@ -109,8 +106,8 @@ Choose an option: [1-5]
 4. Unfriend someone
 5. Add the hidden_note
 &gt; 
-</code></pre><p>We can create an entity and then initialize: a name, a phone number and a function pointer.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#8be9fd">int</span> <span style="color:#ff79c6">__fastcall</span> <span style="color:#50fa7b">create</span>(<span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd">int</span> a1)
+</code></pre><p>We can create an entity and then initialize: a name, a numero and a function pointer.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#8be9fd">int</span> <span style="color:#ff79c6">__fastcall</span> <span style="color:#50fa7b">create</span>(<span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd">int</span> a1)
 {
   <span style="color:#8be9fd">int</span> result; <span style="color:#6272a4">// eax
 </span><span style="color:#6272a4"></span>  <span style="color:#ff79c6">struct</span> entity <span style="color:#ff79c6">*</span>s; <span style="color:#6272a4">// [rsp+18h] [rbp-8h]
@@ -127,8 +124,8 @@ Choose an option: [1-5]
   people[a1] <span style="color:#ff79c6">=</span> s;
   <span style="color:#ff79c6">return</span> result;
 }
-</code></pre></div><p>The bug lies in the <code>edit_name</code> function:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#8be9fd">unsigned</span> <span style="color:#ff79c6">__int64</span> <span style="color:#ff79c6">__fastcall</span> <span style="color:#50fa7b">edit_name</span>(<span style="color:#8be9fd">int</span> a1)
+</code></pre></div><p>The bug lies <code>edit_name</code> function:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#8be9fd">unsigned</span> <span style="color:#ff79c6">__int64</span> <span style="color:#ff79c6">__fastcall</span> <span style="color:#50fa7b">edit_name</span>(<span style="color:#8be9fd">int</span> a1)
 {
   <span style="color:#8be9fd">int</span> n; <span style="color:#6272a4">// [rsp+18h] [rbp-18h] BYREF
 </span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">int</span> name_size; <span style="color:#6272a4">// [rsp+1Ch] [rbp-14h]
@@ -151,11 +148,11 @@ Choose an option: [1-5]
   v4<span style="color:#ff79c6">-&gt;</span>name[n] <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>;
   <span style="color:#ff79c6">return</span> __readfsqword(<span style="color:#bd93f9">0x28u</span>) <span style="color:#ff79c6">^</span> v5;
 }
-</code></pre></div><p>We can give it a new lentgh and if that&rsquo;s not equal to the current size field it frees the current name pointer and allocates a new name pointer <strong>without</strong> updating the size field. Which means if we edit the name pointer with a smaller size, the name pointer will be smaller compared to the size field, then we just have to edit again to make the size equal to <code>v4-&gt;name_size</code> to trigger a heap overflow through the <code>v4-&gt;name</code> pointer.</p>
+</code></pre></div><p>We can give it a new lentgh and if that&rsquo;s not equal to the current size field it frees the current name pointer and allocates a new name pointer <strong>without</strong> updating the size field. Which means if we edit the name pointer with a smaller size, the name pointer will be smaller compared to the size field, then we just have to edit again the size field to make it equal to <code>v4-&gt;name_size</code> to trigger a heap overflow through the <code>v4-&gt;name</code> pointer.</p>
 <h2 id="leak-libc">Leak libc</h2>
 <p>Now we&rsquo;re able to overflow through the name pointer we have to find how the leak the libc, a nice way would be to leak it by using free&rsquo;d chunks in the unsortedbin. Or we can leak the <code>entity-&gt;func</code> function pointer which would give us a leak of the binary base address, then we would have to edit the name pointer with the got entry of <code>puts</code> to leak its address within the libc.</p>
 <p>To do so we can create another entity right after the name pointer:</p>
-<pre><code>0x559b0d4d16b0	0x0000000000000000	0x0000000000000031	........1.......
+<pre tabindex="0"><code>0x559b0d4d16b0	0x0000000000000000	0x0000000000000031	........1.......
 0x559b0d4d16c0	0x3131313131313131	0x0000559b0c84f2a1	11111111.....U..
 0x559b0d4d16d0	0x0000559b0d4d1800	0x00000000000000fe	..M..U..........
 0x559b0d4d16e0	0x0000000000000000	0x0000000000000111	................
@@ -183,26 +180,26 @@ Choose an option: [1-5]
 0x559b0d4d1840	0x0000559b0c851fa0	0x000000000000000a	.....U..........
 0x559b0d4d1850	0x0000000000000000	0x000000000001f7b1	................	 &lt;-- Top chunk
 </code></pre><p>The <code>edit_phone_number</code> overwrites the null byte:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#ff79c6">__int64</span> <span style="color:#ff79c6">__fastcall</span> <span style="color:#50fa7b">edit_phone_number</span>(<span style="color:#8be9fd">int</span> a1)
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#ff79c6">__int64</span> <span style="color:#ff79c6">__fastcall</span> <span style="color:#50fa7b">edit_phone_number</span>(<span style="color:#8be9fd">int</span> a1)
 {
   printf(<span style="color:#f1fa8c">&#34;Enter new phone number: &#34;</span>);
   <span style="color:#ff79c6">return</span> __isoc99_scanf(<span style="color:#f1fa8c">&#34;%8s&#34;</span>, people[a1]);
 }
 </code></pre></div><p>To summarise:</p>
 <ul>
-<li>leak binary base address by overwriting the null byte (<code>edit_phone_number</code>) and then print the phone number.</li>
+<li>leak binary base address by overwriting the null byte (<code>edit_phone_number</code>) and then print the phone numer.</li>
 <li>leak libc base address by overwriting the name field of the second entity with the got entry of <code>puts</code></li>
 </ul>
 <h2 id="profit">PROFIT</h2>
-<p>Then we just have to overwrite the function pointer with the address of <code>system</code> which takes as first argument a pointer to the entity structure. Then we edit the phone number of the entity we wanna use because that&rsquo;s stored in the first field of the structure which means we make it equivalent the call to <code>v4-&gt;func</code> to a <code>system(&quot;/bin/sh&quot;)</code>.</p>
-<pre><code>00000000 entity          struc ; (sizeof=0x20, mappedto_8)
+<p>Then we just have to overwrite the function pointer with the address of <code>system</code> which takes as first argument a pointer to the entity structure of edit the phone number of the entity we wanna use because that&rsquo;s the first field of the structure which means we make it equivalent to a <code>system(&quot;/bin/sh&quot;)</code>.</p>
+<pre tabindex="0"><code>00000000 entity          struc ; (sizeof=0x20, mappedto_8)
 00000000 num             dq ?
 00000008 func            dq ?
 00000010 name            dq ?                    ; offset
 00000018 name_size       dq ?
 00000020 entity          ends
 </code></pre><p>Then here we are:</p>
-<pre><code>$ python3 exploit.py REMOTE HOST=51.124.222.205 PORT=13380
+<pre tabindex="0"><code>$ python3 exploit.py REMOTE HOST=51.124.222.205 PORT=13380
 [*] '/home/nasm/Documents/phonebook/chall/phonebook_patched_patched'
     Arch:     amd64-64-little
     RELRO:    Full RELRO

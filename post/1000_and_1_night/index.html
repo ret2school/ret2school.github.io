@@ -3,23 +3,21 @@
   <head>
     <title>[AeroCTF 2020 - RE] 1000 and 1 night // ret2school</title>
     <meta charset="utf-8" />
-    <meta name="generator" content="Hugo 0.80.0" />
+    <meta name="generator" content="Hugo 0.92.2" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="author" content="nasm" />
     <meta name="description" content="" />
     <link rel="stylesheet" href="https://ret2school.github.io/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css" />
 
     
-<script type="application/javascript">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8K5XT0SJN8"></script>
+<script>
 var doNotTrack = false;
 if (!doNotTrack) {
-	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-	ga('create', 'G-8K5XT0SJN8', 'auto');
-	
-	ga('send', 'pageview');
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-8K5XT0SJN8', { 'anonymize_ip': false });
 }
 </script>
 
@@ -36,9 +34,10 @@ Files can be found here
 For this challenge, we get an archive with a lot of files, the name of which seems to be a hash. Each file is an ELF x86_64 program file. In addition, a server listens, and requests:
 Enter valid token to binary with name &lt;8c235f89a8143a28a1d6067e959dd858&gt; Token: at connection. We therefore understand quickly enough that we will have to automate the reversing of all these ELFs to send the correct token back to the server, and thus have the flag, the server requesting a series of tokens before spitting the flag." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://ret2school.github.io/post/1000_and_1_night/" />
+<meta property="og:url" content="https://ret2school.github.io/post/1000_and_1_night/" /><meta property="article:section" content="post" />
 <meta property="article:published_time" content="2020-11-25T00:00:00+00:00" />
 <meta property="article:modified_time" content="2020-11-25T00:00:00+00:00" />
+
 
 
   </head>
@@ -105,11 +104,11 @@ Enter valid token to binary with name &lt;8c235f89a8143a28a1d6067e959dd858&gt; T
       <p><a href="http://aassfxxx.infos.st/">Author: supersnail</a></p>
 <p>Files can be found <a href="https://rakovskij-stanislav.github.io/ctf_writeups/aeroctf_2020/tasks/files.zip">here</a></p>
 <p>For this challenge, we get an archive with a lot of files, the name of which seems to be a hash. Each file is an ELF x86_64 program file. In addition, a server listens, and requests:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">Enter valid token to binary with name &lt;8c235f89a8143a28a1d6067e959dd858&gt;
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plain" data-lang="plain">Enter valid token to binary with name &lt;8c235f89a8143a28a1d6067e959dd858&gt;
 Token:
 </code></pre></div><p>at connection. We therefore understand quickly enough that we will have to automate the reversing of all these ELFs to send the correct token back to the server, and thus have the flag, the server requesting a series of tokens before spitting the flag.</p>
 <p>Fortunately for us, these ELFs have a very similar structure, and automation should not be too difficult (especially since the binaries are not stripped). The interesting part is therefore in the &ldquo;sym.check&rdquo; function under radare2:</p>
-<pre><code>            ; CALL XREF from main @ 0x1219
+<pre tabindex="0"><code>            ; CALL XREF from main @ 0x1219
 ┌ 171: sym.check (void *arg1);
 │           ; var void *s1 @ rbp-0x38
 │           ; var void *s2 @ rbp-0x30
@@ -168,9 +167,9 @@ Token:
 └           0x0000134e      c3             ret
 </code></pre><p>We can see that crackme fills a buffer with 4 qwords (the encrypted &ldquo;token&rdquo;), before retrieving the serial entered by the user, and performing calculations on it before comparing it with the first buffer.</p>
 <p>The input encryption algorithm is therefore for each byte:</p>
-<pre><code>out[i] = ((serial[i] + 0xa) ^ 0x22) - 0xb
+<pre tabindex="0"><code>out[i] = ((serial[i] + 0xa) ^ 0x22) - 0xb
 </code></pre><p>All executables have the same algorithm, only the parameters, i.e. the buffer, and the constants 0xa, 0x22 and 0xb change for each binary. So we just have to exit python and r2pipe to extract these values and communicate with the server, which gives the python below (the binaries are placed in a &ldquo;files&rdquo; sub-folder):</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#6272a4">#!/usr/bin/python</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#6272a4">#!/usr/bin/python</span>
 
 <span style="color:#ff79c6">import</span> r2pipe
 <span style="color:#ff79c6">import</span> sys
@@ -180,8 +179,8 @@ Token:
 
 buf <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&#34;</span>
 
-<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">get_tok</span>(<span style="color:#8be9fd;font-style:italic">file</span>):
-    r2 <span style="color:#ff79c6">=</span> r2pipe<span style="color:#ff79c6">.</span>open(<span style="color:#f1fa8c">&#34;files/&#34;</span> <span style="color:#ff79c6">+</span> <span style="color:#8be9fd;font-style:italic">file</span>)
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">get_tok</span>(file):
+    r2 <span style="color:#ff79c6">=</span> r2pipe<span style="color:#ff79c6">.</span>open(<span style="color:#f1fa8c">&#34;files/&#34;</span> <span style="color:#ff79c6">+</span> file)
     <span style="color:#6272a4"># Extraction du buffer</span>
     buf <span style="color:#ff79c6">=</span> struct<span style="color:#ff79c6">.</span>pack(<span style="color:#f1fa8c">&#34;&lt;Q&#34;</span>, r2<span style="color:#ff79c6">.</span>cmdj(<span style="color:#f1fa8c">&#34;pdj 1 @0x000012b0&#34;</span>)[<span style="color:#bd93f9">0</span>][<span style="color:#f1fa8c">&#34;val&#34;</span>])
     buf <span style="color:#ff79c6">+=</span> struct<span style="color:#ff79c6">.</span>pack(<span style="color:#f1fa8c">&#34;&lt;Q&#34;</span>, r2<span style="color:#ff79c6">.</span>cmdj(<span style="color:#f1fa8c">&#34;pdj 1 @0x000012ba&#34;</span>)[<span style="color:#bd93f9">0</span>][<span style="color:#f1fa8c">&#34;val&#34;</span>])
@@ -203,9 +202,9 @@ buf <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">b</span><sp
 sock <span style="color:#ff79c6">=</span> socket<span style="color:#ff79c6">.</span>socket(socket<span style="color:#ff79c6">.</span>AF_INET, socket<span style="color:#ff79c6">.</span>SOCK_STREAM)
 sock<span style="color:#ff79c6">.</span>connect((<span style="color:#f1fa8c">&#34;tasks.aeroctf.com&#34;</span>, <span style="color:#bd93f9">44324</span>))
 toto <span style="color:#ff79c6">=</span> sock<span style="color:#ff79c6">.</span>makefile()
-<span style="color:#ff79c6">while</span> True:
+<span style="color:#ff79c6">while</span> <span style="color:#ff79c6">True</span>:
     line <span style="color:#ff79c6">=</span> toto<span style="color:#ff79c6">.</span>readline()
-    <span style="color:#ff79c6">print</span>(line)
+    <span style="color:#8be9fd;font-style:italic">print</span>(line)
     <span style="color:#ff79c6">if</span> line<span style="color:#ff79c6">.</span>find(<span style="color:#f1fa8c">&#34;Enter valid token&#34;</span>) <span style="color:#ff79c6">&gt;</span> <span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>:
         name <span style="color:#ff79c6">=</span> line[line<span style="color:#ff79c6">.</span>find(<span style="color:#f1fa8c">&#34;&lt;&#34;</span>)<span style="color:#ff79c6">+</span><span style="color:#bd93f9">1</span>:<span style="color:#ff79c6">-</span><span style="color:#bd93f9">2</span>]
         token <span style="color:#ff79c6">=</span> get_tok(name)

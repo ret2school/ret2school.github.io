@@ -3,23 +3,21 @@
   <head>
     <title>[CyberSecurityRumble 2021 - RE / Game Hacking] CSRunner // ret2school</title>
     <meta charset="utf-8" />
-    <meta name="generator" content="Hugo 0.80.0" />
+    <meta name="generator" content="Hugo 0.92.2" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="author" content="nasm" />
     <meta name="description" content="" />
     <link rel="stylesheet" href="https://ret2school.github.io/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css" />
 
     
-<script type="application/javascript">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8K5XT0SJN8"></script>
+<script>
 var doNotTrack = false;
 if (!doNotTrack) {
-	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-	ga('create', 'G-8K5XT0SJN8', 'auto');
-	
-	ga('send', 'pageview');
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-8K5XT0SJN8', { 'anonymize_ip': false });
 }
 </script>
 
@@ -34,9 +32,10 @@ This game was using Unity3D as engine, where game logic is usually written in C#
  This challenge is a game, according to its description. Since I gave up on the challenge I was trying to do (NOdeBANKing), I went to help other teammates blocked on this challenge.
 This game was using Unity3D as engine, where game logic is usually written in C# or other language that compiles to MSIL." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://ret2school.github.io/post/csrunner/" />
+<meta property="og:url" content="https://ret2school.github.io/post/csrunner/" /><meta property="article:section" content="post" />
 <meta property="article:published_time" content="2021-11-29T00:00:00+00:00" />
 <meta property="article:modified_time" content="2021-11-29T00:00:00+00:00" />
+
 
 
   </head>
@@ -112,7 +111,7 @@ This game was using Unity3D as engine, where game logic is usually written in C#
 <p>So, I looked for a tool able to reconstruct metadata of the &ldquo;original&rdquo; assembly, and finally came across <a href="https://github.com/Perfare/Il2CppDumper">Il2CppDumper</a>, which even comes with an IDAPython script to rename funcs and add types in IDA Pro. I used that tool to generate &ldquo;dummy&rdquo; assemblies that could be opened in dnSpy, even if there was no MSIL code in the assemblies, but it&rsquo;s a good starting point to understand the class structure.</p>
 <p>And the tool also comes with IDAPython scripts to rename il2cpp-converted functions, which I could use since I managed to compile IDAPython and make it run on my IDA Free 7.6. I first explored Game methods, which only seemed to print debug messages stuff even if <code>PickupHit</code> and <code>PickupMiss</code> methods looked promising.</p>
 <p>But there was another class with interesting name, <code>DieOnCollision</code>, which seemed to handle collisions, I looked at the <code>DieOnCollision$$OnCollisionEnter</code> and saw this:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">    tag <span style="color:#ff79c6">=</span> UnityEngine_GameObject__get_tag(gameObject, <span style="color:#bd93f9">0</span>i64);
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">    tag <span style="color:#ff79c6">=</span> UnityEngine_GameObject__get_tag(gameObject, <span style="color:#bd93f9">0</span>i64);
     <span style="color:#ff79c6">if</span> ( System_String__op_Equality(tag, StringLiteral_4306, <span style="color:#bd93f9">0</span>i64) )
     {
         <span style="color:#ff79c6">if</span> ( <span style="color:#ff79c6">!</span>byte_180A0BB4F )

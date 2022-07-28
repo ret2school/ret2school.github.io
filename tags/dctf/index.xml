@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>DCTF on ret2school</title>
+    <title>dctf on ret2school</title>
     <link>https://ret2school.github.io/tags/dctf/</link>
-    <description>Recent content in DCTF on ret2school</description>
+    <description>Recent content in dctf on ret2school</description>
     <generator>Hugo -- gohugo.io</generator>
     <lastBuildDate>Sun, 17 Apr 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/dctf/index.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -12,8 +12,8 @@
       <pubDate>Sun, 17 Apr 2022 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/post/phonebook/</guid>
-      <description>Intro phonebook is a basic heap challenge I did during the dctf event. It&amp;rsquo;s basically just a heap overflow wich allows us to overflow a function pointer with for example the address of system. You can find the related files there.
-The bug $ ./phonebook Choose an option: [1-5] 1. Store someone&#39;s information 2. Edit information 3. Call someone 4. Unfriend someone 5. Add the hidden_note &amp;gt; We can create an entity and then initialize: a name, a phone number and a function pointer.</description>
+      <description>Intro phonebook is a basic heap challenge I did during the dctf event. It&amp;rsquo;s basically just a heap overflow wich allows us to overflow a function pointer with for example the address of system.
+The bug $ ./phonebook Choose an option: [1-5] 1. Store someone&#39;s information 2. Edit information 3. Call someone 4. Unfriend someone 5. Add the hidden_note &amp;gt; We can create an entity and then initialize: a name, a numero and a function pointer.</description>
     </item>
     
   </channel>

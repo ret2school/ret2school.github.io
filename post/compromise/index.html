@@ -3,23 +3,21 @@
   <head>
     <title>[CyberSecurityRumble 2021 - RE / Forensics] The Compromise // ret2school</title>
     <meta charset="utf-8" />
-    <meta name="generator" content="Hugo 0.80.0" />
+    <meta name="generator" content="Hugo 0.92.2" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="author" content="nasm" />
     <meta name="description" content="" />
     <link rel="stylesheet" href="https://ret2school.github.io/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css" />
 
     
-<script type="application/javascript">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8K5XT0SJN8"></script>
+<script>
 var doNotTrack = false;
 if (!doNotTrack) {
-	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-	ga('create', 'G-8K5XT0SJN8', 'auto');
-	
-	ga('send', 'pageview');
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-8K5XT0SJN8', { 'anonymize_ip': false });
 }
 </script>
 
@@ -32,9 +30,10 @@ Upon investigation, they presume that an internal windows workstation with has b
 <meta property="og:description" content="The Compromise (300 pts)  The SOC team of the BrighSoul QPL (Quantum Physic Labs) is continuously monitoring HTTP proxy and DNS outbound traffic and has identified suspicious DNS traffic to the server authoritative (NS) for the domain thedarkestside.org.
 Upon investigation, they presume that an internal windows workstation with has been compromised with a Colbalt Strike beacon running as the executable named ntupdate.exe. The workstation belongs to the R&amp;D team and they are suspicions that files containing critical Intellectual Property information have been exfiltrated." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://ret2school.github.io/post/compromise/" />
+<meta property="og:url" content="https://ret2school.github.io/post/compromise/" /><meta property="article:section" content="post" />
 <meta property="article:published_time" content="2021-11-29T00:00:00+00:00" />
 <meta property="article:modified_time" content="2021-11-29T00:00:00+00:00" />
+
 
 
   </head>
@@ -117,7 +116,7 @@ Upon investigation, they presume that an internal windows workstation with has b
 <p>The dump file is a classic Minidump file, that opens nicely in WinDBG (I used WinDBG preview because it has a lot nicer interface). We can see there are two threads launched, both sleeping. So we have to analyze the backtrace of the threads to have a clue on what&rsquo;s going on.</p>
 <p>The first thread seems to call SleepEx from ntupdate.exe directly, which can be legitimate. But, in the second thread, SleepEx is called from <code>0x0018ef06</code> which seem more suspicious. To understand what happens, let&rsquo;s dump ntupdate.exe (with <code>.writemem z:\ntupdate.mem 400000 L?004e000</code> WinDBG command, module size is <code>0x4e000</code> according to windbg&rsquo;s module view), and &ldquo;unmap&rdquo; the PE <a href="https://github.com/hasherezade/libpeconv/tree/master/pe_unmapper">with this</a>, yeah I was lazy to code my own tool.</p>
 <p>After opening the &ldquo;reconstructed&rdquo; PE in IDA, the first thing we notice is the <code>%c%c%c%c%c%c%c%c%cMSSE-%d-server</code>, which indicates it seems to be a Cobalt Stike stager (and code really looks like this <a href="https://blog.nviso.eu/2021/04/26/anatomy-of-cobalt-strike-dll-stagers/)">https://blog.nviso.eu/2021/04/26/anatomy-of-cobalt-strike-dll-stagers/)</a>. Good luck, the binary embeds the payload, which can be decrypted using this IDAPython script (don&rsquo;t judge my high quality variable naming):</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">sheep <span style="color:#ff79c6">=</span> []
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">sheep <span style="color:#ff79c6">=</span> []
 key <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\x13\x4a\x5b\x22</span><span style="color:#f1fa8c">&#34;</span>
 <span style="color:#ff79c6">for</span> i <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#bd93f9">0x40000</span>):
     sheep<span style="color:#ff79c6">.</span>append(idaapi<span style="color:#ff79c6">.</span>get_byte(<span style="color:#bd93f9">0x404008</span> <span style="color:#ff79c6">+</span> i) <span style="color:#ff79c6">^</span> key[i <span style="color:#ff79c6">%</span> <span style="color:#bd93f9">4</span>])
@@ -134,7 +133,7 @@ f<span style="color:#ff79c6">.</span>close()
 <li>If the request starts by &ldquo;cdn.&rdquo;, then the first A request contains payload size, and further A requests the payload data xored by 8.8.4.4 (big endian DWORD)</li>
 <li>There is also &ldquo;www6.&rdquo; handler, which seem to be the same with cdn. but with AAAA records (IPv6 addresses are longer, so more data can be sent as response)</li>
 </ul>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">    <span style="color:#ff79c6">if</span> ( (<span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd">int</span>)QueryCnCOrder(fetchOrderDns, <span style="color:#ff79c6">&amp;</span>ip_obf) )
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">    <span style="color:#ff79c6">if</span> ( (<span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd">int</span>)QueryCnCOrder(fetchOrderDns, <span style="color:#ff79c6">&amp;</span>ip_obf) )
       {
         v15 <span style="color:#ff79c6">=</span> v12 <span style="color:#ff79c6">^</span> ntohl(ip_obf);
         ip_obf <span style="color:#ff79c6">=</span> v15;
@@ -170,7 +169,7 @@ f<span style="color:#ff79c6">.</span>close()
           }
         }
 </code></pre></div><p>Unfortunately, this data is encrypted by the AES session key, and since we only have the last part of the &ldquo;fingerprint&rdquo;, we&rsquo;ll need to figure out where the AES key is generated/stored, and extract it from the dump with WinDBG. Before the &ldquo;main&rdquo; loop of DNS queries, some initialization function are quite interesting:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#8be9fd">void</span> <span style="color:#ff79c6">*</span><span style="color:#ff79c6">__fastcall</span> <span style="color:#50fa7b">GrabInfo</span>(GetInfoStruct <span style="color:#ff79c6">*</span>Src, <span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd">int</span> len)
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#8be9fd">void</span> <span style="color:#ff79c6">*</span><span style="color:#ff79c6">__fastcall</span> <span style="color:#50fa7b">GrabInfo</span>(GetInfoStruct <span style="color:#ff79c6">*</span>Src, <span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd">int</span> len)
 {
   DWORD CurrentProcessId; <span style="color:#6272a4">// ebx
 </span><span style="color:#6272a4"></span>  DWORD TickCount; <span style="color:#6272a4">// eax
@@ -216,7 +215,7 @@ f<span style="color:#ff79c6">.</span>close()
   <span style="color:#ff79c6">return</span> memset(Src, <span style="color:#bd93f9">0</span>, v9);
 }
 </code></pre></div><p>We can see that a random 16-byte buffer is filled, which is then passed to a &ldquo;aesCreateContext&rdquo; function which does this:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#ff79c6">__int64</span> <span style="color:#ff79c6">__fastcall</span> <span style="color:#50fa7b">aesCreateContext</span>(<span style="color:#ff79c6">__int64</span> a1)
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#ff79c6">__int64</span> <span style="color:#ff79c6">__fastcall</span> <span style="color:#50fa7b">aesCreateContext</span>(<span style="color:#ff79c6">__int64</span> a1)
 {
   <span style="color:#ff79c6">__int64</span> result; <span style="color:#6272a4">// rax
 </span><span style="color:#6272a4"></span>  __int128 hash[<span style="color:#bd93f9">2</span>]; <span style="color:#6272a4">// [rsp+30h] [rbp-28h] BYREF
@@ -239,7 +238,7 @@ f<span style="color:#ff79c6">.</span>close()
 }
 </code></pre></div><p>While the initial seed is forever lost because stored as local var, the AES key and HMAC keys derived from SHA256 hash of the &ldquo;initial seed&rdquo; are stored in the .data section of the binary, making them &ldquo;easy&rdquo; to extract from the dump (just convert imagebase from 0x180000000 to 0x180000).</p>
 <p>Now come the final part of the challenge, parsing the pcap and reconstructing and decrypting the traffic between the C&amp;C and the bot. For this, I made this quick and dirty Python script using pcapy and ImPacket:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#6272a4">#!/usr/bin/python</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#6272a4">#!/usr/bin/python</span>
 
 <span style="color:#ff79c6">import</span> base64
 <span style="color:#ff79c6">import</span> struct
@@ -298,10 +297,10 @@ CLIENT_IP <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#39;
     ethernet_decoder <span style="color:#ff79c6">=</span> Decoders<span style="color:#ff79c6">.</span>EthDecoder()
     ip_decoder <span style="color:#ff79c6">=</span> Decoders<span style="color:#ff79c6">.</span>IPDecoder()
 
-    hdr <span style="color:#ff79c6">=</span> True
+    hdr <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">True</span>
     packets <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>
 
-    <span style="color:#ff79c6">while</span> hdr <span style="color:#ff79c6">is</span> <span style="color:#ff79c6">not</span> None:
+    <span style="color:#ff79c6">while</span> hdr <span style="color:#ff79c6">is</span> <span style="color:#ff79c6">not</span> <span style="color:#ff79c6">None</span>:
         hdr, body <span style="color:#ff79c6">=</span> pcap<span style="color:#ff79c6">.</span>next()
         eth <span style="color:#ff79c6">=</span> ethernet_decoder<span style="color:#ff79c6">.</span>decode(body)
         <span style="color:#ff79c6">if</span> eth<span style="color:#ff79c6">.</span>get_ether_type() <span style="color:#ff79c6">!=</span> Packets<span style="color:#ff79c6">.</span>IP<span style="color:#ff79c6">.</span>ethertype:
@@ -325,8 +324,8 @@ CLIENT_IP <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#39;
         <span style="color:#ff79c6">yield</span> (ip<span style="color:#ff79c6">.</span>get_ip_src(), ip<span style="color:#ff79c6">.</span>get_ip_dst(), dns)
 
 pkts <span style="color:#ff79c6">=</span> get_next_dns_pkt()
-<span style="color:#ff79c6">while</span> True:
-    <span style="color:#8be9fd;font-style:italic">buffer</span> <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&#34;</span>
+<span style="color:#ff79c6">while</span> <span style="color:#ff79c6">True</span>:
+    buffer <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&#34;</span>
     (src, dst, dns) <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">next</span>(pkts)
     qry <span style="color:#ff79c6">=</span> dns<span style="color:#ff79c6">.</span>get_questions()[<span style="color:#bd93f9">0</span>]
     qry_array <span style="color:#ff79c6">=</span> qry[<span style="color:#bd93f9">0</span>]<span style="color:#ff79c6">.</span>split(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;.&#34;</span>)
@@ -341,33 +340,33 @@ pkts <span style="color:#ff79c6">=</span> get_next_dns_pkt()
             <span style="color:#8be9fd;font-style:italic">type</span>, rawdata <span style="color:#ff79c6">=</span> get_int_raw_resp(resp)
             rawdata <span style="color:#ff79c6">=</span> base64<span style="color:#ff79c6">.</span>b64decode(rawdata)
             buflen <span style="color:#ff79c6">-=</span> <span style="color:#8be9fd;font-style:italic">len</span>(rawdata)
-            <span style="color:#8be9fd;font-style:italic">buffer</span> <span style="color:#ff79c6">+=</span> rawdata
-        <span style="color:#8be9fd;font-style:italic">buffer</span> <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">buffer</span>[:trunc]
-        <span style="color:#ff79c6">print</span>(decrypt(<span style="color:#8be9fd;font-style:italic">buffer</span>))
+            buffer <span style="color:#ff79c6">+=</span> rawdata
+        buffer <span style="color:#ff79c6">=</span> buffer[:trunc]
+        <span style="color:#8be9fd;font-style:italic">print</span>(decrypt(buffer))
     <span style="color:#ff79c6">elif</span> qry_array[<span style="color:#bd93f9">0</span>] <span style="color:#ff79c6">==</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;cdn&#34;</span>:
         <span style="color:#8be9fd;font-style:italic">type</span>, rawdata <span style="color:#ff79c6">=</span> get_int_raw_resp(resp)
         <span style="color:#ff79c6">if</span> <span style="color:#8be9fd;font-style:italic">type</span> <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">1</span>:
             buflen <span style="color:#ff79c6">=</span> struct<span style="color:#ff79c6">.</span>unpack(<span style="color:#f1fa8c">&#34;!L&#34;</span>, rawdata)[<span style="color:#bd93f9">0</span>] <span style="color:#ff79c6">^</span> pattern
-            <span style="color:#ff79c6">while</span> <span style="color:#8be9fd;font-style:italic">len</span>(<span style="color:#8be9fd;font-style:italic">buffer</span>) <span style="color:#ff79c6">&lt;</span> buflen:
+            <span style="color:#ff79c6">while</span> <span style="color:#8be9fd;font-style:italic">len</span>(buffer) <span style="color:#ff79c6">&lt;</span> buflen:
                 src, dst, resp <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">next</span>(pkts)
                 <span style="color:#8be9fd;font-style:italic">type</span>, rawdata <span style="color:#ff79c6">=</span> get_int_raw_resp(resp)
-                <span style="color:#8be9fd;font-style:italic">buffer</span> <span style="color:#ff79c6">+=</span> rawdata
-            <span style="color:#ff79c6">print</span>(decrypt(<span style="color:#8be9fd;font-style:italic">buffer</span>))
+                buffer <span style="color:#ff79c6">+=</span> rawdata
+            <span style="color:#8be9fd;font-style:italic">print</span>(decrypt(buffer))
     <span style="color:#ff79c6">elif</span> qry_array[<span style="color:#bd93f9">0</span>] <span style="color:#ff79c6">==</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;post&#34;</span>:
         alen <span style="color:#ff79c6">=</span> qry_array[<span style="color:#bd93f9">1</span>]
         len_chunk <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">int</span>(<span style="color:#8be9fd;font-style:italic">str</span>(alen[<span style="color:#bd93f9">1</span>:], <span style="color:#f1fa8c">&#34;ascii&#34;</span>), <span style="color:#bd93f9">16</span>)
-        <span style="color:#ff79c6">while</span> <span style="color:#8be9fd;font-style:italic">len</span>(<span style="color:#8be9fd;font-style:italic">buffer</span>) <span style="color:#ff79c6">&lt;</span> len_chunk:
+        <span style="color:#ff79c6">while</span> <span style="color:#8be9fd;font-style:italic">len</span>(buffer) <span style="color:#ff79c6">&lt;</span> len_chunk:
             (src, dst, dns) <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">next</span>(pkts)
             qry <span style="color:#ff79c6">=</span> dns<span style="color:#ff79c6">.</span>get_questions()[<span style="color:#bd93f9">0</span>]
             qry_array <span style="color:#ff79c6">=</span> qry[<span style="color:#bd93f9">0</span>]<span style="color:#ff79c6">.</span>split(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;.&#34;</span>)
             num_chunks <span style="color:#ff79c6">=</span> qry_array[<span style="color:#bd93f9">1</span>][<span style="color:#bd93f9">0</span>]
             num_chunks <span style="color:#ff79c6">-=</span> <span style="color:#bd93f9">0x30</span>
-            <span style="color:#8be9fd;font-style:italic">buffer</span> <span style="color:#ff79c6">+=</span> <span style="color:#8be9fd;font-style:italic">bytes</span><span style="color:#ff79c6">.</span>fromhex(<span style="color:#8be9fd;font-style:italic">str</span>(qry_array[<span style="color:#bd93f9">1</span>][<span style="color:#bd93f9">1</span>:], <span style="color:#f1fa8c">&#39;ascii&#39;</span>))
+            buffer <span style="color:#ff79c6">+=</span> <span style="color:#8be9fd;font-style:italic">bytes</span><span style="color:#ff79c6">.</span>fromhex(<span style="color:#8be9fd;font-style:italic">str</span>(qry_array[<span style="color:#bd93f9">1</span>][<span style="color:#bd93f9">1</span>:], <span style="color:#f1fa8c">&#39;ascii&#39;</span>))
             <span style="color:#ff79c6">if</span> num_chunks <span style="color:#ff79c6">&gt;=</span> <span style="color:#bd93f9">2</span>:
-                <span style="color:#8be9fd;font-style:italic">buffer</span> <span style="color:#ff79c6">+=</span> <span style="color:#8be9fd;font-style:italic">bytes</span><span style="color:#ff79c6">.</span>fromhex(<span style="color:#8be9fd;font-style:italic">str</span>(qry_array[<span style="color:#bd93f9">2</span>], <span style="color:#f1fa8c">&#39;ascii&#39;</span>))
+                buffer <span style="color:#ff79c6">+=</span> <span style="color:#8be9fd;font-style:italic">bytes</span><span style="color:#ff79c6">.</span>fromhex(<span style="color:#8be9fd;font-style:italic">str</span>(qry_array[<span style="color:#bd93f9">2</span>], <span style="color:#f1fa8c">&#39;ascii&#39;</span>))
             <span style="color:#ff79c6">if</span> num_chunks <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">3</span>:
-                <span style="color:#8be9fd;font-style:italic">buffer</span> <span style="color:#ff79c6">+=</span> <span style="color:#8be9fd;font-style:italic">bytes</span><span style="color:#ff79c6">.</span>fromhex(<span style="color:#8be9fd;font-style:italic">str</span>(qry_array[<span style="color:#bd93f9">3</span>], <span style="color:#f1fa8c">&#39;ascii&#39;</span>))
-        <span style="color:#ff79c6">print</span>(decrypt(<span style="color:#8be9fd;font-style:italic">buffer</span>))
+                buffer <span style="color:#ff79c6">+=</span> <span style="color:#8be9fd;font-style:italic">bytes</span><span style="color:#ff79c6">.</span>fromhex(<span style="color:#8be9fd;font-style:italic">str</span>(qry_array[<span style="color:#bd93f9">3</span>], <span style="color:#f1fa8c">&#39;ascii&#39;</span>))
+        <span style="color:#8be9fd;font-style:italic">print</span>(decrypt(buffer))
 </code></pre></div><p>which gives us the flag: <code>CSR{Schro3dinger%%3quation_}</code></p>
 <p>Author: <a href="https://github.com/aaSSfxxx">supersnail</a></p>
 

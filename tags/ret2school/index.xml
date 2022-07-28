@@ -5,15 +5,15 @@
     <link>https://ret2school.github.io/tags/ret2school/</link>
     <description>Recent content on ret2school</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Sun, 17 Apr 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/ret2school/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 28 Jul 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/ret2school/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>[DCTF 2022 - pwn] phonebook</title>
-      <link>https://ret2school.github.io/post/phonebook/</link>
-      <pubDate>Sun, 17 Apr 2022 00:00:00 +0000</pubDate>
+      <title>[diceCTF 2022 - pwn] catastrophe</title>
+      <link>https://ret2school.github.io/post/catastrophe/</link>
+      <pubDate>Thu, 28 Jul 2022 00:00:00 +0000</pubDate>
       
-      <guid>https://ret2school.github.io/post/phonebook/</guid>
-      <description>Intro phonebook is a basic heap challenge I did during the dctf event. It&amp;rsquo;s basically just a heap overflow wich allows us to overflow a function pointer with for example the address of system. You can find the related files there.
-The bug $ ./phonebook Choose an option: [1-5] 1. Store someone&#39;s information 2. Edit information 3. Call someone 4. Unfriend someone 5. Add the hidden_note &amp;gt; We can create an entity and then initialize: a name, a phone number and a function pointer.</description>
+      <guid>https://ret2school.github.io/post/catastrophe/</guid>
+      <description>Introduction  I just learned how to use malloc and free&amp;hellip; am I doing this right?
+ catastrophe is a heap challenge I did during the diceCTF 2022. I did have a lot of issues with the libc and the dynamic linker, thus I did a first time the challenge with the libc that was in /lib/libc.so.6, then I figured out thanks to my teammate supersnail that I was using the wrong libc.</description>
     </item>
     
     <item>

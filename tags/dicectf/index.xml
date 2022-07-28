@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>diceCTF on ret2school</title>
+    <link>https://ret2school.github.io/tags/dicectf/</link>
+    <description>Recent content in diceCTF on ret2school</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Thu, 28 Jul 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/dicectf/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>[diceCTF 2022 - pwn] catastrophe</title>
+      <link>https://ret2school.github.io/post/catastrophe/</link>
+      <pubDate>Thu, 28 Jul 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/catastrophe/</guid>
+      <description>Introduction  I just learned how to use malloc and free&amp;hellip; am I doing this right?
+ catastrophe is a heap challenge I did during the diceCTF 2022. I did have a lot of issues with the libc and the dynamic linker, thus I did a first time the challenge with the libc that was in /lib/libc.so.6, then I figured out thanks to my teammate supersnail that I was using the wrong libc.</description>
+    </item>
+    
+  </channel>
+</rss>

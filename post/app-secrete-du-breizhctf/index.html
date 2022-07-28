@@ -3,23 +3,21 @@
   <head>
     <title>[Breizh CTF 2022- reverse] L&#39;appli secrète du breizhCTF // ret2school</title>
     <meta charset="utf-8" />
-    <meta name="generator" content="Hugo 0.80.0" />
+    <meta name="generator" content="Hugo 0.92.2" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="author" content="nasm" />
     <meta name="description" content="" />
     <link rel="stylesheet" href="https://ret2school.github.io/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css" />
 
     
-<script type="application/javascript">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8K5XT0SJN8"></script>
+<script>
 var doNotTrack = false;
 if (!doNotTrack) {
-	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-	ga('create', 'G-8K5XT0SJN8', 'auto');
-	
-	ga('send', 'pageview');
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-8K5XT0SJN8', { 'anonymize_ip': false });
 }
 </script>
 
@@ -30,9 +28,10 @@ if (!doNotTrack) {
     <meta property="og:title" content="[Breizh CTF 2022- reverse] L&#39;appli secrète du breizhCTF" />
 <meta property="og:description" content="Value: 131 Description: En arrivant à Rennes au BreizhCTF, vous avez trouvé un téléphone par terre et avez décidé de le garder avec vous. Vous vous rendez compte que sur ce téléphone, il y a une appli &#39;SuperSecretApp&#39;. Malheureusement, pour accéder à son contenu, vous devez avoir la bonne combinaison du username et du password. Vous avez donc décidé de reverse l&#39;application pour trouvez cela! Auteur: Worty Format : BZHCTF{username-password}  The file provided is an ." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://ret2school.github.io/post/app-secrete-du-breizhctf/" />
+<meta property="og:url" content="https://ret2school.github.io/post/app-secrete-du-breizhctf/" /><meta property="article:section" content="post" />
 <meta property="article:published_time" content="2022-03-04T00:00:00+00:00" />
 <meta property="article:modified_time" content="2022-03-04T00:00:00+00:00" />
+
 
 
   </head>
@@ -111,7 +110,7 @@ Format : BZHCTF{username-password}
 </code></pre>
 <p>The file provided is an <code>.apk</code>, we extract the source code with the <code>apktool</code> tool:</p>
 <p>In the folder ``Sourcescomexample\supersecretapp\data`, we find the file containing all the logic of the application:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#6272a4">/*
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#6272a4">/*
 </span><span style="color:#6272a4"> * Location:
 </span><span style="color:#6272a4"> * \sources\com\example\supersecretapp\data\LoginDataSource.java
 </span><span style="color:#6272a4">*/</span>
@@ -157,12 +156,12 @@ Format : BZHCTF{username-password}
 <span style="color:#ff79c6">}</span>
 </code></pre></div><p>We can see that the <code>login</code> function is used to check that our user name is indeed <code>kalucheAdmin:))</code>.</p>
 <p>As for the password which is managed by the <code>verifiedPassword</code> function, I decide to use <code>z3</code>:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#6272a4">#!/usr/bin python3</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#6272a4">#!/usr/bin python3</span>
 
 <span style="color:#ff79c6">from</span> z3 <span style="color:#ff79c6">import</span> <span style="color:#ff79c6">*</span>
 
 <span style="color:#6272a4"># List of BitVec</span>
-passwd <span style="color:#ff79c6">=</span> [BitVec(f<span style="color:#f1fa8c">&#39;{i}&#39;</span>, <span style="color:#bd93f9">8</span>) <span style="color:#ff79c6">for</span> i <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#bd93f9">8</span>)]
+passwd <span style="color:#ff79c6">=</span> [BitVec(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#39;</span><span style="color:#f1fa8c">{</span>i<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#39;</span>, <span style="color:#bd93f9">8</span>) <span style="color:#ff79c6">for</span> i <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#bd93f9">8</span>)]
 s <span style="color:#ff79c6">=</span> Solver()
 
 <span style="color:#6272a4"># Constraints</span>
@@ -192,16 +191,16 @@ s<span style="color:#ff79c6">.</span>add( ((passwd[<span style="color:#bd93f9">6
 <span style="color:#6272a4"># pwd.charAt(7) == ((char) (pwd.charAt(5) ^ pwd.charAt(2)))</span>
 s<span style="color:#ff79c6">.</span>add( passwd[<span style="color:#bd93f9">7</span>] <span style="color:#ff79c6">==</span> (passwd[<span style="color:#bd93f9">5</span>] <span style="color:#ff79c6">^</span> passwd[<span style="color:#bd93f9">2</span>]) )
 
-<span style="color:#ff79c6">print</span>(s<span style="color:#ff79c6">.</span>check())
+<span style="color:#8be9fd;font-style:italic">print</span>(s<span style="color:#ff79c6">.</span>check())
 model <span style="color:#ff79c6">=</span> s<span style="color:#ff79c6">.</span>model()
 flag <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#39;&#39;</span><span style="color:#ff79c6">.</span>join([<span style="color:#8be9fd;font-style:italic">chr</span>(<span style="color:#8be9fd;font-style:italic">int</span>(<span style="color:#8be9fd;font-style:italic">str</span>(model[passwd[i]]))) <span style="color:#ff79c6">for</span> i <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#8be9fd;font-style:italic">len</span>(model))])
-<span style="color:#ff79c6">print</span>(flag)
+<span style="color:#8be9fd;font-style:italic">print</span>(flag)
 </code></pre></div><p>The password is then obtained:</p>
-<pre><code>&gt; python3 solve.py
+<pre tabindex="0"><code>&gt; python3 solve.py
 sat
 a9:VbMxw
 </code></pre><p>So the flag is:</p>
-<pre><code>BZHCTF{kalucheAdmin-a9:VbMxw}
+<pre tabindex="0"><code>BZHCTF{kalucheAdmin-a9:VbMxw}
 </code></pre>
     </div>
     <div class="post-footer">

@@ -3,23 +3,21 @@
   <head>
     <title>[Breizh CTF 2022 - pwn] Faible Ty Reseau // ret2school</title>
     <meta charset="utf-8" />
-    <meta name="generator" content="Hugo 0.80.0" />
+    <meta name="generator" content="Hugo 0.92.2" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="author" content="nasm" />
     <meta name="description" content="" />
     <link rel="stylesheet" href="https://ret2school.github.io/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css" />
 
     
-<script type="application/javascript">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8K5XT0SJN8"></script>
+<script>
 var doNotTrack = false;
 if (!doNotTrack) {
-	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-	ga('create', 'G-8K5XT0SJN8', 'auto');
-	
-	ga('send', 'pageview');
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-8K5XT0SJN8', { 'anonymize_ip': false });
 }
 </script>
 
@@ -32,9 +30,10 @@ int __cdecl main(int argc, const char **argv, const char **envp) { int v4; // [r
 <meta property="og:description" content="Faible Ty Réseau is a basic heap-like challenge, it allows us to create a configuration, edit it, call a function pointer on it and finally to free it:
 int __cdecl main(int argc, const char **argv, const char **envp) { int v4; // [rsp&#43;4h] [rbp-Ch] BYREF  unsigned __int64 v5; // [rsp&#43;8h] [rbp-8h]  v5 = __readfsqword(0x28u); while ( 1 ) { puts(aVousN); printf(a1ModifierLesPa, argv); fflush(stdout); v4 = 0; argv = &amp;v4; __isoc99_scanf(&amp;unk_21F3, &amp;v4); switch ( v4 ) { case 0: printf(&#34;wtf ?" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://ret2school.github.io/post/ftm/" />
+<meta property="og:url" content="https://ret2school.github.io/post/ftm/" /><meta property="article:section" content="post" />
 <meta property="article:published_time" content="2022-03-04T00:00:00+00:00" />
 <meta property="article:modified_time" content="2022-03-04T00:00:00+00:00" />
+
 
 
   </head>
@@ -98,7 +97,7 @@ int __cdecl main(int argc, const char **argv, const char **envp) { int v4; // [r
     </header>
     <div class="post-content">
       <p>Faible Ty Réseau is a basic heap-like challenge, it allows us to create a configuration, edit it, call a function pointer on it and finally to free it:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#8be9fd">int</span> <span style="color:#ff79c6">__cdecl</span> <span style="color:#50fa7b">main</span>(<span style="color:#8be9fd">int</span> argc, <span style="color:#ff79c6">const</span> <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">**</span>argv, <span style="color:#ff79c6">const</span> <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">**</span>envp)
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#8be9fd">int</span> <span style="color:#ff79c6">__cdecl</span> <span style="color:#50fa7b">main</span>(<span style="color:#8be9fd">int</span> argc, <span style="color:#ff79c6">const</span> <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">**</span>argv, <span style="color:#ff79c6">const</span> <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">**</span>envp)
 {
   <span style="color:#8be9fd">int</span> v4; <span style="color:#6272a4">// [rsp+4h] [rbp-Ch] BYREF
 </span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">unsigned</span> <span style="color:#ff79c6">__int64</span> v5; <span style="color:#6272a4">// [rsp+8h] [rbp-8h]
@@ -138,7 +137,7 @@ int __cdecl main(int argc, const char **argv, const char **envp) { int v4; // [r
   }
 }
 </code></pre></div><p>They are many ways to pwn the challenge, I did it by taking advantage of the UAF in <code>create</code>:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#ff79c6">__int64</span> <span style="color:#50fa7b">create</span>()
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#ff79c6">__int64</span> <span style="color:#50fa7b">create</span>()
 {
   <span style="color:#8be9fd">int</span> v1; <span style="color:#6272a4">// [rsp+4h] [rbp-1Ch]
 </span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">int</span> v2; <span style="color:#6272a4">// [rsp+8h] [rbp-18h]
@@ -177,7 +176,7 @@ int __cdecl main(int argc, const char **argv, const char **envp) { int v4; // [r
   <span style="color:#ff79c6">return</span> <span style="color:#bd93f9">0LL</span>;
 }
 </code></pre></div><p>As we can see, if ptr is not <code>NULL</code> and that we enter only one byte for each read (by sending only \n for example), then we will trigger a <code>realloc(ptr, 1 + 1 - 2)</code> which frees <code>ptr</code>, <code>ptr</code> being freed the freelist is pointing on <code>ptr</code>. Now let&rsquo;s take a look at the <code>alloc_admin</code> function:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#ff79c6">__int64</span> <span style="color:#50fa7b">alloc_admin</span>()
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#ff79c6">__int64</span> <span style="color:#50fa7b">alloc_admin</span>()
 {
   <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>v1; <span style="color:#6272a4">// [rsp+0h] [rbp-10h]
 </span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>v2; <span style="color:#6272a4">// [rsp+8h] [rbp-8h]
@@ -200,7 +199,7 @@ int __cdecl main(int argc, const char **argv, const char **envp) { int v4; // [r
   <span style="color:#ff79c6">return</span> <span style="color:#bd93f9">0LL</span>;
 }
 </code></pre></div><p>By allocating <code>0x18</code> bytes, it gets the previous freed <code>ptr</code> and writes over a few fields like the function pointer. Then we just have to call the <code>exec</code> function which will call the win function:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#8be9fd">int</span> <span style="color:#50fa7b">exec</span>()
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#8be9fd">int</span> <span style="color:#50fa7b">exec</span>()
 {
   <span style="color:#ff79c6">if</span> ( ptr )
     <span style="color:#ff79c6">return</span> (<span style="color:#ff79c6">*</span>(ptr <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">2</span>))();
@@ -208,7 +207,7 @@ int __cdecl main(int argc, const char **argv, const char **envp) { int v4; // [r
   <span style="color:#ff79c6">return</span> fflush(stdout);
 }
 </code></pre></div><p>Which gives us:</p>
-<pre><code>nasm@off:~/ctf/bzhCTF/pwn$ ./FTM
+<pre tabindex="0"><code>nasm@off:~/ctf/bzhCTF/pwn$ ./FTM
 Vous n'êtes pas connecté (anonyme)
 1. Modifier les paramètres de connexion
 2. Restaurer la configutation d'usine

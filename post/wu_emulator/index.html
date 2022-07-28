@@ -3,23 +3,21 @@
   <head>
     <title>[BTSCTF 2021 - RE] BtS emulator // ret2school</title>
     <meta charset="utf-8" />
-    <meta name="generator" content="Hugo 0.80.0" />
+    <meta name="generator" content="Hugo 0.92.2" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="author" content="nasm" />
     <meta name="description" content="" />
     <link rel="stylesheet" href="https://ret2school.github.io/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css" />
 
     
-<script type="application/javascript">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8K5XT0SJN8"></script>
+<script>
 var doNotTrack = false;
 if (!doNotTrack) {
-	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-	ga('create', 'G-8K5XT0SJN8', 'auto');
-	
-	ga('send', 'pageview');
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-8K5XT0SJN8', { 'anonymize_ip': false });
 }
 </script>
 
@@ -38,9 +36,10 @@ Last day I did a CTF called BTSCTF, and a challenge called BtS emulator. As I&rs
 First I noticed that the binary has all its symbols in it, so easier to reverse. Then I saw that the dispatcher routine seems pretty clean.
 We found the opcode related to it :" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://ret2school.github.io/post/wu_emulator/" />
+<meta property="og:url" content="https://ret2school.github.io/post/wu_emulator/" /><meta property="article:section" content="post" />
 <meta property="article:published_time" content="2021-03-12T00:00:00+00:00" />
 <meta property="article:modified_time" content="2021-03-12T00:00:00+00:00" />
+
 
 
   </head>
@@ -111,7 +110,7 @@ We found the opcode related to it :" />
 <p>First I noticed that the binary has all its symbols in it, so easier to reverse. Then I saw that the dispatcher routine seems pretty clean.</p>
 <p><img src="https://whereisr0da.github.io/blog/post_images/emulator/Screenshot_721.png" alt=""></p>
 <p>We found the opcode related to it :</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-C" data-lang="C"><span style="color:#ff79c6">const</span> uint8_t opcode_buffer[<span style="color:#bd93f9">256</span>] <span style="color:#ff79c6">=</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-C" data-lang="C"><span style="color:#ff79c6">const</span> <span style="color:#8be9fd">uint8_t</span> opcode_buffer[<span style="color:#bd93f9">256</span>] <span style="color:#ff79c6">=</span>
 {
 	<span style="color:#bd93f9">0xf2</span>, <span style="color:#bd93f9">0x72</span>, <span style="color:#bd93f9">0x45</span>, <span style="color:#bd93f9">0x8a</span>, <span style="color:#bd93f9">0x72</span>, <span style="color:#bd93f9">0xf2</span>, <span style="color:#bd93f9">0x72</span>, <span style="color:#bd93f9">0x6e</span>, <span style="color:#bd93f9">0x8a</span>, <span style="color:#bd93f9">0x72</span>, <span style="color:#bd93f9">0xf2</span>, <span style="color:#bd93f9">0x72</span>, <span style="color:#bd93f9">0x74</span>, <span style="color:#bd93f9">0x8a</span>, <span style="color:#bd93f9">0x72</span>, <span style="color:#bd93f9">0xf2</span>,
 	<span style="color:#bd93f9">0x72</span>, <span style="color:#bd93f9">0x65</span>, <span style="color:#bd93f9">0x8a</span>, <span style="color:#bd93f9">0x72</span>, <span style="color:#bd93f9">0xf2</span>, <span style="color:#bd93f9">0x72</span>, <span style="color:#bd93f9">0x72</span>, <span style="color:#bd93f9">0x8a</span>, <span style="color:#bd93f9">0x72</span>, <span style="color:#bd93f9">0xf2</span>, <span style="color:#bd93f9">0x72</span>, <span style="color:#bd93f9">0x20</span>, <span style="color:#bd93f9">0x8a</span>, <span style="color:#bd93f9">0x72</span>, <span style="color:#bd93f9">0xf2</span>, <span style="color:#bd93f9">0x72</span>,
@@ -119,7 +118,7 @@ We found the opcode related to it :" />
 	.....
 }
 </code></pre></div><p>After a bit we can find the VM structure :</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-C++" data-lang="C++"><span style="color:#8be9fd">uint8_t</span> r1;
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-C++" data-lang="C++"><span style="color:#8be9fd">uint8_t</span> r1;
 <span style="color:#8be9fd">uint8_t</span> r2;
 <span style="color:#8be9fd">uint8_t</span> r3;
 <span style="color:#8be9fd">uint8_t</span> sp;
@@ -128,7 +127,7 @@ We found the opcode related to it :" />
 
 std<span style="color:#ff79c6">::</span>vector<span style="color:#ff79c6">&lt;</span><span style="color:#8be9fd">uint8_t</span><span style="color:#ff79c6">&gt;</span> stack;
 </code></pre></div><p>So from here, I directly started to reverse each handles to create a dissasembler (sorry for Windows tabs) :</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-C++" data-lang="C++"><span style="color:#8be9fd">void</span> <span style="color:#50fa7b">CMP</span>() {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-C++" data-lang="C++"><span style="color:#8be9fd">void</span> <span style="color:#50fa7b">CMP</span>() {
 	printf(<span style="color:#f1fa8c">&#34;CMP r1, r2</span><span style="color:#f1fa8c">\r\n</span><span style="color:#f1fa8c">&#34;</span>);
 	ef <span style="color:#ff79c6">+=</span> ((r1 <span style="color:#ff79c6">-</span> r2) <span style="color:#ff79c6">!=</span> <span style="color:#bd93f9">0</span>);
 	ip <span style="color:#ff79c6">+=</span> <span style="color:#bd93f9">1</span>;
@@ -212,7 +211,7 @@ std<span style="color:#ff79c6">::</span>vector<span style="color:#ff79c6">&lt;</
 
 }
 </code></pre></div><p>After my reimplementation of each handlers, we can just execute the opcodes and see what it looks like:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ASM" data-lang="ASM"><span style="color:#50fa7b">MOVIMM</span> r3 <span style="color:#bd93f9">0x45</span>		// push each byte of &#34;Enter password&#34; 
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ASM" data-lang="ASM"><span style="color:#50fa7b">MOVIMM</span> r3 <span style="color:#bd93f9">0x45</span>		// push each byte of &#34;Enter password&#34; 
 PUSH
 <span style="color:#50fa7b">MOVIMM</span> r3 <span style="color:#bd93f9">0x6e</span>
 <span style="color:#50fa7b">PUSH</span>
