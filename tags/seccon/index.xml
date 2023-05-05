@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>SECCON on ret2school</title>
+    <link>https://ret2school.github.io/tags/seccon/</link>
+    <description>Recent content in SECCON on ret2school</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Tue, 10 Jan 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/seccon/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>[UTCTF 2023] Welcome</title>
+      <link>https://ret2school.github.io/post/welcome/</link>
+      <pubDate>Tue, 10 Jan 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/welcome/</guid>
+      <description>UTCTF 2023: Welcome  Welcome
+1000
+Note: while this challenge is nominally RE, there is some crypto-level/crypto-style math involved too.
+Welcome to UTCTF! I made a special last minute program just for you to display a wonderful welcome message (+ flag!) I may have accidentally (okay&amp;hellip; purposely) made a small bug in my math &amp;gt; that makes this unsolvable(TM). Can you figure it out and fix it for me please?</description>
+    </item>
+    
+    <item>
+      <title>[SECCON CTF 2022 Quals] babyfile</title>
+      <link>https://ret2school.github.io/post/babyfile/</link>
+      <pubDate>Fri, 19 Aug 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/babyfile/</guid>
+      <description>Introduction babyfile is a file stream exploitation I did during the SECCON CTF 2022 Quals event. I didn’t succeed to flag it within the 24 hours :(. But anyway I hope this write up will be interesting to read given I show another way to gain code execution &amp;ndash; I have not seen before &amp;ndash; based on _IO_obstack_jumps! The related files can be found here. If you&amp;rsquo;re not familiar with file stream internals, I advice you to read my previous writeups about file stream exploitation, especially this one and this other one.</description>
+    </item>
+    
+  </channel>
+</rss>

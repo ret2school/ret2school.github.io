@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>zig on ret2school</title>
+    <link>https://ret2school.github.io/tags/zig/</link>
+    <description>Recent content in zig on ret2school</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Mon, 08 Aug 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/zig/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>[corCTF 2022 - pwn] zigzag</title>
+      <link>https://ret2school.github.io/post/zigzag/</link>
+      <pubDate>Mon, 08 Aug 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/zigzag/</guid>
+      <description>Introduction zigzag is a zig heap challenge I did during the corCTF 2022 event. It was pretty exotic given we have to pwn a heap like challenge written in zig. It is not using the C allocator but instead it uses the GeneralPurposeAllocator, which makes the challenge even more interesting. Find the tasks here.
+TL; DR  Understanding zig GeneralPurposeAllocator internals Hiijack the BucketHeader of a given bucket to get a write what were / read what where primitive.</description>
+    </item>
+    
+  </channel>
+</rss>

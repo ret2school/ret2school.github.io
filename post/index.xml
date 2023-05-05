@@ -5,7 +5,48 @@
     <link>https://ret2school.github.io/post/</link>
     <description>Recent content in Posts on ret2school</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Thu, 28 Jul 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 10 Jan 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>[UTCTF 2023] Welcome</title>
+      <link>https://ret2school.github.io/post/welcome/</link>
+      <pubDate>Tue, 10 Jan 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/welcome/</guid>
+      <description>UTCTF 2023: Welcome  Welcome
+1000
+Note: while this challenge is nominally RE, there is some crypto-level/crypto-style math involved too.
+Welcome to UTCTF! I made a special last minute program just for you to display a wonderful welcome message (+ flag!) I may have accidentally (okay&amp;hellip; purposely) made a small bug in my math &amp;gt; that makes this unsolvable(TM). Can you figure it out and fix it for me please?</description>
+    </item>
+    
+    <item>
+      <title>[SECCON CTF 2022 Quals] babyfile</title>
+      <link>https://ret2school.github.io/post/babyfile/</link>
+      <pubDate>Fri, 19 Aug 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/babyfile/</guid>
+      <description>Introduction babyfile is a file stream exploitation I did during the SECCON CTF 2022 Quals event. I didn’t succeed to flag it within the 24 hours :(. But anyway I hope this write up will be interesting to read given I show another way to gain code execution &amp;ndash; I have not seen before &amp;ndash; based on _IO_obstack_jumps! The related files can be found here. If you&amp;rsquo;re not familiar with file stream internals, I advice you to read my previous writeups about file stream exploitation, especially this one and this other one.</description>
+    </item>
+    
+    <item>
+      <title>[corCTF 2022 - pwn] zigzag</title>
+      <link>https://ret2school.github.io/post/zigzag/</link>
+      <pubDate>Mon, 08 Aug 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/zigzag/</guid>
+      <description>Introduction zigzag is a zig heap challenge I did during the corCTF 2022 event. It was pretty exotic given we have to pwn a heap like challenge written in zig. It is not using the C allocator but instead it uses the GeneralPurposeAllocator, which makes the challenge even more interesting. Find the tasks here.
+TL; DR  Understanding zig GeneralPurposeAllocator internals Hiijack the BucketHeader of a given bucket to get a write what were / read what where primitive.</description>
+    </item>
+    
+    <item>
+      <title>[corCTF 2022 - pwn] cshell2</title>
+      <link>https://ret2school.github.io/post/cshell2/</link>
+      <pubDate>Sun, 07 Aug 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/cshell2/</guid>
+      <description>Introduction cshell2 is a heap challenge I did during the corCTF 2022 event. It was pretty classic so I will not describe a lot. If you begin with heap challenges, I advice you to read previous heap writeup.
+TL; DR  Fill tcache. Heap overflow in edit on the bio field which allows to leak the address of the unsortedbin. Leak heap and defeat safe-linking to get an arbitrary write through tcache poisoning.</description>
+    </item>
+    
     <item>
       <title>[diceCTF 2022 - pwn] catastrophe</title>
       <link>https://ret2school.github.io/post/catastrophe/</link>
@@ -459,8 +500,9 @@ To extract ptx text from a host binary, use the following command: cuobjdump -pt
       <pubDate>Tue, 25 Feb 2020 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/post/list_team/</guid>
-      <description>Members The team is composed of:
- nasm (17 yo, interested in RE/pwn) supersnail (chad reverser) Zeynn (18 yo, web/steg/cypto) x. (the Guesser, the carry-er) Tek 0xPierre r0da (RE stuff) op (pwn/RE, a little bit of everything :) ) look Ast4te  </description>
+      <description>Background The r2s (ret2school) team has been created in 2020 by french ctf players from the REsearch discord server. We do CTF for fun to learn new things, if you’re looking for a CTF team, we’re fully open.
+Members The team is composed of:
+ nasm (19 yo, interested in RE/pwn) supersnail (chad reverser) Zeynn (20 yo, web/steg/cypto) x. (the Guesser, the carry-er) Tek 0xPierre r0da (RE stuff) op (pwn/RE, a little bit of everything :) look Ast4te  </description>
     </item>
     
   </channel>

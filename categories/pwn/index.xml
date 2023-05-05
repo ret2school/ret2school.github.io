@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>pwn on ret2school</title>
+    <link>https://ret2school.github.io/categories/pwn/</link>
+    <description>Recent content in pwn on ret2school</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Mon, 08 Aug 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/categories/pwn/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>[corCTF 2022 - pwn] zigzag</title>
+      <link>https://ret2school.github.io/post/zigzag/</link>
+      <pubDate>Mon, 08 Aug 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/zigzag/</guid>
+      <description>Introduction zigzag is a zig heap challenge I did during the corCTF 2022 event. It was pretty exotic given we have to pwn a heap like challenge written in zig. It is not using the C allocator but instead it uses the GeneralPurposeAllocator, which makes the challenge even more interesting. Find the tasks here.
+TL; DR  Understanding zig GeneralPurposeAllocator internals Hiijack the BucketHeader of a given bucket to get a write what were / read what where primitive.</description>
+    </item>
+    
+    <item>
+      <title>[corCTF 2022 - pwn] cshell2</title>
+      <link>https://ret2school.github.io/post/cshell2/</link>
+      <pubDate>Sun, 07 Aug 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/cshell2/</guid>
+      <description>Introduction cshell2 is a heap challenge I did during the corCTF 2022 event. It was pretty classic so I will not describe a lot. If you begin with heap challenges, I advice you to read previous heap writeup.
+TL; DR  Fill tcache. Heap overflow in edit on the bio field which allows to leak the address of the unsortedbin. Leak heap and defeat safe-linking to get an arbitrary write through tcache poisoning.</description>
+    </item>
+    
+  </channel>
+</rss>

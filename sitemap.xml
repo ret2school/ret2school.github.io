@@ -2,16 +2,67 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://ret2school.github.io/post/welcome/</loc>
+    <lastmod>2023-01-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/tags/ctf/</loc>
+    <lastmod>2023-01-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/tags/file-stream/</loc>
+    <lastmod>2023-01-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/tags/linux/</loc>
+    <lastmod>2023-01-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/tags/nasm/</loc>
+    <lastmod>2023-01-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/post/</loc>
+    <lastmod>2023-01-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/tags/pwn/</loc>
+    <lastmod>2023-01-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/</loc>
+    <lastmod>2023-01-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/tags/seccon/</loc>
+    <lastmod>2023-01-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/tags/</loc>
+    <lastmod>2023-01-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/post/babyfile/</loc>
+    <lastmod>2022-08-19T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://ret2school.github.io/tags/2022/</loc>
-    <lastmod>2022-07-28T00:00:00+00:00</lastmod>
+    <lastmod>2022-08-08T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/post/zigzag/</loc>
+    <lastmod>2022-08-08T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/categories/</loc>
+    <lastmod>2022-08-08T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/tags/corctf/</loc>
+    <lastmod>2022-08-08T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/tags/heap/</loc>
+    <lastmod>2022-08-08T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/categories/pwn/</loc>
+    <lastmod>2022-08-08T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/tags/zig/</loc>
+    <lastmod>2022-08-08T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/post/cshell2/</loc>
+    <lastmod>2022-08-07T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://ret2school.github.io/post/catastrophe/</loc>
     <lastmod>2022-07-28T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://ret2school.github.io/tags/aassfxxx/</loc>
-    <lastmod>2022-07-28T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://ret2school.github.io/tags/ctf/</loc>
     <lastmod>2022-07-28T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://ret2school.github.io/tags/dicectf/</loc>
@@ -20,25 +71,7 @@
     <loc>https://ret2school.github.io/tags/fsop/</loc>
     <lastmod>2022-07-28T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://ret2school.github.io/tags/heap/</loc>
-    <lastmod>2022-07-28T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://ret2school.github.io/tags/nasm/</loc>
-    <lastmod>2022-07-28T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://ret2school.github.io/post/</loc>
-    <lastmod>2022-07-28T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://ret2school.github.io/tags/pwn/</loc>
-    <lastmod>2022-07-28T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>https://ret2school.github.io/tags/ret2school/</loc>
-    <lastmod>2022-07-28T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://ret2school.github.io/</loc>
-    <lastmod>2022-07-28T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://ret2school.github.io/tags/</loc>
     <lastmod>2022-07-28T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://ret2school.github.io/post/onceandforall/</loc>
@@ -415,8 +448,6 @@
   </url><url>
     <loc>https://ret2school.github.io/post/list_team/</loc>
     <lastmod>2020-02-25T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://ret2school.github.io/categories/</loc>
   </url><url>
     <loc>https://ret2school.github.io/tags/x./</loc>
   </url>
