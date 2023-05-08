@@ -5,7 +5,20 @@
     <link>https://ret2school.github.io/post/</link>
     <description>Recent content in Posts on ret2school</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Sun, 07 May 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 08 May 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>[pwnme 2023] chip8</title>
+      <link>https://ret2school.github.io/post/chip8/</link>
+      <pubDate>Mon, 08 May 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/chip8/</guid>
+      <description>chip8  Solves: 24 Easy
+I just found a repo of a chip-8 emulator, it may be vulnerable but I didn&amp;rsquo;t had enough time to report the vulnerability with a working PoC. You must find a way to get the flag in memory on the remote service !
+Author: Express#8049
+Remote service at : nc 51.254.39.184 1337
+ chip8 is a emulator-pwn challenge I did during the pwnme CTF . You can find the related files here.</description>
+    </item>
+    
     <item>
       <title>[pwnme 2023] Heap-hop</title>
       <link>https://ret2school.github.io/post/heaphop/</link>

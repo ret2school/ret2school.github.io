@@ -5,13 +5,67 @@
     <link>https://ret2school.github.io/tags/</link>
     <description>Recent content in Tags on ret2school</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Sun, 07 May 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 08 May 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>chip8</title>
+      <link>https://ret2school.github.io/tags/chip8/</link>
+      <pubDate>Mon, 08 May 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/chip8/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>ctf</title>
       <link>https://ret2school.github.io/tags/ctf/</link>
-      <pubDate>Sun, 07 May 2023 00:00:00 +0000</pubDate>
+      <pubDate>Mon, 08 May 2023 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/tags/ctf/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>emulator</title>
+      <link>https://ret2school.github.io/tags/emulator/</link>
+      <pubDate>Mon, 08 May 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/emulator/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>linux</title>
+      <link>https://ret2school.github.io/tags/linux/</link>
+      <pubDate>Mon, 08 May 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/linux/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>nasm</title>
+      <link>https://ret2school.github.io/tags/nasm/</link>
+      <pubDate>Mon, 08 May 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/nasm/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>pwn</title>
+      <link>https://ret2school.github.io/tags/pwn/</link>
+      <pubDate>Mon, 08 May 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/pwn/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>pwnme</title>
+      <link>https://ret2school.github.io/tags/pwnme/</link>
+      <pubDate>Mon, 08 May 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/pwnme/</guid>
       <description></description>
     </item>
     
@@ -21,42 +75,6 @@
       <pubDate>Sun, 07 May 2023 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/tags/heap/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>linux</title>
-      <link>https://ret2school.github.io/tags/linux/</link>
-      <pubDate>Sun, 07 May 2023 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/linux/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>nasm</title>
-      <link>https://ret2school.github.io/tags/nasm/</link>
-      <pubDate>Sun, 07 May 2023 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/nasm/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>pwn</title>
-      <link>https://ret2school.github.io/tags/pwn/</link>
-      <pubDate>Sun, 07 May 2023 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/pwn/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>pwnme</title>
-      <link>https://ret2school.github.io/tags/pwnme/</link>
-      <pubDate>Sun, 07 May 2023 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/pwnme/</guid>
       <description></description>
     </item>
     

