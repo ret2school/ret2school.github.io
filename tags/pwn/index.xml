@@ -5,7 +5,34 @@
     <link>https://ret2school.github.io/tags/pwn/</link>
     <description>Recent content in pwn on ret2school</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Tue, 10 Jan 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/pwn/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 07 May 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/pwn/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>[pwnme 2023] Heap-hop</title>
+      <link>https://ret2school.github.io/post/heaphop/</link>
+      <pubDate>Sun, 07 May 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/heaphop/</guid>
+      <description>Heap-Hop  Solves: 31 Medium
+Heap exploitation is cool, and the best is when no free is used. &amp;gt;Try to pwn the challenge and get the flag remotely.
+Note:
+ You must spawn an instance to solve this challenge. You can connect to it with netcat: nc IP PORT  Author: Express#8049
+Remote service at : nc 51.254.39.184 1336
+ Heap-hop is a heap exploitation challenge I did during the pwnme CTF.</description>
+    </item>
+    
+    <item>
+      <title>[pwnme 2023] vip</title>
+      <link>https://ret2school.github.io/post/vip/</link>
+      <pubDate>Sun, 07 May 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/vip/</guid>
+      <description>VIP at libc  Sooo I heard that if you were VIP, you could access some specific features! Maybe one of those features can be used to get inside their system?
+INFO : This challenge need to spawn an instance, you can connect to it with netcat: nc IP PORT
+Author: Zerotistic#0001
+Remote service at : nc 51.254.39.184 1335
+ VIP at libc is a basic stack based buffer overflow challenge.</description>
+    </item>
+    
     <item>
       <title>[UTCTF 2023] Welcome</title>
       <link>https://ret2school.github.io/post/welcome/</link>

@@ -5,13 +5,67 @@
     <link>https://ret2school.github.io/tags/</link>
     <description>Recent content in Tags on ret2school</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Tue, 10 Jan 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 07 May 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>ctf</title>
       <link>https://ret2school.github.io/tags/ctf/</link>
-      <pubDate>Tue, 10 Jan 2023 00:00:00 +0000</pubDate>
+      <pubDate>Sun, 07 May 2023 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/tags/ctf/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>heap</title>
+      <link>https://ret2school.github.io/tags/heap/</link>
+      <pubDate>Sun, 07 May 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/heap/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>linux</title>
+      <link>https://ret2school.github.io/tags/linux/</link>
+      <pubDate>Sun, 07 May 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/linux/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>nasm</title>
+      <link>https://ret2school.github.io/tags/nasm/</link>
+      <pubDate>Sun, 07 May 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/nasm/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>pwn</title>
+      <link>https://ret2school.github.io/tags/pwn/</link>
+      <pubDate>Sun, 07 May 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/pwn/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>pwnme</title>
+      <link>https://ret2school.github.io/tags/pwnme/</link>
+      <pubDate>Sun, 07 May 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/pwnme/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>tcache</title>
+      <link>https://ret2school.github.io/tags/tcache/</link>
+      <pubDate>Sun, 07 May 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/tcache/</guid>
       <description></description>
     </item>
     
@@ -21,24 +75,6 @@
       <pubDate>Tue, 10 Jan 2023 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/tags/file-stream/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>linux</title>
-      <link>https://ret2school.github.io/tags/linux/</link>
-      <pubDate>Tue, 10 Jan 2023 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/linux/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>pwn</title>
-      <link>https://ret2school.github.io/tags/pwn/</link>
-      <pubDate>Tue, 10 Jan 2023 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/pwn/</guid>
       <description></description>
     </item>
     
@@ -61,15 +97,6 @@
     </item>
     
     <item>
-      <title>nasm</title>
-      <link>https://ret2school.github.io/tags/nasm/</link>
-      <pubDate>Fri, 19 Aug 2022 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/nasm/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>2022</title>
       <link>https://ret2school.github.io/tags/2022/</link>
       <pubDate>Mon, 08 Aug 2022 00:00:00 +0000</pubDate>
@@ -84,15 +111,6 @@
       <pubDate>Mon, 08 Aug 2022 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/tags/corctf/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>heap</title>
-      <link>https://ret2school.github.io/tags/heap/</link>
-      <pubDate>Mon, 08 Aug 2022 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/heap/</guid>
       <description></description>
     </item>
     
