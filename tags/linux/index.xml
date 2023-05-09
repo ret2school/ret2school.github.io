@@ -5,7 +5,18 @@
     <link>https://ret2school.github.io/tags/linux/</link>
     <description>Recent content in linux on ret2school</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Mon, 08 May 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/linux/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 09 May 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/linux/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>[pwnme 2023 - pwn] PwnMeIfYouKern</title>
+      <link>https://ret2school.github.io/post/pwn_me_if_you_kern/</link>
+      <pubDate>Tue, 09 May 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/pwn_me_if_you_kern/</guid>
+      <description>PwnMeIfYouKern was a linux kernel exploitation challenge from pwnme 2023.
+There were no SMAP or SMEP, but KASLR was activated.
+user@PwnMeIfYouKern:~$ cat /proc/cpuinfo | grep sm.p user@PwnMeIfYouKern:~$ cat /proc/cmdline console=ttyS0 loglevel=3 oops=panic panic=1 kaslr user@PwnMeIfYouKern:~$ cat /proc/sys/vm/mmap_min_addr 4096 TL;DR  we manipulate elements from a linked list each element contains a buffer, his size, and a pointer to the next element of the list there is a buffer overflow, we can change the size of the buffer to leak data, and overwrite the pointer to the next element to get an arbitrary read/write break kaslr by leaking a pipe_buffer structure overwrite modprobe_path enjoy  Reverse engineering Here is the write function :</description>
+    </item>
+    
     <item>
       <title>[pwnme 2023] chip8</title>
       <link>https://ret2school.github.io/post/chip8/</link>
@@ -44,18 +55,6 @@ INFO : This challenge need to spawn an instance, you can connect to it with netc
 Author: Zerotistic#0001
 Remote service at : nc 51.254.39.184 1335
  VIP at libc is a basic stack based buffer overflow challenge.</description>
-    </item>
-    
-    <item>
-      <title>[UTCTF 2023] Welcome</title>
-      <link>https://ret2school.github.io/post/welcome/</link>
-      <pubDate>Tue, 10 Jan 2023 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/post/welcome/</guid>
-      <description>UTCTF 2023: Welcome  Welcome
-1000
-Note: while this challenge is nominally RE, there is some crypto-level/crypto-style math involved too.
-Welcome to UTCTF! I made a special last minute program just for you to display a wonderful welcome message (+ flag!) I may have accidentally (okay&amp;hellip; purposely) made a small bug in my math &amp;gt; that makes this unsolvable(TM). Can you figure it out and fix it for me please?</description>
     </item>
     
     <item>

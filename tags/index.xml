@@ -5,7 +5,52 @@
     <link>https://ret2school.github.io/tags/</link>
     <description>Recent content in Tags on ret2school</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Mon, 08 May 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 09 May 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>ctf</title>
+      <link>https://ret2school.github.io/tags/ctf/</link>
+      <pubDate>Tue, 09 May 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/ctf/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>kernel</title>
+      <link>https://ret2school.github.io/tags/kernel/</link>
+      <pubDate>Tue, 09 May 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/kernel/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>linux</title>
+      <link>https://ret2school.github.io/tags/linux/</link>
+      <pubDate>Tue, 09 May 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/linux/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>pwnme</title>
+      <link>https://ret2school.github.io/tags/pwnme/</link>
+      <pubDate>Tue, 09 May 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/pwnme/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Tek</title>
+      <link>https://ret2school.github.io/tags/tek/</link>
+      <pubDate>Tue, 09 May 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/tek/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>chip8</title>
       <link>https://ret2school.github.io/tags/chip8/</link>
@@ -16,29 +61,11 @@
     </item>
     
     <item>
-      <title>ctf</title>
-      <link>https://ret2school.github.io/tags/ctf/</link>
-      <pubDate>Mon, 08 May 2023 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/ctf/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>emulator</title>
       <link>https://ret2school.github.io/tags/emulator/</link>
       <pubDate>Mon, 08 May 2023 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/tags/emulator/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>linux</title>
-      <link>https://ret2school.github.io/tags/linux/</link>
-      <pubDate>Mon, 08 May 2023 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/linux/</guid>
       <description></description>
     </item>
     
@@ -61,15 +88,6 @@
     </item>
     
     <item>
-      <title>pwnme</title>
-      <link>https://ret2school.github.io/tags/pwnme/</link>
-      <pubDate>Mon, 08 May 2023 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/pwnme/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>heap</title>
       <link>https://ret2school.github.io/tags/heap/</link>
       <pubDate>Sun, 07 May 2023 00:00:00 +0000</pubDate>
@@ -88,20 +106,20 @@
     </item>
     
     <item>
-      <title>file stream</title>
-      <link>https://ret2school.github.io/tags/file-stream/</link>
+      <title>avr</title>
+      <link>https://ret2school.github.io/tags/avr/</link>
       <pubDate>Tue, 10 Jan 2023 00:00:00 +0000</pubDate>
       
-      <guid>https://ret2school.github.io/tags/file-stream/</guid>
+      <guid>https://ret2school.github.io/tags/avr/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>SECCON</title>
-      <link>https://ret2school.github.io/tags/seccon/</link>
+      <title>reverse</title>
+      <link>https://ret2school.github.io/tags/reverse/</link>
       <pubDate>Tue, 10 Jan 2023 00:00:00 +0000</pubDate>
       
-      <guid>https://ret2school.github.io/tags/seccon/</guid>
+      <guid>https://ret2school.github.io/tags/reverse/</guid>
       <description></description>
     </item>
     
@@ -111,6 +129,24 @@
       <pubDate>Tue, 10 Jan 2023 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/tags/supersnail/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>file stream</title>
+      <link>https://ret2school.github.io/tags/file-stream/</link>
+      <pubDate>Fri, 19 Aug 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/file-stream/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>SECCON</title>
+      <link>https://ret2school.github.io/tags/seccon/</link>
+      <pubDate>Fri, 19 Aug 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/seccon/</guid>
       <description></description>
     </item>
     
@@ -205,15 +241,6 @@
     </item>
     
     <item>
-      <title>Tek</title>
-      <link>https://ret2school.github.io/tags/tek/</link>
-      <pubDate>Tue, 05 Apr 2022 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/tek/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>web</title>
       <link>https://ret2school.github.io/tags/web/</link>
       <pubDate>Tue, 05 Apr 2022 00:00:00 +0000</pubDate>
@@ -255,15 +282,6 @@
       <pubDate>Fri, 04 Mar 2022 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/tags/prog/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>reverse</title>
-      <link>https://ret2school.github.io/tags/reverse/</link>
-      <pubDate>Fri, 04 Mar 2022 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/reverse/</guid>
       <description></description>
     </item>
     

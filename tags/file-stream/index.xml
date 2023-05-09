@@ -5,19 +5,7 @@
     <link>https://ret2school.github.io/tags/file-stream/</link>
     <description>Recent content in file stream on ret2school</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Tue, 10 Jan 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/file-stream/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>[UTCTF 2023] Welcome</title>
-      <link>https://ret2school.github.io/post/welcome/</link>
-      <pubDate>Tue, 10 Jan 2023 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/post/welcome/</guid>
-      <description>UTCTF 2023: Welcome  Welcome
-1000
-Note: while this challenge is nominally RE, there is some crypto-level/crypto-style math involved too.
-Welcome to UTCTF! I made a special last minute program just for you to display a wonderful welcome message (+ flag!) I may have accidentally (okay&amp;hellip; purposely) made a small bug in my math &amp;gt; that makes this unsolvable(TM). Can you figure it out and fix it for me please?</description>
-    </item>
-    
+    <lastBuildDate>Fri, 19 Aug 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/file-stream/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>[SECCON CTF 2022 Quals] babyfile</title>
       <link>https://ret2school.github.io/post/babyfile/</link>
