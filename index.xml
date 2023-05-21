@@ -5,7 +5,23 @@
     <link>https://ret2school.github.io/</link>
     <description>Recent content on ret2school</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Tue, 09 May 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 21 May 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>[Grey Cat CTF Quals 2023 - pwn] Write me a Book</title>
+      <link>https://ret2school.github.io/post/writemeabook/</link>
+      <pubDate>Sun, 21 May 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/writemeabook/</guid>
+      <description>Write me a book  Write me a Book 349
+Give back to the library! Share your thoughts and experiences!
+The flag can be found in /flag
+Elma
+nc 34.124.157.94 12346
+ Write me a book is a heap challenge I did during the Grey Cat The Flag 2023 Qualifiers. You can find the tasks and the exploit here.
+TL;DR To manage to read the flag we have to:
+ create overlapping chunks due to an oob write vulnerability in rewrite_books tcache poisoning thanks to the overlapping chunks Overwrite the first entry of @books to then be able to rewrite 4 entries of @books by setting a large size.</description>
+    </item>
+    
     <item>
       <title>[pwnme 2023 - pwn] PwnMeIfYouKern</title>
       <link>https://ret2school.github.io/post/pwn_me_if_you_kern/</link>
