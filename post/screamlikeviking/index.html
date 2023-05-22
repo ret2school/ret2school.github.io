@@ -116,21 +116,6 @@ Perhaps he could play with his own echoes to guess what the meaning of this famo
 <li>Håstad&rsquo;s broadcast attack (CRT + <code>e</code>-th root) on the pairs of <code>(C, N)</code></li>
 </ul>
 <h1 id="code-review">Code review</h1>
-<p>The following source code is given:# [pwnme 2023 - crypto] Scream Like Viking</p>
-<blockquote>
-<p>Our protagonist John is in a room, he hears some kind of noise, like something resonating.
-But he doesn&rsquo;t understand it&hellip;
-Perhaps he could play with his own echoes to guess what the meaning of this famous resonance could be&hellip;</p>
-<p><code>nc 51.68.95.78 32773</code></p>
-</blockquote>
-<!-- raw HTML omitted -->
-<p>This article is a write-up for &ldquo;Scream Like Viking&rdquo;, a cryptography challenge from PwnMe 2023.</p>
-<h1 id="tldr-1">TL;DR</h1>
-<ul>
-<li>Get pairs of <code>(C, N)</code> where <code>N</code> is recovered by taking GCD of multiple <code>M^e - C</code></li>
-<li>Håstad&rsquo;s broadcast attack (CRT + <code>e</code>-th root) on the pairs of <code>(C, N)</code></li>
-</ul>
-<h1 id="code-review-1">Code review</h1>
 <p>The following source code is given:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#ff79c6">from</span> Crypto.Util.number <span style="color:#ff79c6">import</span> getPrime, bytes_to_long, long_to_bytes
 <span style="color:#ff79c6">from</span> Crypto.Util.Padding <span style="color:#ff79c6">import</span> pad
