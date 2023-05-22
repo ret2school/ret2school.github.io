@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title>[pwnme 2023 - crypto] Scream Like Viking // ret2school</title>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.92.2" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="nasm" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="https://ret2school.github.io/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css" />
+
+    
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8K5XT0SJN8"></script>
+<script>
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-8K5XT0SJN8', { 'anonymize_ip': false });
+}
+</script>
+
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="[pwnme 2023 - crypto] Scream Like Viking"/>
+<meta name="twitter:description" content="[pwnme 2023 - crypto] Scream Like Viking  Our protagonist John is in a room, he hears some kind of noise, like something resonating. But he doesn&rsquo;t understand it&hellip; Perhaps he could play with his own echoes to guess what the meaning of this famous resonance could be&hellip;
+nc 51.68.95.78 32773
+ Scream Like Viking&#34;
+This article is a write-up for &ldquo;Scream Like Viking&rdquo;, a cryptography challenge from PwnMe 2023."/>
+
+    <meta property="og:title" content="[pwnme 2023 - crypto] Scream Like Viking" />
+<meta property="og:description" content="[pwnme 2023 - crypto] Scream Like Viking  Our protagonist John is in a room, he hears some kind of noise, like something resonating. But he doesn&rsquo;t understand it&hellip; Perhaps he could play with his own echoes to guess what the meaning of this famous resonance could be&hellip;
+nc 51.68.95.78 32773
+ Scream Like Viking&#34;
+This article is a write-up for &ldquo;Scream Like Viking&rdquo;, a cryptography challenge from PwnMe 2023." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ret2school.github.io/post/screamlikeviking/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2023-05-22T00:00:00+00:00" />
+<meta property="article:modified_time" content="2023-05-22T00:00:00+00:00" />
+
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://ret2school.github.io"><img class="app-header-avatar" src="/pic.jpeg" alt="nasm" /></a>
+      <h1>ret2school</h1>
+      <nav class="app-header-menu">
+          <a class="app-header-menu-item" href="/">Home</a>
+             / 
+          
+          <a class="app-header-menu-item" href="/tags/">Tags</a>
+      </nav>
+      <p>Just a bunch of french ctf players</p>
+      <div class="app-header-social">
+        
+          <a target="_blank" href="https://github.com/ret2school" rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github">
+  <title>github</title>
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+</svg></a>
+        
+          <a target="_blank" href="https://twitter.com/ret2school_fr" rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-twitter">
+  <title>twitter</title>
+  <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
+</svg></a>
+        
+      </div>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">[pwnme 2023 - crypto] Scream Like Viking</h1>
+      <div class="post-meta">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          May 22, 2023
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          5 min read
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tag">
+  <title>tag</title>
+  <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line>
+</svg>
+              <a class="tag" href="https://ret2school.github.io/tags/ctf/">ctf</a>
+              <a class="tag" href="https://ret2school.github.io/tags/alol/">Alol</a>
+              <a class="tag" href="https://ret2school.github.io/tags/yarienkiva/">yarienkiva</a>
+              <a class="tag" href="https://ret2school.github.io/tags/crypto/">crypto</a>
+              <a class="tag" href="https://ret2school.github.io/tags/">Tags</a>
+              <a class="tag" href="https://ret2school.github.io/tags/pwnme/">pwnme</a>
+        </div>
+      </div>
+    </header>
+    <div class="post-content">
+      <h1 id="pwnme-2023---crypto-scream-like-viking">[pwnme 2023 - crypto] Scream Like Viking</h1>
+<blockquote>
+<p>Our protagonist John is in a room, he hears some kind of noise, like something resonating.
+But he doesn&rsquo;t understand it&hellip;
+Perhaps he could play with his own echoes to guess what the meaning of this famous resonance could be&hellip;</p>
+<p><code>nc 51.68.95.78 32773</code></p>
+</blockquote>
+<p><img src="https://media.tenor.com/O8zaeaYI8NkAAAAd/fus-roh-dah-skyrim.gif" alt="Shout Like Dovahkiin > Scream Like Viking"></p>
+<p>This article is a write-up for &ldquo;Scream Like Viking&rdquo;, a cryptography challenge from PwnMe 2023.</p>
+<h1 id="tldr">TL;DR</h1>
+<ul>
+<li>Get pairs of <code>(C, N)</code> where <code>N</code> is recovered by taking GCD of multiple <code>M^e - C</code></li>
+<li>Håstad&rsquo;s broadcast attack (CRT + <code>e</code>-th root) on the pairs of <code>(C, N)</code></li>
+</ul>
+<h1 id="code-review">Code review</h1>
+<p>The following source code is given:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#ff79c6">from</span> Crypto.Util.number <span style="color:#ff79c6">import</span> getPrime, bytes_to_long, long_to_bytes
+<span style="color:#ff79c6">from</span> Crypto.Util.Padding <span style="color:#ff79c6">import</span> pad
+
+e <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">17</span>
+p <span style="color:#ff79c6">=</span> getPrime(<span style="color:#bd93f9">512</span>)
+q <span style="color:#ff79c6">=</span> getPrime(<span style="color:#bd93f9">512</span>)
+N <span style="color:#ff79c6">=</span> p <span style="color:#ff79c6">*</span> q
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">encrypt</span>(m):
+    <span style="color:#ff79c6">assert</span> <span style="color:#bd93f9">0</span> <span style="color:#ff79c6">&lt;=</span> m <span style="color:#ff79c6">&lt;</span> N    
+    c <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">pow</span>(bytes_to_long(pad(long_to_bytes(m), <span style="color:#bd93f9">50</span>)), e, N)
+    <span style="color:#ff79c6">return</span> <span style="color:#8be9fd;font-style:italic">int</span>(c)
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">encrypt_flag</span>():
+    <span style="color:#ff79c6">with</span> <span style="color:#8be9fd;font-style:italic">open</span>(<span style="color:#f1fa8c">&#34;/flag.txt&#34;</span>, <span style="color:#f1fa8c">&#34;rb&#34;</span>) <span style="color:#ff79c6">as</span> f:
+        flag <span style="color:#ff79c6">=</span> f<span style="color:#ff79c6">.</span>read()
+    c <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">pow</span>(bytes_to_long(pad(flag, <span style="color:#bd93f9">50</span>)), e, N)
+    <span style="color:#ff79c6">return</span> c
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">main</span>():
+    <span style="color:#ff79c6">try</span>:
+        <span style="color:#ff79c6">while</span> <span style="color:#ff79c6">True</span>:
+            <span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">&#34;Enter your option (Encrypt or Flag) &gt; &#34;</span>, end<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#39;&#39;</span>)
+            cmd <span style="color:#ff79c6">=</span> (<span style="color:#8be9fd;font-style:italic">input</span>()<span style="color:#ff79c6">.</span>strip())
+            <span style="color:#ff79c6">if</span> cmd <span style="color:#ff79c6">==</span> <span style="color:#f1fa8c">&#34;Encrypt&#34;</span>:
+                <span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">&#34;Enter your integer to encrypt &gt; &#34;</span>, end<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#39;&#39;</span>)
+                m <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">int</span>(<span style="color:#8be9fd;font-style:italic">input</span>())
+                c <span style="color:#ff79c6">=</span> encrypt(m)
+                <span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#8be9fd;font-style:italic">str</span>(c) <span style="color:#ff79c6">+</span> <span style="color:#f1fa8c">&#39;</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#39;</span>)
+            <span style="color:#ff79c6">elif</span> cmd <span style="color:#ff79c6">==</span> <span style="color:#f1fa8c">&#34;Flag&#34;</span>:
+                c <span style="color:#ff79c6">=</span> encrypt_flag()
+                <span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">&#34;Flag cipher for you: &#34;</span> <span style="color:#ff79c6">+</span> <span style="color:#8be9fd;font-style:italic">str</span>(c) <span style="color:#ff79c6">+</span> <span style="color:#f1fa8c">&#39;</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#39;</span>)
+                <span style="color:#ff79c6">return</span>
+    <span style="color:#ff79c6">except</span> Exception <span style="color:#ff79c6">as</span> e:
+        <span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">&#34;An error occured:</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>, e)
+
+<span style="color:#ff79c6">if</span> __name__ <span style="color:#ff79c6">==</span> <span style="color:#f1fa8c">&#34;__main__&#34;</span>:
+    main()
+</code></pre></div><p>The challenge is a classical RSA encryption oracle, we can either ask for the encrypted flag or encrypt a plaintext of our choosing. The twists here are that the modulus <code>N</code> isn&rsquo;t given and the exponent <code>e</code> is 17 (pretty smol). When a small <code>e</code> is used to encrypt a message <code>M</code> it&rsquo;s possible that <code>M^e &lt; N</code>, sidestepping the modulo operation and making it possible to recover <code>M</code> by taking the <code>e</code>-th root of <code>C</code> (the ciphertext). This can be remediated by padding <code>M</code> to make it large enough that the modulo operation happens all the time.</p>
+<p>We can&rsquo;t take the <code>17-th</code> root of <code>C</code> here because <code>M</code> is padded, thus the modulo operation has taken place, but we could use Håstad&rsquo;s broadcast attack (hinted at in the challenge title and description) since the flag is encrypted with a different modulus each time. Before that, however, we&rsquo;ll need to find a way to recover <code>N</code>.</p>
+<h1 id="recovering-n">Recovering N</h1>
+<p>This part is based on <a href="https://cryptohack.gitbook.io/cryptobook/untitled/recovering-the-modulus">this page</a> from CryptoBook, the CryptoHack gitbook. We can&rsquo;t send <code>-1</code> to recover <code>N-1</code> as the message is padded server-side but we can still recover <code>N</code> by using pairs of messages and encrypted messages.
+The general idea is the following:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">C <span style="color:#ff79c6">=</span> M<span style="color:#ff79c6">^</span>e [N] <span style="color:#ff79c6">&lt;=&gt;</span> C <span style="color:#ff79c6">+</span> kN <span style="color:#ff79c6">=</span> M<span style="color:#ff79c6">^</span>e (<span style="color:#ff79c6">with</span> k <span style="color:#ff79c6">in</span> Z)
+            <span style="color:#ff79c6">&lt;=&gt;</span> kN <span style="color:#ff79c6">=</span> M<span style="color:#ff79c6">^</span>e <span style="color:#ff79c6">-</span> C
+</code></pre></div><p>Thus:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">GCD(M1<span style="color:#ff79c6">^</span>e <span style="color:#ff79c6">-</span> C1, M1<span style="color:#ff79c6">^</span>e <span style="color:#ff79c6">-</span> C1) <span style="color:#ff79c6">=</span> GCD(k1 <span style="color:#ff79c6">*</span> N, k2 <span style="color:#ff79c6">*</span> N) <span style="color:#ff79c6">=</span> aN
+</code></pre></div><p><code>a = 1</code> if <code>k1</code> and <code>k2</code> are coprime but if they aren&rsquo;t we can repeat the operation with new pairs of <code>(M, C)</code> until they are. The following function implements this part of the solution.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#ff79c6">def</span> <span style="color:#50fa7b">recover_n</span>(pairs):
+    <span style="color:#ff79c6">return</span> reduce(gmpy2<span style="color:#ff79c6">.</span>gcd, [gmpy2<span style="color:#ff79c6">.</span>mpz(<span style="color:#8be9fd;font-style:italic">pow</span>(pt, e) <span style="color:#ff79c6">-</span> ct) <span style="color:#ff79c6">for</span> pt, ct <span style="color:#ff79c6">in</span> pairs])
+</code></pre></div><h1 id="håstads-broadcast-attack">Håstad&rsquo;s broadcast attack</h1>
+<p>NB: Håstad&rsquo;s broadcast attack is a Coppersmith&rsquo;s attack (based on the Coppersmith method, used to find zeros of polynomials) and its general case uses the LLL algorithm. Lattices are completely out of the scope of this write-up so the &ldquo;simple version&rdquo; of the algorithm is preferred.</p>
+<p>The simple version has two key parts: first, using the Chinese Remainder Theorem to recover <code>flag^e</code> and second, taking its <code>e</code>-th root to recover the flag. The fact that the flag is padded changes nothing as the padding is deterministic.</p>
+<p>This write-up won&rsquo;t explain in detail the Chinese Remainder Theorem (a good explanation can be found <a href="https://brilliant.org/wiki/chinese-remainder-theorem/">here</a>) but the gist of it is that given the following, we can recover <code>x</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">c1 <span style="color:#ff79c6">=</span> x [n1]
+c2 <span style="color:#ff79c6">=</span> x [n2]
+    <span style="color:#ff79c6">...</span>
+ck <span style="color:#ff79c6">=</span> x [nk]
+</code></pre></div><p>In our case <code>x</code> is <code>flag^e</code>, no more moduli to deal with. All that&rsquo;s left now is to take the <code>e</code>-th root of <code>flage^e</code> to recover the flag.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py">pt_17 <span style="color:#ff79c6">=</span> crt(N, C)[<span style="color:#bd93f9">0</span>]   <span style="color:#6272a4"># N is an array of moduli and C is an array of corresponding ciphertexts</span>
+pt, _ <span style="color:#ff79c6">=</span> gmpy2<span style="color:#ff79c6">.</span>iroot(pt_17, e)
+</code></pre></div><h1 id="conclusion">Conclusion</h1>
+<p>Below is the final commented solve script.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#ff79c6">from</span> pwn <span style="color:#ff79c6">import</span> <span style="color:#ff79c6">*</span>
+context<span style="color:#ff79c6">.</span>log_level<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#39;WARNING&#39;</span>
+
+<span style="color:#ff79c6">from</span> Crypto.Util.number <span style="color:#ff79c6">import</span> long_to_bytes, bytes_to_long
+<span style="color:#ff79c6">from</span> Crypto.Util.Padding <span style="color:#ff79c6">import</span> pad, unpad
+<span style="color:#ff79c6">from</span> sympy.ntheory.modular <span style="color:#ff79c6">import</span> crt
+<span style="color:#ff79c6">from</span> functools <span style="color:#ff79c6">import</span> reduce
+<span style="color:#ff79c6">import</span> gmpy2
+
+e <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">17</span>
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">recover_n</span>(pairs: <span style="color:#8be9fd;font-style:italic">list</span>) <span style="color:#ff79c6">-&gt;</span> <span style="color:#8be9fd;font-style:italic">int</span>:
+    <span style="color:#f1fa8c">&#39;&#39;&#39;
+</span><span style="color:#f1fa8c">    Recovers N from pairs of (pt, ct).
+</span><span style="color:#f1fa8c">    
+</span><span style="color:#f1fa8c">    N = GCD(M1^e - C1, GCD(M2^e - C2, GCD(..., GCD(Mn-1^e - Cn-1, Mn^e - Cn))))
+</span><span style="color:#f1fa8c">    &#39;&#39;&#39;</span>
+    <span style="color:#ff79c6">return</span> reduce(gmpy2<span style="color:#ff79c6">.</span>gcd, [gmpy2<span style="color:#ff79c6">.</span>mpz(<span style="color:#8be9fd;font-style:italic">pow</span>(pt, e) <span style="color:#ff79c6">-</span> ct) <span style="color:#ff79c6">for</span> pt, ct <span style="color:#ff79c6">in</span> pairs])
+
+C, N <span style="color:#ff79c6">=</span> [], []
+
+<span style="color:#ff79c6">while</span> <span style="color:#ff79c6">True</span>:
+
+    r <span style="color:#ff79c6">=</span> remote(<span style="color:#f1fa8c">&#39;51.68.95.78&#39;</span>, <span style="color:#bd93f9">32773</span>)
+    <span style="color:#6272a4">#r = process([&#39;python3&#39;, &#39;viking.py&#39;])</span>
+
+    <span style="color:#6272a4"># ---------------------- recover N ----------------------</span>
+
+    pairings <span style="color:#ff79c6">=</span> []
+
+
+    <span style="color:#ff79c6">for</span> _ <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#bd93f9">10</span>): <span style="color:#6272a4"># generate 10 pairs of (pt, ct)</span>
+                        <span style="color:#6272a4"># 10 is a perfectly arbitrary number</span>
+
+        r<span style="color:#ff79c6">.</span>recvuntil(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#39;&gt; &#39;</span>)
+        r<span style="color:#ff79c6">.</span>sendline(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#39;Encrypt&#39;</span>)
+
+        r<span style="color:#ff79c6">.</span>recvuntil(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#39;&gt; &#39;</span>)
+        m_ <span style="color:#ff79c6">=</span> os<span style="color:#ff79c6">.</span>urandom(<span style="color:#bd93f9">64</span>)
+
+        r<span style="color:#ff79c6">.</span>sendline(<span style="color:#8be9fd;font-style:italic">str</span>(bytes_to_long(m_))<span style="color:#ff79c6">.</span>encode())
+        c_ <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">int</span>(r<span style="color:#ff79c6">.</span>recvline())
+
+        pairings<span style="color:#ff79c6">.</span>append([bytes_to_long(pad(m_, <span style="color:#bd93f9">50</span>)), c_])
+
+        n <span style="color:#ff79c6">=</span> recover_n(pairings) <span style="color:#6272a4"># recover n</span>
+
+    r<span style="color:#ff79c6">.</span>recvuntil(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#39;&gt; &#39;</span>)
+    r<span style="color:#ff79c6">.</span>sendline(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#39;Flag&#39;</span>)
+
+    r<span style="color:#ff79c6">.</span>recvuntil(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#39;:&#39;</span>)
+    flag_ <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">int</span>(r<span style="color:#ff79c6">.</span>recvline())   <span style="color:#6272a4"># recover flag</span>
+
+    C<span style="color:#ff79c6">.</span>append(flag_)
+    N<span style="color:#ff79c6">.</span>append(n)
+
+    r<span style="color:#ff79c6">.</span>close()
+
+    <span style="color:#6272a4"># -------------- Håstad&#39;s broadcast attack --------------</span>
+
+    pt_17 <span style="color:#ff79c6">=</span> crt(N, C)[<span style="color:#bd93f9">0</span>]           <span style="color:#6272a4"># CRT to recover M^17</span>
+    pt, _ <span style="color:#ff79c6">=</span> gmpy2<span style="color:#ff79c6">.</span>iroot(pt_17, e)  <span style="color:#6272a4"># (M^17) ^ 1/17</span>
+
+    <span style="color:#6272a4"># checking for flag syntax is bloat, it&#39;ll be printed eventually anyway</span>
+    <span style="color:#8be9fd;font-style:italic">print</span>(long_to_bytes(pt))
+
+<span style="color:#f1fa8c">&#39;&#39;&#39;
+</span><span style="color:#f1fa8c">$ python3 solve.py
+</span><span style="color:#f1fa8c">b&#39;</span><span style="color:#f1fa8c">\x11\xb6</span><span style="color:#f1fa8c">&lt;</span><span style="color:#f1fa8c">\xe8\xbc</span><span style="color:#f1fa8c">#o</span><span style="color:#f1fa8c">\xbf</span><span style="color:#f1fa8c">&#39;
+</span><span style="color:#f1fa8c">b&#39;</span><span style="color:#f1fa8c">\x01\n\xc5</span><span style="color:#f1fa8c">%</span><span style="color:#f1fa8c">\x00</span><span style="color:#f1fa8c">^</span><span style="color:#f1fa8c">\xd6</span><span style="color:#f1fa8c">[</span><span style="color:#f1fa8c">\x94</span><span style="color:#f1fa8c">/</span><span style="color:#f1fa8c">\x05\xb7\x89\xb4\xe5</span><span style="color:#f1fa8c">-&#39;
+</span><span style="color:#f1fa8c">b&#39;</span><span style="color:#f1fa8c">\x15\xa1\xc8\x18\xbe</span><span style="color:#f1fa8c">i</span><span style="color:#f1fa8c">\xf9\x03\xc5</span><span style="color:#f1fa8c">8</span><span style="color:#f1fa8c">\x85\xe3</span><span style="color:#f1fa8c">qjV</span><span style="color:#f1fa8c">\x98\t</span><span style="color:#f1fa8c">av</span><span style="color:#f1fa8c">\xd8</span><span style="color:#f1fa8c">43U&#39;
+</span><span style="color:#f1fa8c">b&#39;</span><span style="color:#f1fa8c">\x01\x98\xd1\x83\xc1</span><span style="color:#f1fa8c">@</span><span style="color:#f1fa8c">\xcc\x96\x94\xa3\x00</span><span style="color:#f1fa8c">r</span><span style="color:#f1fa8c">\xa7</span><span style="color:#f1fa8c">+ok</span><span style="color:#f1fa8c">\xf5\x81\xb7\xc7\xc9</span><span style="color:#f1fa8c">}c</span><span style="color:#f1fa8c">\x14</span><span style="color:#f1fa8c">8</span><span style="color:#f1fa8c">\xb5\x9d\x88</span><span style="color:#f1fa8c">A</span><span style="color:#f1fa8c">\x05</span><span style="color:#f1fa8c">m&#39;
+</span><span style="color:#f1fa8c">b&#39;</span><span style="color:#f1fa8c">\x1a\x82</span><span style="color:#f1fa8c">{cC</span><span style="color:#f1fa8c">\x1b\x16\x0f\x0e\xd5</span><span style="color:#f1fa8c">e3o</span><span style="color:#f1fa8c">\xc7</span><span style="color:#f1fa8c">.</span><span style="color:#f1fa8c">\xf9\xc1\xf9</span><span style="color:#f1fa8c">z</span><span style="color:#f1fa8c">\x93\x1b</span><span style="color:#f1fa8c">+s&lt;</span><span style="color:#f1fa8c">\xac</span><span style="color:#f1fa8c">LW</span><span style="color:#f1fa8c">\xbf\xbe\xf8\xa1\xfa\xb6</span><span style="color:#f1fa8c">BN</span><span style="color:#f1fa8c">\xaa</span><span style="color:#f1fa8c">n</span><span style="color:#f1fa8c">\xaa</span><span style="color:#f1fa8c">&#39;
+</span><span style="color:#f1fa8c">b&#39;</span><span style="color:#f1fa8c">\x02\x07\xd9\x83</span><span style="color:#f1fa8c">_</span><span style="color:#f1fa8c">\xf7\x11\xc7\x8d\x1c</span><span style="color:#f1fa8c">=</span><span style="color:#f1fa8c">\xee\x98</span><span style="color:#f1fa8c">mo</span><span style="color:#f1fa8c">\xf5</span><span style="color:#f1fa8c">v</span><span style="color:#f1fa8c">\x8c\x07\xdd\xbc\xab\xbf\xff\xa7\x8f</span><span style="color:#f1fa8c">G</span><span style="color:#f1fa8c">\x95\t\xb2\xec\xe2\xd7</span><span style="color:#f1fa8c">b9[</span><span style="color:#f1fa8c">\x8a</span><span style="color:#f1fa8c">%;c</span><span style="color:#f1fa8c">\x1a</span><span style="color:#f1fa8c">!</span><span style="color:#f1fa8c">\x91\xa3\x1e\t</span><span style="color:#f1fa8c">&#39;
+</span><span style="color:#f1fa8c">b&#39;PWNME</span><span style="color:#f1fa8c">{3e851a6cc5525581446cad5694185b99}</span><span style="color:#f1fa8c">\n\n\n\n\n\n\n\n\n\n\n</span><span style="color:#f1fa8c">&#39;
+</span><span style="color:#f1fa8c">^C
+</span><span style="color:#f1fa8c">&#39;&#39;&#39;</span>
+</code></pre></div>
+    </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>

@@ -5,13 +5,49 @@
     <link>https://ret2school.github.io/tags/</link>
     <description>Recent content in Tags on ret2school</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Sun, 21 May 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 22 May 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Alol</title>
+      <link>https://ret2school.github.io/tags/alol/</link>
+      <pubDate>Mon, 22 May 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/alol/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>crypto</title>
+      <link>https://ret2school.github.io/tags/crypto/</link>
+      <pubDate>Mon, 22 May 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/crypto/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>ctf</title>
       <link>https://ret2school.github.io/tags/ctf/</link>
-      <pubDate>Sun, 21 May 2023 00:00:00 +0000</pubDate>
+      <pubDate>Mon, 22 May 2023 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/tags/ctf/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>pwnme</title>
+      <link>https://ret2school.github.io/tags/pwnme/</link>
+      <pubDate>Mon, 22 May 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/pwnme/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>yarienkiva</title>
+      <link>https://ret2school.github.io/tags/yarienkiva/</link>
+      <pubDate>Mon, 22 May 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/yarienkiva/</guid>
       <description></description>
     </item>
     
@@ -57,15 +93,6 @@
       <pubDate>Tue, 09 May 2023 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/tags/linux/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>pwnme</title>
-      <link>https://ret2school.github.io/tags/pwnme/</link>
-      <pubDate>Tue, 09 May 2023 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/pwnme/</guid>
       <description></description>
     </item>
     
@@ -300,15 +327,6 @@
       <pubDate>Sun, 02 Jan 2022 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/tags/hitcon/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Alol</title>
-      <link>https://ret2school.github.io/tags/alol/</link>
-      <pubDate>Sun, 05 Dec 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/alol/</guid>
       <description></description>
     </item>
     
@@ -597,15 +615,6 @@
       <pubDate>Sun, 11 Apr 2021 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/tags/archie/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>crypto</title>
-      <link>https://ret2school.github.io/tags/crypto/</link>
-      <pubDate>Sun, 11 Apr 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/crypto/</guid>
       <description></description>
     </item>
     
