@@ -157,7 +157,7 @@ index <code>i-0x171</code> in the large array. That's how most of the strings of
 the program are retrieved. We can then replace all the calls to this
 function with the corresponding string. I've done it by hand, by
 calling manually the function <code>_0xb32e</code> in the JavaScript console. You
-can find the resulting script <a href="src/app_deobf1.js">there</a>.</p>
+can find the resulting script <a href="https://github.com/ret2school/ctf/blob/master/2023/greyctf/reverse/crackme1/src/app_deobf1.js">there</a>.</p>
 <p>Then, the following code raises our attention. Is it the key validation
 algorithm?</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript">
@@ -309,7 +309,7 @@ in the listener <code>buttonClick</code>.</p>
 <code>context_canvas</code>. <code>context_query_c</code> is the WebGL context of the canvas
 displaying the image.</p>
 <p>For more details, you can find the final deobfuscated JS script
-<a href="src/app_deobf2.js">here</a>.</p>
+<a href="https://github.com/ret2school/ctf/blob/master/2023/greyctf/reverse/crackme1/src/app_deobf2.js">here</a>.</p>
 <p>Data is stored in three large matrices (here <code>matrix1</code>, <code>matrix2</code>,
 <code>matrix3</code>)</p>
 <p>The canvas created doesn't display anything, but is associated to a
@@ -335,7 +335,7 @@ code of the shader is the following:</p>
 the shader (<code>f</code>) is retrieved, the values of <code>a, b, c, d, e</code> are updated
 and the previous values of <code>d</code> are stored in the uniform vector <code>s</code></p>
 <p>The algorithm can be simplified and written in Python as follows (see
-full script <a href="src/check_flag.py">here</a>):</p>
+full script <a href="https://github.com/ret2school/ctf/blob/master/2023/greyctf/reverse/crackme1/src/check_flag.py">here</a>):</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">
 <span style="color:#ff79c6">import</span> sys
 
@@ -466,7 +466,7 @@ will not be zero at next iteration, the vector <code>d</code> will be reset to
 here 0 (at iteration 34), therefore we must have <code>key[0] = 82 = 'R'</code>.</p>
 <p>During the CTF, I was lazy so I retrieved one by one the characters of
 the key in the same way, but here is a nice script to get the key (full
-script <a href="src/solve.py">here</a>):</p>
+script <a href="https://github.com/ret2school/ctf/blob/master/2023/greyctf/reverse/crackme1/src/solve.py">here</a>):</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">
 <span style="color:#ff79c6">import</span> sys
 
