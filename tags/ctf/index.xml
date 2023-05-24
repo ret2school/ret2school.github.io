@@ -5,7 +5,19 @@
     <link>https://ret2school.github.io/tags/ctf/</link>
     <description>Recent content in ctf on ret2school</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Mon, 22 May 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/ctf/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 24 May 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/ctf/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>[Grey Cat CTF Quals 2023 - reverse] crackme1</title>
+      <link>https://ret2school.github.io/post/crackme1_greycat/</link>
+      <pubDate>Wed, 24 May 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/crackme1_greycat/</guid>
+      <description>TL;DR: A challenge with obfuscated JavaScript, with some WebGL shaders to reverse.
+Description: When the correct key is entered, you will see a nice image.
+When we open the webpage, we can first inspect the HTML code.
+&amp;lt;body&amp;gt; &amp;lt;canvas id=&amp;#34;c&amp;#34;&amp;gt;&amp;lt;/canvas&amp;gt; &amp;lt;div class=&amp;#34;input-container&amp;#34;&amp;gt; &amp;lt;input id=&amp;#34;textInput&amp;#34; type=&amp;#34;text&amp;#34; placeholder=&amp;#34;Enter Key&amp;#34;&amp;gt; &amp;lt;button id=&amp;#34;submitButton&amp;#34; class=&amp;#34;submit-button&amp;#34;&amp;gt;Submit&amp;lt;/button&amp;gt; &amp;lt;/div&amp;gt; &amp;lt;p id=&amp;#34;flag&amp;#34;&amp;gt;&amp;lt;/p&amp;gt; &amp;lt;script src=&amp;#34;https://webgl2fundamentals.org/webgl/resources/webgl-utils.js&amp;#34;&amp;gt;&amp;lt;/script&amp;gt; &amp;lt;script src=&amp;#34;https://webgl2fundamentals.org/webgl/resources/m4.js&amp;#34;&amp;gt;&amp;lt;/script&amp;gt; &amp;lt;script src=&amp;#34;/app.js&amp;#34;&amp;gt;&amp;lt;/script&amp;gt; &amp;lt;/body&amp;gt; We can first see that there is an empty &amp;lt;p&amp;gt; tag with id flag, which will probably be used to display the flag when the correct key is entered.</description>
+    </item>
+    
     <item>
       <title>[pwnme 2023 - crypto] Scream Like Viking</title>
       <link>https://ret2school.github.io/post/screamlikeviking/</link>

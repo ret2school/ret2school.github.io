@@ -1,0 +1,522 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title>[Grey Cat CTF Quals 2023 - reverse] crackme1 // ret2school</title>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.92.2" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="nasm" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="https://ret2school.github.io/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css" />
+
+    
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8K5XT0SJN8"></script>
+<script>
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', 'G-8K5XT0SJN8', { 'anonymize_ip': false });
+}
+</script>
+
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="[Grey Cat CTF Quals 2023 - reverse] crackme1"/>
+<meta name="twitter:description" content="TL;DR: A challenge with obfuscated JavaScript, with some WebGL shaders to reverse.
+Description: When the correct key is entered, you will see a nice image.
+When we open the webpage, we can first inspect the HTML code.
+&lt;body&gt; &lt;canvas id=&#34;c&#34;&gt;&lt;/canvas&gt; &lt;div class=&#34;input-container&#34;&gt; &lt;input id=&#34;textInput&#34; type=&#34;text&#34; placeholder=&#34;Enter Key&#34;&gt; &lt;button id=&#34;submitButton&#34; class=&#34;submit-button&#34;&gt;Submit&lt;/button&gt; &lt;/div&gt; &lt;p id=&#34;flag&#34;&gt;&lt;/p&gt; &lt;script src=&#34;https://webgl2fundamentals.org/webgl/resources/webgl-utils.js&#34;&gt;&lt;/script&gt; &lt;script src=&#34;https://webgl2fundamentals.org/webgl/resources/m4.js&#34;&gt;&lt;/script&gt; &lt;script src=&#34;/app.js&#34;&gt;&lt;/script&gt; &lt;/body&gt; We can first see that there is an empty &lt;p&gt; tag with id flag, which will probably be used to display the flag when the correct key is entered."/>
+
+    <meta property="og:title" content="[Grey Cat CTF Quals 2023 - reverse] crackme1" />
+<meta property="og:description" content="TL;DR: A challenge with obfuscated JavaScript, with some WebGL shaders to reverse.
+Description: When the correct key is entered, you will see a nice image.
+When we open the webpage, we can first inspect the HTML code.
+&lt;body&gt; &lt;canvas id=&#34;c&#34;&gt;&lt;/canvas&gt; &lt;div class=&#34;input-container&#34;&gt; &lt;input id=&#34;textInput&#34; type=&#34;text&#34; placeholder=&#34;Enter Key&#34;&gt; &lt;button id=&#34;submitButton&#34; class=&#34;submit-button&#34;&gt;Submit&lt;/button&gt; &lt;/div&gt; &lt;p id=&#34;flag&#34;&gt;&lt;/p&gt; &lt;script src=&#34;https://webgl2fundamentals.org/webgl/resources/webgl-utils.js&#34;&gt;&lt;/script&gt; &lt;script src=&#34;https://webgl2fundamentals.org/webgl/resources/m4.js&#34;&gt;&lt;/script&gt; &lt;script src=&#34;/app.js&#34;&gt;&lt;/script&gt; &lt;/body&gt; We can first see that there is an empty &lt;p&gt; tag with id flag, which will probably be used to display the flag when the correct key is entered." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ret2school.github.io/post/crackme1_greycat/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2023-05-24T00:00:00+00:00" />
+<meta property="article:modified_time" content="2023-05-24T00:00:00+00:00" />
+
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://ret2school.github.io"><img class="app-header-avatar" src="/pic.jpeg" alt="nasm" /></a>
+      <h1>ret2school</h1>
+      <nav class="app-header-menu">
+          <a class="app-header-menu-item" href="/">Home</a>
+             / 
+          
+          <a class="app-header-menu-item" href="/tags/">Tags</a>
+      </nav>
+      <p>Just a bunch of french ctf players</p>
+      <div class="app-header-social">
+        
+          <a target="_blank" href="https://github.com/ret2school" rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github">
+  <title>github</title>
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+</svg></a>
+        
+          <a target="_blank" href="https://twitter.com/ret2school_fr" rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-twitter">
+  <title>twitter</title>
+  <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
+</svg></a>
+        
+      </div>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">[Grey Cat CTF Quals 2023 - reverse] crackme1</h1>
+      <div class="post-meta">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          May 24, 2023
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          14 min read
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tag">
+  <title>tag</title>
+  <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line>
+</svg>
+              <a class="tag" href="https://ret2school.github.io/tags/ctf/">ctf</a>
+              <a class="tag" href="https://ret2school.github.io/tags/spiker00t/">spiker00t</a>
+              <a class="tag" href="https://ret2school.github.io/tags/reverse/">reverse</a>
+              <a class="tag" href="https://ret2school.github.io/tags/js/">js</a>
+        </div>
+      </div>
+    </header>
+    <div class="post-content">
+      <p><img src="/images/greycat/chall.png" alt=""></p>
+<p><strong>TL;DR:</strong> A challenge with obfuscated JavaScript, with some WebGL
+shaders to reverse.</p>
+<p><strong>Description:</strong> When the correct key is entered, you will see a nice
+image.</p>
+<p>When we open the webpage, we can first inspect the HTML code.</p>
+<p><img src="/images/greycat/webpage.png" alt=""></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">&lt;<span style="color:#ff79c6">body</span>&gt;
+    &lt;<span style="color:#ff79c6">canvas</span> <span style="color:#50fa7b">id</span><span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;c&#34;</span>&gt;&lt;/<span style="color:#ff79c6">canvas</span>&gt;
+    &lt;<span style="color:#ff79c6">div</span> <span style="color:#50fa7b">class</span><span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;input-container&#34;</span>&gt;
+      &lt;<span style="color:#ff79c6">input</span> <span style="color:#50fa7b">id</span><span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;textInput&#34;</span> <span style="color:#50fa7b">type</span><span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;text&#34;</span> <span style="color:#50fa7b">placeholder</span><span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;Enter Key&#34;</span>&gt;
+      &lt;<span style="color:#ff79c6">button</span> <span style="color:#50fa7b">id</span><span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;submitButton&#34;</span> <span style="color:#50fa7b">class</span><span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;submit-button&#34;</span>&gt;Submit&lt;/<span style="color:#ff79c6">button</span>&gt;
+    &lt;/<span style="color:#ff79c6">div</span>&gt;
+
+    &lt;<span style="color:#ff79c6">p</span> <span style="color:#50fa7b">id</span><span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;flag&#34;</span>&gt;&lt;/<span style="color:#ff79c6">p</span>&gt;
+
+    &lt;<span style="color:#ff79c6">script</span> <span style="color:#50fa7b">src</span><span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;https://webgl2fundamentals.org/webgl/resources/webgl-utils.js&#34;</span>&gt;&lt;/<span style="color:#ff79c6">script</span>&gt;
+    &lt;<span style="color:#ff79c6">script</span> <span style="color:#50fa7b">src</span><span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;https://webgl2fundamentals.org/webgl/resources/m4.js&#34;</span>&gt;&lt;/<span style="color:#ff79c6">script</span>&gt;
+    &lt;<span style="color:#ff79c6">script</span> <span style="color:#50fa7b">src</span><span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;/app.js&#34;</span>&gt;&lt;/<span style="color:#ff79c6">script</span>&gt;
+&lt;/<span style="color:#ff79c6">body</span>&gt;
+</code></pre></div><p>We can first see that there is an empty &lt;p&gt; tag with id <code>flag</code>, which
+will probably be used to display the flag when the correct key is
+entered.</p>
+<p>Moreover, the image is displayed inside of a canvas, and WebGL resources
+are loaded, we can then easily guess that the image will be displayed
+with some WebGL shaders.</p>
+<p>Then, we can finally take a look at the JS code of <code>app.js</code>. And&hellip;
+aaargh, we have to deal with deeply obfuscated JavaScript, without any
+explicit identifier.</p>
+<p><img src="/images/greycat/obfu_js.png" alt="">
+original-image-title=&quot;&quot;}</p>
+<h1 id="javascript-deobfuscation">JavaScript Deobfuscation</h1>
+<p>But&hellip; a few functions might raise our attention. First of all, the
+following function:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#8be9fd;font-style:italic">function</span> _0x3665() {
+
+    <span style="color:#8be9fd;font-style:italic">var</span> _0x35624b <span style="color:#ff79c6">=</span> [<span style="color:#f1fa8c">&#39;bindTexture&#39;</span>, <span style="color:#f1fa8c">&#39;bindBuffer&#39;</span>, <span style="color:#f1fa8c">&#39;useProgram&#39;</span>, <span style="color:#f1fa8c">&#39;round&#39;</span>, <span style="color:#f1fa8c">&#39;resizeCanvasToDisplaySize&#39;</span>, <span style="color:#f1fa8c">&#39;addEventListener&#39;</span>, <span style="color:#f1fa8c">&#39;TEXTURE_MIN_FILTER&#39;</span>, <span style="color:#f1fa8c">&#39;webgl2&#39;</span>, <span style="color:#f1fa8c">&#39;bindVertexArray&#39;</span>, <span style="color:#f1fa8c">&#39;getAttribLocation&#39;</span>, <span style="color:#f1fa8c">&#39;FLOAT&#39;</span>, ...];
+
+    _0x3665 <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">function</span>() {
+    <span style="color:#ff79c6">return</span> _0x35624b;
+    };
+    <span style="color:#ff79c6">return</span> _0x3665();
+}
+</code></pre></div><p>where <code>_0x35624b</code> is a very large array of strings. And if we search
+where this function is called, it leads to the following function:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#8be9fd;font-style:italic">function</span> _0xb32e(_0x2b2797, _0x5d6142) {
+    <span style="color:#8be9fd;font-style:italic">var</span> _0x366531 <span style="color:#ff79c6">=</span> _0x3665();
+    <span style="color:#ff79c6">return</span> _0xb32e <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">function</span>(_0xb32e88, _0x42c1d9) {
+    _0xb32e88 <span style="color:#ff79c6">=</span> _0xb32e88 <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">0x171</span>;
+    <span style="color:#8be9fd;font-style:italic">var</span> _0x3672ab <span style="color:#ff79c6">=</span> _0x366531[_0xb32e88];
+    <span style="color:#ff79c6">return</span> _0x3672ab;
+    }, _0xb32e(_0x2b2797, _0x5d6142);
+}
+</code></pre></div><p>This function take as argument an index <code>i</code>, and returns the string at
+index <code>i-0x171</code> in the large array. That's how most of the strings of
+the program are retrieved. We can then replace all the calls to this
+function with the corresponding string. I've done it by hand, by
+calling manually the function <code>_0xb32e</code> in the JavaScript console. You
+can find the resulting script <a href="src/app_deobf1.js">there</a>.</p>
+<p>Then, the following code raises our attention. Is it the key validation
+algorithm?</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript">
+<span style="color:#8be9fd;font-style:italic">window</span>[<span style="color:#f1fa8c">&#39;addEventListener&#39;</span>](<span style="color:#f1fa8c">&#39;load&#39;</span>, () =&gt; {
+    <span style="color:#ff79c6">const</span> _0x1bd4fc <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">document</span>[<span style="color:#f1fa8c">&#39;getElementById&#39;</span>](<span style="color:#f1fa8c">&#39;submitButton&#39;</span>);
+    _0x1bd4fc[<span style="color:#f1fa8c">&#39;addEventListener&#39;</span>](<span style="color:#f1fa8c">&#39;click&#39;</span>, _0x2d148f);
+});
+
+<span style="color:#8be9fd;font-style:italic">function</span> _0x2d148f() {
+    <span style="color:#ff79c6">const</span> _0x264178 <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">document</span>[<span style="color:#f1fa8c">&#39;getElementById&#39;</span>](<span style="color:#f1fa8c">&#39;textInput&#39;</span>);
+    <span style="color:#8be9fd;font-style:italic">var</span> _0x3be76d <span style="color:#ff79c6">=</span> _0x264178[<span style="color:#f1fa8c">&#39;value&#39;</span>];
+    <span style="color:#ff79c6">while</span> (_0x3be76d[<span style="color:#f1fa8c">&#39;length&#39;</span>] <span style="color:#ff79c6">&lt;</span> <span style="color:#bd93f9">0x400</span>) _0x3be76d <span style="color:#ff79c6">=</span> _0x3be76d <span style="color:#ff79c6">+</span> _0x3be76d;
+    _0x3be76d <span style="color:#ff79c6">=</span> _0x3be76d[<span style="color:#f1fa8c">&#39;substring&#39;</span>](<span style="color:#bd93f9">0x0</span>, <span style="color:#bd93f9">0x400</span>), _0x1d1d26(_0x3be76d);
+    <span style="color:#8be9fd;font-style:italic">var</span> _0x5c36a9 <span style="color:#ff79c6">=</span> [<span style="color:#bd93f9">0xc3</span>, <span style="color:#bd93f9">0xb8</span>, <span style="color:#bd93f9">0xb3</span>, <span style="color:#bd93f9">0x42</span>, <span style="color:#bd93f9">0xb6</span>, <span style="color:#bd93f9">0xc2</span>, <span style="color:#bd93f9">0x1c</span>, <span style="color:#bd93f9">0xa4</span>, <span style="color:#bd93f9">0xce</span>, <span style="color:#bd93f9">0x45</span>, <span style="color:#bd93f9">0x6</span>, <span style="color:#bd93f9">0x3b</span>, <span style="color:#bd93f9">0x1f</span>, <span style="color:#bd93f9">0x1c</span>, <span style="color:#bd93f9">0x66</span>, <span style="color:#bd93f9">0xb1</span>, <span style="color:#bd93f9">0x6c</span>, <span style="color:#bd93f9">0x9a</span>, <span style="color:#bd93f9">0x36</span>, <span style="color:#bd93f9">0xe5</span>, <span style="color:#bd93f9">0x14</span>, <span style="color:#bd93f9">0xbf</span>, <span style="color:#bd93f9">0x18</span>, <span style="color:#bd93f9">0x6e</span>],
+    _0x35223f <span style="color:#ff79c6">=</span> _0x656fa5(_0x3be76d, <span style="color:#bd93f9">0x18</span>),
+    _0x258cbb <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#39;&#39;</span>;
+    <span style="color:#ff79c6">for</span> (<span style="color:#8be9fd;font-style:italic">var</span> _0x2e4a9c <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x0</span>; _0x2e4a9c <span style="color:#ff79c6">&lt;</span> <span style="color:#bd93f9">0x18</span>; <span style="color:#ff79c6">++</span>_0x2e4a9c) {
+    _0x258cbb <span style="color:#ff79c6">+=</span> <span style="color:#8be9fd;font-style:italic">String</span>[<span style="color:#f1fa8c">&#39;fromCharCode&#39;</span>](_0x5c36a9[_0x2e4a9c] <span style="color:#ff79c6">^</span> _0x35223f[_0x2e4a9c]);
+    }
+    <span style="color:#ff79c6">if</span> (_0x258cbb[<span style="color:#f1fa8c">&#39;startsWith&#39;</span>](<span style="color:#f1fa8c">&#39;grey{&#39;</span>)) <span style="color:#8be9fd;font-style:italic">document</span>[<span style="color:#f1fa8c">&#39;querySelector&#39;</span>](<span style="color:#f1fa8c">&#39;#flag&#39;</span>)[<span style="color:#f1fa8c">&#39;textContent&#39;</span>] <span style="color:#ff79c6">=</span> _0x258cbb;
+}
+
+<span style="color:#8be9fd;font-style:italic">function</span> _0x656fa5(_0x51d5a4, _0x14e107) {
+    <span style="color:#8be9fd;font-style:italic">var</span> _0x1c6239 <span style="color:#ff79c6">=</span> [],
+    _0x51a6b8 <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x0</span>,
+    _0xc583ec, _0x11ff50 <span style="color:#ff79c6">=</span> [];
+    <span style="color:#ff79c6">for</span> (<span style="color:#8be9fd;font-style:italic">var</span> _0x5c4c24 <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x0</span>; _0x5c4c24 <span style="color:#ff79c6">&lt;</span> <span style="color:#bd93f9">0x100</span>; _0x5c4c24<span style="color:#ff79c6">++</span>) {
+    _0x1c6239[_0x5c4c24] <span style="color:#ff79c6">=</span> _0x5c4c24;
+    }
+    <span style="color:#ff79c6">for</span> (_0x5c4c24 <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x0</span>; _0x5c4c24 <span style="color:#ff79c6">&lt;</span> <span style="color:#bd93f9">0x100</span>; _0x5c4c24<span style="color:#ff79c6">++</span>) {
+    _0x51a6b8 <span style="color:#ff79c6">=</span> (_0x51a6b8 <span style="color:#ff79c6">+</span> _0x1c6239[_0x5c4c24] <span style="color:#ff79c6">+</span> _0x51d5a4[<span style="color:#f1fa8c">&#39;charCodeAt&#39;</span>](_0x5c4c24 <span style="color:#ff79c6">%</span> _0x51d5a4[<span style="color:#f1fa8c">&#39;length&#39;</span>])) <span style="color:#ff79c6">%</span> <span style="color:#bd93f9">0x100</span>, _0xc583ec <span style="color:#ff79c6">=</span> _0x1c6239[_0x5c4c24], _0x1c6239[_0x5c4c24] <span style="color:#ff79c6">=</span> _0x1c6239[_0x51a6b8], _0x1c6239[_0x51a6b8] <span style="color:#ff79c6">=</span> _0xc583ec;
+    }
+    _0x5c4c24 <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x0</span>, _0x51a6b8 <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x0</span>;
+    <span style="color:#ff79c6">for</span> (<span style="color:#8be9fd;font-style:italic">var</span> _0x11ada2 <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x0</span>; _0x11ada2 <span style="color:#ff79c6">&lt;</span> _0x14e107; _0x11ada2<span style="color:#ff79c6">++</span>) {
+    _0x5c4c24 <span style="color:#ff79c6">=</span> (_0x5c4c24 <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x1</span>) <span style="color:#ff79c6">%</span> <span style="color:#bd93f9">0x100</span>, _0x51a6b8 <span style="color:#ff79c6">=</span> (_0x51a6b8 <span style="color:#ff79c6">+</span> _0x1c6239[_0x5c4c24]) <span style="color:#ff79c6">%</span> <span style="color:#bd93f9">0x100</span>, _0xc583ec <span style="color:#ff79c6">=</span> _0x1c6239[_0x5c4c24], _0x1c6239[_0x5c4c24] <span style="color:#ff79c6">=</span> _0x1c6239[_0x51a6b8], _0x1c6239[_0x51a6b8] <span style="color:#ff79c6">=</span> _0xc583ec, _0x11ff50[<span style="color:#f1fa8c">&#39;push&#39;</span>](_0x1c6239[(_0x1c6239[_0x5c4c24] <span style="color:#ff79c6">+</span> _0x1c6239[_0x51a6b8]) <span style="color:#ff79c6">%</span> <span style="color:#bd93f9">0x100</span>]);
+    }
+    <span style="color:#ff79c6">return</span> _0x11ff50;
+}
+
+</code></pre></div><p>After further deobfuscation, we have the following result:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript">
+<span style="color:#8be9fd;font-style:italic">window</span>[<span style="color:#f1fa8c">&#39;addEventListener&#39;</span>](<span style="color:#f1fa8c">&#39;load&#39;</span>, () =&gt; {
+    <span style="color:#8be9fd;font-style:italic">document</span>[<span style="color:#f1fa8c">&#39;getElementById&#39;</span>](<span style="color:#f1fa8c">&#39;submitButton&#39;</span>)[<span style="color:#f1fa8c">&#39;addEventListener&#39;</span>](<span style="color:#f1fa8c">&#39;click&#39;</span>, buttonClick);
+});
+
+<span style="color:#8be9fd;font-style:italic">function</span> buttonClick() {
+    <span style="color:#8be9fd;font-style:italic">var</span> key <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">document</span>[<span style="color:#f1fa8c">&#39;getElementById&#39;</span>](<span style="color:#f1fa8c">&#39;textKey&#39;</span>)[<span style="color:#f1fa8c">&#39;value&#39;</span>];
+    <span style="color:#6272a4">// We replicate the key up to a length of 0x400
+</span><span style="color:#6272a4"></span>    <span style="color:#ff79c6">while</span> (key[<span style="color:#f1fa8c">&#39;length&#39;</span>] <span style="color:#ff79c6">&lt;</span> <span style="color:#bd93f9">0x400</span>)
+    key <span style="color:#ff79c6">=</span> key <span style="color:#ff79c6">+</span> key;
+    key <span style="color:#ff79c6">=</span> key[<span style="color:#f1fa8c">&#39;substring&#39;</span>](<span style="color:#bd93f9">0x0</span>, <span style="color:#bd93f9">0x400</span>);
+    display_image(key);
+    <span style="color:#8be9fd;font-style:italic">var</span> cipher <span style="color:#ff79c6">=</span> [<span style="color:#bd93f9">0xc3</span>, <span style="color:#bd93f9">0xb8</span>, <span style="color:#bd93f9">0xb3</span>, <span style="color:#bd93f9">0x42</span>, <span style="color:#bd93f9">0xb6</span>, <span style="color:#bd93f9">0xc2</span>, <span style="color:#bd93f9">0x1c</span>, <span style="color:#bd93f9">0xa4</span>, <span style="color:#bd93f9">0xce</span>, <span style="color:#bd93f9">0x45</span>, <span style="color:#bd93f9">0x6</span>, <span style="color:#bd93f9">0x3b</span>, <span style="color:#bd93f9">0x1f</span>, <span style="color:#bd93f9">0x1c</span>, <span style="color:#bd93f9">0x66</span>, <span style="color:#bd93f9">0xb1</span>, <span style="color:#bd93f9">0x6c</span>, <span style="color:#bd93f9">0x9a</span>, <span style="color:#bd93f9">0x36</span>, <span style="color:#bd93f9">0xe5</span>, <span style="color:#bd93f9">0x14</span>, <span style="color:#bd93f9">0xbf</span>, <span style="color:#bd93f9">0x18</span>, <span style="color:#bd93f9">0x6e</span>],
+    key_sched <span style="color:#ff79c6">=</span> rc4(key, <span style="color:#bd93f9">0x18</span>),
+    flag <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#39;&#39;</span>;
+    <span style="color:#ff79c6">for</span> (<span style="color:#8be9fd;font-style:italic">var</span> i <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x0</span>; i <span style="color:#ff79c6">&lt;</span> <span style="color:#bd93f9">0x18</span>; <span style="color:#ff79c6">++</span>i) {
+    flag <span style="color:#ff79c6">+=</span> <span style="color:#8be9fd;font-style:italic">String</span>[<span style="color:#f1fa8c">&#39;fromCharCode&#39;</span>](cipher[i] <span style="color:#ff79c6">^</span> key_sched[i]);
+    }
+    <span style="color:#ff79c6">if</span> (flag[<span style="color:#f1fa8c">&#39;startsWith&#39;</span>](<span style="color:#f1fa8c">&#39;grey{&#39;</span>)) <span style="color:#8be9fd;font-style:italic">document</span>[<span style="color:#f1fa8c">&#39;querySelector&#39;</span>](<span style="color:#f1fa8c">&#39;#flag&#39;</span>)[<span style="color:#f1fa8c">&#39;textContent&#39;</span>] <span style="color:#ff79c6">=</span> flag;
+}
+
+<span style="color:#8be9fd;font-style:italic">function</span> rc4(key, len) {
+    <span style="color:#8be9fd;font-style:italic">var</span> a <span style="color:#ff79c6">=</span> [],
+    j <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x0</span>,
+    tmp, permutation <span style="color:#ff79c6">=</span> [];
+    <span style="color:#ff79c6">for</span> (<span style="color:#8be9fd;font-style:italic">var</span> i <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x0</span>; i <span style="color:#ff79c6">&lt;</span> <span style="color:#bd93f9">0x100</span>; i<span style="color:#ff79c6">++</span>) {
+    a[i] <span style="color:#ff79c6">=</span> i;
+    }
+    <span style="color:#ff79c6">for</span> (i <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x0</span>; i <span style="color:#ff79c6">&lt;</span> <span style="color:#bd93f9">0x100</span>; i<span style="color:#ff79c6">++</span>) {
+    j <span style="color:#ff79c6">=</span> (j <span style="color:#ff79c6">+</span> a[i] <span style="color:#ff79c6">+</span> key[<span style="color:#f1fa8c">&#39;charCodeAt&#39;</span>](i <span style="color:#ff79c6">%</span> key[<span style="color:#f1fa8c">&#39;length&#39;</span>])) <span style="color:#ff79c6">%</span> <span style="color:#bd93f9">0x100</span>;
+    tmp <span style="color:#ff79c6">=</span> a[i];
+    a[i] <span style="color:#ff79c6">=</span> a[j];
+    a[j] <span style="color:#ff79c6">=</span> tmp;
+    }
+    i <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x0</span>, j <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x0</span>;
+    <span style="color:#ff79c6">for</span> (<span style="color:#8be9fd;font-style:italic">var</span> k <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x0</span>; k <span style="color:#ff79c6">&lt;</span> len; k<span style="color:#ff79c6">++</span>) {
+    i <span style="color:#ff79c6">=</span> (i <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x1</span>) <span style="color:#ff79c6">%</span> <span style="color:#bd93f9">0x100</span>;
+    j <span style="color:#ff79c6">=</span> (j <span style="color:#ff79c6">+</span> a[i]) <span style="color:#ff79c6">%</span> <span style="color:#bd93f9">0x100</span>;
+    tmp <span style="color:#ff79c6">=</span> a[i];
+    a[i] <span style="color:#ff79c6">=</span> a[j];
+    a[j] <span style="color:#ff79c6">=</span> tmp;
+    permutation[<span style="color:#f1fa8c">&#39;push&#39;</span>](a[(a[i] <span style="color:#ff79c6">+</span> a[j]) <span style="color:#ff79c6">%</span> <span style="color:#bd93f9">0x100</span>]);
+    }
+    <span style="color:#ff79c6">return</span> permutation;
+}
+
+</code></pre></div><p>The flag is deciphered using RC4 with the key provided as input. But the
+RC4 implementation seems to have no vulnerabilities, and is just here to
+give us the flag when the correct key is entered. But how can we
+retrieve the correct key?</p>
+<p>Remember, the WebGL stuff to display the good image when the correct key
+is entered&hellip;</p>
+<h1 id="reverse-engineering-of-webgl-shaders">Reverse Engineering of WebGL Shaders</h1>
+<p>After deobfuscation, we have a function <code>display_image</code> which is called
+in the listener <code>buttonClick</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript">
+<span style="color:#8be9fd;font-style:italic">function</span> display_image(input) {
+    <span style="color:#8be9fd;font-style:italic">var</span> a <span style="color:#ff79c6">=</span> [<span style="color:#bd93f9">0x0</span>, <span style="color:#bd93f9">0x0</span>, <span style="color:#bd93f9">0x0</span>, <span style="color:#bd93f9">0x0</span>],
+    b <span style="color:#ff79c6">=</span> [<span style="color:#bd93f9">0x0</span>, <span style="color:#bd93f9">0x0</span>, <span style="color:#bd93f9">0x0</span>, <span style="color:#bd93f9">0x0</span>],
+    c <span style="color:#ff79c6">=</span> [<span style="color:#bd93f9">0x0</span>, <span style="color:#bd93f9">0x0</span>, <span style="color:#bd93f9">0x0</span>, <span style="color:#bd93f9">0x0</span>],
+    d <span style="color:#ff79c6">=</span> [<span style="color:#bd93f9">0x0</span>, <span style="color:#bd93f9">0x0</span>, <span style="color:#bd93f9">0x0</span>, <span style="color:#bd93f9">0x0</span>],
+    e <span style="color:#ff79c6">=</span> [<span style="color:#bd93f9">0x41</span>, <span style="color:#bd93f9">0x41</span>, <span style="color:#bd93f9">0x41</span>, <span style="color:#bd93f9">0x41</span>];
+    <span style="color:#ff79c6">for</span> (<span style="color:#8be9fd;font-style:italic">var</span> i <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x0</span>; i <span style="color:#ff79c6">&lt;</span> <span style="color:#bd93f9">0x104</span>; <span style="color:#ff79c6">++</span>i) {
+    <span style="color:#ff79c6">const</span> _0x3d0205 <span style="color:#ff79c6">=</span> init_buffer_vertex(context_canvas, <span style="color:#ff79c6">new</span> Float32Array(a), a_shader),
+      _0x1bbc48 <span style="color:#ff79c6">=</span> init_buffer_vertex(context_canvas, <span style="color:#ff79c6">new</span> Float32Array(b), b_shader),
+      _0x12ff68 <span style="color:#ff79c6">=</span> init_buffer_vertex(context_canvas, <span style="color:#ff79c6">new</span> Float32Array(c), c_shader),
+      _0x358438 <span style="color:#ff79c6">=</span> init_buffer_vertex(context_canvas, <span style="color:#ff79c6">new</span> Float32Array(d), d_shader),
+      _0x31fd87 <span style="color:#ff79c6">=</span> init_buffer_vertex(context_canvas, <span style="color:#ff79c6">new</span> Float32Array(e), e_shader),
+      _0x5efde3 <span style="color:#ff79c6">=</span> context_canvas[<span style="color:#f1fa8c">&#39;createTransformFeedback&#39;</span>]();
+    context_canvas[<span style="color:#f1fa8c">&#39;bindTransformFeedback&#39;</span>](context_canvas[<span style="color:#f1fa8c">&#39;TRANSFORM_FEEDBACK&#39;</span>], _0x5efde3);
+    <span style="color:#ff79c6">const</span> feedback_shader <span style="color:#ff79c6">=</span> init_buffer(context_canvas, a[<span style="color:#f1fa8c">&#39;length&#39;</span>] <span style="color:#ff79c6">*</span> <span style="color:#bd93f9">0x4</span>);
+    context_canvas[<span style="color:#f1fa8c">&#39;bindBufferBase&#39;</span>](context_canvas[<span style="color:#f1fa8c">&#39;TRANSFORM_FEEDBACK_BUFFER&#39;</span>], <span style="color:#bd93f9">0x0</span>, feedback_shader);
+    context_canvas[<span style="color:#f1fa8c">&#39;bindTransformFeedback&#39;</span>](context_canvas[<span style="color:#f1fa8c">&#39;TRANSFORM_FEEDBACK&#39;</span>], <span style="color:#ff79c6">null</span>);
+    context_canvas[<span style="color:#f1fa8c">&#39;bindBuffer&#39;</span>](context_canvas[<span style="color:#f1fa8c">&#39;ARRAY_BUFFER&#39;</span>], <span style="color:#ff79c6">null</span>);
+    context_canvas[<span style="color:#f1fa8c">&#39;useProgram&#39;</span>](program12);
+    context_canvas[<span style="color:#f1fa8c">&#39;bindVertexArray&#39;</span>](_0x37ea82);
+    context_canvas[<span style="color:#f1fa8c">&#39;bindTransformFeedback&#39;</span>](context_canvas[<span style="color:#f1fa8c">&#39;TRANSFORM_FEEDBACK&#39;</span>], _0x5efde3);
+    context_canvas[<span style="color:#f1fa8c">&#39;beginTransformFeedback&#39;</span>](context_canvas[<span style="color:#f1fa8c">&#39;POINTS&#39;</span>]);
+    context_canvas[<span style="color:#f1fa8c">&#39;drawArrays&#39;</span>](context_canvas[<span style="color:#f1fa8c">&#39;POINTS&#39;</span>], <span style="color:#bd93f9">0x0</span>, a[<span style="color:#f1fa8c">&#39;length&#39;</span>]);
+    context_canvas[<span style="color:#f1fa8c">&#39;endTransformFeedback&#39;</span>]();
+    context_canvas[<span style="color:#f1fa8c">&#39;bindTransformFeedback&#39;</span>](context_canvas[<span style="color:#f1fa8c">&#39;TRANSFORM_FEEDBACK&#39;</span>], <span style="color:#ff79c6">null</span>);
+    <span style="color:#6272a4">// We get the feedback from the WebGL shader
+</span><span style="color:#6272a4"></span>    <span style="color:#ff79c6">const</span> f <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">new</span> Float32Array(a[<span style="color:#f1fa8c">&#39;length&#39;</span>]);
+    context_canvas[<span style="color:#f1fa8c">&#39;bindBuffer&#39;</span>](context_canvas[<span style="color:#f1fa8c">&#39;ARRAY_BUFFER&#39;</span>], feedback_shader);
+    context_canvas[<span style="color:#f1fa8c">&#39;getBufferSubData&#39;</span>](context_canvas[<span style="color:#f1fa8c">&#39;ARRAY_BUFFER&#39;</span>], <span style="color:#bd93f9">0x0</span>, f);
+    <span style="color:#ff79c6">for</span> (<span style="color:#8be9fd;font-style:italic">var</span> j <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0x0</span>; j <span style="color:#ff79c6">&lt;</span> <span style="color:#bd93f9">0x4</span>; <span style="color:#ff79c6">++</span>j) {
+        d[j] <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">Math</span>[<span style="color:#f1fa8c">&#39;round&#39;</span>](f[j]) <span style="color:#ff79c6">%</span> <span style="color:#bd93f9">0x100</span>;
+        e <span style="color:#ff79c6">=</span> e[<span style="color:#f1fa8c">&#39;fill&#39;</span>](input[<span style="color:#f1fa8c">&#39;charCodeAt&#39;</span>](d[j]));
+        a[j] <span style="color:#ff79c6">=</span> matrix1[d[<span style="color:#bd93f9">0x0</span>]][j];
+        b[j] <span style="color:#ff79c6">=</span> matrix2[d[<span style="color:#bd93f9">0x0</span>]][j];
+        c[j] <span style="color:#ff79c6">=</span> matrix3[d[<span style="color:#bd93f9">0x0</span>]][j];
+    }
+    context_canvas[<span style="color:#f1fa8c">&#39;uniform4fv&#39;</span>](s_shader, d);
+    context_query_c[<span style="color:#f1fa8c">&#39;clearColor&#39;</span>](<span style="color:#bd93f9">0x0</span>, <span style="color:#bd93f9">0x0</span>, <span style="color:#bd93f9">0x0</span>, <span style="color:#bd93f9">0x0</span>), context_query_c[<span style="color:#f1fa8c">&#39;clear&#39;</span>](context_canvas[<span style="color:#f1fa8c">&#39;COLOR_BUFFER_BIT&#39;</span>]);
+    context_query_c[<span style="color:#f1fa8c">&#39;useProgram&#39;</span>](program34);
+    context_query_c[<span style="color:#f1fa8c">&#39;activeTexture&#39;</span>](context_query_c[<span style="color:#f1fa8c">&#39;TEXTURE0&#39;</span>] <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x1</span>);
+    context_query_c[<span style="color:#f1fa8c">&#39;bindTexture&#39;</span>](context_query_c[<span style="color:#f1fa8c">&#39;TEXTURE_2D&#39;</span>], _0x3d5c0d);
+    context_query_c[<span style="color:#f1fa8c">&#39;texParameteri&#39;</span>](context_query_c[<span style="color:#f1fa8c">&#39;TEXTURE_2D&#39;</span>], context_query_c[<span style="color:#f1fa8c">&#39;TEXTURE_WRAP_S&#39;</span>], context_query_c[<span style="color:#f1fa8c">&#39;CLAMP_TO_EDGE&#39;</span>]);
+    context_query_c[<span style="color:#f1fa8c">&#39;texParameteri&#39;</span>](context_query_c[<span style="color:#f1fa8c">&#39;TEXTURE_2D&#39;</span>], context_query_c[<span style="color:#f1fa8c">&#39;TEXTURE_WRAP_T&#39;</span>], context_query_c[<span style="color:#f1fa8c">&#39;CLAMP_TO_EDGE&#39;</span>]);
+    context_query_c[<span style="color:#f1fa8c">&#39;texParameteri&#39;</span>](context_query_c[<span style="color:#f1fa8c">&#39;TEXTURE_2D&#39;</span>], context_query_c[<span style="color:#f1fa8c">&#39;TEXTURE_MIN_FILTER&#39;</span>], context_query_c[<span style="color:#f1fa8c">&#39;NEAREST&#39;</span>]);
+    context_query_c[<span style="color:#f1fa8c">&#39;texParameteri&#39;</span>](context_query_c[<span style="color:#f1fa8c">&#39;TEXTURE_2D&#39;</span>], context_query_c[<span style="color:#f1fa8c">&#39;TEXTURE_MAG_FILTER&#39;</span>], context_query_c[<span style="color:#f1fa8c">&#39;NEAREST&#39;</span>]);
+    <span style="color:#6272a4">// We need to have d[0x1] = 1 to display the good image!
+</span><span style="color:#6272a4"></span>    context_query_c[<span style="color:#f1fa8c">&#39;activeTexture&#39;</span>](context_query_c[<span style="color:#f1fa8c">&#39;TEXTURE0&#39;</span>]), context_query_c[<span style="color:#f1fa8c">&#39;bindTexture&#39;</span>](context_query_c[<span style="color:#f1fa8c">&#39;TEXTURE_2D&#39;</span>], array_images[d[<span style="color:#bd93f9">0x1</span>]]);
+    context_query_c[<span style="color:#f1fa8c">&#39;bindVertexArray&#39;</span>](_0x5745db), context_query_c[<span style="color:#f1fa8c">&#39;drawArrays&#39;</span>](context_query_c[<span style="color:#f1fa8c">&#39;TRIANGLES&#39;</span>], <span style="color:#bd93f9">0x0</span>, <span style="color:#bd93f9">0x6</span>);
+    }
+}
+
+</code></pre></div><p>A new canvas is created, and its WebGL context is stored in
+<code>context_canvas</code>. <code>context_query_c</code> is the WebGL context of the canvas
+displaying the image.</p>
+<p>For more details, you can find the final deobfuscated JS script
+<a href="src/app_deobf2.js">here</a>.</p>
+<p>Data is stored in three large matrices (here <code>matrix1</code>, <code>matrix2</code>,
+<code>matrix3</code>)</p>
+<p>The canvas created doesn't display anything, but is associated to a
+WebGL shader which performs some computations to validate the flag. The
+code of the shader is the following:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-glsl" data-lang="glsl"><span style="color:#ff79c6">#version 300 es</span>
+
+<span style="color:#ff79c6">uniform</span> <span style="color:#ff79c6">vec4</span> s;
+
+<span style="color:#ff79c6">in</span> <span style="color:#ff79c6">float</span> a;
+<span style="color:#ff79c6">in</span> <span style="color:#ff79c6">float</span> b;
+<span style="color:#ff79c6">in</span> <span style="color:#ff79c6">float</span> c;
+<span style="color:#ff79c6">in</span> <span style="color:#ff79c6">float</span> d;
+<span style="color:#ff79c6">in</span> <span style="color:#ff79c6">float</span> e;
+
+<span style="color:#ff79c6">out</span> <span style="color:#ff79c6">float</span> f;
+
+<span style="color:#ff79c6">void</span> main() {
+    <span style="color:#6272a4">// equals to 0 if s.z is non-zero, a * d + b + c * e otherwise</span>
+    f <span style="color:#ff79c6">=</span> (a <span style="color:#ff79c6">*</span> d <span style="color:#ff79c6">+</span> b <span style="color:#ff79c6">+</span> c <span style="color:#ff79c6">*</span> e) <span style="color:#ff79c6">*</span> (step(<span style="color:#bd93f9">0.0</span>f, <span style="color:#ff79c6">-</span>abs(s.z)));
+}
+</code></pre></div><p>At each iteration of <code>i</code> in the function <code>display_image</code>, the output of
+the shader (<code>f</code>) is retrieved, the values of <code>a, b, c, d, e</code> are updated
+and the previous values of <code>d</code> are stored in the uniform vector <code>s</code></p>
+<p>The algorithm can be simplified and written in Python as follows (see
+full script <a href="src/check_flag.py">here</a>):</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">
+<span style="color:#ff79c6">import</span> sys
+
+matrix1 <span style="color:#ff79c6">=</span> [[<span style="color:#bd93f9">0x1</span>, <span style="color:#bd93f9">0x0</span>, <span style="color:#bd93f9">0x1</span>, <span style="color:#bd93f9">0x1</span>], <span style="color:#ff79c6">...</span>]
+matrix2 <span style="color:#ff79c6">=</span> [[<span style="color:#bd93f9">0xe5</span>, <span style="color:#bd93f9">0x0</span>, <span style="color:#bd93f9">0x0</span>, <span style="color:#bd93f9">0x0</span>], <span style="color:#ff79c6">...</span>]
+matrix3 <span style="color:#ff79c6">=</span> [[<span style="color:#bd93f9">0x0</span>, <span style="color:#bd93f9">0x0</span>, <span style="color:#bd93f9">0x0</span>, <span style="color:#bd93f9">0x0</span>], <span style="color:#ff79c6">...</span>]
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">compute</span>(a,b,c,d,e):
+    res <span style="color:#ff79c6">=</span> a <span style="color:#ff79c6">*</span> d <span style="color:#ff79c6">+</span> b <span style="color:#ff79c6">+</span> c <span style="color:#ff79c6">*</span> e
+    <span style="color:#6272a4">#print(res)</span>
+    <span style="color:#ff79c6">if</span> res <span style="color:#ff79c6">&gt;=</span> <span style="color:#bd93f9">0</span>:
+    <span style="color:#ff79c6">return</span> res <span style="color:#ff79c6">%</span> <span style="color:#bd93f9">256</span>
+    <span style="color:#ff79c6">else</span>:
+    <span style="color:#ff79c6">return</span> <span style="color:#ff79c6">-</span> ((<span style="color:#ff79c6">-</span>res) <span style="color:#ff79c6">%</span> <span style="color:#bd93f9">256</span>)
+
+<span style="color:#ff79c6">if</span> __name__ <span style="color:#ff79c6">==</span> <span style="color:#f1fa8c">&#39;__main__&#39;</span>:
+    key <span style="color:#ff79c6">=</span> sys<span style="color:#ff79c6">.</span>argv[<span style="color:#bd93f9">1</span>]
+    a <span style="color:#ff79c6">=</span> [<span style="color:#bd93f9">0x0</span>, <span style="color:#bd93f9">0x0</span>, <span style="color:#bd93f9">0x0</span>, <span style="color:#bd93f9">0x0</span>]
+    b <span style="color:#ff79c6">=</span> [<span style="color:#bd93f9">0x0</span>, <span style="color:#bd93f9">0x0</span>, <span style="color:#bd93f9">0x0</span>, <span style="color:#bd93f9">0x0</span>]
+    c <span style="color:#ff79c6">=</span> [<span style="color:#bd93f9">0x0</span>, <span style="color:#bd93f9">0x0</span>, <span style="color:#bd93f9">0x0</span>, <span style="color:#bd93f9">0x0</span>]
+    d <span style="color:#ff79c6">=</span> [<span style="color:#bd93f9">0x0</span>, <span style="color:#bd93f9">0x0</span>, <span style="color:#bd93f9">0x0</span>, <span style="color:#bd93f9">0x0</span>]
+    e <span style="color:#ff79c6">=</span> [<span style="color:#bd93f9">0x41</span>, <span style="color:#bd93f9">0x41</span>, <span style="color:#bd93f9">0x41</span>, <span style="color:#bd93f9">0x41</span>]
+
+    <span style="color:#ff79c6">for</span> i <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#bd93f9">0x104</span>):
+    <span style="color:#ff79c6">if</span> d[<span style="color:#bd93f9">2</span>]:
+        d <span style="color:#ff79c6">=</span> [<span style="color:#bd93f9">0</span> <span style="color:#ff79c6">for</span> j <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#bd93f9">4</span>)]
+    <span style="color:#ff79c6">else</span>:
+        d <span style="color:#ff79c6">=</span> [compute(a[j],b[j],c[j],d[j],e[j]) <span style="color:#ff79c6">for</span> j <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#bd93f9">4</span>)]
+    e <span style="color:#ff79c6">=</span> [<span style="color:#8be9fd;font-style:italic">ord</span>(key[d[<span style="color:#bd93f9">3</span>] <span style="color:#ff79c6">%</span> <span style="color:#8be9fd;font-style:italic">len</span>(key)]) <span style="color:#ff79c6">for</span> j <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#bd93f9">4</span>)]
+    a <span style="color:#ff79c6">=</span> matrix1[d[<span style="color:#bd93f9">0</span>]]<span style="color:#ff79c6">.</span>copy()
+    b <span style="color:#ff79c6">=</span> matrix2[d[<span style="color:#bd93f9">0</span>]]<span style="color:#ff79c6">.</span>copy()
+    c <span style="color:#ff79c6">=</span> matrix3[d[<span style="color:#bd93f9">0</span>]]<span style="color:#ff79c6">.</span>copy()
+    <span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">&#34;After iteration &#34;</span> <span style="color:#ff79c6">+</span> <span style="color:#8be9fd;font-style:italic">str</span>(i))
+    <span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">&#34;a = &#34;</span> <span style="color:#ff79c6">+</span> <span style="color:#8be9fd;font-style:italic">str</span>(a) <span style="color:#ff79c6">+</span> <span style="color:#f1fa8c">&#34;, b = &#34;</span> <span style="color:#ff79c6">+</span> <span style="color:#8be9fd;font-style:italic">str</span>(b) <span style="color:#ff79c6">+</span> <span style="color:#f1fa8c">&#34;, c = &#34;</span> <span style="color:#ff79c6">+</span> <span style="color:#8be9fd;font-style:italic">str</span>(c) <span style="color:#ff79c6">+</span> <span style="color:#f1fa8c">&#34;, d = &#34;</span> <span style="color:#ff79c6">+</span> <span style="color:#8be9fd;font-style:italic">str</span>(d) <span style="color:#ff79c6">+</span> <span style="color:#f1fa8c">&#34;, e = &#34;</span> <span style="color:#ff79c6">+</span> <span style="color:#8be9fd;font-style:italic">str</span>(e))
+
+    <span style="color:#ff79c6">if</span> d[<span style="color:#bd93f9">1</span>] <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">1</span>:
+    <span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">&#34;Correct key!&#34;</span>)
+    <span style="color:#ff79c6">else</span>:
+    <span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">&#34;Wrong key :(&#34;</span>)
+
+</code></pre></div><h1 id="flag">Flag</h1>
+<p>If we run the previous algorithm with some random key, for instance
+<code>abcdef</code>, we can observe the following:</p>
+<pre><code>[rlaspina@ARCH-RLS src] $ python check_flag.py abcdef
+After iteration 0
+a = [1, 0, 1, 1], b = [229, 0, 0, 0], c = [0, 0, 0, 0], d = [0, 0, 0, 0], e = [97, 97, 97, 97]
+After iteration 1
+a = [1, 0, 1, 1], b = [-72, 0, 0, 0], c = [0, 0, 0, 0], d = [229, 0, 0, 0], e = [97, 97, 97, 97]
+After iteration 2
+a = [1, 0, 1, 1], b = [-76, 0, 0, 0], c = [0, 0, 0, 0], d = [157, 0, 0, 0], e = [97, 97, 97, 97]
+After iteration 3
+a = [1, 0, 1, 1], b = [-24, 0, 0, 0], c = [0, 0, 0, 0], d = [81, 0, 0, 0], e = [97, 97, 97, 97]
+After iteration 4
+a = [1, 0, 1, 1], b = [97, 0, 0, 0], c = [0, 0, 0, 0], d = [57, 0, 0, 0], e = [97, 97, 97, 97]
+After iteration 5
+a = [1, 0, 1, 1], b = [-117, 0, 0, 0], c = [0, 0, 0, 0], d = [154, 0, 0, 0], e = [97, 97, 97, 97]
+After iteration 6
+a = [1, 0, 1, 1], b = [14, 0, 0, 0], c = [0, 0, 0, 0], d = [37, 0, 0, 0], e = [97, 97, 97, 97]
+After iteration 7
+a = [1, 0, 1, 1], b = [47, 0, 0, 0], c = [0, 0, 0, 0], d = [51, 0, 0, 0], e = [97, 97, 97, 97]
+After iteration 8
+a = [1, 0, 1, 1], b = [101, 0, 0, 0], c = [0, 0, 0, 0], d = [98, 0, 0, 0], e = [97, 97, 97, 97]
+After iteration 9
+a = [1, 0, 1, 1], b = [-159, 0, 0, 0], c = [0, 0, 0, 0], d = [199, 0, 0, 0], e = [97, 97, 97, 97]
+After iteration 10
+a = [1, 0, 1, 1], b = [-34, 0, 0, 0], c = [0, 0, 0, 0], d = [40, 0, 0, 0], e = [97, 97, 97, 97]
+After iteration 11
+a = [1, 0, 1, 1], b = [241, 0, 0, 0], c = [0, 0, 0, 0], d = [6, 0, 0, 0], e = [97, 97, 97, 97]
+After iteration 12
+a = [1, 0, 1, 1], b = [-121, 0, 0, 0], c = [0, 0, 0, 0], d = [247, 0, 0, 0], e = [97, 97, 97, 97]
+After iteration 13
+a = [1, 0, 1, 1], b = [94, 0, 0, 0], c = [0, 0, 0, 0], d = [126, 0, 0, 0], e = [97, 97, 97, 97]
+After iteration 14
+a = [1, 0, 1, 1], b = [-187, 0, 0, 0], c = [0, 0, 0, 0], d = [220, 0, 0, 0], e = [97, 97, 97, 97]
+After iteration 15
+a = [1, 0, 1, 1], b = [40, 0, 0, 0], c = [0, 0, 0, 0], d = [33, 0, 0, 0], e = [97, 97, 97, 97]
+After iteration 16
+a = [1, 0, 1, 1], b = [20, 0, 0, 0], c = [0, 0, 0, 0], d = [73, 0, 0, 0], e = [97, 97, 97, 97]
+After iteration 17
+a = [1, 0, 1, 1], b = [84, 0, 0, 0], c = [0, 0, 0, 0], d = [93, 0, 0, 0], e = [97, 97, 97, 97]
+After iteration 18
+a = [1, 0, 1, 1], b = [-31, 0, 0, 0], c = [0, 0, 0, 0], d = [177, 0, 0, 0], e = [97, 97, 97, 97]
+After iteration 19
+a = [1, 0, 1, 1], b = [-110, 0, 0, 0], c = [0, 0, 0, 0], d = [146, 0, 0, 0], e = [97, 97, 97, 97]
+After iteration 20
+a = [1, 0, 1, 1], b = [204, 0, 0, 0], c = [0, 0, 0, 0], d = [36, 0, 0, 0], e = [97, 97, 97, 97]
+After iteration 21
+a = [1, 0, 1, 1], b = [-201, 0, 0, 0], c = [0, 0, 0, 0], d = [240, 0, 0, 0], e = [97, 97, 97, 97]
+After iteration 22
+a = [1, 0, 1, 1], b = [-37, 0, 0, 0], c = [0, 0, 0, 0], d = [39, 0, 0, 0], e = [97, 97, 97, 97]
+After iteration 23
+a = [1, 0, 1, 1], b = [248, 0, 0, 0], c = [0, 0, 0, 0], d = [2, 0, 0, 0], e = [97, 97, 97, 97]
+After iteration 24
+a = [1, 0, 1, 1], b = [-138, 0, 0, 0], c = [0, 0, 0, 0], d = [250, 0, 0, 0], e = [97, 97, 97, 97]
+After iteration 25
+a = [1, 0, 1, 1], b = [35, 0, 0, 0], c = [0, 0, 0, 0], d = [112, 0, 0, 0], e = [97, 97, 97, 97]
+After iteration 26
+a = [1, 0, 1, 1], b = [-24, 0, 0, 0], c = [0, 0, 0, 0], d = [147, 0, 0, 0], e = [97, 97, 97, 97]
+After iteration 27
+a = [1, 0, 1, 1], b = [-55, 0, 0, 0], c = [0, 0, 0, 0], d = [123, 0, 0, 0], e = [97, 97, 97, 97]
+After iteration 28
+a = [1, 0, 1, 1], b = [94, 0, 0, 0], c = [0, 0, 0, 0], d = [68, 0, 0, 0], e = [97, 97, 97, 97]
+After iteration 29
+a = [1, 0, 1, 1], b = [46, 0, 0, 0], c = [0, 0, 0, 0], d = [162, 0, 0, 0], e = [97, 97, 97, 97]
+After iteration 30
+a = [1, 0, 1, 1], b = [-122, 0, 0, 0], c = [0, 0, 0, 0], d = [208, 0, 0, 0], e = [97, 97, 97, 97]
+After iteration 31
+a = [1, 0, 1, 1], b = [55, 0, 0, 0], c = [0, 0, 0, 0], d = [86, 0, 0, 0], e = [97, 97, 97, 97]
+After iteration 32
+a = [1, 0, 1, 1], b = [-20, 0, 0, 0], c = [0, 0, 0, 0], d = [141, 0, 0, 0], e = [97, 97, 97, 97]
+After iteration 33
+a = [1, 0, 1, 1], b = [-77, 0, 0, 0], c = [0, 0, 0, 0], d = [121, 0, 0, 0], e = [97, 97, 97, 97]
+After iteration 34
+a = [1, 0, 1, 1], b = [105, 0, -82, 2], c = [0, 0, 1, 0], d = [44, 0, 0, 0], e = [97, 97, 97, 97]
+After iteration 35
+a = [1, 0, 1, 1], b = [46, 0, 0, 0], c = [0, 0, 0, 0], d = [149, 0, 15, 2], e = [99, 99, 99, 99]
+After iteration 36
+a = [1, 0, 1, 1], b = [229, 0, 0, 0], c = [0, 0, 0, 0], d = [0, 0, 0, 0], e = [97, 97, 97, 97]
+</code></pre>
+<p>Until iteration 34, a deterministic pattern appears: the values of
+a,b,c,d does not depend yet on the key, since c is always equal to
+<code>[0, 0, 0, 0]</code>. But at iteration 35, if
+<code>a[2] * d[2] + b[2] + c[2] * e[2] = e[2] - 82</code> is not zero, then <code>d[2]</code>
+will not be zero at next iteration, the vector <code>d</code> will be reset to
+<code>[0, 0, 0, 0]</code>, and the cycle will repeat over and over from iteration
+36.</p>
+<p>But&hellip; <code>e[2]</code> is actually the character of the flag at index <code>d[3]</code>,
+here 0 (at iteration 34), therefore we must have <code>key[0] = 82 = 'R'</code>.</p>
+<p>During the CTF, I was lazy so I retrieved one by one the characters of
+the key in the same way, but here is a nice script to get the key (full
+script <a href="src/solve.py">here</a>):</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">
+<span style="color:#ff79c6">import</span> sys
+
+matrix1 <span style="color:#ff79c6">=</span> [[<span style="color:#bd93f9">0x1</span>, <span style="color:#bd93f9">0x0</span>, <span style="color:#bd93f9">0x1</span>, <span style="color:#bd93f9">0x1</span>], <span style="color:#ff79c6">...</span>]
+matrix2 <span style="color:#ff79c6">=</span> [[<span style="color:#bd93f9">0xe5</span>, <span style="color:#bd93f9">0x0</span>, <span style="color:#bd93f9">0x0</span>, <span style="color:#bd93f9">0x0</span>], <span style="color:#ff79c6">...</span>]
+matrix3 <span style="color:#ff79c6">=</span> [[<span style="color:#bd93f9">0x0</span>, <span style="color:#bd93f9">0x0</span>, <span style="color:#bd93f9">0x0</span>, <span style="color:#bd93f9">0x0</span>], <span style="color:#ff79c6">...</span>]
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">compute</span>(a,b,c,d,e):
+    res <span style="color:#ff79c6">=</span> a <span style="color:#ff79c6">*</span> d <span style="color:#ff79c6">+</span> b <span style="color:#ff79c6">+</span> c <span style="color:#ff79c6">*</span> e
+    <span style="color:#6272a4">#print(res)</span>
+    <span style="color:#ff79c6">if</span> res <span style="color:#ff79c6">&gt;=</span> <span style="color:#bd93f9">0</span>:
+    <span style="color:#ff79c6">return</span> res <span style="color:#ff79c6">%</span> <span style="color:#bd93f9">256</span>
+    <span style="color:#ff79c6">else</span>:
+    <span style="color:#ff79c6">return</span> <span style="color:#ff79c6">-</span> ((<span style="color:#ff79c6">-</span>res) <span style="color:#ff79c6">%</span> <span style="color:#bd93f9">256</span>)
+
+<span style="color:#ff79c6">if</span> __name__ <span style="color:#ff79c6">==</span> <span style="color:#f1fa8c">&#39;__main__&#39;</span>:
+    key <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">bytearray</span>([<span style="color:#bd93f9">0</span> <span style="color:#ff79c6">for</span> i <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#bd93f9">20</span>)])
+
+    a <span style="color:#ff79c6">=</span> [<span style="color:#bd93f9">0x0</span>, <span style="color:#bd93f9">0x0</span>, <span style="color:#bd93f9">0x0</span>, <span style="color:#bd93f9">0x0</span>]
+    b <span style="color:#ff79c6">=</span> [<span style="color:#bd93f9">0x0</span>, <span style="color:#bd93f9">0x0</span>, <span style="color:#bd93f9">0x0</span>, <span style="color:#bd93f9">0x0</span>]
+    c <span style="color:#ff79c6">=</span> [<span style="color:#bd93f9">0x0</span>, <span style="color:#bd93f9">0x0</span>, <span style="color:#bd93f9">0x0</span>, <span style="color:#bd93f9">0x0</span>]
+    d <span style="color:#ff79c6">=</span> [<span style="color:#bd93f9">0x0</span>, <span style="color:#bd93f9">0x0</span>, <span style="color:#bd93f9">0x0</span>, <span style="color:#bd93f9">0x0</span>]
+    e <span style="color:#ff79c6">=</span> [<span style="color:#bd93f9">0x41</span>, <span style="color:#bd93f9">0x41</span>, <span style="color:#bd93f9">0x41</span>, <span style="color:#bd93f9">0x41</span>]
+
+    <span style="color:#ff79c6">for</span> i <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#bd93f9">0x104</span>):
+    <span style="color:#ff79c6">if</span> b[<span style="color:#bd93f9">2</span>] <span style="color:#ff79c6">!=</span> <span style="color:#bd93f9">0</span>:
+        key[d[<span style="color:#bd93f9">3</span>]] <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">-</span>b[<span style="color:#bd93f9">2</span>]
+    e <span style="color:#ff79c6">=</span> [key[d[<span style="color:#bd93f9">3</span>]] <span style="color:#ff79c6">for</span> j <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#bd93f9">4</span>)]
+    <span style="color:#ff79c6">if</span> d[<span style="color:#bd93f9">2</span>]:
+        d <span style="color:#ff79c6">=</span> [<span style="color:#bd93f9">0</span> <span style="color:#ff79c6">for</span> j <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#bd93f9">4</span>)]
+    <span style="color:#ff79c6">else</span>:
+        d <span style="color:#ff79c6">=</span> [compute(a[j],b[j],c[j],d[j],e[j]) <span style="color:#ff79c6">for</span> j <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#bd93f9">4</span>)]
+        a <span style="color:#ff79c6">=</span> matrix1[d[<span style="color:#bd93f9">0</span>]]<span style="color:#ff79c6">.</span>copy()
+        b <span style="color:#ff79c6">=</span> matrix2[d[<span style="color:#bd93f9">0</span>]]<span style="color:#ff79c6">.</span>copy()
+        c <span style="color:#ff79c6">=</span> matrix3[d[<span style="color:#bd93f9">0</span>]]<span style="color:#ff79c6">.</span>copy()
+
+    key_string <span style="color:#ff79c6">=</span> key<span style="color:#ff79c6">.</span>decode(<span style="color:#f1fa8c">&#39;utf-8&#39;</span>)
+    <span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">&#34;The key is: &#34;</span> <span style="color:#ff79c6">+</span> key_string)
+
+</code></pre></div><p>The key obtained is <strong>REDchickenPIE</strong>. We finally enter the key in the
+input field of the webpage, and&hellip; Yeaaaaaaah !!! :)</p>
+<p><img src="/images/greycat/good_cat.png" alt=""></p>
+<p><strong>FLAG:</strong> grey{y0u~h4dfun~?~e4a3d~}</p>
+
+    </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>
