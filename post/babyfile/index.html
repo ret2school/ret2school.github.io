@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en-us">
   <head>
-    <title>[SECCON CTF 2022 Quals] babyfile // ret2school</title>
+    <title>[SECCON CTF 2022 Quals - pwn] babyfile // ret2school</title>
     <meta charset="utf-8" />
     <meta name="generator" content="Hugo 0.92.2" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -22,10 +22,10 @@ if (!doNotTrack) {
 </script>
 
     <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="[SECCON CTF 2022 Quals] babyfile"/>
+<meta name="twitter:title" content="[SECCON CTF 2022 Quals - pwn] babyfile"/>
 <meta name="twitter:description" content="Introduction babyfile is a file stream exploitation I did during the SECCON CTF 2022 Quals event. I didn’t succeed to flag it within the 24 hours :(. But anyway I hope this write up will be interesting to read given I show another way to gain code execution &ndash; I have not seen before &ndash; based on _IO_obstack_jumps! The related files can be found here. If you&rsquo;re not familiar with file stream internals, I advice you to read my previous writeups about file stream exploitation, especially this one and this other one."/>
 
-    <meta property="og:title" content="[SECCON CTF 2022 Quals] babyfile" />
+    <meta property="og:title" content="[SECCON CTF 2022 Quals - pwn] babyfile" />
 <meta property="og:description" content="Introduction babyfile is a file stream exploitation I did during the SECCON CTF 2022 Quals event. I didn’t succeed to flag it within the 24 hours :(. But anyway I hope this write up will be interesting to read given I show another way to gain code execution &ndash; I have not seen before &ndash; based on _IO_obstack_jumps! The related files can be found here. If you&rsquo;re not familiar with file stream internals, I advice you to read my previous writeups about file stream exploitation, especially this one and this other one." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://ret2school.github.io/post/babyfile/" /><meta property="article:section" content="post" />
@@ -64,7 +64,7 @@ if (!doNotTrack) {
       
   <article class="post">
     <header class="post-header">
-      <h1 class ="post-title">[SECCON CTF 2022 Quals] babyfile</h1>
+      <h1 class ="post-title">[SECCON CTF 2022 Quals - pwn] babyfile</h1>
       <div class="post-meta">
         <div>
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">

@@ -18,7 +18,7 @@ user@PwnMeIfYouKern:~$ cat /proc/cpuinfo | grep sm.p user@PwnMeIfYouKern:~$ cat 
     </item>
     
     <item>
-      <title>[pwnme 2023] chip8</title>
+      <title>[pwnme 2023 - pwn] chip8</title>
       <link>https://ret2school.github.io/post/chip8/</link>
       <pubDate>Mon, 08 May 2023 00:00:00 +0000</pubDate>
       
@@ -31,7 +31,7 @@ Remote service at : nc 51.254.39.184 1337
     </item>
     
     <item>
-      <title>[pwnme 2023] Heap-hop</title>
+      <title>[pwnme 2023 - pwn] Heap-hop</title>
       <link>https://ret2school.github.io/post/heaphop/</link>
       <pubDate>Sun, 07 May 2023 00:00:00 +0000</pubDate>
       
@@ -45,7 +45,7 @@ Remote service at : nc 51.254.39.184 1336
     </item>
     
     <item>
-      <title>[pwnme 2023] vip</title>
+      <title>[pwnme 2023 - pwn] vip</title>
       <link>https://ret2school.github.io/post/vip/</link>
       <pubDate>Sun, 07 May 2023 00:00:00 +0000</pubDate>
       
@@ -58,7 +58,7 @@ Remote service at : nc 51.254.39.184 1335
     </item>
     
     <item>
-      <title>[SECCON CTF 2022 Quals] babyfile</title>
+      <title>[SECCON CTF 2022 Quals - pwn] babyfile</title>
       <link>https://ret2school.github.io/post/babyfile/</link>
       <pubDate>Fri, 19 Aug 2022 00:00:00 +0000</pubDate>
       
