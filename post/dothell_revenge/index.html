@@ -14,13 +14,13 @@
     <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="[ESAIP CTF 2023 - reverse] Dothell Revenge"/>
 <meta name="twitter:description" content="Dothell Revenge  Solves : 3
-They downed the CTF infra as soon as it ended so I didn&rsquo;t have the time to save the challenge prompt :(
+It seems that you now need a password to get some stars&hellip; But you don&rsquo;t have any. Time for some hacking!
 Author: Oogle
  Dothell Revenge was a hard reverse-engineering challenge from ESAIP CTF 2023. It was a modified version of Dothell, a challenge from the 2022 edition that had 0 solves. I didn&rsquo;t participate IRL last year, but I did this year, and even beat two of the best reversers I know to the first blood."/>
 
     <meta property="og:title" content="[ESAIP CTF 2023 - reverse] Dothell Revenge" />
 <meta property="og:description" content="Dothell Revenge  Solves : 3
-They downed the CTF infra as soon as it ended so I didn&rsquo;t have the time to save the challenge prompt :(
+It seems that you now need a password to get some stars&hellip; But you don&rsquo;t have any. Time for some hacking!
 Author: Oogle
  Dothell Revenge was a hard reverse-engineering challenge from ESAIP CTF 2023. It was a modified version of Dothell, a challenge from the 2022 edition that had 0 solves. I didn&rsquo;t participate IRL last year, but I did this year, and even beat two of the best reversers I know to the first blood." />
 <meta property="og:type" content="article" />
@@ -84,7 +84,8 @@ Author: Oogle
       <h1 id="dothell-revenge">Dothell Revenge</h1>
 <blockquote>
 <p>Solves : 3</p>
-<p>They downed the CTF infra as soon as it ended so I didn&rsquo;t have the time to save the challenge prompt :(</p>
+<p>It seems that you now need a password to get some stars&hellip;
+But you don&rsquo;t have any. Time for some hacking!</p>
 <p>Author: Oogle</p>
 </blockquote>
 <p>Dothell Revenge was a hard reverse-engineering challenge from ESAIP CTF 2023. It was a modified version of Dothell, a challenge from the 2022 edition that had 0 solves. I didn&rsquo;t participate IRL last year, but I did this year, and even beat two of the best reversers I know to the first blood.</p>
@@ -94,7 +95,7 @@ Author: Oogle
 <li>Write a keygen with Z3</li>
 </ul>
 <h2 id="unpacking-confuserex">Unpacking ConfuserEx</h2>
-<p>Looking at the decompiled code in dnSpy indicates the binary is packed.</p>
+<p>Looking at the decompiled code in dnSpy, it&rsquo;s very likely that the binary is packed.</p>
 <p><img src="https://raw.githubusercontent.com/ret2school/ctf/master/2023/esaip_ctf/reverse/dothell_revenge/regretting_my_life_choices_rn.png" alt=""></p>
 <p>Thankfully, when scrolling to the bottom of the <code>Main</code> function, we see that the program tries to load the <code>koi</code> module.</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c#" data-lang="c#">Assembly executingAssembly = Assembly.GetExecutingAssembly();
@@ -123,7 +124,7 @@ MethodBase methodBase = module.ResolveMethod((<span style="color:#8be9fd">int</s
 </code></pre></div><p>This tells us with high certainty that the PE was packed using <a href="https://github.dev/yck1509/ConfuserEx">ConfuserEx</a> (an open-source but discontinued .NET protector). To unpack it we can use a <a href="https://github.com/XenocodeRCE/ConfuserEx-Unpacker">pre-existing unpacker</a>.</p>
 <h2 id="writing-a-keygen-with-z3">Writing a keygen with Z3</h2>
 <p>Now that we&rsquo;ve unpacked the PE, let&rsquo;s analyze the source code and write a keygen. The program isn&rsquo;t obfuscated and there&rsquo;s only a single anti-debug function (<code>nantendoShadowBan</code>) that makes the program exit if <code>dnSpy</code> or <code>ILSpy</code> are present in the process list. Other than that, the program isn&rsquo;t very complicated, it creates a form containing an input box and a button (the button runs the <code>checker_Click</code> function). The source code of the form is available <a href="https://raw.githubusercontent.com/ret2school/ctf/master/2023/esaip_ctf/reverse/dothell_revenge/Form1.cs">here</a>.</p>
-<p>To write the keygen we&rsquo;ll use Z3Py, an API around Z3 a SMT solver/theorem prover by Microsoft. A keygen using Z3 can be written by &ldquo;translating&rdquo; the <code>C#</code> to <code>Python</code> and modifying the syntax a bit. Below is the commented solve script (also available <a href="https://raw.githubusercontent.com/ret2school/ctf/master/2023/esaip_ctf/reverse/dothell_revenge/solve.py">here</a>).</p>
+<p>To write the keygen we&rsquo;ll use Z3Py, an API around Z3 (a SMT solver/theorem prover by Microsoft). A keygen using Z3 can be written by &ldquo;translating&rdquo; the <code>C#</code> to <code>Python</code> and modifying the syntax a bit. Below is the commented solve script (also available <a href="https://raw.githubusercontent.com/ret2school/ctf/master/2023/esaip_ctf/reverse/dothell_revenge/solve.py">here</a>).</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#ff79c6">from</span> base64 <span style="color:#ff79c6">import</span> b64decode
 <span style="color:#ff79c6">from</span> string <span style="color:#ff79c6">import</span> printable
 <span style="color:#ff79c6">import</span> z3
@@ -134,6 +135,7 @@ MethodBase methodBase = module.ResolveMethod((<span style="color:#8be9fd">int</s
 <span style="color:#6272a4"># This single assumption cost me 3h, most of my sanity and half of my brain cells. Why?</span>
 <span style="color:#6272a4"># Because &#39;/&#39; isn&#39;t a true division, it&#39;s a *floor division*</span>
 <span style="color:#6272a4"># Meaning that the condition is true for 35 but also 36, 37, 38 and 39</span>
+<span style="color:#6272a4"># The author hadn&#39;t originally planned for this and I&#39;m thankful he helped me debug the problem at 2AM</span>
 
 <span style="color:#f1fa8c">&#34;&#34;&#34;
 </span><span style="color:#f1fa8c">if (length / 5 + 1 != 8)

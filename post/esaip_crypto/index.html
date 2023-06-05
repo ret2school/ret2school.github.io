@@ -156,9 +156,9 @@ BANNER <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">b</span>
         p<span style="color:#ff79c6">.</span>start()
         client<span style="color:#ff79c6">.</span>close()
 </code></pre></div><p>We can control the <code>SBOX</code> for the encryption of a single random message and we have to leak the key. I originally thought of doing something like in <a href="https://crypto.stackexchange.com/questions/67612/aes-oracle-with-bad-s-box#67614">this StackOverflow post</a> where the <code>SBOX</code> is set to an identity mapping (<code>[0x0, 0x1, ..., 0xff] =&gt; [0x0, 0x1, ..., 0xff]</code>) so that no substitution actually takes place but it wouldn&rsquo;t have worked as we need to leak the encryption key, not the plaintext.</p>
-<p>What I chose to do instead was to send an empty/null <code>SBOX</code> (256 zeros). The commented <code>encrypt</code> function below explains this choice.</p>
+<p>What I chose to do instead was to send an empty/null <code>SBOX</code> (256 zeros). The commented <code>encrypt</code> function below explains why.</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#ff79c6">def</span> <span style="color:#50fa7b">encrypt</span>(self, plaintext):
-    <span style="color:#6272a4"># convert plaintext to 4 x 4 matrix</span>
+    <span style="color:#6272a4"># convert plaintext block to 4 x 4 matrix</span>
     self<span style="color:#ff79c6">.</span>plain_state <span style="color:#ff79c6">=</span> text2matrix(plaintext)
 
     <span style="color:#6272a4"># plaintext ^= round_keys[:4]</span>
@@ -386,7 +386,7 @@ Thus if we can create a share <code>(0, f(0))</code>, the function will always r
                                       &lt;=&gt; s / (s - 0) * f(0) + 0 / (0 - s) * f(s)
                                       &lt;=&gt; 1 * f(0) + 0 * f(s)
                                       &lt;=&gt; f(0)
-</code></pre><p>To do this, we can simply create a new share with an ID of <code>1256472</code> (which will create the share <code>(0, secret)</code>).</p>
+</code></pre><p>To do this, we can simply create a new share with an ID of <code>1256472</code> (so that <code>create_point</code> will return 0 and the share <code>(0, secret)</code> will be created).</p>
 <pre tabindex="0"><code>$ nc AAA.BBB.CCC.DDD 55555
 # [...]
 1--Get the secret
