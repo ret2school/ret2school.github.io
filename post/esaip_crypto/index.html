@@ -1,0 +1,540 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title>[ESAIP CTF 2023] All crypto challenges // ret2school</title>
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.92.2" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="nasm" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="https://ret2school.github.io/css/main.min.0fb49e70a30412f97ddfc418e18fefef1d9fcdebe45f634dbbba768b00fe1eec.css" />
+
+    
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="[ESAIP CTF 2023] All crypto challenges"/>
+<meta name="twitter:description" content="This article contains write-ups for all cryptography challenges from ESAIP CTF 2023. All challenge files, prompts and solves are available here.
+The event was nice and I had a great time competing with my friends. However, I&rsquo;d like to quickly rant before diving into the write-ups.
+&lt;rant&gt;
+ I can&rsquo;t believe this has to be said but before giving source code, please make sure that it works. Added bonus: publish the Dockerfiles you use so players don&rsquo;t have to waste time debugging."/>
+
+    <meta property="og:title" content="[ESAIP CTF 2023] All crypto challenges" />
+<meta property="og:description" content="This article contains write-ups for all cryptography challenges from ESAIP CTF 2023. All challenge files, prompts and solves are available here.
+The event was nice and I had a great time competing with my friends. However, I&rsquo;d like to quickly rant before diving into the write-ups.
+&lt;rant&gt;
+ I can&rsquo;t believe this has to be said but before giving source code, please make sure that it works. Added bonus: publish the Dockerfiles you use so players don&rsquo;t have to waste time debugging." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ret2school.github.io/post/esaip_crypto/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2023-06-02T00:00:00+00:00" />
+<meta property="article:modified_time" content="2023-06-02T00:00:00+00:00" />
+
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://ret2school.github.io"><img class="app-header-avatar" src="/pic.jpeg" alt="nasm" /></a>
+      <span class="app-header-title">ret2school</span>
+      <nav class="app-header-menu">
+          <a class="app-header-menu-item" href="/post/list_team/">About</a>
+             - 
+          
+          <a class="app-header-menu-item" href="/">Home</a>
+             - 
+          
+          <a class="app-header-menu-item" href="/tags/">Tags</a>
+      </nav>
+      <p>Just a bunch of french ctf players</p>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">[ESAIP CTF 2023] All crypto challenges</h1>
+      <div class="post-meta">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          Jun 2, 2023
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          10 min read
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tag">
+  <title>tag</title>
+  <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line>
+</svg>
+              <a class="tag" href="https://ret2school.github.io/tags/ctf/">ctf</a>
+              <a class="tag" href="https://ret2school.github.io/tags/ret2school/">ret2school</a>
+              <a class="tag" href="https://ret2school.github.io/tags/2023/">2023</a>
+              <a class="tag" href="https://ret2school.github.io/tags/alol/">alol</a>
+              <a class="tag" href="https://ret2school.github.io/tags/crypto/">crypto</a>
+        </div>
+      </div>
+    </header>
+    <div class="post-content">
+      <p>This article contains write-ups for all cryptography challenges from ESAIP CTF 2023. All challenge files, prompts and solves are available <a href="https://github.com/ESAIP-CTF/public-esaip-ctf-2023/tree/master/challenges/crypto">here</a>.</p>
+<p>The event was nice and I had a great time competing with my friends. <em>However</em>, I&rsquo;d like to quickly rant before diving into the write-ups.</p>
+<p>&lt;rant&gt;</p>
+<ul>
+<li>I can&rsquo;t believe this has to be said but before giving source code, <em>please make sure that it works</em>.</li>
+<li>Added bonus: publish the Dockerfiles you use so players don&rsquo;t have to waste time debugging.</li>
+<li>I was tired and didn&rsquo;t notice I had solved a challenge locally because no flag was printed &hellip; turns out the challenge file didn&rsquo;t contain a placeholder flag :)</li>
+</ul>
+<p>&lt;/rant&gt;</p>
+<h1 id="bowsers-box">Bowser&rsquo;s Box</h1>
+<blockquote>
+<p>Bowser wants to get the ultime lucky box !
+You new to find it before him !</p>
+</blockquote>
+<p>Probably my favourite challenge, not too hard but an interesting concept nonetheless. The following Python source code is given:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#ff79c6">from</span> Crypto.Util.number <span style="color:#ff79c6">import</span> bytes_to_long
+<span style="color:#ff79c6">from</span> multiprocessing <span style="color:#ff79c6">import</span> Process
+<span style="color:#ff79c6">from</span> os <span style="color:#ff79c6">import</span> urandom
+<span style="color:#ff79c6">import</span> socket
+
+BANNER <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&#34;&#34;
+</span><span style="color:#f1fa8c">__________                                /\        __________              
+</span><span style="color:#f1fa8c">\______   \ ______  _  ________ __________)/ ______ \______   \ _______  ___
+</span><span style="color:#f1fa8c"> |    |  _//  _ \ \/ \/ /  ___// __ \_  __ \/  ___/  |    |  _//  _ \  \/  /
+</span><span style="color:#f1fa8c"> |    |   (  &lt;_&gt; )     /\___ </span><span style="color:#f1fa8c">\\\\</span><span style="color:#f1fa8c">  ___/|  | \/\___ \   |    |   (  &lt;_&gt; &gt;    &lt; 
+</span><span style="color:#f1fa8c"> |______  /\____/ \/\_//____  &gt;\___  &gt;__|  /____  &gt;  |______  /\____/__/\_ </span><span style="color:#f1fa8c">\\</span><span style="color:#f1fa8c">
+</span><span style="color:#f1fa8c">        \/                  \/     \/           \/          \/            \/
+</span><span style="color:#f1fa8c">&#34;&#34;&#34;</span>
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">read_line</span>(s):
+    body <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&#34;</span>
+    <span style="color:#ff79c6">while</span> <span style="color:#ff79c6">True</span>:
+        ch <span style="color:#ff79c6">=</span> s<span style="color:#ff79c6">.</span>recv(<span style="color:#bd93f9">1</span>)
+        <span style="color:#ff79c6">if</span> ch <span style="color:#ff79c6">==</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>:
+            <span style="color:#ff79c6">break</span>
+        body <span style="color:#ff79c6">=</span> body <span style="color:#ff79c6">+</span> ch
+    <span style="color:#ff79c6">return</span> body
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">challenge</span>(s):
+    s<span style="color:#ff79c6">.</span>send(BANNER)
+    s<span style="color:#ff79c6">.</span>send(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;What&#39;s the SBox you want to use for the encryption?</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>)
+    s<span style="color:#ff79c6">.</span>send(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;Example : 1,2,3,4,5,6...</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>)
+
+    <span style="color:#ff79c6">try</span>:
+        sbox <span style="color:#ff79c6">=</span> read_line(s)<span style="color:#ff79c6">.</span>decode()
+        sbox <span style="color:#ff79c6">=</span> sbox<span style="color:#ff79c6">.</span>split(<span style="color:#f1fa8c">&#34;,&#34;</span>)
+        sbox <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">tuple</span>([<span style="color:#8be9fd;font-style:italic">int</span>(x) <span style="color:#ff79c6">for</span> x <span style="color:#ff79c6">in</span> sbox])
+        <span style="color:#ff79c6">assert</span> <span style="color:#8be9fd;font-style:italic">len</span>(sbox) <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">256</span>
+    <span style="color:#ff79c6">except</span>:
+        s<span style="color:#ff79c6">.</span>send(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;SBox is invalid!</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>)
+        exit()
+
+    <span style="color:#6272a4"># N.B: modified version of https://github.com/bozhu/AES-Python to work with</span>
+    <span style="color:#6272a4">#      python3 and where SBOX is passed to constructor and set before</span>
+    <span style="color:#6272a4">#      change_key is called</span>
+    <span style="color:#ff79c6">from</span> aes <span style="color:#ff79c6">import</span> AES
+    master_key <span style="color:#ff79c6">=</span> bytes_to_long(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;ECTF{??????????}&#34;</span>)
+    AES <span style="color:#ff79c6">=</span> AES(master_key, sbox)
+    ciphertext <span style="color:#ff79c6">=</span> AES<span style="color:#ff79c6">.</span>encrypt(bytes_to_long(urandom(<span style="color:#bd93f9">120</span>)))
+
+    s<span style="color:#ff79c6">.</span>send(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;Cipher text: &#34;</span> <span style="color:#ff79c6">+</span> <span style="color:#8be9fd;font-style:italic">str</span>(ciphertext)<span style="color:#ff79c6">.</span>encode() <span style="color:#ff79c6">+</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>)
+    <span style="color:#ff79c6">return</span>
+
+<span style="color:#ff79c6">if</span> __name__ <span style="color:#ff79c6">==</span> <span style="color:#f1fa8c">&#39;__main__&#39;</span>:
+    s <span style="color:#ff79c6">=</span> socket<span style="color:#ff79c6">.</span>socket()
+    s<span style="color:#ff79c6">.</span>setsockopt(socket<span style="color:#ff79c6">.</span>SOL_SOCKET, socket<span style="color:#ff79c6">.</span>SO_REUSEADDR, <span style="color:#bd93f9">1</span>)
+    s<span style="color:#ff79c6">.</span>bind((<span style="color:#f1fa8c">&#34;0.0.0.0&#34;</span>, <span style="color:#bd93f9">55555</span>))
+    s<span style="color:#ff79c6">.</span>listen(<span style="color:#bd93f9">10</span>)
+    <span style="color:#ff79c6">while</span> <span style="color:#ff79c6">True</span>:
+        client, addr <span style="color:#ff79c6">=</span> s<span style="color:#ff79c6">.</span>accept()
+        <span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">&#34;Got connect from &#34;</span> <span style="color:#ff79c6">+</span> <span style="color:#8be9fd;font-style:italic">str</span>(addr))
+        p <span style="color:#ff79c6">=</span> Process(target<span style="color:#ff79c6">=</span>challenge, args<span style="color:#ff79c6">=</span>(client,))
+        p<span style="color:#ff79c6">.</span>daemon <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">True</span>
+        p<span style="color:#ff79c6">.</span>start()
+        client<span style="color:#ff79c6">.</span>close()
+</code></pre></div><p>We can control the <code>SBOX</code> for the encryption of a single random message and we have to leak the key. I originally thought of doing something like in <a href="https://crypto.stackexchange.com/questions/67612/aes-oracle-with-bad-s-box#67614">this StackOverflow post</a> where the <code>SBOX</code> is set to an identity mapping (<code>[0x0, 0x1, ..., 0xff] =&gt; [0x0, 0x1, ..., 0xff]</code>) so that no substitution actually takes place but it wouldn&rsquo;t have worked as we need to leak the encryption key, not the plaintext.</p>
+<p>What I chose to do instead was to send an empty/null <code>SBOX</code> (256 zeros). The commented <code>encrypt</code> function below explains this choice.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#ff79c6">def</span> <span style="color:#50fa7b">encrypt</span>(self, plaintext):
+    <span style="color:#6272a4"># convert plaintext to 4 x 4 matrix</span>
+    self<span style="color:#ff79c6">.</span>plain_state <span style="color:#ff79c6">=</span> text2matrix(plaintext)
+
+    <span style="color:#6272a4"># plaintext ^= round_keys[:4]</span>
+    self<span style="color:#ff79c6">.</span>__add_round_key(self<span style="color:#ff79c6">.</span>plain_state, self<span style="color:#ff79c6">.</span>round_keys[:<span style="color:#bd93f9">4</span>])
+
+    <span style="color:#6272a4"># useless, we&#39;ll see why below</span>
+    <span style="color:#ff79c6">for</span> i <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#bd93f9">1</span>, <span style="color:#bd93f9">10</span>):
+        self<span style="color:#ff79c6">.</span>__round_encrypt(self<span style="color:#ff79c6">.</span>plain_state, self<span style="color:#ff79c6">.</span>round_keys[<span style="color:#bd93f9">4</span> <span style="color:#ff79c6">*</span> i : <span style="color:#bd93f9">4</span> <span style="color:#ff79c6">*</span> (i <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">1</span>)])
+
+    <span style="color:#6272a4"># perform substitution but since the SBOX is all 0s the resulting plain_state</span>
+    <span style="color:#6272a4"># will also be all 0s, thus rendering entirely useless every operation done</span>
+    <span style="color:#6272a4"># until now</span>
+    self<span style="color:#ff79c6">.</span>__sub_bytes(self<span style="color:#ff79c6">.</span>plain_state)
+
+    <span style="color:#6272a4"># shift the rows (useless as all the values are 0)</span>
+    self<span style="color:#ff79c6">.</span>__shift_rows(self<span style="color:#ff79c6">.</span>plain_state)
+
+    <span style="color:#6272a4"># plain_state ^= xor round_keys[40:]</span>
+    <span style="color:#6272a4"># but as the plain_state is all 0s we have</span>
+    <span style="color:#6272a4"># plain_state = round_keys[40:]</span>
+    self<span style="color:#ff79c6">.</span>__add_round_key(self<span style="color:#ff79c6">.</span>plain_state, self<span style="color:#ff79c6">.</span>round_keys[<span style="color:#bd93f9">40</span>:])
+
+    <span style="color:#6272a4"># return plain_state (round_keys[40:]) as an int</span>
+    <span style="color:#ff79c6">return</span> matrix2text(self<span style="color:#ff79c6">.</span>plain_state)
+</code></pre></div><p>Basically, by using a null <code>SBOX</code>, we&rsquo;ve turned the encryption function into the following:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#ff79c6">def</span> <span style="color:#50fa7b">encrypt</span>(self, plaintext):
+    <span style="color:#ff79c6">return</span> matrix2text(self<span style="color:#ff79c6">.</span>round_keys[<span style="color:#bd93f9">40</span>:])
+</code></pre></div><p>Since the <code>round_keys</code> are derived from the &ldquo;master key&rdquo; (via the key scheduling algorithm) and each byte of the master key affects the same byte of each round key we can bruteforce the master key character by character.</p>
+<p>This can be done with the following Python script:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#ff79c6">from</span> aes <span style="color:#ff79c6">import</span> AES, text2matrix, matrix2text
+<span style="color:#ff79c6">from</span> Crypto.Util.number <span style="color:#ff79c6">import</span> long_to_bytes, bytes_to_long
+<span style="color:#ff79c6">import</span> string
+
+<span style="color:#6272a4"># Got this value by sending a null sbox to the remote server</span>
+ct <span style="color:#ff79c6">=</span> long_to_bytes(<span style="color:#bd93f9">201063020592992157563690216943176785208</span>)
+pt <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#39;&#39;</span>
+
+<span style="color:#ff79c6">for</span> i <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#bd93f9">16</span>): <span style="color:#6272a4"># 16 byte key</span>
+    <span style="color:#ff79c6">for</span> c <span style="color:#ff79c6">in</span> string<span style="color:#ff79c6">.</span>printable:
+        test_key <span style="color:#ff79c6">=</span> pt <span style="color:#ff79c6">+</span> c<span style="color:#ff79c6">.</span>encode() <span style="color:#ff79c6">+</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#39;</span><span style="color:#f1fa8c">\x00</span><span style="color:#f1fa8c">&#39;</span> <span style="color:#ff79c6">*</span> (<span style="color:#bd93f9">15</span> <span style="color:#ff79c6">-</span> <span style="color:#8be9fd;font-style:italic">len</span>(pt))
+        cipher <span style="color:#ff79c6">=</span> AES(bytes_to_long(test_key), [<span style="color:#bd93f9">0</span>]<span style="color:#ff79c6">*</span><span style="color:#bd93f9">256</span>)
+
+        <span style="color:#ff79c6">if</span> long_to_bytes(matrix2text(cipher<span style="color:#ff79c6">.</span>round_keys[<span style="color:#bd93f9">40</span>:]))[i] <span style="color:#ff79c6">==</span> ct[i]:
+            pt <span style="color:#ff79c6">+=</span> c<span style="color:#ff79c6">.</span>encode()
+            <span style="color:#ff79c6">break</span>
+<span style="color:#8be9fd;font-style:italic">print</span>(pt)
+<span style="color:#6272a4"># b&#39;ECTF{AEEES_SBOX}&#39;</span>
+</code></pre></div><h1 id="mario-chest">Mario Chest</h1>
+<blockquote>
+<p>Mario wanted to hide his deepest secret in a chest to defeat Bowser.
+He shared part of the chest code with some of his friends, but now Mario is gone and the code is incomplete&hellip;
+You need to retrieve this secret !</p>
+</blockquote>
+<p>We&rsquo;re given the following Python source code:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#ff79c6">import</span> random
+<span style="color:#ff79c6">from</span> decimal <span style="color:#ff79c6">import</span> Decimal,getcontext
+<span style="color:#ff79c6">from</span> multiprocessing <span style="color:#ff79c6">import</span> Process
+<span style="color:#ff79c6">import</span> socket
+
+getcontext()<span style="color:#ff79c6">.</span>prec <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">80</span>
+
+FLAG <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;&#34;</span>
+
+<span style="color:#6272a4"># Menu</span>
+menu_options <span style="color:#ff79c6">=</span> {
+    <span style="color:#f1fa8c">&#34;1&#34;</span>: <span style="color:#f1fa8c">&#39;Get the secret&#39;</span>,
+    <span style="color:#f1fa8c">&#34;2&#34;</span>: <span style="color:#f1fa8c">&#39;Create new share&#39;</span>,
+    <span style="color:#f1fa8c">&#34;3&#34;</span>: <span style="color:#f1fa8c">&#39;Exit&#39;</span>,
+}
+
+banner <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&#34;&#34;
+</span><span style="color:#f1fa8c">                     _                              
+</span><span style="color:#f1fa8c"> _____         _    | |       _____ _           _   
+</span><span style="color:#f1fa8c">|     |___ ___|_|___|_|___   |     | |_ ___ ___| |_ 
+</span><span style="color:#f1fa8c">| | | | .&#39;|  _| | . | |_ -|  |   --|   | -_|_ -|  _|
+</span><span style="color:#f1fa8c">|_|_|_|__,|_| |_|___| |___|  |_____|_|_|___|___|_|  
+</span><span style="color:#f1fa8c">                                                                                                                                                                  
+</span><span style="color:#f1fa8c">&#34;&#34;&#34;</span>
+
+<span style="color:#6272a4"># Print menu</span>
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">print_menu</span>(s):
+    <span style="color:#ff79c6">for</span> key <span style="color:#ff79c6">in</span> menu_options<span style="color:#ff79c6">.</span>keys():
+        menu <span style="color:#ff79c6">=</span> key<span style="color:#ff79c6">+</span> <span style="color:#f1fa8c">&#39;--&#39;</span><span style="color:#ff79c6">+</span>menu_options[key] 
+        s<span style="color:#ff79c6">.</span>send(menu<span style="color:#ff79c6">.</span>encode()<span style="color:#ff79c6">+</span><span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>)
+
+<span style="color:#6272a4"># Get user input</span>
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">read_line</span>(s):
+    body <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;&#34;</span>
+    <span style="color:#ff79c6">while</span> <span style="color:#ff79c6">True</span>:
+        ch <span style="color:#ff79c6">=</span> s<span style="color:#ff79c6">.</span>recv(<span style="color:#bd93f9">1</span>)
+        <span style="color:#ff79c6">if</span> ch <span style="color:#ff79c6">==</span> <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>:
+            <span style="color:#ff79c6">break</span>
+        body <span style="color:#ff79c6">=</span> body <span style="color:#ff79c6">+</span> ch
+    <span style="color:#ff79c6">return</span> body
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">str_to_int</span>(secret):
+    <span style="color:#ff79c6">return</span> <span style="color:#8be9fd;font-style:italic">sum</span>([<span style="color:#8be9fd;font-style:italic">ord</span>(c) <span style="color:#ff79c6">*</span> (<span style="color:#bd93f9">256</span> <span style="color:#ff79c6">**</span> i) <span style="color:#ff79c6">for</span> i, c <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">enumerate</span>(secret)])
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">int_to_str</span>(secret_int):
+    secret_str <span style="color:#ff79c6">=</span> []
+    <span style="color:#ff79c6">while</span> secret_int <span style="color:#ff79c6">&gt;</span> <span style="color:#bd93f9">0</span>:
+        secret_str<span style="color:#ff79c6">.</span>append(<span style="color:#8be9fd;font-style:italic">chr</span>(secret_int <span style="color:#ff79c6">%</span> <span style="color:#bd93f9">256</span>))
+        secret_int <span style="color:#ff79c6">//=</span> <span style="color:#bd93f9">256</span>
+    <span style="color:#ff79c6">return</span> <span style="color:#f1fa8c">&#39;&#39;</span><span style="color:#ff79c6">.</span>join(secret_str)
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">create_point</span>(x):
+    a <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">int</span>(<span style="color:#8be9fd;font-style:italic">str</span>(<span style="color:#bd93f9">6</span><span style="color:#ff79c6">**</span><span style="color:#bd93f9">3</span>)[<span style="color:#bd93f9">1</span>:] <span style="color:#ff79c6">+</span> <span style="color:#8be9fd;font-style:italic">str</span>(<span style="color:#bd93f9">5</span><span style="color:#ff79c6">**</span><span style="color:#bd93f9">4</span>)[:<span style="color:#bd93f9">2</span>])
+    b <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">int</span>(<span style="color:#8be9fd;font-style:italic">str</span>(<span style="color:#bd93f9">3</span><span style="color:#ff79c6">**</span><span style="color:#bd93f9">3</span>)[<span style="color:#bd93f9">1</span>:] <span style="color:#ff79c6">+</span> <span style="color:#8be9fd;font-style:italic">str</span>(<span style="color:#bd93f9">4</span><span style="color:#ff79c6">**</span><span style="color:#bd93f9">4</span>)[<span style="color:#bd93f9">1</span>:])
+    c <span style="color:#ff79c6">=</span> a <span style="color:#ff79c6">*</span> b
+    <span style="color:#ff79c6">return</span> x <span style="color:#ff79c6">-</span> c
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">create_share</span>(x,m,secret):
+    coefficients <span style="color:#ff79c6">=</span> coeff(m, secret)
+    shares<span style="color:#ff79c6">.</span>append((x, polynom(x, coefficients)))     
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">reconstruct_secret</span>(shares):
+    sums <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>
+ 
+    <span style="color:#ff79c6">for</span> j, share_j <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">enumerate</span>(shares):
+        xj, yj <span style="color:#ff79c6">=</span> share_j
+        prod <span style="color:#ff79c6">=</span> Decimal(<span style="color:#bd93f9">1</span>)
+ 
+        <span style="color:#ff79c6">for</span> i, share_i <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">enumerate</span>(shares):
+            xi, _ <span style="color:#ff79c6">=</span> share_i
+            <span style="color:#ff79c6">if</span> i <span style="color:#ff79c6">!=</span> j:
+                prod <span style="color:#ff79c6">*=</span> Decimal(Decimal(xi)<span style="color:#ff79c6">/</span>(xi<span style="color:#ff79c6">-</span>xj))
+ 
+        prod <span style="color:#ff79c6">*=</span> yj
+        sums <span style="color:#ff79c6">+=</span> Decimal(prod)
+ 
+    <span style="color:#ff79c6">return</span> <span style="color:#8be9fd;font-style:italic">int</span>(<span style="color:#8be9fd;font-style:italic">round</span>(Decimal(sums), <span style="color:#bd93f9">0</span>))
+ 
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">polynom</span>(x, coefficients):
+    point <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>
+
+    <span style="color:#ff79c6">for</span> coefficient_index, coefficient_value <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">enumerate</span>(coefficients[::<span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>]):
+        point <span style="color:#ff79c6">+=</span> x <span style="color:#ff79c6">**</span> coefficient_index <span style="color:#ff79c6">*</span> coefficient_value
+    <span style="color:#ff79c6">return</span> point
+ 
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">coeff</span>(t, secret):
+    coeff <span style="color:#ff79c6">=</span> [random<span style="color:#ff79c6">.</span>randrange(<span style="color:#bd93f9">0</span>, <span style="color:#bd93f9">10</span><span style="color:#ff79c6">**</span><span style="color:#bd93f9">5</span>) <span style="color:#ff79c6">for</span> _ <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(t <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">1</span>)]
+    coeff<span style="color:#ff79c6">.</span>append(secret)
+    <span style="color:#ff79c6">return</span> coeff
+ 
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">generate_shares</span>(n, m, secret):
+    coefficients <span style="color:#ff79c6">=</span> coeff(m, secret)
+    shares <span style="color:#ff79c6">=</span> []
+ 
+    <span style="color:#ff79c6">for</span> _ <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#bd93f9">1</span>, n<span style="color:#ff79c6">+</span><span style="color:#bd93f9">1</span>):
+        x <span style="color:#ff79c6">=</span> random<span style="color:#ff79c6">.</span>randrange(<span style="color:#bd93f9">1</span>, <span style="color:#bd93f9">10</span><span style="color:#ff79c6">**</span><span style="color:#bd93f9">5</span>)
+        shares<span style="color:#ff79c6">.</span>append((x, polynom(x, coefficients)))
+ 
+    <span style="color:#ff79c6">return</span> shares
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">verify_secret</span>(generated_secret):
+    <span style="color:#ff79c6">if</span> generated_secret <span style="color:#ff79c6">==</span> FLAG:
+
+        <span style="color:#ff79c6">return</span> <span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;Okey, I&#39;ll share my secret with you : </span><span style="color:#f1fa8c">{</span>FLAG<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;</span>
+    <span style="color:#ff79c6">else</span> :
+        <span style="color:#ff79c6">return</span> <span style="color:#f1fa8c">&#34;I won&#39;t share my secret if you won&#39;t share yours ( ͡° ͜ʖ ͡°)&#34;</span>
+
+<span style="color:#6272a4"># Challenge</span>
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">challenge</span>(s):
+    s<span style="color:#ff79c6">.</span>send(banner)
+    <span style="color:#ff79c6">while</span> (<span style="color:#ff79c6">True</span>):
+        print_menu(s)
+        choice <span style="color:#ff79c6">=</span> read_line(s)
+        <span style="color:#ff79c6">if</span> choice<span style="color:#ff79c6">.</span>decode(<span style="color:#f1fa8c">&#34;utf-8&#34;</span>) <span style="color:#ff79c6">==</span> <span style="color:#f1fa8c">&#34;1&#34;</span>:
+            pool <span style="color:#ff79c6">=</span> []
+            pool<span style="color:#ff79c6">.</span>append(shares[<span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>])
+            pool<span style="color:#ff79c6">.</span>append(shares[<span style="color:#ff79c6">-</span><span style="color:#bd93f9">2</span>])
+            reconstructed <span style="color:#ff79c6">=</span> int_to_str(reconstruct_secret(pool))
+            result <span style="color:#ff79c6">=</span>  verify_secret(reconstructed)
+            s<span style="color:#ff79c6">.</span>send(result<span style="color:#ff79c6">.</span>encode()<span style="color:#ff79c6">+</span><span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>)
+
+        <span style="color:#ff79c6">elif</span> choice<span style="color:#ff79c6">.</span>decode(<span style="color:#f1fa8c">&#34;utf-8&#34;</span>) <span style="color:#ff79c6">==</span> <span style="color:#f1fa8c">&#34;2&#34;</span>:
+            s<span style="color:#ff79c6">.</span>send(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;Enter your new share ID number : </span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>)
+            ID <span style="color:#ff79c6">=</span> read_line(s)
+            point <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">int</span>(ID)
+            create_share(create_point(point),t,secret_int)
+            
+        <span style="color:#ff79c6">elif</span> choice<span style="color:#ff79c6">.</span>decode(<span style="color:#f1fa8c">&#34;utf-8&#34;</span>) <span style="color:#ff79c6">==</span> <span style="color:#f1fa8c">&#34;3&#34;</span>:
+            <span style="color:#ff79c6">break</span>
+        <span style="color:#ff79c6">else</span>:
+            s<span style="color:#ff79c6">.</span>send(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#34;Wrong choice: send 1,2 or 3</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>)
+
+ 
+<span style="color:#6272a4"># Main</span>
+<span style="color:#ff79c6">if</span> __name__ <span style="color:#ff79c6">==</span> <span style="color:#f1fa8c">&#39;__main__&#39;</span>:
+
+    t, n <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">5</span>, <span style="color:#bd93f9">10</span>
+    secret_int <span style="color:#ff79c6">=</span> str_to_int(FLAG)
+    shares <span style="color:#ff79c6">=</span> generate_shares(n, t, secret_int)
+
+    s <span style="color:#ff79c6">=</span> socket<span style="color:#ff79c6">.</span>socket()
+    s<span style="color:#ff79c6">.</span>setsockopt(socket<span style="color:#ff79c6">.</span>SOL_SOCKET, socket<span style="color:#ff79c6">.</span>SO_REUSEADDR, <span style="color:#bd93f9">1</span>)
+    s<span style="color:#ff79c6">.</span>bind((<span style="color:#f1fa8c">&#34;0.0.0.0&#34;</span>, <span style="color:#bd93f9">55555</span>))
+    s<span style="color:#ff79c6">.</span>listen(<span style="color:#bd93f9">10</span>)
+    
+    <span style="color:#ff79c6">while</span> <span style="color:#ff79c6">True</span>:
+        client, addr <span style="color:#ff79c6">=</span> s<span style="color:#ff79c6">.</span>accept()
+        <span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;Got connect from </span><span style="color:#f1fa8c">{</span>addr<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;</span>)
+        p <span style="color:#ff79c6">=</span> Process(target<span style="color:#ff79c6">=</span>challenge, args<span style="color:#ff79c6">=</span>(client,))
+        p<span style="color:#ff79c6">.</span>daemon <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">True</span>
+        p<span style="color:#ff79c6">.</span>start()
+        client<span style="color:#ff79c6">.</span>close()
+</code></pre></div><p>The program seems to erronously implement a SSSS (Shamir&rsquo;s Secret Sharing Scheme) in which we can either create a new share or recover the secret (if the reconstructed secret is equal to the original secret). Two functions from the original source code have been rewritten below to highlight the implentation errors.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#ff79c6">def</span> <span style="color:#50fa7b">create_point</span>(x):
+    <span style="color:#6272a4"># This function should make it so we can&#39;t chose the value</span>
+    <span style="color:#6272a4"># of the resulting point, thankfully for us that&#39;s not the case</span>
+    <span style="color:#ff79c6">return</span> x <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">1256472</span>
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">reconstruct_secret</span>(shares):
+    <span style="color:#6272a4"># Only the last 2 shares (instead of all 5) are used to recover</span>
+    <span style="color:#6272a4"># the secret so we can rewrite the function as follows:</span>
+    (xj,yj), (xi,yi) <span style="color:#ff79c6">=</span> shares
+
+    sums <span style="color:#ff79c6">=</span> Decimal(Decimal(xi) <span style="color:#ff79c6">/</span> (xi<span style="color:#ff79c6">-</span>xj)) <span style="color:#ff79c6">*</span> yj \
+         <span style="color:#ff79c6">+</span> Decimal(Decimal(xj) <span style="color:#ff79c6">/</span> (xj<span style="color:#ff79c6">-</span>xi)) <span style="color:#ff79c6">*</span> yi
+
+    <span style="color:#ff79c6">return</span> <span style="color:#8be9fd;font-style:italic">int</span>(<span style="color:#8be9fd;font-style:italic">round</span>(Decimal(sums), <span style="color:#bd93f9">0</span>))
+</code></pre></div><p>From the rewritten version of the <code>reconstruct_secret</code> function it&rsquo;s obvious that, for each part of the equation, if either <code>x</code> or <code>y</code> are equal to <code>0</code> then that part of the equation will be equal to <code>0</code>.
+Thus if we can create a share <code>(0, f(0))</code>, the function will always return <code>f(0)</code> (ie. the secret) and we can recover the flag. The demonstration for this is given below, where <code>s</code> is the share created by the program and <code>u</code> is the share we&rsquo;ve created.</p>
+<pre tabindex="0"><code>xi / (xi-xj) * yj + xj / (xj-xi) * yi &lt;=&gt; s / (s - u) * f(u) + u / (u - s) * f(s)
+                                      &lt;=&gt; s / (s - 0) * f(0) + 0 / (0 - s) * f(s)
+                                      &lt;=&gt; 1 * f(0) + 0 * f(s)
+                                      &lt;=&gt; f(0)
+</code></pre><p>To do this, we can simply create a new share with an ID of <code>1256472</code> (which will create the share <code>(0, secret)</code>).</p>
+<pre tabindex="0"><code>$ nc AAA.BBB.CCC.DDD 55555
+# [...]
+1--Get the secret
+2--Create new share
+3--Exit
+2
+Enter your new share ID number :
+1256472
+1--Get the secret
+2--Create new share
+3--Exit
+1
+Okey, I'll share my secret with you : ECTF{WhEn_Mari0_W4nTs_To_Share}
+</code></pre><h1 id="square-mario">Square Mario</h1>
+<blockquote>
+<p>While your were playing mario you found those 2 files, please find a way to decrypt them!</p>
+</blockquote>
+<p>We&rsquo;re given the following Python source code and output.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#ff79c6">from</span> Cryptodome.Util.number <span style="color:#ff79c6">import</span> bytes_to_long, getPrime
+
+FLAG <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">open</span>(<span style="color:#f1fa8c">&#34;flag.txt&#34;</span>, <span style="color:#f1fa8c">&#34;rb&#34;</span>)<span style="color:#ff79c6">.</span>read()
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">square</span>(x, m, n<span style="color:#ff79c6">=</span><span style="color:#bd93f9">5</span>):
+    <span style="color:#ff79c6">for</span> _ <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(n):
+        x <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">pow</span>(x, <span style="color:#bd93f9">2</span>, m)
+    <span style="color:#ff79c6">return</span> x
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">encrypt</span>(flag):
+    p <span style="color:#ff79c6">=</span> getPrime(<span style="color:#bd93f9">1024</span>)
+    x <span style="color:#ff79c6">=</span> square(bytes_to_long(flag), p)
+    <span style="color:#ff79c6">return</span> (x, p)
+
+(X, P) <span style="color:#ff79c6">=</span> encrypt(FLAG)
+
+<span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">&#34;X =&#34;</span>, X)
+<span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">&#34;P =&#34;</span>, P)
+
+<span style="color:#6272a4">#X = 65567906504707001412451629380105920336765646875361267702392177389975788601105395041727677960531694075172671673825534663404646697891108703571487714370157822718820383082425198093895770956243411362693772945081793898878903728208012455412074768926681046872056914503511397246233621635857399405920045067524154745070</span>
+<span style="color:#6272a4">#P = 126419363563553215091646637314497854198261588036382180640893319022541659598027100223880826774071842687403022731516037083359599621020514054284689589273154786802636897124000251303336410620757242551598664334914370563254424053331496101404625326501881265007678722518697084930349838815078675100361385273502712083087</span>
+</code></pre></div><p>The flag is converted to a <code>long</code> before being squared 5 times modulo <code>P</code> (so <code>X = flag ** 32 % P</code>).
+Thus we can simply recursively take the modular square root of <code>X</code> (and <code>-X % P</code>, as there are two roots) using the Tonneli-Shanks algorithm.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#ff79c6">from</span> libnum <span style="color:#ff79c6">import</span> n2s
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">mod_sqrt</span>(a, p):
+
+    <span style="color:#ff79c6">def</span> <span style="color:#50fa7b">legendre_symbol</span>(a, p):
+        ls <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">pow</span>(a, (p <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">1</span>) <span style="color:#ff79c6">//</span> <span style="color:#bd93f9">2</span>, p)
+        <span style="color:#ff79c6">return</span> <span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span> <span style="color:#ff79c6">if</span> ls <span style="color:#ff79c6">==</span> p <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">1</span> <span style="color:#ff79c6">else</span> ls
+
+    <span style="color:#ff79c6">if</span> legendre_symbol(a, p) <span style="color:#ff79c6">!=</span> <span style="color:#bd93f9">1</span>:
+        <span style="color:#ff79c6">return</span> <span style="color:#bd93f9">0</span>
+    <span style="color:#ff79c6">elif</span> a <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">0</span>:
+        <span style="color:#ff79c6">return</span> <span style="color:#bd93f9">0</span>
+    <span style="color:#ff79c6">elif</span> p <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">2</span>:
+        <span style="color:#ff79c6">return</span> p
+    <span style="color:#ff79c6">elif</span> p <span style="color:#ff79c6">%</span> <span style="color:#bd93f9">4</span> <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">3</span>:
+        <span style="color:#ff79c6">return</span> <span style="color:#8be9fd;font-style:italic">pow</span>(a, (p <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">1</span>) <span style="color:#ff79c6">//</span> <span style="color:#bd93f9">4</span>, p)
+
+    s <span style="color:#ff79c6">=</span> p <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">1</span>
+    e <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>
+    <span style="color:#ff79c6">while</span> s <span style="color:#ff79c6">%</span> <span style="color:#bd93f9">2</span> <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">0</span>:
+        s <span style="color:#ff79c6">//=</span> <span style="color:#bd93f9">2</span>
+        e <span style="color:#ff79c6">+=</span> <span style="color:#bd93f9">1</span>
+
+    n <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">2</span>
+    <span style="color:#ff79c6">while</span> legendre_symbol(n, p) <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>:
+        n <span style="color:#ff79c6">+=</span> <span style="color:#bd93f9">1</span>
+
+    x <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">pow</span>(a, (s <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">1</span>) <span style="color:#ff79c6">//</span> <span style="color:#bd93f9">2</span>, p)
+    b <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">pow</span>(a, s, p)
+    g <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">pow</span>(n, s, p)
+    r <span style="color:#ff79c6">=</span> e
+
+    <span style="color:#ff79c6">while</span> <span style="color:#ff79c6">True</span>:
+        t <span style="color:#ff79c6">=</span> b
+        m <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>
+        <span style="color:#ff79c6">for</span> m <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(r):
+            <span style="color:#ff79c6">if</span> t <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">1</span>:
+                <span style="color:#ff79c6">break</span>
+            t <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">pow</span>(t, <span style="color:#bd93f9">2</span>, p)
+
+        <span style="color:#ff79c6">if</span> m <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">0</span>:
+            <span style="color:#ff79c6">return</span> x
+
+        gs <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">pow</span>(g, <span style="color:#bd93f9">2</span> <span style="color:#ff79c6">**</span> (r <span style="color:#ff79c6">-</span> m <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">1</span>), p)
+        g <span style="color:#ff79c6">=</span> (gs <span style="color:#ff79c6">*</span> gs) <span style="color:#ff79c6">%</span> p
+        x <span style="color:#ff79c6">=</span> (x <span style="color:#ff79c6">*</span> gs) <span style="color:#ff79c6">%</span> p
+        b <span style="color:#ff79c6">=</span> (b <span style="color:#ff79c6">*</span> g) <span style="color:#ff79c6">%</span> p
+        r <span style="color:#ff79c6">=</span> m
+
+X <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">65567906504707001412451629380105920336765646875361267702392177389975788601105395041727677960531694075172671673825534663404646697891108703571487714370157822718820383082425198093895770956243411362693772945081793898878903728208012455412074768926681046872056914503511397246233621635857399405920045067524154745070</span>
+P <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">126419363563553215091646637314497854198261588036382180640893319022541659598027100223880826774071842687403022731516037083359599621020514054284689589273154786802636897124000251303336410620757242551598664334914370563254424053331496101404625326501881265007678722518697084930349838815078675100361385273502712083087</span>
+
+X <span style="color:#ff79c6">=</span> [X]
+<span style="color:#ff79c6">for</span> _ <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#bd93f9">5</span>):
+    X <span style="color:#ff79c6">=</span> [mod_sqrt(x, P) <span style="color:#ff79c6">for</span> x <span style="color:#ff79c6">in</span> X] <span style="color:#ff79c6">+</span> [(<span style="color:#ff79c6">-</span>mod_sqrt(x, P))<span style="color:#ff79c6">%</span>P <span style="color:#ff79c6">for</span> x <span style="color:#ff79c6">in</span> X]
+
+<span style="color:#ff79c6">for</span> x <span style="color:#ff79c6">in</span> X:
+    <span style="color:#ff79c6">if</span> n2s(x)<span style="color:#ff79c6">.</span>startswith(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#39;ECTF&#39;</span>):
+        <span style="color:#8be9fd;font-style:italic">print</span>(n2s(x))
+<span style="color:#6272a4"># b&#39;ECTF{7c2fc5155efcebd7264625c8f4e4db1aea7d489515368cf1626b3d6dffc01e63}&#39;</span>
+</code></pre></div><h1 id="toad-sauce">Toad Sauce</h1>
+<pre tabindex="0"><code>README.md:
+It's not a surprise, Toad loves *censored* sauce !
+
+He tried to create his own *censored* sauce by mixing 6 of his favorite ingredients.
+
+Retrieve the secret recipe !
+
+flag.enc:
+QVWQ{M0lP_Ld_MUj1gj_Fh_Na0n}
+</code></pre><p>From the challenge prompt, we can guess that the flag was encrypted with a Cesar cipher with 6 different and repeating shifts. Since we have the crib &lsquo;<code>ECTF</code>&rsquo; we can calculate the first 4 shifts (out of 6).</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#ff79c6">from</span> string <span style="color:#ff79c6">import</span> ascii_uppercase <span style="color:#ff79c6">as</span> up
+<span style="color:#ff79c6">from</span> string <span style="color:#ff79c6">import</span> ascii_lowercase <span style="color:#ff79c6">as</span> lo
+
+a <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#39;QVWQ</span><span style="color:#f1fa8c">{M0lP_Ld_MUj1gj_Fh_Na0n}</span><span style="color:#f1fa8c">&#39;</span>
+b <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#39;ECTF&#39;</span>
+
+key <span style="color:#ff79c6">=</span> [<span style="color:#8be9fd;font-style:italic">ord</span>(a_) <span style="color:#ff79c6">-</span> <span style="color:#8be9fd;font-style:italic">ord</span>(b_) <span style="color:#ff79c6">for</span> a_,b_ <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">zip</span>(a,b)] <span style="color:#ff79c6">+</span> [<span style="color:#bd93f9">0</span>, <span style="color:#bd93f9">0</span>]
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">cesar</span>(a, key):
+    arr <span style="color:#ff79c6">=</span> []
+    <span style="color:#ff79c6">for</span> a_,k <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">zip</span>(a,key):
+        <span style="color:#ff79c6">if</span> a_ <span style="color:#ff79c6">in</span> up:
+            arr<span style="color:#ff79c6">.</span>append(up[ (up<span style="color:#ff79c6">.</span>index(a_) <span style="color:#ff79c6">-</span> k) <span style="color:#ff79c6">%</span> <span style="color:#bd93f9">26</span>])
+        <span style="color:#ff79c6">elif</span> a_ <span style="color:#ff79c6">in</span> lo:
+            arr<span style="color:#ff79c6">.</span>append(lo[ (lo<span style="color:#ff79c6">.</span>index(a_) <span style="color:#ff79c6">-</span> k) <span style="color:#ff79c6">%</span> <span style="color:#bd93f9">26</span>])
+        <span style="color:#ff79c6">else</span>:
+            arr<span style="color:#ff79c6">.</span>append(a_)
+    <span style="color:#ff79c6">return</span> arr
+
+<span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">&#39;&#39;</span><span style="color:#ff79c6">.</span>join(cesar(a, key <span style="color:#ff79c6">*</span> <span style="color:#bd93f9">100</span>)))
+<span style="color:#6272a4"># ECTF{M0sM_Ld_TRy1gx_Cw_No0k}</span>
+</code></pre></div><p>As I have no respect for crypto challenges where we&rsquo;re only given a <code>flag.enc</code> file, we can guess the rest of the flag: <code>ECTF{T0aD_Is_TRy1ng_To_Co0k}</code>.</p>
+<h1 id="luigi-ascent">Luigi Ascent</h1>
+<pre tabindex="0"><code>README.md:
+I heard that Luigi wanted to touch the Scy !
+
+flag.enc:
+ELgU0l}C30cm0~Tt_Heu~FsT__d~{_oSCs~
+</code></pre><p>&ldquo;<code>Scy</code>&rdquo; hints that the flag was encrypted with a scytale cipher. Using an <a href="https://www.cachesleuth.com/scytale.html">online decryptor</a> we can try all numbers of columns until we get the flag: <code>ECTF{L3ts_g0_ToUcH_S0me_Cl0uds}</code>.</p>
+
+    </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>

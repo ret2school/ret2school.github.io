@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title>[ESAIP CTF 2023] Dothell Revenge // ret2school</title>
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.92.2" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="nasm" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="https://ret2school.github.io/css/main.min.0fb49e70a30412f97ddfc418e18fefef1d9fcdebe45f634dbbba768b00fe1eec.css" />
+
+    
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="[ESAIP CTF 2023] Dothell Revenge"/>
+<meta name="twitter:description" content="Dothell Revenge  Solves : 3
+They downed the CTF infra as soon as it ended so I didn&rsquo;t have the time to save the challenge prompt :(
+Author: Oogle
+ Dothell Revenge was a hard reverse-engineering challenge from ESAIP CTF 2023. It was a modified version of Dothell, a challenge from the 2022 edition that had 0 solves. I didn&rsquo;t participate IRL last year, but I did this year, and even beat two of the best reversers I know to the first blood."/>
+
+    <meta property="og:title" content="[ESAIP CTF 2023] Dothell Revenge" />
+<meta property="og:description" content="Dothell Revenge  Solves : 3
+They downed the CTF infra as soon as it ended so I didn&rsquo;t have the time to save the challenge prompt :(
+Author: Oogle
+ Dothell Revenge was a hard reverse-engineering challenge from ESAIP CTF 2023. It was a modified version of Dothell, a challenge from the 2022 edition that had 0 solves. I didn&rsquo;t participate IRL last year, but I did this year, and even beat two of the best reversers I know to the first blood." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ret2school.github.io/post/dothell_revenge/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2023-05-27T00:00:00+00:00" />
+<meta property="article:modified_time" content="2023-05-27T00:00:00+00:00" />
+
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://ret2school.github.io"><img class="app-header-avatar" src="/pic.jpeg" alt="nasm" /></a>
+      <span class="app-header-title">ret2school</span>
+      <nav class="app-header-menu">
+          <a class="app-header-menu-item" href="/post/list_team/">About</a>
+             - 
+          
+          <a class="app-header-menu-item" href="/">Home</a>
+             - 
+          
+          <a class="app-header-menu-item" href="/tags/">Tags</a>
+      </nav>
+      <p>Just a bunch of french ctf players</p>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">[ESAIP CTF 2023] Dothell Revenge</h1>
+      <div class="post-meta">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          May 27, 2023
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          5 min read
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tag">
+  <title>tag</title>
+  <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line>
+</svg>
+              <a class="tag" href="https://ret2school.github.io/tags/ctf/">ctf</a>
+              <a class="tag" href="https://ret2school.github.io/tags/alol/">alol</a>
+              <a class="tag" href="https://ret2school.github.io/tags/reverse/">reverse</a>
+              <a class="tag" href="https://ret2school.github.io/tags/dotnet/">dotnet</a>
+              <a class="tag" href="https://ret2school.github.io/tags/z3/">z3</a>
+              <a class="tag" href="https://ret2school.github.io/tags/2023/">2023</a>
+        </div>
+      </div>
+    </header>
+    <div class="post-content">
+      <h1 id="dothell-revenge">Dothell Revenge</h1>
+<blockquote>
+<p>Solves : 3</p>
+<p>They downed the CTF infra as soon as it ended so I didn&rsquo;t have the time to save the challenge prompt :(</p>
+<p>Author: Oogle</p>
+</blockquote>
+<p>Dothell Revenge was a hard reverse-engineering challenge from ESAIP CTF 2023. It was a modified version of Dothell, a challenge from the 2022 edition that had 0 solves. I didn&rsquo;t participate IRL last year, but I did this year, and even beat two of the best reversers I know to the first blood.</p>
+<h2 id="tldr">TL;DR</h2>
+<ul>
+<li>Unpack ConfuserEx</li>
+<li>Write a keygen with Z3</li>
+</ul>
+<h2 id="unpacking-confuserex">Unpacking ConfuserEx</h2>
+<p>Looking at the decompiled code in dnSpy indicates the binary is packed.</p>
+<p><img src="https://raw.githubusercontent.com/ret2school/ctf/master/2023/esaip_ctf/reverse/dothell_revenge/regretting_my_life_choices_rn.png" alt=""></p>
+<p>Thankfully, when scrolling to the bottom of the <code>Main</code> function, we see that the program tries to load the <code>koi</code> module.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c#" data-lang="c#">Assembly executingAssembly = Assembly.GetExecutingAssembly();
+Module manifestModule = executingAssembly.ManifestModule;
+GCHandle gchandle = &lt;Module&gt;.Decrypt(array, <span style="color:#bd93f9">2751949377</span>U);    <span style="color:#6272a4">// decrypt module
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd">byte</span>[] array2 = (<span style="color:#8be9fd">byte</span>[])gchandle.Target;
+Module module = executingAssembly.LoadModule(<span style="color:#f1fa8c">&#34;koi&#34;</span>, array2); <span style="color:#6272a4">// load module, /!\ &#34;koi&#34; -&gt; ConfuserEx
+</span><span style="color:#6272a4"></span>Array.Clear(array2, <span style="color:#bd93f9">0</span>, array2.Length);
+gchandle.Free();
+Array.Clear(array, <span style="color:#bd93f9">0</span>, array.Length);
+&lt;Module&gt;.key = manifestModule.ResolveSignature(<span style="color:#bd93f9">285212673</span>);   <span style="color:#6272a4">// Resolve metadataToken of the entrypoint
+</span><span style="color:#6272a4"></span>AppDomain.CurrentDomain.AssemblyResolve += &lt;Module&gt;.Resolve;
+module.GetTypes();
+MethodBase methodBase = module.ResolveMethod((<span style="color:#8be9fd">int</span>)&lt;Module&gt;.key[<span style="color:#bd93f9">0</span>] | ((<span style="color:#8be9fd">int</span>)&lt;Module&gt;.key[<span style="color:#bd93f9">1</span>] &lt;&lt; <span style="color:#bd93f9">8</span>) | ((<span style="color:#8be9fd">int</span>)&lt;Module&gt;.key[<span style="color:#bd93f9">2</span>] &lt;&lt; <span style="color:#bd93f9">16</span>) | ((<span style="color:#8be9fd">int</span>)&lt;Module&gt;.key[<span style="color:#bd93f9">3</span>] &lt;&lt; <span style="color:#bd93f9">24</span>)); <span style="color:#6272a4">// Resolve entrypoint
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd">object</span>[] array3 = <span style="color:#ff79c6">new</span> <span style="color:#8be9fd">object</span>[methodBase.GetParameters().Length];
+<span style="color:#ff79c6">if</span> (array3.Length != <span style="color:#bd93f9">0</span>)
+{
+    array3[<span style="color:#bd93f9">0</span>] = args;
+}
+<span style="color:#8be9fd">object</span> obj = methodBase.Invoke(<span style="color:#ff79c6">null</span>, array3);                <span style="color:#6272a4">// Invoke entrypoint
+</span><span style="color:#6272a4"></span><span style="color:#ff79c6">if</span> (obj <span style="color:#ff79c6">is</span> <span style="color:#8be9fd">int</span>)
+{
+    <span style="color:#ff79c6">return</span> (<span style="color:#8be9fd">int</span>)obj;
+}
+<span style="color:#ff79c6">return</span> <span style="color:#bd93f9">0</span>;
+</code></pre></div><p>This tells us with high certainty that the PE was packed using <a href="https://github.dev/yck1509/ConfuserEx">ConfuserEx</a> (an open-source but discontinued .NET protector). To unpack it we can use a <a href="https://github.com/XenocodeRCE/ConfuserEx-Unpacker">pre-existing unpacker</a>.</p>
+<h2 id="writing-a-keygen-with-z3">Writing a keygen with Z3</h2>
+<p>Now that we&rsquo;ve unpacked the PE, let&rsquo;s analyze the source code and write a keygen. The program isn&rsquo;t obfuscated and there&rsquo;s only a single anti-debug function (<code>nantendoShadowBan</code>) that makes the program exit if <code>dnSpy</code> or <code>ILSpy</code> are present in the process list. Other than that, the program isn&rsquo;t very complicated, it creates a form containing an input box and a button (the button runs the <code>checker_Click</code> function). The source code of the form is available <a href="https://raw.githubusercontent.com/ret2school/ctf/master/2023/esaip_ctf/reverse/dothell_revenge/Form1.cs">here</a>.</p>
+<p>To write the keygen we&rsquo;ll use Z3Py, an API around Z3 a SMT solver/theorem prover by Microsoft. A keygen using Z3 can be written by &ldquo;translating&rdquo; the <code>C#</code> to <code>Python</code> and modifying the syntax a bit. Below is the commented solve script (also available <a href="https://raw.githubusercontent.com/ret2school/ctf/master/2023/esaip_ctf/reverse/dothell_revenge/solve.py">here</a>).</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#ff79c6">from</span> base64 <span style="color:#ff79c6">import</span> b64decode
+<span style="color:#ff79c6">from</span> string <span style="color:#ff79c6">import</span> printable
+<span style="color:#ff79c6">import</span> z3
+
+<span style="color:#6272a4"># Before adding constraints we need to find the number of variables to use (ie. the length of the flag)</span>
+<span style="color:#6272a4"># Thankfully it&#39;s not too hard to find ... 🥲</span>
+
+<span style="color:#6272a4"># This single assumption cost me 3h, most of my sanity and half of my brain cells. Why?</span>
+<span style="color:#6272a4"># Because &#39;/&#39; isn&#39;t a true division, it&#39;s a *floor division*</span>
+<span style="color:#6272a4"># Meaning that the condition is true for 35 but also 36, 37, 38 and 39</span>
+
+<span style="color:#f1fa8c">&#34;&#34;&#34;
+</span><span style="color:#f1fa8c">if (length / 5 + 1 != 8)
+</span><span style="color:#f1fa8c">{
+</span><span style="color:#f1fa8c">    MessageBox.Show(&#34;Not for you!&#34;);
+</span><span style="color:#f1fa8c">    return;
+</span><span style="color:#f1fa8c">}
+</span><span style="color:#f1fa8c">&#34;&#34;&#34;</span>
+length <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">39</span>
+
+flag <span style="color:#ff79c6">=</span> [z3<span style="color:#ff79c6">.</span>BitVec(<span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">{</span>i<span style="color:#f1fa8c">:</span><span style="color:#f1fa8c">02</span><span style="color:#f1fa8c">}</span><span style="color:#f1fa8c">&#34;</span>, <span style="color:#bd93f9">8</span>) <span style="color:#ff79c6">for</span> i <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(length)]
+s <span style="color:#ff79c6">=</span> z3<span style="color:#ff79c6">.</span>Solver()
+
+<span style="color:#ff79c6">for</span> i <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(length):
+    s<span style="color:#ff79c6">.</span>add(<span style="color:#8be9fd;font-style:italic">ord</span>(<span style="color:#8be9fd;font-style:italic">min</span>(printable)) <span style="color:#ff79c6">&lt;=</span> flag[i])
+    s<span style="color:#ff79c6">.</span>add(flag[i] <span style="color:#ff79c6">&lt;=</span> <span style="color:#8be9fd;font-style:italic">ord</span>(<span style="color:#8be9fd;font-style:italic">max</span>(printable)))
+
+<span style="color:#f1fa8c">&#34;&#34;&#34;
+</span><span style="color:#f1fa8c">int num = 1;
+</span><span style="color:#f1fa8c">int length = this.supplier.Text.Length;
+</span><span style="color:#f1fa8c">int num2 = -1;
+</span><span style="color:#f1fa8c">while (num == 1)
+</span><span style="color:#f1fa8c">{
+</span><span style="color:#f1fa8c">    if (num2 + 5 &gt; length - 1)
+</span><span style="color:#f1fa8c">    {
+</span><span style="color:#f1fa8c">        num = 0;
+</span><span style="color:#f1fa8c">    }
+</span><span style="color:#f1fa8c">    else
+</span><span style="color:#f1fa8c">    {
+</span><span style="color:#f1fa8c">        num2 += 5;
+</span><span style="color:#f1fa8c">        if (!this.supplier.Text[num2].Equals(Encoding.UTF8.GetString(Convert.FromBase64String(&#34;LQ==&#34;))[0]))
+</span><span style="color:#f1fa8c">        {
+</span><span style="color:#f1fa8c">            MessageBox.Show(&#34;Not for you!&#34;);
+</span><span style="color:#f1fa8c">            return;
+</span><span style="color:#f1fa8c">        }
+</span><span style="color:#f1fa8c">    }
+</span><span style="color:#f1fa8c">}
+</span><span style="color:#f1fa8c">&#34;&#34;&#34;</span>
+
+num <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>
+num2 <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>
+
+<span style="color:#ff79c6">while</span> (num <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">1</span>):
+    <span style="color:#ff79c6">if</span> (num2 <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">5</span> <span style="color:#ff79c6">&gt;</span> length <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">1</span>):
+        num <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>;
+    <span style="color:#ff79c6">else</span>:
+        num2 <span style="color:#ff79c6">+=</span> <span style="color:#bd93f9">5</span>;
+        s<span style="color:#ff79c6">.</span>add(flag[num2] <span style="color:#ff79c6">==</span> <span style="color:#8be9fd;font-style:italic">ord</span>(b64decode(<span style="color:#f1fa8c">&#34;LQ==&#34;</span>)<span style="color:#ff79c6">.</span>decode()))
+
+<span style="color:#f1fa8c">&#34;&#34;&#34;
+</span><span style="color:#f1fa8c">int num3 = 1;
+</span><span style="color:#f1fa8c">int num4 = 0;
+</span><span style="color:#f1fa8c">int num5 = 0;
+</span><span style="color:#f1fa8c">if (num4 &gt; length - 1)
+</span><span style="color:#f1fa8c">{
+</span><span style="color:#f1fa8c">    MessageBox.Show(&#34;Not for you!&#34;);
+</span><span style="color:#f1fa8c">    return;
+</span><span style="color:#f1fa8c">}
+</span><span style="color:#f1fa8c">while (num3 == 1)
+</span><span style="color:#f1fa8c">{
+</span><span style="color:#f1fa8c">    if (!this.supplier.Text[num4].Equals(Convert.ToChar((int)(Encoding.UTF8.GetString(Convert.FromBase64String(this.ichi.Text))[num5] - &#39;</span><span style="color:#f1fa8c">\u0014</span><span style="color:#f1fa8c">&#39;))))
+</span><span style="color:#f1fa8c">    {
+</span><span style="color:#f1fa8c">        MessageBox.Show(&#34;Not for you!&#34;);
+</span><span style="color:#f1fa8c">        return;
+</span><span style="color:#f1fa8c">    }
+</span><span style="color:#f1fa8c">    if (num4 + 5 &gt; length - 1)
+</span><span style="color:#f1fa8c">    {
+</span><span style="color:#f1fa8c">        num3 = 0;
+</span><span style="color:#f1fa8c">    }
+</span><span style="color:#f1fa8c">    else
+</span><span style="color:#f1fa8c">    {
+</span><span style="color:#f1fa8c">        num4 += 5;
+</span><span style="color:#f1fa8c">        num5++;
+</span><span style="color:#f1fa8c">    }
+</span><span style="color:#f1fa8c">}
+</span><span style="color:#f1fa8c">&#34;&#34;&#34;</span>
+
+<span style="color:#6272a4"># this.ichi is a component of the Form just used to store text</span>
+ichi <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;ZWpkaGtpYWIK&#34;</span>;
+num3 <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>
+num4 <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>
+num5 <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>
+
+<span style="color:#ff79c6">while</span> (num3 <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">1</span>):
+    s<span style="color:#ff79c6">.</span>add(flag[num4] <span style="color:#ff79c6">==</span> <span style="color:#8be9fd;font-style:italic">ord</span>(b64decode(ichi)<span style="color:#ff79c6">.</span>decode()[num5]) <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">0x14</span> )
+    <span style="color:#ff79c6">if</span> (num4 <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">5</span> <span style="color:#ff79c6">&gt;</span> length <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">1</span>):
+        num3 <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>;
+    <span style="color:#ff79c6">else</span>:
+        num4 <span style="color:#ff79c6">+=</span> <span style="color:#bd93f9">5</span>;
+        num5 <span style="color:#ff79c6">+=</span><span style="color:#bd93f9">1</span>;
+
+<span style="color:#f1fa8c">&#34;&#34;&#34;
+</span><span style="color:#f1fa8c">int num6 = 1;
+</span><span style="color:#f1fa8c">num4 = length - 1;
+</span><span style="color:#f1fa8c">num5 = 0;
+</span><span style="color:#f1fa8c">if (num4 &gt; length - 1)
+</span><span style="color:#f1fa8c">{
+</span><span style="color:#f1fa8c">    MessageBox.Show(&#34;Not for you!&#34;);
+</span><span style="color:#f1fa8c">    return;
+</span><span style="color:#f1fa8c">}
+</span><span style="color:#f1fa8c">while (num6 == 1)
+</span><span style="color:#f1fa8c">{
+</span><span style="color:#f1fa8c">    if (!Convert.ToChar((int)(this.supplier.Text[num4] % &#39;</span><span style="color:#f1fa8c">\u007f</span><span style="color:#f1fa8c">&#39;)).Equals(Convert.ToChar((int)(Encoding.UTF8.GetString(Convert.FromBase64String(this.ni.Text))[num5] - &#39;</span><span style="color:#f1fa8c">\u0018</span><span style="color:#f1fa8c">&#39;))))
+</span><span style="color:#f1fa8c">    {
+</span><span style="color:#f1fa8c">        MessageBox.Show(&#34;Not for you!&#34;);
+</span><span style="color:#f1fa8c">        return;
+</span><span style="color:#f1fa8c">    }
+</span><span style="color:#f1fa8c">    if (num4 - 5 &lt; 0)
+</span><span style="color:#f1fa8c">    {
+</span><span style="color:#f1fa8c">        num6 = 0;
+</span><span style="color:#f1fa8c">    }
+</span><span style="color:#f1fa8c">    else
+</span><span style="color:#f1fa8c">    {
+</span><span style="color:#f1fa8c">        num4 -= 5;
+</span><span style="color:#f1fa8c">        num5++;
+</span><span style="color:#f1fa8c">    }
+</span><span style="color:#f1fa8c">}
+</span><span style="color:#f1fa8c">&#34;&#34;&#34;</span>
+
+<span style="color:#6272a4"># same as this.ichi, component of the Form just used to store text</span>
+ni   <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;cnRwdnh1encK&#34;</span>
+num6 <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
+num4 <span style="color:#ff79c6">=</span> length <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">1</span>;
+num5 <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>;
+
+<span style="color:#ff79c6">while</span> (num6 <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">1</span>):
+    s<span style="color:#ff79c6">.</span>add(flag[num4] <span style="color:#ff79c6">%</span> <span style="color:#bd93f9">0x7f</span> <span style="color:#ff79c6">==</span> <span style="color:#8be9fd;font-style:italic">ord</span>(b64decode(ni)<span style="color:#ff79c6">.</span>decode()[num5]) <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">0x18</span>)
+
+    <span style="color:#ff79c6">if</span> (num4 <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">5</span> <span style="color:#ff79c6">&lt;</span> <span style="color:#bd93f9">0</span>):
+        num6 <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>;
+    <span style="color:#ff79c6">else</span>:
+        num4 <span style="color:#ff79c6">-=</span> <span style="color:#bd93f9">5</span>;
+        num5 <span style="color:#ff79c6">+=</span><span style="color:#bd93f9">1</span>;
+
+<span style="color:#f1fa8c">&#34;&#34;&#34;
+</span><span style="color:#f1fa8c">int num7 = 1;
+</span><span style="color:#f1fa8c">num4 = 1;
+</span><span style="color:#f1fa8c">num5 = 0;
+</span><span style="color:#f1fa8c">if (num4 &gt; length - 1)
+</span><span style="color:#f1fa8c">{
+</span><span style="color:#f1fa8c">    MessageBox.Show(&#34;Not for you!&#34;);
+</span><span style="color:#f1fa8c">    return;
+</span><span style="color:#f1fa8c">}
+</span><span style="color:#f1fa8c">while (num7 == 1)
+</span><span style="color:#f1fa8c">{
+</span><span style="color:#f1fa8c">    if (!this.supplier.Text[num4].Equals(Form.ActiveForm.Text[num5 * 2]))
+</span><span style="color:#f1fa8c">    {
+</span><span style="color:#f1fa8c">        MessageBox.Show(&#34;Not for you!&#34;);
+</span><span style="color:#f1fa8c">        return;
+</span><span style="color:#f1fa8c">    }
+</span><span style="color:#f1fa8c">    if (!this.supplier.Text[num4 + 1].Equals(Form.ActiveForm.Text[num5 * 2 + 1]))
+</span><span style="color:#f1fa8c">    {
+</span><span style="color:#f1fa8c">        MessageBox.Show(&#34;Not for you!&#34;);
+</span><span style="color:#f1fa8c">        return;
+</span><span style="color:#f1fa8c">    }
+</span><span style="color:#f1fa8c">    if (num4 + 5 &gt; length - 1)
+</span><span style="color:#f1fa8c">    {
+</span><span style="color:#f1fa8c">        num7 = 0;
+</span><span style="color:#f1fa8c">    }
+</span><span style="color:#f1fa8c">    else
+</span><span style="color:#f1fa8c">    {
+</span><span style="color:#f1fa8c">        num4 += 5;
+</span><span style="color:#f1fa8c">        num5++;
+</span><span style="color:#f1fa8c">    }
+</span><span style="color:#f1fa8c">}
+</span><span style="color:#f1fa8c">&#34;&#34;&#34;</span>
+
+<span style="color:#6272a4"># name of active form</span>
+ActiveForm <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;Mario star grabber&#34;</span>;
+num7 <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
+num4 <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">1</span>;
+num5 <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>;
+
+<span style="color:#ff79c6">while</span> (num7 <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">1</span>):
+    s<span style="color:#ff79c6">.</span>add(flag[num4]   <span style="color:#ff79c6">==</span> <span style="color:#8be9fd;font-style:italic">ord</span>(ActiveForm[num5<span style="color:#ff79c6">*</span><span style="color:#bd93f9">2</span>]))
+    s<span style="color:#ff79c6">.</span>add(flag[num4<span style="color:#ff79c6">+</span><span style="color:#bd93f9">1</span>] <span style="color:#ff79c6">==</span> <span style="color:#8be9fd;font-style:italic">ord</span>(ActiveForm[num5<span style="color:#ff79c6">*</span><span style="color:#bd93f9">2</span> <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">1</span>]))
+
+    <span style="color:#ff79c6">if</span> (num4 <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">5</span> <span style="color:#ff79c6">&gt;</span> length <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">1</span>):
+        num7 <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>;
+    <span style="color:#ff79c6">else</span>:
+        num4 <span style="color:#ff79c6">+=</span> <span style="color:#bd93f9">5</span>;
+        num5 <span style="color:#ff79c6">+=</span><span style="color:#bd93f9">1</span>;
+
+<span style="color:#6272a4"># in case there are multiple valid keys (shouldn&#39;t be the case, but you never know)</span>
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">all_smt</span>(s, initial_terms):
+    <span style="color:#6272a4"># https://github.com/Z3Prover/z3/issues/5765#issuecomment-1009760596</span>
+    <span style="color:#ff79c6">def</span> <span style="color:#50fa7b">block_term</span>(s, m, t):
+        s<span style="color:#ff79c6">.</span>add(t <span style="color:#ff79c6">!=</span> m<span style="color:#ff79c6">.</span>eval(t, model_completion<span style="color:#ff79c6">=</span><span style="color:#ff79c6">True</span>))
+    <span style="color:#ff79c6">def</span> <span style="color:#50fa7b">fix_term</span>(s, m, t):
+        s<span style="color:#ff79c6">.</span>add(t <span style="color:#ff79c6">==</span> m<span style="color:#ff79c6">.</span>eval(t, model_completion<span style="color:#ff79c6">=</span><span style="color:#ff79c6">True</span>))
+    <span style="color:#ff79c6">def</span> <span style="color:#50fa7b">all_smt_rec</span>(terms):
+        <span style="color:#ff79c6">if</span> z3<span style="color:#ff79c6">.</span>sat <span style="color:#ff79c6">==</span> s<span style="color:#ff79c6">.</span>check():
+           m <span style="color:#ff79c6">=</span> s<span style="color:#ff79c6">.</span>model()
+           <span style="color:#ff79c6">yield</span> m
+           <span style="color:#ff79c6">for</span> i <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(<span style="color:#8be9fd;font-style:italic">len</span>(terms)):
+               s<span style="color:#ff79c6">.</span>push()
+               block_term(s, m, terms[i])
+               <span style="color:#ff79c6">for</span> j <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">range</span>(i):
+                   fix_term(s, m, terms[j])
+               <span style="color:#ff79c6">yield from</span> all_smt_rec(terms[i:])
+               s<span style="color:#ff79c6">.</span>pop()   
+    <span style="color:#ff79c6">yield from</span> all_smt_rec(<span style="color:#8be9fd;font-style:italic">list</span>(initial_terms))
+
+<span style="color:#ff79c6">if</span> z3<span style="color:#ff79c6">.</span>sat <span style="color:#ff79c6">==</span> s<span style="color:#ff79c6">.</span>check():
+    <span style="color:#ff79c6">for</span> m <span style="color:#ff79c6">in</span> all_smt(s, flag):
+        <span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">&#39;&#39;</span><span style="color:#ff79c6">.</span>join([<span style="color:#8be9fd;font-style:italic">chr</span>(m[i]<span style="color:#ff79c6">.</span>as_long()) <span style="color:#ff79c6">for</span> i <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">sorted</span>(m, key<span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">str</span>)]))
+<span style="color:#ff79c6">else</span>:
+    <span style="color:#8be9fd;font-style:italic">print</span>(<span style="color:#f1fa8c">&#34;Oh no&#34;</span>)
+
+<span style="color:#6272a4"># QMa_-Vrib-Po ]-Tst`-War^-U gX-Mra\-NbbZ</span>
+</code></pre></div>
+    </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>

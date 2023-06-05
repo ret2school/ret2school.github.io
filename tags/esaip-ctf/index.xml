@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>ESAIP CTF on ret2school</title>
+    <link>https://ret2school.github.io/tags/esaip-ctf/</link>
+    <description>Recent content in ESAIP CTF on ret2school</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 02 Jun 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/esaip-ctf/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>[ESAIP CTF 2023] All crypto challenges</title>
+      <link>https://ret2school.github.io/post/esaip_crypto/</link>
+      <pubDate>Fri, 02 Jun 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/esaip_crypto/</guid>
+      <description>This article contains write-ups for all cryptography challenges from ESAIP CTF 2023. All challenge files, prompts and solves are available here.
+The event was nice and I had a great time competing with my friends. However, I&amp;rsquo;d like to quickly rant before diving into the write-ups.
+&amp;lt;rant&amp;gt;
+ I can&amp;rsquo;t believe this has to be said but before giving source code, please make sure that it works. Added bonus: publish the Dockerfiles you use so players don&amp;rsquo;t have to waste time debugging.</description>
+    </item>
+    
+    <item>
+      <title>[ESAIP CTF 2023] Dothell Revenge</title>
+      <link>https://ret2school.github.io/post/dothell_revenge/</link>
+      <pubDate>Sat, 27 May 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/dothell_revenge/</guid>
+      <description>Dothell Revenge  Solves : 3
+They downed the CTF infra as soon as it ended so I didn&amp;rsquo;t have the time to save the challenge prompt :(
+Author: Oogle
+ Dothell Revenge was a hard reverse-engineering challenge from ESAIP CTF 2023. It was a modified version of Dothell, a challenge from the 2022 edition that had 0 solves. I didn&amp;rsquo;t participate IRL last year, but I did this year, and even beat two of the best reversers I know to the first blood.</description>
+    </item>
+    
+  </channel>
+</rss>

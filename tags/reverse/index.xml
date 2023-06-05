@@ -5,7 +5,20 @@
     <link>https://ret2school.github.io/tags/reverse/</link>
     <description>Recent content in reverse on ret2school</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Wed, 24 May 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/reverse/index.xml" rel="self" type="application/rss+xml" />
+    <language>en-us</language>
+    <lastBuildDate>Sat, 27 May 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/reverse/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>[ESAIP CTF 2023] Dothell Revenge</title>
+      <link>https://ret2school.github.io/post/dothell_revenge/</link>
+      <pubDate>Sat, 27 May 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/dothell_revenge/</guid>
+      <description>Dothell Revenge  Solves : 3
+They downed the CTF infra as soon as it ended so I didn&amp;rsquo;t have the time to save the challenge prompt :(
+Author: Oogle
+ Dothell Revenge was a hard reverse-engineering challenge from ESAIP CTF 2023. It was a modified version of Dothell, a challenge from the 2022 edition that had 0 solves. I didn&amp;rsquo;t participate IRL last year, but I did this year, and even beat two of the best reversers I know to the first blood.</description>
+    </item>
+    
     <item>
       <title>[Grey Cat CTF Quals 2023 - reverse] crackme1</title>
       <link>https://ret2school.github.io/post/crackme1_greycat/</link>
