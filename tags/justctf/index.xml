@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>JustCTF on ret2school</title>
+    <link>https://ret2school.github.io/tags/justctf/</link>
+    <description>Recent content in JustCTF on ret2school</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 02 Jun 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/justctf/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>[JustCTF - crypto] Vaulted</title>
+      <link>https://ret2school.github.io/post/vaulted/</link>
+      <pubDate>Fri, 02 Jun 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/vaulted/</guid>
+      <description>Vaulted  This secure multisignature application will keep our flag safe. Mind holding on to one of the backup keys?
+nc vaulted.nc.jctf.pro 1337
+Author: Tjaden Hess from Trail of Bits
+ Vaulted was an easy crypto challenge from JustCTF 2023. To be fair it wasn&amp;rsquo;t really a crypto challenge, you&amp;rsquo;d instantly know how to solve the challenge if you had a bit of crypto knowledge (especially on elliptic curves and how points can be represented) but if you didn&amp;rsquo;t a bit of source code reading would make the solution obvious.</description>
+    </item>
+    
+  </channel>
+</rss>

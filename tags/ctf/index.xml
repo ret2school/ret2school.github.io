@@ -20,12 +20,24 @@ The event was nice and I had a great time competing with my friends. However, I&
     </item>
     
     <item>
+      <title>[JustCTF - crypto] Vaulted</title>
+      <link>https://ret2school.github.io/post/vaulted/</link>
+      <pubDate>Fri, 02 Jun 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/vaulted/</guid>
+      <description>Vaulted  This secure multisignature application will keep our flag safe. Mind holding on to one of the backup keys?
+nc vaulted.nc.jctf.pro 1337
+Author: Tjaden Hess from Trail of Bits
+ Vaulted was an easy crypto challenge from JustCTF 2023. To be fair it wasn&amp;rsquo;t really a crypto challenge, you&amp;rsquo;d instantly know how to solve the challenge if you had a bit of crypto knowledge (especially on elliptic curves and how points can be represented) but if you didn&amp;rsquo;t a bit of source code reading would make the solution obvious.</description>
+    </item>
+    
+    <item>
       <title>[ESAIP CTF 2023 - reverse] Dothell Revenge</title>
       <link>https://ret2school.github.io/post/dothell_revenge/</link>
       <pubDate>Sat, 27 May 2023 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/post/dothell_revenge/</guid>
-      <description>Dothell Revenge  Solves : 3
+      <description>Dothell Revenge  Solves: 3
 It seems that you now need a password to get some stars&amp;hellip; But you don&amp;rsquo;t have any. Time for some hacking!
 Author: Oogle
  Dothell Revenge was a hard reverse-engineering challenge from ESAIP CTF 2023. It was a modified version of Dothell, a challenge from the 2022 edition that had 0 solves. I didn&amp;rsquo;t participate IRL last year, but I did this year, and even beat two of the best reversers I know to the first blood.</description>
@@ -49,10 +61,11 @@ When we open the webpage, we can first inspect the HTML code.
       <pubDate>Mon, 22 May 2023 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/post/screamlikeviking/</guid>
-      <description>[pwnme 2023 - crypto] Scream Like Viking  Our protagonist John is in a room, he hears some kind of noise, like something resonating. But he doesn&amp;rsquo;t understand it&amp;hellip; Perhaps he could play with his own echoes to guess what the meaning of this famous resonance could be&amp;hellip;
+      <description>Scream Like Viking  Our protagonist John is in a room, he hears some kind of noise, like something resonating. But he doesn&amp;rsquo;t understand it&amp;hellip; Perhaps he could play with his own echoes to guess what the meaning of this famous resonance could be&amp;hellip;
 nc 51.68.95.78 32773
  Scream Like Viking&#34;
-This article is a write-up for &amp;ldquo;Scream Like Viking&amp;rdquo;, a cryptography challenge from PwnMe 2023.</description>
+This article is a write-up for &amp;ldquo;Scream Like Viking&amp;rdquo;, a cryptography challenge from PwnMe 2023.
+TL;DR  Get pairs of (C, N) where N is recovered by taking GCD of multiple M^e - C Håstad&amp;rsquo;s broadcast attack (CRT + e-th root) on the pairs of (C, N)  Code review The following source code is given:</description>
     </item>
     
     <item>
@@ -229,6 +242,15 @@ int __cdecl main(int argc, const char **argv, const char **envp) { int v4; // [r
     </item>
     
     <item>
+      <title>[Breizh CTF 2022 - reverse] L&#39;appli secrète du breizhCTF</title>
+      <link>https://ret2school.github.io/post/app-secrete-du-breizhctf/</link>
+      <pubDate>Fri, 04 Mar 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/app-secrete-du-breizhctf/</guid>
+      <description>Value: 131 Description: En arrivant à Rennes au BreizhCTF, vous avez trouvé un téléphone par terre et avez décidé de le garder avec vous. Vous vous rendez compte que sur ce téléphone, il y a une appli &#39;SuperSecretApp&#39;. Malheureusement, pour accéder à son contenu, vous devez avoir la bonne combinaison du username et du password. Vous avez donc décidé de reverse l&#39;application pour trouvez cela! Auteur: Worty Format : BZHCTF{username-password}  The file provided is an .</description>
+    </item>
+    
+    <item>
       <title>[Breizh CTF 2022- Forensic] La livraison de pizza</title>
       <link>https://ret2school.github.io/post/livraison-de-pizza/</link>
       <pubDate>Fri, 04 Mar 2022 00:00:00 +0000</pubDate>
@@ -256,15 +278,6 @@ int __cdecl main(int argc, const char **argv, const char **envp) { int v4; // [r
       <description>Value: 50 Description: Le reverse c&#39;est quand même vachement compliqué... ou pas ? Auteur: Worty Format : BZHCTF{}  Like all the CTF challenges named &amp;ldquo;Baby&amp;rdquo;, this challenge was very simple.
 You just had to open the source code in radare2 to see the flag in clear:
 &amp;gt; r2 baby [0x00001070]&amp;gt; aaa [Cannot find function at 0x00001070 sym. and entry0 (aa) [x] Analyze all flags starting with sym. and entry0 (aa) [x] Analyze function calls (aac) [x] Analyze len bytes of instructions for references (aar) [x] Check for objc references [x] Check for vtables [x] Type matching analysis for all functions (aaft) [x] Propagate noreturn information [x] Use -AA or aaaa to perform additional experimental analysis.</description>
-    </item>
-    
-    <item>
-      <title>[Breizh CTF 2022- reverse] L&#39;appli secrète du breizhCTF</title>
-      <link>https://ret2school.github.io/post/app-secrete-du-breizhctf/</link>
-      <pubDate>Fri, 04 Mar 2022 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/post/app-secrete-du-breizhctf/</guid>
-      <description>Value: 131 Description: En arrivant à Rennes au BreizhCTF, vous avez trouvé un téléphone par terre et avez décidé de le garder avec vous. Vous vous rendez compte que sur ce téléphone, il y a une appli &#39;SuperSecretApp&#39;. Malheureusement, pour accéder à son contenu, vous devez avoir la bonne combinaison du username et du password. Vous avez donc décidé de reverse l&#39;application pour trouvez cela! Auteur: Worty Format : BZHCTF{username-password}  The file provided is an .</description>
     </item>
     
     <item>
@@ -473,7 +486,7 @@ We found the opcode related to it :</description>
       <pubDate>Tue, 02 Mar 2021 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/post/localization_is_hard_wu/</guid>
-      <description>[Localization is hard - web] AeroCTF 0x00 To solve this challenge we had to exploit a SSTI on Thymeleaf and lead that into a Remote Code Execution
+      <description>Localization is hard 0x00 To solve this challenge we had to exploit a SSTI on Thymeleaf and lead that into a Remote Code Execution
 0x01 Discovering the vulnerability The challenge description talk about a Coffee who made for CTFers and in English and in Russian.
 Btw , the challenge description tell us that the flag should be located at / on the file system, this maybe mean that we have to get an access to the machine to read the flag.</description>
     </item>

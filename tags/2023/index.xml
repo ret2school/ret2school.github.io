@@ -20,12 +20,24 @@ The event was nice and I had a great time competing with my friends. However, I&
     </item>
     
     <item>
+      <title>[JustCTF - crypto] Vaulted</title>
+      <link>https://ret2school.github.io/post/vaulted/</link>
+      <pubDate>Fri, 02 Jun 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/vaulted/</guid>
+      <description>Vaulted  This secure multisignature application will keep our flag safe. Mind holding on to one of the backup keys?
+nc vaulted.nc.jctf.pro 1337
+Author: Tjaden Hess from Trail of Bits
+ Vaulted was an easy crypto challenge from JustCTF 2023. To be fair it wasn&amp;rsquo;t really a crypto challenge, you&amp;rsquo;d instantly know how to solve the challenge if you had a bit of crypto knowledge (especially on elliptic curves and how points can be represented) but if you didn&amp;rsquo;t a bit of source code reading would make the solution obvious.</description>
+    </item>
+    
+    <item>
       <title>[ESAIP CTF 2023 - reverse] Dothell Revenge</title>
       <link>https://ret2school.github.io/post/dothell_revenge/</link>
       <pubDate>Sat, 27 May 2023 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/post/dothell_revenge/</guid>
-      <description>Dothell Revenge  Solves : 3
+      <description>Dothell Revenge  Solves: 3
 It seems that you now need a password to get some stars&amp;hellip; But you don&amp;rsquo;t have any. Time for some hacking!
 Author: Oogle
  Dothell Revenge was a hard reverse-engineering challenge from ESAIP CTF 2023. It was a modified version of Dothell, a challenge from the 2022 edition that had 0 solves. I didn&amp;rsquo;t participate IRL last year, but I did this year, and even beat two of the best reversers I know to the first blood.</description>

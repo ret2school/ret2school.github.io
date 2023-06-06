@@ -13,10 +13,19 @@
       <pubDate>Sat, 27 May 2023 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/post/dothell_revenge/</guid>
-      <description>Dothell Revenge  Solves : 3
+      <description>Dothell Revenge  Solves: 3
 It seems that you now need a password to get some stars&amp;hellip; But you don&amp;rsquo;t have any. Time for some hacking!
 Author: Oogle
  Dothell Revenge was a hard reverse-engineering challenge from ESAIP CTF 2023. It was a modified version of Dothell, a challenge from the 2022 edition that had 0 solves. I didn&amp;rsquo;t participate IRL last year, but I did this year, and even beat two of the best reversers I know to the first blood.</description>
+    </item>
+    
+    <item>
+      <title>[Breizh CTF 2022 - reverse] L&#39;appli secrète du breizhCTF</title>
+      <link>https://ret2school.github.io/post/app-secrete-du-breizhctf/</link>
+      <pubDate>Fri, 04 Mar 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/app-secrete-du-breizhctf/</guid>
+      <description>Value: 131 Description: En arrivant à Rennes au BreizhCTF, vous avez trouvé un téléphone par terre et avez décidé de le garder avec vous. Vous vous rendez compte que sur ce téléphone, il y a une appli &#39;SuperSecretApp&#39;. Malheureusement, pour accéder à son contenu, vous devez avoir la bonne combinaison du username et du password. Vous avez donc décidé de reverse l&#39;application pour trouvez cela! Auteur: Worty Format : BZHCTF{username-password}  The file provided is an .</description>
     </item>
     
   </channel>

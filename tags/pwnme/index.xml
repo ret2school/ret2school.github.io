@@ -13,10 +13,11 @@
       <pubDate>Mon, 22 May 2023 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/post/screamlikeviking/</guid>
-      <description>[pwnme 2023 - crypto] Scream Like Viking  Our protagonist John is in a room, he hears some kind of noise, like something resonating. But he doesn&amp;rsquo;t understand it&amp;hellip; Perhaps he could play with his own echoes to guess what the meaning of this famous resonance could be&amp;hellip;
+      <description>Scream Like Viking  Our protagonist John is in a room, he hears some kind of noise, like something resonating. But he doesn&amp;rsquo;t understand it&amp;hellip; Perhaps he could play with his own echoes to guess what the meaning of this famous resonance could be&amp;hellip;
 nc 51.68.95.78 32773
  Scream Like Viking&#34;
-This article is a write-up for &amp;ldquo;Scream Like Viking&amp;rdquo;, a cryptography challenge from PwnMe 2023.</description>
+This article is a write-up for &amp;ldquo;Scream Like Viking&amp;rdquo;, a cryptography challenge from PwnMe 2023.
+TL;DR  Get pairs of (C, N) where N is recovered by taking GCD of multiple M^e - C Håstad&amp;rsquo;s broadcast attack (CRT + e-th root) on the pairs of (C, N)  Code review The following source code is given:</description>
     </item>
     
     <item>

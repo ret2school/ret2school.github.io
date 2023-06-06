@@ -81,14 +81,5 @@ You just had to open the source code in radare2 to see the flag in clear:
 &amp;gt; r2 baby [0x00001070]&amp;gt; aaa [Cannot find function at 0x00001070 sym. and entry0 (aa) [x] Analyze all flags starting with sym. and entry0 (aa) [x] Analyze function calls (aac) [x] Analyze len bytes of instructions for references (aar) [x] Check for objc references [x] Check for vtables [x] Type matching analysis for all functions (aaft) [x] Propagate noreturn information [x] Use -AA or aaaa to perform additional experimental analysis.</description>
     </item>
     
-    <item>
-      <title>[Breizh CTF 2022- reverse] L&#39;appli secrète du breizhCTF</title>
-      <link>https://ret2school.github.io/post/app-secrete-du-breizhctf/</link>
-      <pubDate>Fri, 04 Mar 2022 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/post/app-secrete-du-breizhctf/</guid>
-      <description>Value: 131 Description: En arrivant à Rennes au BreizhCTF, vous avez trouvé un téléphone par terre et avez décidé de le garder avec vous. Vous vous rendez compte que sur ce téléphone, il y a une appli &#39;SuperSecretApp&#39;. Malheureusement, pour accéder à son contenu, vous devez avoir la bonne combinaison du username et du password. Vous avez donc décidé de reverse l&#39;application pour trouvez cela! Auteur: Worty Format : BZHCTF{username-password}  The file provided is an .</description>
-    </item>
-    
   </channel>
 </rss>

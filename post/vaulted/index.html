@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title>[JustCTF - crypto] Vaulted // ret2school</title>
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.92.2" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="nasm" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="https://ret2school.github.io/css/main.min.0fb49e70a30412f97ddfc418e18fefef1d9fcdebe45f634dbbba768b00fe1eec.css" />
+
+    
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="[JustCTF - crypto] Vaulted"/>
+<meta name="twitter:description" content="Vaulted  This secure multisignature application will keep our flag safe. Mind holding on to one of the backup keys?
+nc vaulted.nc.jctf.pro 1337
+Author: Tjaden Hess from Trail of Bits
+ Vaulted was an easy crypto challenge from JustCTF 2023. To be fair it wasn&rsquo;t really a crypto challenge, you&rsquo;d instantly know how to solve the challenge if you had a bit of crypto knowledge (especially on elliptic curves and how points can be represented) but if you didn&rsquo;t a bit of source code reading would make the solution obvious."/>
+
+    <meta property="og:title" content="[JustCTF - crypto] Vaulted" />
+<meta property="og:description" content="Vaulted  This secure multisignature application will keep our flag safe. Mind holding on to one of the backup keys?
+nc vaulted.nc.jctf.pro 1337
+Author: Tjaden Hess from Trail of Bits
+ Vaulted was an easy crypto challenge from JustCTF 2023. To be fair it wasn&rsquo;t really a crypto challenge, you&rsquo;d instantly know how to solve the challenge if you had a bit of crypto knowledge (especially on elliptic curves and how points can be represented) but if you didn&rsquo;t a bit of source code reading would make the solution obvious." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ret2school.github.io/post/vaulted/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2023-06-02T00:00:00+00:00" />
+<meta property="article:modified_time" content="2023-06-02T00:00:00+00:00" />
+
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://ret2school.github.io"><img class="app-header-avatar" src="/pic.jpeg" alt="nasm" /></a>
+      <span class="app-header-title">ret2school</span>
+      <nav class="app-header-menu">
+          <a class="app-header-menu-item" href="/post/list_team/">About</a>
+             - 
+          
+          <a class="app-header-menu-item" href="/">Home</a>
+             - 
+          
+          <a class="app-header-menu-item" href="/tags/">Tags</a>
+      </nav>
+      <p>Just a bunch of french ctf players</p>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">[JustCTF - crypto] Vaulted</h1>
+      <div class="post-meta">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          Jun 2, 2023
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          5 min read
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tag">
+  <title>tag</title>
+  <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line>
+</svg>
+              <a class="tag" href="https://ret2school.github.io/tags/ctf/">ctf</a>
+              <a class="tag" href="https://ret2school.github.io/tags/ret2school/">ret2school</a>
+              <a class="tag" href="https://ret2school.github.io/tags/justctf/">JustCTF</a>
+              <a class="tag" href="https://ret2school.github.io/tags/2023/">2023</a>
+              <a class="tag" href="https://ret2school.github.io/tags/alol/">alol</a>
+              <a class="tag" href="https://ret2school.github.io/tags/crypto/">crypto</a>
+              <a class="tag" href="https://ret2school.github.io/tags/ecc/">ecc</a>
+        </div>
+      </div>
+    </header>
+    <div class="post-content">
+      <h1 id="vaulted">Vaulted</h1>
+<blockquote>
+<p>This secure multisignature application will keep our flag safe. Mind holding on to one of the backup keys?</p>
+<p><code>nc vaulted.nc.jctf.pro 1337</code></p>
+<p>Author: Tjaden Hess from Trail of Bits</p>
+</blockquote>
+<p>Vaulted was an easy crypto challenge from JustCTF 2023. To be fair it wasn&rsquo;t really a crypto challenge, you&rsquo;d instantly know how to solve the challenge if you had a bit of crypto knowledge (especially on elliptic curves and how points can be represented) but if you didn&rsquo;t a bit of source code reading would make the solution obvious.</p>
+<h2 id="tldr">TL;DR</h2>
+<ul>
+<li>Generate a pub/priv key pair</li>
+<li>Enrol your public key</li>
+<li>Get the flag by sending your pubkey in three different formats (compressed, uncompressed and hybrid) along with three identical signatures of <code>b'get_flag'</code></li>
+</ul>
+<h2 id="source-code-analysis">Source code analysis</h2>
+<p>We&rsquo;re given the following source code and a <code>tar</code> archive containing the necessary files to run a local instance of the challenge.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#ff79c6">from</span> coincurve <span style="color:#ff79c6">import</span> PublicKey
+<span style="color:#ff79c6">import</span> json
+
+FLAG <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#39;justWTF{th15M1ghtB34(0Rr3CtFl4G!Right????!?!?!??!!1!??1?}&#39;</span>
+PUBKEYS <span style="color:#ff79c6">=</span> [<span style="color:#f1fa8c">&#39;025056d8e3ae5269577328cb2210bdaa1cf3f076222fcf7222b5578af846685103&#39;</span>, 
+           <span style="color:#f1fa8c">&#39;0266aa51a20e5619620d344f3c65b0150a66670b67c10dac5d619f7c713c13d98f&#39;</span>, 
+           <span style="color:#f1fa8c">&#39;0267ccabf3ae6ce4ac1107709f3e8daffb3be71f3e34b8879f08cb63dff32c4fdc&#39;</span>]
+
+
+<span style="color:#ff79c6">class</span> <span style="color:#50fa7b">FlagVault</span>:
+    <span style="color:#ff79c6">def</span> __init__(self, flag):
+        self<span style="color:#ff79c6">.</span>flag <span style="color:#ff79c6">=</span> flag
+        self<span style="color:#ff79c6">.</span>pubkeys <span style="color:#ff79c6">=</span> []
+
+    <span style="color:#ff79c6">def</span> <span style="color:#50fa7b">get_keys</span>(self, _data):
+        <span style="color:#ff79c6">return</span> <span style="color:#8be9fd;font-style:italic">str</span>([pk<span style="color:#ff79c6">.</span>format()<span style="color:#ff79c6">.</span>hex() <span style="color:#ff79c6">for</span> pk <span style="color:#ff79c6">in</span> self<span style="color:#ff79c6">.</span>pubkeys])
+
+    <span style="color:#ff79c6">def</span> <span style="color:#50fa7b">enroll</span>(self, data):
+        <span style="color:#ff79c6">if</span> <span style="color:#8be9fd;font-style:italic">len</span>(self<span style="color:#ff79c6">.</span>pubkeys) <span style="color:#ff79c6">&gt;</span> <span style="color:#bd93f9">3</span>:
+            <span style="color:#ff79c6">raise</span> Exception(<span style="color:#f1fa8c">&#34;Vault public keys are full&#34;</span>)
+
+        pk <span style="color:#ff79c6">=</span> PublicKey(<span style="color:#8be9fd;font-style:italic">bytes</span><span style="color:#ff79c6">.</span>fromhex(data[<span style="color:#f1fa8c">&#39;pubkey&#39;</span>]))
+        self<span style="color:#ff79c6">.</span>pubkeys<span style="color:#ff79c6">.</span>append(pk)
+        <span style="color:#ff79c6">return</span> <span style="color:#f1fa8c">f</span><span style="color:#f1fa8c">&#34;Success. There are </span><span style="color:#f1fa8c">{</span><span style="color:#8be9fd;font-style:italic">len</span>(self<span style="color:#ff79c6">.</span>pubkeys)<span style="color:#f1fa8c">}</span><span style="color:#f1fa8c"> enrolled&#34;</span>
+
+    <span style="color:#ff79c6">def</span> <span style="color:#50fa7b">get_flag</span>(self, data):
+        <span style="color:#6272a4"># Deduplicate pubkeys</span>
+        auths <span style="color:#ff79c6">=</span> {<span style="color:#8be9fd;font-style:italic">bytes</span><span style="color:#ff79c6">.</span>fromhex(pk): <span style="color:#8be9fd;font-style:italic">bytes</span><span style="color:#ff79c6">.</span>fromhex(s) <span style="color:#ff79c6">for</span> (pk, s) <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">zip</span>(data[<span style="color:#f1fa8c">&#39;pubkeys&#39;</span>], data[<span style="color:#f1fa8c">&#39;signatures&#39;</span>])}
+
+        <span style="color:#ff79c6">if</span> <span style="color:#8be9fd;font-style:italic">len</span>(auths) <span style="color:#ff79c6">&lt;</span> <span style="color:#bd93f9">3</span>:
+            <span style="color:#ff79c6">raise</span> Exception(<span style="color:#f1fa8c">&#34;Too few signatures&#34;</span>)
+
+        <span style="color:#ff79c6">if</span> <span style="color:#ff79c6">not</span> <span style="color:#8be9fd;font-style:italic">all</span>(PublicKey(pk) <span style="color:#ff79c6">in</span> self<span style="color:#ff79c6">.</span>pubkeys <span style="color:#ff79c6">for</span> pk <span style="color:#ff79c6">in</span> auths):
+            <span style="color:#ff79c6">raise</span> Exception(<span style="color:#f1fa8c">&#34;Public key is not authorized&#34;</span>)
+
+        <span style="color:#ff79c6">if</span> <span style="color:#ff79c6">not</span> <span style="color:#8be9fd;font-style:italic">all</span>(PublicKey(pk)<span style="color:#ff79c6">.</span>verify(s, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#39;get_flag&#39;</span>) <span style="color:#ff79c6">for</span> pk, s <span style="color:#ff79c6">in</span> auths<span style="color:#ff79c6">.</span>items()):
+            <span style="color:#ff79c6">raise</span> Exception(<span style="color:#f1fa8c">&#34;Signature is invalid&#34;</span>)
+
+        <span style="color:#ff79c6">return</span> self<span style="color:#ff79c6">.</span>flag
+
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">write</span>(data):
+    <span style="color:#8be9fd;font-style:italic">print</span>(json<span style="color:#ff79c6">.</span>dumps(data))
+
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">read</span>():
+    <span style="color:#ff79c6">try</span>:
+        <span style="color:#ff79c6">return</span> json<span style="color:#ff79c6">.</span>loads(<span style="color:#8be9fd;font-style:italic">input</span>())
+    <span style="color:#ff79c6">except</span> EOFError:
+        exit(<span style="color:#bd93f9">0</span>)
+
+
+WELCOME <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;&#34;&#34;
+</span><span style="color:#f1fa8c">Welcome to the vault! Thank you for agreeing to hold on to one of our backup keys.
+</span><span style="color:#f1fa8c">
+</span><span style="color:#f1fa8c">The vault requires 3 of 4 keys to open. Please enroll your public key.
+</span><span style="color:#f1fa8c">&#34;&#34;&#34;</span>
+
+<span style="color:#ff79c6">if</span> __name__ <span style="color:#ff79c6">==</span> <span style="color:#f1fa8c">&#34;__main__&#34;</span>:
+    vault <span style="color:#ff79c6">=</span> FlagVault(FLAG)
+    <span style="color:#ff79c6">for</span> pubkey <span style="color:#ff79c6">in</span> PUBKEYS:
+        vault<span style="color:#ff79c6">.</span>enroll({<span style="color:#f1fa8c">&#39;pubkey&#39;</span>: pubkey})
+
+    write({<span style="color:#f1fa8c">&#39;message&#39;</span>: WELCOME})
+    <span style="color:#ff79c6">while</span> <span style="color:#ff79c6">True</span>:
+        <span style="color:#ff79c6">try</span>:
+            data <span style="color:#ff79c6">=</span> read()
+            <span style="color:#ff79c6">if</span> data[<span style="color:#f1fa8c">&#39;method&#39;</span>] <span style="color:#ff79c6">==</span> <span style="color:#f1fa8c">&#39;get_keys&#39;</span>: 
+                write({<span style="color:#f1fa8c">&#39;message&#39;</span>: vault<span style="color:#ff79c6">.</span>get_keys(data)})
+            <span style="color:#ff79c6">elif</span> data[<span style="color:#f1fa8c">&#39;method&#39;</span>] <span style="color:#ff79c6">==</span> <span style="color:#f1fa8c">&#39;enroll&#39;</span>:
+                write({<span style="color:#f1fa8c">&#39;message&#39;</span>: vault<span style="color:#ff79c6">.</span>enroll(data)})
+            <span style="color:#ff79c6">elif</span> data[<span style="color:#f1fa8c">&#39;method&#39;</span>] <span style="color:#ff79c6">==</span> <span style="color:#f1fa8c">&#34;get_flag&#34;</span>:
+                write({<span style="color:#f1fa8c">&#39;message&#39;</span>: vault<span style="color:#ff79c6">.</span>get_flag(data)})
+            <span style="color:#ff79c6">else</span>:
+                write({<span style="color:#f1fa8c">&#39;error&#39;</span>: <span style="color:#f1fa8c">&#39;invalid method&#39;</span>})
+        <span style="color:#ff79c6">except</span> Exception <span style="color:#ff79c6">as</span> e:
+            write({<span style="color:#f1fa8c">&#39;error&#39;</span>: <span style="color:#8be9fd;font-style:italic">repr</span>(e)})
+</code></pre></div><p>We can either get the vault keys, enrol a new key (the check on the number of keys is done <em>before</em> enrolling a new key so the vault can contain 4 keys) or get the flag.</p>
+<p>Let&rsquo;s look closer at the <code>get_flag</code> function.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#ff79c6">def</span> <span style="color:#50fa7b">get_flag</span>(self, data):
+    <span style="color:#6272a4"># The pubkeys are supplied by the user, even though they are defined in the program, how strange ...</span>
+    auths <span style="color:#ff79c6">=</span> {<span style="color:#8be9fd;font-style:italic">bytes</span><span style="color:#ff79c6">.</span>fromhex(pk): <span style="color:#8be9fd;font-style:italic">bytes</span><span style="color:#ff79c6">.</span>fromhex(s) <span style="color:#ff79c6">for</span> (pk, s) <span style="color:#ff79c6">in</span> <span style="color:#8be9fd;font-style:italic">zip</span>(data[<span style="color:#f1fa8c">&#39;pubkeys&#39;</span>], data[<span style="color:#f1fa8c">&#39;signatures&#39;</span>])}
+
+    <span style="color:#6272a4"># That&#39;s what the welcome message meant by &#34;requires 3 of 4 keys to open&#34;,</span>
+    <span style="color:#6272a4"># we need to send at least 3 signatures (from, supposedly, 3 different pubkeys,</span>
+    <span style="color:#6272a4"># one of which can be ours)</span>
+    <span style="color:#ff79c6">if</span> <span style="color:#8be9fd;font-style:italic">len</span>(auths) <span style="color:#ff79c6">&lt;</span> <span style="color:#bd93f9">3</span>:
+        <span style="color:#ff79c6">raise</span> Exception(<span style="color:#f1fa8c">&#34;Too few signatures&#34;</span>)
+
+    <span style="color:#6272a4"># Create a PublicKey object for each user-supplied public key and checks if</span>
+    <span style="color:#6272a4"># it&#39;s in the vault. This inclusion check should fail as the new keys are</span>
+    <span style="color:#6272a4"># objects and have different memory addresses than the existing keys.</span>
+    <span style="color:#6272a4"># However, this isn&#39;t the case as the `__eq__` method has been overwritten</span>
+    <span style="color:#6272a4"># in the PublicKey class&#39; definition. </span>
+
+    <span style="color:#6272a4"># ```py</span>
+    <span style="color:#6272a4">#  def __eq__(self, other) -&gt; bool:</span>
+	<span style="color:#6272a4">#      return self.format(compressed=False) == other.format(compressed=False)</span>
+	<span style="color:#6272a4"># ```</span>
+    <span style="color:#ff79c6">if</span> <span style="color:#ff79c6">not</span> <span style="color:#8be9fd;font-style:italic">all</span>(PublicKey(pk) <span style="color:#ff79c6">in</span> self<span style="color:#ff79c6">.</span>pubkeys <span style="color:#ff79c6">for</span> pk <span style="color:#ff79c6">in</span> auths):
+        <span style="color:#ff79c6">raise</span> Exception(<span style="color:#f1fa8c">&#34;Public key is not authorized&#34;</span>)
+
+    <span style="color:#6272a4"># Finally, verify all the signatures </span>
+    <span style="color:#ff79c6">if</span> <span style="color:#ff79c6">not</span> <span style="color:#8be9fd;font-style:italic">all</span>(PublicKey(pk)<span style="color:#ff79c6">.</span>verify(s, <span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#39;get_flag&#39;</span>) <span style="color:#ff79c6">for</span> pk, s <span style="color:#ff79c6">in</span> auths<span style="color:#ff79c6">.</span>items()):
+        <span style="color:#ff79c6">raise</span> Exception(<span style="color:#f1fa8c">&#34;Signature is invalid&#34;</span>)
+
+    <span style="color:#ff79c6">return</span> self<span style="color:#ff79c6">.</span>flag
+</code></pre></div><p>Even though the function blindly trusts the user-supplied public keys, it wouldn&rsquo;t be vulnerable if these public keys were all unique (ie. if one public key couldn&rsquo;t have multiple different representations). Thankfully, that&rsquo;s not the case.</p>
+<h2 id="representations-of-points-on-an-elliptic-curve">Representations of points on an elliptic curve</h2>
+<p>The <code>coincurve</code> library used in this challenge provides Python bindings around <code>libsecp256k1</code> (the library used by Bitcoin Core). Thus, the public (and private) keys used in the script are points on an elliptic curve. Points on an elliptic curve can be represented in two different forms: an uncompressed form and a compressed form. The uncompressed form is simply <code>(x, y)</code> (the coordinates of the point) whilst the compressed form is <code>(x, lsb)</code> (the <code>x</code> coordinate and the least significant bit of the <code>y</code> coordinate, ie. if <code>y</code> is even or odd). Prof. Buchana has a clear explanation of why:</p>
+<blockquote>
+<p>&ldquo;As we can easily determine the y axis-value if we know the x-axis value, there is no need to store the y-axis value. But in this elliptic curve, there are two points which are always possible for every x coordinate value, so all we need to do, is to point to the correct one. For this one of these points is an even value and the other has an odd value.&rdquo;</p>
+<p><a href="https://scribe.rip/asecuritysite-when-bob-met-alice/02-03-or-04-so-what-are-compressed-and-uncompressed-public-keys-6abcb57efeb6">ASecuritySite - 02, 03 or 04? So What Are Compressed and Uncompressed Public Keys?</a></p>
+</blockquote>
+<p><code>coincurve</code> uses the DER encoding for the representation of the keys, so the uncompressed format is <code>0x04 || x || y</code> whilst the compressed format is <code>(0x02|0x03) || x</code> (<code>0x02</code> if <code>y</code> is even, <code>0x03</code> if it&rsquo;s odd).</p>
+<p>We now know that we can supply the same public key twice (formatted differently), that&rsquo;s 2/3 public keys taken care of but what about the last one?</p>
+<p>From looking at the <code>PublicKey</code> class' definition in the <a href="https://github.com/ofek/coincurve/blob/master/coincurve/keys.py#L298">source code</a>, we find another supported format.</p>
+<pre tabindex="0"><code>:param data: The formatted public key. This class supports parsing
+             compressed   (33 bytes, header byte `0x02` or `0x03`),
+             uncompressed (65 bytes, header byte `0x04`), or
+             hybrid       (65 bytes, header byte `0x06` or `0x07`) format public keys.
+</code></pre><p>The &ldquo;<code>hybrid</code>&rdquo; format seems to be a mix between the compressed/uncompressed formats: <code>(0x06|0x07) || x || y</code> (<code>0x06</code> if <code>y</code> is even, <code>0x07</code> if it&rsquo;s odd).</p>
+<p>We can now supply three differently formatted public keys along with three times the same signature to the <code>get_flag</code> function.</p>
+<h1 id="conclusion">Conclusion</h1>
+<p>The script below implements this, all that&rsquo;s left now is to send its output to the challenge server to get the flag.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#ff79c6">from</span> coincurve <span style="color:#ff79c6">import</span> PrivateKey
+<span style="color:#ff79c6">import</span> json
+
+sk <span style="color:#ff79c6">=</span> PrivateKey()
+pk <span style="color:#ff79c6">=</span> priv<span style="color:#ff79c6">.</span>public_key
+
+signatures <span style="color:#ff79c6">=</span> [sk<span style="color:#ff79c6">.</span>sign(<span style="color:#f1fa8c">b</span><span style="color:#f1fa8c">&#39;get_flag&#39;</span>)<span style="color:#ff79c6">.</span>hex()] <span style="color:#ff79c6">*</span> <span style="color:#bd93f9">3</span>
+pubkeys <span style="color:#ff79c6">=</span> [
+         pk<span style="color:#ff79c6">.</span>format(compressed<span style="color:#ff79c6">=</span><span style="color:#ff79c6">True</span>)<span style="color:#ff79c6">.</span>hex(),     <span style="color:#6272a4"># compressed</span>
+         pk<span style="color:#ff79c6">.</span>format(compressed<span style="color:#ff79c6">=</span><span style="color:#ff79c6">False</span>)<span style="color:#ff79c6">.</span>hex(),    <span style="color:#6272a4"># uncompressed</span>
+  <span style="color:#f1fa8c">&#39;07&#39;</span> <span style="color:#ff79c6">+</span> pk<span style="color:#ff79c6">.</span>format(compressed<span style="color:#ff79c6">=</span><span style="color:#ff79c6">False</span>)<span style="color:#ff79c6">.</span>hex()[<span style="color:#bd93f9">2</span>:] <span style="color:#6272a4"># hybrid</span>
+]
+
+<span style="color:#8be9fd;font-style:italic">print</span>(json<span style="color:#ff79c6">.</span>dumps({
+	<span style="color:#f1fa8c">&#34;method&#34;</span>: <span style="color:#f1fa8c">&#34;enroll&#34;</span>,
+	<span style="color:#f1fa8c">&#34;pubkey&#34;</span>: pubkeys[<span style="color:#bd93f9">0</span>]
+}))
+
+<span style="color:#8be9fd;font-style:italic">print</span>(json<span style="color:#ff79c6">.</span>dumps({
+	<span style="color:#f1fa8c">&#34;method&#34;</span>: <span style="color:#f1fa8c">&#34;get_flag&#34;</span>,
+	<span style="color:#f1fa8c">&#34;pubkeys&#34;</span>: pubkeys,
+	<span style="color:#f1fa8c">&#34;signatures&#34;</span>: signatures
+}))
+
+<span style="color:#6272a4"># {&#34;message&#34;: &#34;justCTF{n0nc4n0n1c4l_72037872768289199286663281818929329}&#34;}</span>
+</code></pre></div>
+    </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>

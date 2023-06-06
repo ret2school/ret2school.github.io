@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Aero CTF on ret2school</title>
+    <link>https://ret2school.github.io/tags/aero-ctf/</link>
+    <description>Recent content in Aero CTF on ret2school</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 28 Feb 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/aero-ctf/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>[AeroCTF 2021 - RE] BashD00r</title>
+      <link>https://ret2school.github.io/post/bashd00r/</link>
+      <pubDate>Sun, 28 Feb 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/bashd00r/</guid>
+      <description>Aero CTF 2021 - BashD00r (500 pts) This is the second challenge I was able to solve, and the hardest one. The task is below:
+ There seems to be something wrong with our bash.
+Can you see if anyone has entered the backdoor?
+bash.7z
+ So we are given a archive, which contains a &amp;ldquo;bash&amp;rdquo; binary. This binary was backdoored, so we need to find it to get the flag.</description>
+    </item>
+    
+    <item>
+      <title>[AeroCTF 2021 - RE] dummyper</title>
+      <link>https://ret2school.github.io/post/dummyper/</link>
+      <pubDate>Sun, 28 Feb 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/dummyper/</guid>
+      <description>Aero CTF 2021 - Dummyper (454 pts) This the first challenge I did. The challenge&amp;rsquo;s task was:
+ This stupid program has encrypted our flag.
+We only have a dump left.
+ With a mysterious &amp;ldquo;dump.7z&amp;rdquo; that contains a &amp;ldquo;dump&amp;rdquo; file. This file is an ELF binary, so we load it in IDA.
+Overview IDA complains about broken section table, but still succeeds to load the bin. We get classical glibc&amp;rsquo;s __libc_start_main, and the &amp;ldquo;main&amp;rdquo; function which looks like this:</description>
+    </item>
+    
+    <item>
+      <title>[AeroCTF 2020 - RE] 1000 and 1 night</title>
+      <link>https://ret2school.github.io/post/1000_and_1_night/</link>
+      <pubDate>Wed, 25 Nov 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/1000_and_1_night/</guid>
+      <description>Author: supersnail
+Files can be found here
+For this challenge, we get an archive with a lot of files, the name of which seems to be a hash. Each file is an ELF x86_64 program file. In addition, a server listens, and requests:
+Enter valid token to binary with name &amp;lt;8c235f89a8143a28a1d6067e959dd858&amp;gt; Token: at connection. We therefore understand quickly enough that we will have to automate the reversing of all these ELFs to send the correct token back to the server, and thus have the flag, the server requesting a series of tokens before spitting the flag.</description>
+    </item>
+    
+  </channel>
+</rss>

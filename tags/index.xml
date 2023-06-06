@@ -44,11 +44,29 @@
     </item>
     
     <item>
+      <title>ecc</title>
+      <link>https://ret2school.github.io/tags/ecc/</link>
+      <pubDate>Fri, 02 Jun 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/ecc/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>ESAIP CTF</title>
       <link>https://ret2school.github.io/tags/esaip-ctf/</link>
       <pubDate>Fri, 02 Jun 2023 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/tags/esaip-ctf/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>JustCTF</title>
+      <link>https://ret2school.github.io/tags/justctf/</link>
+      <pubDate>Fri, 02 Jun 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/justctf/</guid>
       <description></description>
     </item>
     
@@ -71,11 +89,11 @@
     </item>
     
     <item>
-      <title>reverse</title>
-      <link>https://ret2school.github.io/tags/reverse/</link>
+      <title>reverse engineering</title>
+      <link>https://ret2school.github.io/tags/reverse-engineering/</link>
       <pubDate>Sat, 27 May 2023 00:00:00 +0000</pubDate>
       
-      <guid>https://ret2school.github.io/tags/reverse/</guid>
+      <guid>https://ret2school.github.io/tags/reverse-engineering/</guid>
       <description></description>
     </item>
     
@@ -112,15 +130,6 @@
       <pubDate>Mon, 22 May 2023 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/tags/pwnme/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>yarienkiva</title>
-      <link>https://ret2school.github.io/tags/yarienkiva/</link>
-      <pubDate>Mon, 22 May 2023 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/yarienkiva/</guid>
       <description></description>
     </item>
     
@@ -332,11 +341,20 @@
     </item>
     
     <item>
-      <title>forensic</title>
-      <link>https://ret2school.github.io/tags/forensic/</link>
+      <title>BreizhCTF</title>
+      <link>https://ret2school.github.io/tags/breizhctf/</link>
       <pubDate>Fri, 04 Mar 2022 00:00:00 +0000</pubDate>
       
-      <guid>https://ret2school.github.io/tags/forensic/</guid>
+      <guid>https://ret2school.github.io/tags/breizhctf/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>forensics</title>
+      <link>https://ret2school.github.io/tags/forensics/</link>
+      <pubDate>Fri, 04 Mar 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/forensics/</guid>
       <description></description>
     </item>
     
@@ -377,11 +395,11 @@
     </item>
     
     <item>
-      <title>hitcon</title>
-      <link>https://ret2school.github.io/tags/hitcon/</link>
+      <title>HitconCTF</title>
+      <link>https://ret2school.github.io/tags/hitconctf/</link>
       <pubDate>Sun, 02 Jan 2022 00:00:00 +0000</pubDate>
       
-      <guid>https://ret2school.github.io/tags/hitcon/</guid>
+      <guid>https://ret2school.github.io/tags/hitconctf/</guid>
       <description></description>
     </item>
     
@@ -422,15 +440,6 @@
     </item>
     
     <item>
-      <title>TRACS 2021</title>
-      <link>https://ret2school.github.io/tags/tracs-2021/</link>
-      <pubDate>Sun, 05 Dec 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/tracs-2021/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>CyberSecurityRumble</title>
       <link>https://ret2school.github.io/tags/cybersecurityrumble/</link>
       <pubDate>Mon, 29 Nov 2021 00:00:00 +0000</pubDate>
@@ -440,29 +449,11 @@
     </item>
     
     <item>
-      <title>fofo</title>
-      <link>https://ret2school.github.io/tags/fofo/</link>
+      <title>game hacking</title>
+      <link>https://ret2school.github.io/tags/game-hacking/</link>
       <pubDate>Mon, 29 Nov 2021 00:00:00 +0000</pubDate>
       
-      <guid>https://ret2school.github.io/tags/fofo/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>forensics</title>
-      <link>https://ret2school.github.io/tags/forensics/</link>
-      <pubDate>Mon, 29 Nov 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/forensics/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>GameHacking</title>
-      <link>https://ret2school.github.io/tags/gamehacking/</link>
-      <pubDate>Mon, 29 Nov 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/gamehacking/</guid>
+      <guid>https://ret2school.github.io/tags/game-hacking/</guid>
       <description></description>
     </item>
     
@@ -575,15 +566,6 @@
     </item>
     
     <item>
-      <title>cheapie</title>
-      <link>https://ret2school.github.io/tags/cheapie/</link>
-      <pubDate>Mon, 03 May 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/cheapie/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>FCSC</title>
       <link>https://ret2school.github.io/tags/fcsc/</link>
       <pubDate>Mon, 03 May 2021 00:00:00 +0000</pubDate>
@@ -602,24 +584,6 @@
     </item>
     
     <item>
-      <title>mipsy</title>
-      <link>https://ret2school.github.io/tags/mipsy/</link>
-      <pubDate>Mon, 03 May 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/mipsy/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>n4sm</title>
-      <link>https://ret2school.github.io/tags/n4sm/</link>
-      <pubDate>Mon, 03 May 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/n4sm/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>privesc</title>
       <link>https://ret2school.github.io/tags/privesc/</link>
       <pubDate>Mon, 03 May 2021 00:00:00 +0000</pubDate>
@@ -629,38 +593,11 @@
     </item>
     
     <item>
-      <title>Privesc Me</title>
-      <link>https://ret2school.github.io/tags/privesc-me/</link>
-      <pubDate>Mon, 03 May 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/privesc-me/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>reporter</title>
-      <link>https://ret2school.github.io/tags/reporter/</link>
-      <pubDate>Mon, 03 May 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/reporter/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>HeroCTF v3</title>
       <link>https://ret2school.github.io/tags/heroctf-v3/</link>
       <pubDate>Thu, 29 Apr 2021 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/tags/heroctf-v3/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>reverse engineering</title>
-      <link>https://ret2school.github.io/tags/reverse-engineering/</link>
-      <pubDate>Thu, 29 Apr 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/reverse-engineering/</guid>
       <description></description>
     </item>
     
@@ -773,11 +710,11 @@
     </item>
     
     <item>
-      <title>DaVinciCTF 2021</title>
-      <link>https://ret2school.github.io/tags/davincictf-2021/</link>
+      <title>DaVinciCTF</title>
+      <link>https://ret2school.github.io/tags/davincictf/</link>
       <pubDate>Mon, 15 Mar 2021 00:00:00 +0000</pubDate>
       
-      <guid>https://ret2school.github.io/tags/davincictf-2021/</guid>
+      <guid>https://ret2school.github.io/tags/davincictf/</guid>
       <description></description>
     </item>
     
@@ -796,15 +733,6 @@
       <pubDate>Fri, 12 Mar 2021 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/tags/r0da/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>revers engineering</title>
-      <link>https://ret2school.github.io/tags/revers-engineering/</link>
-      <pubDate>Fri, 12 Mar 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/revers-engineering/</guid>
       <description></description>
     </item>
     
@@ -845,11 +773,11 @@
     </item>
     
     <item>
-      <title>Aero CTF 2021</title>
-      <link>https://ret2school.github.io/tags/aero-ctf-2021/</link>
+      <title>Aero CTF</title>
+      <link>https://ret2school.github.io/tags/aero-ctf/</link>
       <pubDate>Sun, 28 Feb 2021 00:00:00 +0000</pubDate>
       
-      <guid>https://ret2school.github.io/tags/aero-ctf-2021/</guid>
+      <guid>https://ret2school.github.io/tags/aero-ctf/</guid>
       <description></description>
     </item>
     
@@ -908,11 +836,11 @@
     </item>
     
     <item>
-      <title>unionCTF 2021</title>
-      <link>https://ret2school.github.io/tags/unionctf-2021/</link>
+      <title>unionCTF</title>
+      <link>https://ret2school.github.io/tags/unionctf/</link>
       <pubDate>Mon, 22 Feb 2021 00:00:00 +0000</pubDate>
       
-      <guid>https://ret2school.github.io/tags/unionctf-2021/</guid>
+      <guid>https://ret2school.github.io/tags/unionctf/</guid>
       <description></description>
     </item>
     
@@ -935,47 +863,11 @@
     </item>
     
     <item>
-      <title>HitconCTF</title>
-      <link>https://ret2school.github.io/tags/hitconctf/</link>
-      <pubDate>Tue, 01 Dec 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/hitconctf/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>HitconCTF 2020</title>
-      <link>https://ret2school.github.io/tags/hitconctf-2020/</link>
-      <pubDate>Tue, 01 Dec 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/hitconctf-2020/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Aero CTF 2020</title>
-      <link>https://ret2school.github.io/tags/aero-ctf-2020/</link>
-      <pubDate>Thu, 26 Nov 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/aero-ctf-2020/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>AeroCTF</title>
       <link>https://ret2school.github.io/tags/aeroctf/</link>
       <pubDate>Thu, 26 Nov 2020 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/tags/aeroctf/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Crack the heart</title>
-      <link>https://ret2school.github.io/tags/crack-the-heart/</link>
-      <pubDate>Wed, 25 Nov 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/crack-the-heart/</guid>
       <description></description>
     </item>
     
