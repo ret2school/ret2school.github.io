@@ -6,7 +6,20 @@
     <description>Recent content in nasm on ret2school</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 21 May 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/nasm/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 24 Jul 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/nasm/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>[ImaginaryCTF 2023 - pwn] window-of-opportunity</title>
+      <link>https://ret2school.github.io/post/iwindow/</link>
+      <pubDate>Mon, 24 Jul 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/iwindow/</guid>
+      <description>window-of-opportunity  window-of-opportunity (490 pts) - 11 solves by Eth007
+Description: Sometimes, there is a glimmer of hope, a spark of inspiration, a window of opportunity.
+Attachments https://imaginaryctf.org/r/izYM0#opportunity_dist.zip
+nc window-of-opportunity.chal.imaginaryctf.org 1337
+ window-of-opportunity is a kernel exploitation challenge I did for the ImaginaryCTF 2023. We are given an arbitrary read primitive (and a stack buffer overflow but I didn&amp;rsquo;t use it), and the goal is basically to read the /flag.txt file.</description>
+    </item>
+    
     <item>
       <title>[Grey Cat CTF Quals 2023 - pwn] Write me a Book</title>
       <link>https://ret2school.github.io/post/writemeabook/</link>
