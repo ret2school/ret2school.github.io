@@ -6,7 +6,19 @@
     <description>Recent content in z3 on ret2school</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 27 May 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/z3/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 24 Jul 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/z3/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>[ImaginaryCTF 2023 - reverse] Sheepish</title>
+      <link>https://ret2school.github.io/post/sheepish/</link>
+      <pubDate>Mon, 24 Jul 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/sheepish/</guid>
+      <description>ImaginaryCTF 2023 - Write-Up for the challenge Sheepish (Reverse) TL;DR: Obfuscated Python code using lambda-calculus.
+Description: Mary had a flagchecker, its fleece was white as snow.
+Introduction We are given a Python script, consisting in a single line of ~26k characters, with lots of lambda-functions. The full script is available here , see the beginning and the end of the file below.
+print((((lambda _____________:((lambda ___:_____________(lambda _______:___(___)(_______)))(lambda ___:_____________(lambda _______:___(___)(_______)))))(lambda _____________:lambda ___________:lambda ______:(lambda ____:(lambda _:_(lambda __________:lambda _____:__________))(____))(___________)(lambda _:(lambda __________:lambda _____:__________))(lambda _:(lambda __________:lambda _____:__________(_____)(lambda __________:lambda _____:_____))((lambda __________:lambda _____:(lambda __________:lambda _____:__________(_____)(lambda __________:lambda _____:_____))((lambda __________:lambda _____:(lambda __________:__________(lambda _:(lambda __________:lambda _____:_____))(lambda __________:lambda _____:__________)) [.</description>
+    </item>
+    
     <item>
       <title>[ESAIP CTF 2023 - reverse] Dothell Revenge</title>
       <link>https://ret2school.github.io/post/dothell_revenge/</link>

@@ -6,13 +6,58 @@
     <description>Recent content in Tags on ret2school</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 02 Jun 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 24 Jul 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>2023</title>
       <link>https://ret2school.github.io/tags/2023/</link>
-      <pubDate>Fri, 02 Jun 2023 00:00:00 +0000</pubDate>
+      <pubDate>Mon, 24 Jul 2023 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/tags/2023/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>ctf</title>
+      <link>https://ret2school.github.io/tags/ctf/</link>
+      <pubDate>Mon, 24 Jul 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/ctf/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>ImaginaryCTF</title>
+      <link>https://ret2school.github.io/tags/imaginaryctf/</link>
+      <pubDate>Mon, 24 Jul 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/imaginaryctf/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>reverse</title>
+      <link>https://ret2school.github.io/tags/reverse/</link>
+      <pubDate>Mon, 24 Jul 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/reverse/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>spiker00t</title>
+      <link>https://ret2school.github.io/tags/spiker00t/</link>
+      <pubDate>Mon, 24 Jul 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/spiker00t/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>z3</title>
+      <link>https://ret2school.github.io/tags/z3/</link>
+      <pubDate>Mon, 24 Jul 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/tags/z3/</guid>
       <description></description>
     </item>
     
@@ -31,15 +76,6 @@
       <pubDate>Fri, 02 Jun 2023 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/tags/crypto/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>ctf</title>
-      <link>https://ret2school.github.io/tags/ctf/</link>
-      <pubDate>Fri, 02 Jun 2023 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/ctf/</guid>
       <description></description>
     </item>
     
@@ -98,29 +134,11 @@
     </item>
     
     <item>
-      <title>z3</title>
-      <link>https://ret2school.github.io/tags/z3/</link>
-      <pubDate>Sat, 27 May 2023 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/z3/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>js</title>
       <link>https://ret2school.github.io/tags/js/</link>
       <pubDate>Wed, 24 May 2023 00:00:00 +0000</pubDate>
       
       <guid>https://ret2school.github.io/tags/js/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>spiker00t</title>
-      <link>https://ret2school.github.io/tags/spiker00t/</link>
-      <pubDate>Wed, 24 May 2023 00:00:00 +0000</pubDate>
-      
-      <guid>https://ret2school.github.io/tags/spiker00t/</guid>
       <description></description>
     </item>
     

@@ -3,7 +3,40 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://ret2school.github.io/tags/2023/</loc>
-    <lastmod>2023-06-02T00:00:00+00:00</lastmod>
+    <lastmod>2023-07-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/post/sheepish/</loc>
+    <lastmod>2023-07-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/categories/</loc>
+    <lastmod>2023-07-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/tags/ctf/</loc>
+    <lastmod>2023-07-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/tags/imaginaryctf/</loc>
+    <lastmod>2023-07-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/post/</loc>
+    <lastmod>2023-07-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/</loc>
+    <lastmod>2023-07-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/tags/reverse/</loc>
+    <lastmod>2023-07-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/categories/reverse/</loc>
+    <lastmod>2023-07-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/tags/spiker00t/</loc>
+    <lastmod>2023-07-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/tags/</loc>
+    <lastmod>2023-07-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://ret2school.github.io/tags/z3/</loc>
+    <lastmod>2023-07-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://ret2school.github.io/post/esaip_crypto/</loc>
     <lastmod>2023-06-02T00:00:00+00:00</lastmod>
@@ -17,9 +50,6 @@
     <loc>https://ret2school.github.io/tags/crypto/</loc>
     <lastmod>2023-06-02T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://ret2school.github.io/tags/ctf/</loc>
-    <lastmod>2023-06-02T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>https://ret2school.github.io/tags/ecc/</loc>
     <lastmod>2023-06-02T00:00:00+00:00</lastmod>
   </url><url>
@@ -29,16 +59,7 @@
     <loc>https://ret2school.github.io/tags/justctf/</loc>
     <lastmod>2023-06-02T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://ret2school.github.io/post/</loc>
-    <lastmod>2023-06-02T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>https://ret2school.github.io/tags/ret2school/</loc>
-    <lastmod>2023-06-02T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://ret2school.github.io/</loc>
-    <lastmod>2023-06-02T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://ret2school.github.io/tags/</loc>
     <lastmod>2023-06-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://ret2school.github.io/post/dothell_revenge/</loc>
@@ -50,16 +71,10 @@
     <loc>https://ret2school.github.io/tags/reverse-engineering/</loc>
     <lastmod>2023-05-27T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://ret2school.github.io/tags/z3/</loc>
-    <lastmod>2023-05-27T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>https://ret2school.github.io/post/crackme1_greycat/</loc>
     <lastmod>2023-05-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://ret2school.github.io/tags/js/</loc>
-    <lastmod>2023-05-24T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://ret2school.github.io/tags/spiker00t/</loc>
     <lastmod>2023-05-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://ret2school.github.io/post/screamlikeviking/</loc>
@@ -132,9 +147,6 @@
     <lastmod>2022-08-08T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://ret2school.github.io/post/zigzag/</loc>
-    <lastmod>2022-08-08T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://ret2school.github.io/categories/</loc>
     <lastmod>2022-08-08T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://ret2school.github.io/tags/corctf/</loc>

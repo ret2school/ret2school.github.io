@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title>[ImaginaryCTF 2023 - reverse] Sheepish // ret2school</title>
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.92.2" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="nasm" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="https://ret2school.github.io/css/main.min.0fb49e70a30412f97ddfc418e18fefef1d9fcdebe45f634dbbba768b00fe1eec.css" />
+
+    
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="[ImaginaryCTF 2023 - reverse] Sheepish"/>
+<meta name="twitter:description" content="ImaginaryCTF 2023 - Write-Up for the challenge Sheepish (Reverse) TL;DR: Obfuscated Python code using lambda-calculus.
+Description: Mary had a flagchecker, its fleece was white as snow.
+Introduction We are given a Python script, consisting in a single line of ~26k characters, with lots of lambda-functions. The full script is available here , see the beginning and the end of the file below.
+print((((lambda _____________:((lambda ___:_____________(lambda _______:___(___)(_______)))(lambda ___:_____________(lambda _______:___(___)(_______)))))(lambda _____________:lambda ___________:lambda ______:(lambda ____:(lambda _:_(lambda __________:lambda _____:__________))(____))(___________)(lambda _:(lambda __________:lambda _____:__________))(lambda _:(lambda __________:lambda _____:__________(_____)(lambda __________:lambda _____:_____))((lambda __________:lambda _____:(lambda __________:lambda _____:__________(_____)(lambda __________:lambda _____:_____))((lambda __________:lambda _____:(lambda __________:__________(lambda _:(lambda __________:lambda _____:_____))(lambda __________:lambda _____:__________)) [."/>
+
+    <meta property="og:title" content="[ImaginaryCTF 2023 - reverse] Sheepish" />
+<meta property="og:description" content="ImaginaryCTF 2023 - Write-Up for the challenge Sheepish (Reverse) TL;DR: Obfuscated Python code using lambda-calculus.
+Description: Mary had a flagchecker, its fleece was white as snow.
+Introduction We are given a Python script, consisting in a single line of ~26k characters, with lots of lambda-functions. The full script is available here , see the beginning and the end of the file below.
+print((((lambda _____________:((lambda ___:_____________(lambda _______:___(___)(_______)))(lambda ___:_____________(lambda _______:___(___)(_______)))))(lambda _____________:lambda ___________:lambda ______:(lambda ____:(lambda _:_(lambda __________:lambda _____:__________))(____))(___________)(lambda _:(lambda __________:lambda _____:__________))(lambda _:(lambda __________:lambda _____:__________(_____)(lambda __________:lambda _____:_____))((lambda __________:lambda _____:(lambda __________:lambda _____:__________(_____)(lambda __________:lambda _____:_____))((lambda __________:lambda _____:(lambda __________:__________(lambda _:(lambda __________:lambda _____:_____))(lambda __________:lambda _____:__________)) [." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://ret2school.github.io/post/sheepish/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2023-07-24T00:00:00+00:00" />
+<meta property="article:modified_time" content="2023-07-24T00:00:00+00:00" />
+
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://ret2school.github.io"><img class="app-header-avatar" src="/pic.jpeg" alt="nasm" /></a>
+      <span class="app-header-title">ret2school</span>
+      <nav class="app-header-menu">
+          <a class="app-header-menu-item" href="/post/list_team/">About</a>
+             - 
+          
+          <a class="app-header-menu-item" href="/">Home</a>
+             - 
+          
+          <a class="app-header-menu-item" href="/tags/">Tags</a>
+      </nav>
+      <p>Just a bunch of french ctf players</p>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">[ImaginaryCTF 2023 - reverse] Sheepish</h1>
+      <div class="post-meta">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          Jul 24, 2023
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          4 min read
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tag">
+  <title>tag</title>
+  <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line>
+</svg>
+              <a class="tag" href="https://ret2school.github.io/tags/ctf/">ctf</a>
+              <a class="tag" href="https://ret2school.github.io/tags/imaginaryctf/">ImaginaryCTF</a>
+              <a class="tag" href="https://ret2school.github.io/tags/2023/">2023</a>
+              <a class="tag" href="https://ret2school.github.io/tags/reverse/">reverse</a>
+              <a class="tag" href="https://ret2school.github.io/tags/spiker00t/">spiker00t</a>
+              <a class="tag" href="https://ret2school.github.io/tags/z3/">z3</a>
+        </div>
+      </div>
+    </header>
+    <div class="post-content">
+      <h1 id="imaginaryctf-2023---write-up-for-the-challenge-sheepish-reverse">ImaginaryCTF 2023 - Write-Up for the challenge Sheepish (Reverse)</h1>
+<p><img src="../images/chall.png" alt="challenge"></p>
+<p><strong>TL;DR:</strong> Obfuscated Python code using lambda-calculus.</p>
+<p><strong>Description:</strong> Mary had a flagchecker, its fleece was white as snow.</p>
+<h2 id="introduction">Introduction</h2>
+<p>We are given a Python script, consisting in a single line of ~26k characters, with lots of lambda-functions. The full script is available <a href="https://raw.githubusercontent.com/ret2school/ctf/master/2023/imaginaryctf/reverse/sheepish/src/sheepish.py">here</a>
+, see the beginning and the end of the file below.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#8be9fd;font-style:italic">print</span>((((<span style="color:#ff79c6">lambda</span> _____________:((<span style="color:#ff79c6">lambda</span> ___:_____________(<span style="color:#ff79c6">lambda</span> _______:___(___)(_______)))(<span style="color:#ff79c6">lambda</span> ___:_____________(<span style="color:#ff79c6">lambda</span> _______:___(___)(_______)))))(<span style="color:#ff79c6">lambda</span> _____________:<span style="color:#ff79c6">lambda</span> ___________:<span style="color:#ff79c6">lambda</span> ______:(<span style="color:#ff79c6">lambda</span> ____:(<span style="color:#ff79c6">lambda</span> _:_(<span style="color:#ff79c6">lambda</span> __________:<span style="color:#ff79c6">lambda</span> _____:__________))(____))(___________)(<span style="color:#ff79c6">lambda</span> _:(<span style="color:#ff79c6">lambda</span> __________:<span style="color:#ff79c6">lambda</span> _____:__________))(<span style="color:#ff79c6">lambda</span> _:(<span style="color:#ff79c6">lambda</span> __________:<span style="color:#ff79c6">lambda</span> _____:__________(_____)(<span style="color:#ff79c6">lambda</span> __________:<span style="color:#ff79c6">lambda</span> _____:_____))((<span style="color:#ff79c6">lambda</span> __________:<span style="color:#ff79c6">lambda</span> _____:(<span style="color:#ff79c6">lambda</span> __________:<span style="color:#ff79c6">lambda</span> _____:__________(_____)(<span style="color:#ff79c6">lambda</span> __________:<span style="color:#ff79c6">lambda</span> _____:_____))((<span style="color:#ff79c6">lambda</span> __________:<span style="color:#ff79c6">lambda</span> _____:(<span style="color:#ff79c6">lambda</span> __________:__________(<span style="color:#ff79c6">lambda</span> _:(<span style="color:#ff79c6">lambda</span> __________:<span style="color:#ff79c6">lambda</span> _____:_____))(<span style="color:#ff79c6">lambda</span> __________:<span style="color:#ff79c6">lambda</span> _____:__________))
+[<span style="color:#ff79c6">...</span>]
+(<span style="color:#ff79c6">lambda</span> _____________:(<span style="color:#ff79c6">lambda</span> ________:(((<span style="color:#ff79c6">lambda</span> ____:<span style="color:#ff79c6">lambda</span> ___:(<span style="color:#ff79c6">lambda</span> __________:<span style="color:#ff79c6">lambda</span> _____:<span style="color:#ff79c6">lambda</span> ______________:______________(__________)(_____))(<span style="color:#ff79c6">lambda</span> __________:<span style="color:#ff79c6">lambda</span> _____:_____)((<span style="color:#ff79c6">lambda</span> __________:<span style="color:#ff79c6">lambda</span> _____:<span style="color:#ff79c6">lambda</span> ______________:______________(__________)(_____))(___)(____)))(_____________(________[<span style="color:#bd93f9">1</span>:]))(((<span style="color:#ff79c6">lambda</span> _____________:((<span style="color:#ff79c6">lambda</span> ___:_____________(<span style="color:#ff79c6">lambda</span> _______:___(___)(_______)))(<span style="color:#ff79c6">lambda</span> ___:_____________(<span style="color:#ff79c6">lambda</span> _______:___(___)(_______)))))(<span style="color:#ff79c6">lambda</span> _____________:(<span style="color:#ff79c6">lambda</span> __:(((<span style="color:#ff79c6">lambda</span> __:<span style="color:#ff79c6">lambda</span> __________:<span style="color:#ff79c6">lambda</span> _____:__________(__(__________)(_____)))(_____________(__<span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>))) <span style="color:#ff79c6">if</span> __ <span style="color:#ff79c6">else</span> (<span style="color:#ff79c6">lambda</span> __________:<span style="color:#ff79c6">lambda</span> _____:_____)))))(________[<span style="color:#bd93f9">0</span>]))) <span style="color:#ff79c6">if</span> <span style="color:#8be9fd;font-style:italic">len</span>(________) <span style="color:#ff79c6">else</span> ((<span style="color:#ff79c6">lambda</span> __________:<span style="color:#ff79c6">lambda</span> _____:<span style="color:#ff79c6">lambda</span> ______________:______________(__________)(_____))(<span style="color:#ff79c6">lambda</span> __________:<span style="color:#ff79c6">lambda</span> _____:__________)(<span style="color:#ff79c6">lambda</span> __________:<span style="color:#ff79c6">lambda</span> _____:__________))))))(<span style="color:#8be9fd;font-style:italic">input</span>(<span style="color:#f1fa8c">&#34;&gt;&gt;&gt; &#34;</span>)<span style="color:#ff79c6">.</span>encode())))(<span style="color:#f1fa8c">&#34;Well done!&#34;</span>)(<span style="color:#f1fa8c">&#34;Try again...&#34;</span>))
+</code></pre></div><p>In order to make the code more &ldquo;readable&rdquo;, we can replace the variable names (<code>_</code>, <code>__</code>, <code>___</code>, &hellip;) with more readable names (<code>x1</code>, <code>x2</code>, <code>x3</code>, &hellip;)</p>
+<h2 id="a-bit-of-culture">A bit of culture</h2>
+<p>In theoretical science, it is known that <a href="https://en.wikipedia.org/wiki/Lambda_calculus">lambda-calculus</a> is Turing-complete. In other words, any program can be simulated with &ldquo;lambda-terms&rdquo;, namely, terms similar to <code>lambda</code> functions in Python.</p>
+<p>For instance, the constant &ldquo;true&rdquo; can be simulated with the lambda-term λx.λy.x, and &ldquo;false&rdquo; with λx.λy.y. Integers can be represented as <a href="https://en.wikipedia.org/wiki/Church_encoding">Church numerals</a>.</p>
+<p>The website <a href="https://lambdacalc.io/">https://lambdacalc.io/</a> provides a good summary of &ldquo;common lambda-terms&rdquo; used to simulate common operations in programming.</p>
+<h2 id="deobfuscation-and-solve">Deobfuscation, and solve</h2>
+<p>When looking closer at the code, we can observe such terms.</p>
+<p>For instance, the constants true and false:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">tru <span style="color:#ff79c6">=</span> (<span style="color:#ff79c6">lambda</span> x10:<span style="color:#ff79c6">lambda</span> x5:x10)
+fls <span style="color:#ff79c6">=</span> (<span style="color:#ff79c6">lambda</span> x10:<span style="color:#ff79c6">lambda</span> x5:x5)
+</code></pre></div><p>as well as the Church numerals and their arithmetic operations:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">power <span style="color:#ff79c6">=</span> (<span style="color:#ff79c6">lambda</span> x10:<span style="color:#ff79c6">lambda</span> x5:x5(x10))
+is0 <span style="color:#ff79c6">=</span> (<span style="color:#ff79c6">lambda</span> x10:x10(<span style="color:#ff79c6">lambda</span> x01:(fls))(tru))
+succ <span style="color:#ff79c6">=</span> (<span style="color:#ff79c6">lambda</span> x2:<span style="color:#ff79c6">lambda</span> x10:<span style="color:#ff79c6">lambda</span> x5:x10(x2(x10)(x5)))
+pred <span style="color:#ff79c6">=</span> (<span style="color:#ff79c6">lambda</span> x2:<span style="color:#ff79c6">lambda</span> x13:<span style="color:#ff79c6">lambda</span> x3:x2(<span style="color:#ff79c6">lambda</span> x12:<span style="color:#ff79c6">lambda</span> x9:x9(x12(x13)))(<span style="color:#ff79c6">lambda</span> x01:x3)(<span style="color:#ff79c6">lambda</span> x10:x10))
+plus <span style="color:#ff79c6">=</span> (<span style="color:#ff79c6">lambda</span> x10:<span style="color:#ff79c6">lambda</span> x5:x10(succ)(x5))
+minus <span style="color:#ff79c6">=</span> (<span style="color:#ff79c6">lambda</span> x10:<span style="color:#ff79c6">lambda</span> x5:x5(pred)(x10))
+le <span style="color:#ff79c6">=</span> (<span style="color:#ff79c6">lambda</span> x10:<span style="color:#ff79c6">lambda</span> x5:is0(minus(x10)(x5)))
+ge <span style="color:#ff79c6">=</span> (<span style="color:#ff79c6">lambda</span> x10:<span style="color:#ff79c6">lambda</span> x5:is0(minus(x5)(x10)))
+mult <span style="color:#ff79c6">=</span> (<span style="color:#ff79c6">lambda</span> x10:<span style="color:#ff79c6">lambda</span> x5:<span style="color:#ff79c6">lambda</span> x14:x10(x5(x14)))
+two <span style="color:#ff79c6">=</span> (<span style="color:#ff79c6">lambda</span> x10:<span style="color:#ff79c6">lambda</span> x5:x10(x10(x5)))
+three <span style="color:#ff79c6">=</span> (<span style="color:#ff79c6">lambda</span> x10:<span style="color:#ff79c6">lambda</span> x5:x10(x10(x10(x5))))
+four <span style="color:#ff79c6">=</span> (succ)(three)
+</code></pre></div><p>The script is now way shorter, and a bit understandable (see <a href="https://raw.githubusercontent.com/ret2school/ctf/master/2023/imaginaryctf/reverse/sheepish/src/sheepish_deobf2.py">here</a>). We can recognize a sequence of arithmetic expressions, such as:</p>
+<pre tabindex="0"><code>((plus)(mult((power)(two)(four))(succ(mult(two)(three))))((plus)(mult(two)(three))(succ(mult(two)(three)))))
+</code></pre><p>The characters of the flag, maybe?</p>
+<p>To solve the chall, I took the expressions, and I reimplemented the operators (full script <a href="https://raw.githubusercontent.com/ret2school/ctf/master/2023/imaginaryctf/reverse/sheepish/src/sheepish_arith.py">here</a>):</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#ff79c6">def</span> <span style="color:#50fa7b">plus</span>(x):
+    <span style="color:#ff79c6">return</span> <span style="color:#ff79c6">lambda</span> y: x <span style="color:#ff79c6">+</span> y
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">mult</span>(x):
+    <span style="color:#ff79c6">return</span> <span style="color:#ff79c6">lambda</span> y: x <span style="color:#ff79c6">*</span> y
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">power</span>(x):
+    <span style="color:#ff79c6">return</span> <span style="color:#ff79c6">lambda</span> y: x <span style="color:#ff79c6">**</span> y
+
+<span style="color:#ff79c6">def</span> <span style="color:#50fa7b">succ</span>(x):
+    <span style="color:#ff79c6">return</span> x<span style="color:#ff79c6">+</span><span style="color:#bd93f9">1</span>
+
+zero <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">0</span>
+two <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">2</span>
+three <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">3</span>
+four <span style="color:#ff79c6">=</span> <span style="color:#bd93f9">4</span>
+
+flag <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;&#34;</span>
+
+flag <span style="color:#ff79c6">+=</span> <span style="color:#8be9fd;font-style:italic">chr</span>(((plus)(mult((power)(two)(four))(succ(mult(two)(three))))((plus)(mult(two)(three))(succ(mult(two)(three))))))
+flag <span style="color:#ff79c6">+=</span> <span style="color:#8be9fd;font-style:italic">chr</span>(((plus)(mult((power)(two)(four))(three))(mult((plus)(two)(three))(three))))
+[<span style="color:#ff79c6">...</span>]
+flag <span style="color:#ff79c6">+=</span> <span style="color:#8be9fd;font-style:italic">chr</span>(((plus)(mult((power)(two)(four))(mult(two)(three)))(three)))
+flag <span style="color:#ff79c6">+=</span> <span style="color:#8be9fd;font-style:italic">chr</span>(((plus)(mult((power)(two)(four))(mult(two)(three)))((power)(three)(two))))
+
+<span style="color:#8be9fd;font-style:italic">print</span>(flag[::<span style="color:#ff79c6">-</span><span style="color:#bd93f9">1</span>])
+</code></pre></div><p><strong>FLAG:</strong> ictf{d0_sh33p_b@@@?}</p>
+<h2 id="upsolve">Upsolve</h2>
+<p>Even if identifying the arithmetic expressions was enough to solve the challenge, I was curious to understand the rest of the script.</p>
+<p>In particular, the first lambda-term is very strange:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">(<span style="color:#ff79c6">lambda</span> x13:((<span style="color:#ff79c6">lambda</span> x3:x13(<span style="color:#ff79c6">lambda</span> x7:x3(x3)(x7)))(<span style="color:#ff79c6">lambda</span> x3:x13(<span style="color:#ff79c6">lambda</span> x7:x3(x3)(x7)))))
+</code></pre></div><p><code>x3</code> is applied to itself!</p>
+<p>This term is a fixed-point combinator, more precisely a Z combinator: see theoretical details <a href="https://en.wikipedia.org/wiki/Fixed-point_combinator">here</a>. Roughly, it&rsquo;s a term that can be used to simulate recursion.</p>
+<p>Moreover, a long sequence of &ldquo;chained&rdquo; pairs appears at the beginning:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">((<span style="color:#ff79c6">lambda</span> x4:<span style="color:#ff79c6">lambda</span> x3:pair(fls)(pair(x3)(x4)))((<span style="color:#ff79c6">lambda</span> x4:<span style="color:#ff79c6">lambda</span> x3:pair(fls)(pair(x3)(x4)))((<span style="color:#ff79c6">lambda</span> x4:<span style="color:#ff79c6">lambda</span> x3:pair(fls)(pair(x3)(x4)))((<span style="color:#ff79c6">lambda</span> x4:<span style="color:#ff79c6">lambda</span> x3:pair(fls)(pair(x3)(x4)))((<span style="color:#ff79c6">lambda</span> x4:<span style="color:#ff79c6">lambda</span> x3:pair(fls)(pair(x3)(x4))) ((<span style="color:#ff79c6">lambda</span> x4:<span style="color:#ff79c6">lambda</span> x3:pair(fls)(pair(x3)(x4))) ((<span style="color:#ff79c6">lambda</span> x4:<span style="color:#ff79c6">lambda</span> x3:pair(fls)(pair(x3)(x4)))((<span style="color:#ff79c6">lambda</span> x4:<span style="color:#ff79c6">lambda</span> x3:pair(fls)(pair(x3)(x4)))((<span style="color:#ff79c6">lambda</span> x4:<span style="color:#ff79c6">lambda</span> x3:pair(fls)(pair(x3)(x4))) ((<span style="color:#ff79c6">lambda</span> x4:<span style="color:#ff79c6">lambda</span> x3:pair(fls)(pair(x3)(x4)))((<span style="color:#ff79c6">lambda</span> x4:<span style="color:#ff79c6">lambda</span> x3:pair(fls)(pair(x3)(x4)))((<span style="color:#ff79c6">lambda</span> x4:<span style="color:#ff79c6">lambda</span> x3:pair(fls)(pair(x3)(x4)))((<span style="color:#ff79c6">lambda</span> x4:<span style="color:#ff79c6">lambda</span> x3:pair(fls)(pair(x3)(x4)))((<span style="color:#ff79c6">lambda</span> x4:<span style="color:#ff79c6">lambda</span> x3:pair(fls)(pair(x3)(x4)))((<span style="color:#ff79c6">lambda</span> x4:<span style="color:#ff79c6">lambda</span> x3:pair(fls)(pair(x3)(x4)))((<span style="color:#ff79c6">lambda</span> x4:<span style="color:#ff79c6">lambda</span> x3:pair(fls)(pair(x3)(x4)))((<span style="color:#ff79c6">lambda</span> x4:<span style="color:#ff79c6">lambda</span> x3:pair(fls)(pair(x3)(x4)))((<span style="color:#ff79c6">lambda</span> x4:<span style="color:#ff79c6">lambda</span> x3:pair(fls)(pair(x3)(x4)))((<span style="color:#ff79c6">lambda</span> x4:<span style="color:#ff79c6">lambda</span> x3:pair(fls)(pair(x3)(x4))) ((<span style="color:#ff79c6">lambda</span> x4:<span style="color:#ff79c6">lambda</span> x3:pair(fls)(pair(x3)(x4))) (pair(tru)(tru)) [<span style="color:#ff79c6">...</span>]) [<span style="color:#ff79c6">...</span>]) [<span style="color:#ff79c6">...</span>])
+</code></pre></div><p>This term actually represents a linked list, whose elements are the susmentionned arithmetic expressions.</p>
+<p>After further deobfuscation/understanding, we can conclude that the script performs successive comparisons on the chars of the input, in reverse order, with the chars in the linked list.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>As a functional programming lover, I enjoyed a lot solving this chall. A big thanks to the author!
+I know it was possible to side-channel it, but it was funnier with lambda-calculus :)</p>
+
+    </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>
