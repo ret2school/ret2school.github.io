@@ -8,6 +8,33 @@
     <language>en-us</language>
     <lastBuildDate>Mon, 24 Jul 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/tags/imaginaryctf/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>[ImaginaryCTF 2023 - pwn] mailman</title>
+      <link>https://ret2school.github.io/post/mailman/</link>
+      <pubDate>Mon, 24 Jul 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/mailman/</guid>
+      <description>mailman  mailman (423 pts) - 31 solves by Eth007
+Description
+I&amp;rsquo;m sure that my post office is 100% secure! It uses some of the latest software, unlike some of the other post offices out there&amp;hellip; Flag is in ./flag.txt.
+Attachments https://imaginaryctf.org/r/PIxtO#vuln https://imaginaryctf.org/r/c9Mk8#libc.so.6
+nc mailman.chal.imaginaryctf.org 1337
+ mailman is a heap challenge I did for the ImaginaryCTF 2023 event. It was a basic heap challenge involving tcache poisoning, safe-linking and seccomp bypass.</description>
+    </item>
+    
+    <item>
+      <title>[ImaginaryCTF 2023 - pwn] window-of-opportunity</title>
+      <link>https://ret2school.github.io/post/iwindow/</link>
+      <pubDate>Mon, 24 Jul 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/iwindow/</guid>
+      <description>window-of-opportunity  window-of-opportunity (490 pts) - 11 solves by Eth007
+Description: Sometimes, there is a glimmer of hope, a spark of inspiration, a window of opportunity.
+Attachments https://imaginaryctf.org/r/izYM0#opportunity_dist.zip
+nc window-of-opportunity.chal.imaginaryctf.org 1337
+ window-of-opportunity is a kernel exploitation challenge I did for the ImaginaryCTF 2023. We are given an arbitrary read primitive (and a stack buffer overflow but I didn&amp;rsquo;t use it), and the goal is basically to read the /flag.txt file.</description>
+    </item>
+    
+    <item>
       <title>[ImaginaryCTF 2023 - reverse] Sheepish</title>
       <link>https://ret2school.github.io/post/sheepish/</link>
       <pubDate>Mon, 24 Jul 2023 00:00:00 +0000</pubDate>

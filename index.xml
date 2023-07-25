@@ -8,6 +8,20 @@
     <language>en-us</language>
     <lastBuildDate>Mon, 24 Jul 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://ret2school.github.io/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>[ImaginaryCTF 2023 - pwn] mailman</title>
+      <link>https://ret2school.github.io/post/mailman/</link>
+      <pubDate>Mon, 24 Jul 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://ret2school.github.io/post/mailman/</guid>
+      <description>mailman  mailman (423 pts) - 31 solves by Eth007
+Description
+I&amp;rsquo;m sure that my post office is 100% secure! It uses some of the latest software, unlike some of the other post offices out there&amp;hellip; Flag is in ./flag.txt.
+Attachments https://imaginaryctf.org/r/PIxtO#vuln https://imaginaryctf.org/r/c9Mk8#libc.so.6
+nc mailman.chal.imaginaryctf.org 1337
+ mailman is a heap challenge I did for the ImaginaryCTF 2023 event. It was a basic heap challenge involving tcache poisoning, safe-linking and seccomp bypass.</description>
+    </item>
+    
+    <item>
       <title>[ImaginaryCTF 2023 - pwn] window-of-opportunity</title>
       <link>https://ret2school.github.io/post/iwindow/</link>
       <pubDate>Mon, 24 Jul 2023 00:00:00 +0000</pubDate>
